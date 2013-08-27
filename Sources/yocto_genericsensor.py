@@ -1,8 +1,8 @@
 #*********************************************************************
 #*
-#* $Id: yocto_pressure.py 12324 2013-08-13 15:10:31Z mvuilleu $
+#* $Id: yocto_genericsensor.py 12324 2013-08-13 15:10:31Z mvuilleu $
 #*
-#* Implements yFindPressure(), the high-level API for Pressure functions
+#* Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #*
 #* - - - - - - - - - License information: - - - - - - - - - 
 #*
@@ -40,7 +40,7 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
-class YPressure(YFunction):
+class YGenericSensor(YFunction):
     """
     The Yoctopuce application programming interface allows you to read an instant
     measure of the sensor, as well as the minimal and maximal values observed.
@@ -51,7 +51,7 @@ class YPressure(YFunction):
 
     #--- (end of globals)
 
-    #--- (YPressure definitions)
+    #--- (YGenericSensor definitions)
 
 
     LOGICALNAME_INVALID             = YAPI.INVALID_STRING
@@ -62,29 +62,37 @@ class YPressure(YFunction):
     HIGHESTVALUE_INVALID            = YAPI.INVALID_DOUBLE
     CURRENTRAWVALUE_INVALID         = YAPI.INVALID_DOUBLE
     CALIBRATIONPARAM_INVALID        = YAPI.INVALID_STRING
+    SIGNALVALUE_INVALID             = YAPI.INVALID_DOUBLE
+    SIGNALUNIT_INVALID              = YAPI.INVALID_STRING
+    SIGNALRANGE_INVALID             = YAPI.INVALID_STRING
+    VALUERANGE_INVALID              = YAPI.INVALID_STRING
     RESOLUTION_INVALID              = YAPI.INVALID_DOUBLE
     CALIBRATIONOFFSET_INVALID       = YAPI.INVALID_LONG
 
 
 
-    _PressureCache ={}
+    _GenericSensorCache ={}
 
-    #--- (end of YPressure definitions)
+    #--- (end of YGenericSensor definitions)
 
-    #--- (YPressure implementation)
+    #--- (YGenericSensor implementation)
 
     def __init__(self,func):
-        super(YPressure,self).__init__("Pressure", func)
+        super(YGenericSensor,self).__init__("GenericSensor", func)
         self._callback = None
-        self._logicalName = YPressure.LOGICALNAME_INVALID
-        self._advertisedValue = YPressure.ADVERTISEDVALUE_INVALID
-        self._unit = YPressure.UNIT_INVALID
-        self._currentValue = YPressure.CURRENTVALUE_INVALID
-        self._lowestValue = YPressure.LOWESTVALUE_INVALID
-        self._highestValue = YPressure.HIGHESTVALUE_INVALID
-        self._currentRawValue = YPressure.CURRENTRAWVALUE_INVALID
-        self._calibrationParam = YPressure.CALIBRATIONPARAM_INVALID
-        self._resolution = YPressure.RESOLUTION_INVALID
+        self._logicalName = YGenericSensor.LOGICALNAME_INVALID
+        self._advertisedValue = YGenericSensor.ADVERTISEDVALUE_INVALID
+        self._unit = YGenericSensor.UNIT_INVALID
+        self._currentValue = YGenericSensor.CURRENTVALUE_INVALID
+        self._lowestValue = YGenericSensor.LOWESTVALUE_INVALID
+        self._highestValue = YGenericSensor.HIGHESTVALUE_INVALID
+        self._currentRawValue = YGenericSensor.CURRENTRAWVALUE_INVALID
+        self._calibrationParam = YGenericSensor.CALIBRATIONPARAM_INVALID
+        self._signalValue = YGenericSensor.SIGNALVALUE_INVALID
+        self._signalUnit = YGenericSensor.SIGNALUNIT_INVALID
+        self._signalRange = YGenericSensor.SIGNALRANGE_INVALID
+        self._valueRange = YGenericSensor.VALUERANGE_INVALID
+        self._resolution = YGenericSensor.RESOLUTION_INVALID
         self._calibrationOffset = 0
 
     def _parse(self, j):
@@ -97,40 +105,48 @@ class YPressure(YFunction):
             elif member.name == "unit":
                 self._unit = member.svalue
             elif member.name == "currentValue":
-                self._currentValue = round(member.ivalue/6553.6) / 10
+                self._currentValue = round(member.ivalue/65.536) / 1000
             elif member.name == "lowestValue":
-                self._lowestValue = round(member.ivalue/6553.6) / 10
+                self._lowestValue = round(member.ivalue/65.536) / 1000
             elif member.name == "highestValue":
-                self._highestValue = round(member.ivalue/6553.6) / 10
+                self._highestValue = round(member.ivalue/65.536) / 1000
             elif member.name == "currentRawValue":
                 self._currentRawValue = member.ivalue/65536.0
             elif member.name == "calibrationParam":
                 self._calibrationParam = member.svalue
+            elif member.name == "signalValue":
+                self._signalValue = round(member.ivalue/65.536) / 1000
+            elif member.name == "signalUnit":
+                self._signalUnit = member.svalue
+            elif member.name == "signalRange":
+                self._signalRange = member.svalue
+            elif member.name == "valueRange":
+                self._valueRange = member.svalue
             elif member.name == "resolution":
                 self._resolution = 1.0 / round(65536.0/member.ivalue) if member.ivalue > 100 else 0.001 / round(67.0/member.ivalue)
         return 0
 
     def get_logicalName(self):
         """
-        Returns the logical name of the pressure sensor.
+        Returns the logical name of the generic sensor.
         
-        @return a string corresponding to the logical name of the pressure sensor
+        @return a string corresponding to the logical name of the generic sensor
         
-        On failure, throws an exception or returns YPressure.LOGICALNAME_INVALID.
+        On failure, throws an exception or returns YGenericSensor.LOGICALNAME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YPressure.LOGICALNAME_INVALID
+                return YGenericSensor.LOGICALNAME_INVALID
         return self._logicalName
 
     def set_logicalName(self, newval):
         """
-        Changes the logical name of the pressure sensor. You can use yCheckLogicalName()
+        Changes the logical name of the generic sensor. You can use yCheckLogicalName()
         prior to this call to make sure that your parameter is valid.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
         
-        @param newval : a string corresponding to the logical name of the pressure sensor
+        @param newval : a string corresponding to the logical name of the generic sensor
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -142,15 +158,15 @@ class YPressure(YFunction):
 
     def get_advertisedValue(self):
         """
-        Returns the current value of the pressure sensor (no more than 6 characters).
+        Returns the current value of the generic sensor (no more than 6 characters).
         
-        @return a string corresponding to the current value of the pressure sensor (no more than 6 characters)
+        @return a string corresponding to the current value of the generic sensor (no more than 6 characters)
         
-        On failure, throws an exception or returns YPressure.ADVERTISEDVALUE_INVALID.
+        On failure, throws an exception or returns YGenericSensor.ADVERTISEDVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YPressure.ADVERTISEDVALUE_INVALID
+                return YGenericSensor.ADVERTISEDVALUE_INVALID
         return self._advertisedValue
 
     def get_unit(self):
@@ -159,12 +175,28 @@ class YPressure(YFunction):
         
         @return a string corresponding to the measuring unit for the measured value
         
-        On failure, throws an exception or returns YPressure.UNIT_INVALID.
+        On failure, throws an exception or returns YGenericSensor.UNIT_INVALID.
         """
-        if self._unit == YPressure.UNIT_INVALID:
+        if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YPressure.UNIT_INVALID
+                return YGenericSensor.UNIT_INVALID
         return self._unit
+
+    def set_unit(self, newval):
+        """
+        Changes the measuring unit for the measured value.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+        
+        @param newval : a string corresponding to the measuring unit for the measured value
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("unit", rest_val)
+
 
     def get_currentValue(self):
         """
@@ -172,13 +204,13 @@ class YPressure(YFunction):
         
         @return a floating point number corresponding to the current measured value
         
-        On failure, throws an exception or returns YPressure.CURRENTVALUE_INVALID.
+        On failure, throws an exception or returns YGenericSensor.CURRENTVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YPressure.CURRENTVALUE_INVALID
+                return YGenericSensor.CURRENTVALUE_INVALID
         res = YAPI._applyCalibration(self._currentRawValue, self._calibrationParam, self._calibrationOffset, self._resolution)
-        if res != YPressure.CURRENTVALUE_INVALID:
+        if res != YGenericSensor.CURRENTVALUE_INVALID:
             return res
         return self._currentValue
 
@@ -202,11 +234,11 @@ class YPressure(YFunction):
         
         @return a floating point number corresponding to the minimal value observed
         
-        On failure, throws an exception or returns YPressure.LOWESTVALUE_INVALID.
+        On failure, throws an exception or returns YGenericSensor.LOWESTVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YPressure.LOWESTVALUE_INVALID
+                return YGenericSensor.LOWESTVALUE_INVALID
         return self._lowestValue
 
     def set_highestValue(self, newval):
@@ -229,30 +261,30 @@ class YPressure(YFunction):
         
         @return a floating point number corresponding to the maximal value observed
         
-        On failure, throws an exception or returns YPressure.HIGHESTVALUE_INVALID.
+        On failure, throws an exception or returns YGenericSensor.HIGHESTVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YPressure.HIGHESTVALUE_INVALID
+                return YGenericSensor.HIGHESTVALUE_INVALID
         return self._highestValue
 
     def get_currentRawValue(self):
         """
-        Returns the unrounded and uncalibrated raw value returned by the sensor.
+        Returns the uncalibrated, unrounded raw value returned by the sensor.
         
-        @return a floating point number corresponding to the unrounded and uncalibrated raw value returned by the sensor
+        @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
         
-        On failure, throws an exception or returns YPressure.CURRENTRAWVALUE_INVALID.
+        On failure, throws an exception or returns YGenericSensor.CURRENTRAWVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YPressure.CURRENTRAWVALUE_INVALID
+                return YGenericSensor.CURRENTRAWVALUE_INVALID
         return self._currentRawValue
 
     def get_calibrationParam(self):
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YPressure.CALIBRATIONPARAM_INVALID
+                return YGenericSensor.CALIBRATIONPARAM_INVALID
         return self._calibrationParam
 
     def set_calibrationParam(self, newval):
@@ -291,6 +323,102 @@ class YPressure(YFunction):
                 return self._lastErrorType
         return YAPI._decodeCalibrationPoints(self._calibrationParam,None,rawValues,refValues,self._resolution,self._calibrationOffset)
 
+    def get_signalValue(self):
+        """
+        Returns the measured value of the electrical signal used by the sensor.
+        
+        @return a floating point number corresponding to the measured value of the electrical signal used by the sensor
+        
+        On failure, throws an exception or returns YGenericSensor.SIGNALVALUE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+                return YGenericSensor.SIGNALVALUE_INVALID
+        return self._signalValue
+
+    def get_signalUnit(self):
+        """
+        Returns the measuring unit of the electrical signal used by the sensor.
+        
+        @return a string corresponding to the measuring unit of the electrical signal used by the sensor
+        
+        On failure, throws an exception or returns YGenericSensor.SIGNALUNIT_INVALID.
+        """
+        if self._signalUnit == YGenericSensor.SIGNALUNIT_INVALID:
+            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+                return YGenericSensor.SIGNALUNIT_INVALID
+        return self._signalUnit
+
+    def get_signalRange(self):
+        """
+        Returns the electric signal range used by the sensor.
+        
+        @return a string corresponding to the electric signal range used by the sensor
+        
+        On failure, throws an exception or returns YGenericSensor.SIGNALRANGE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+                return YGenericSensor.SIGNALRANGE_INVALID
+        return self._signalRange
+
+    def set_signalRange(self, newval):
+        """
+        Changes the electric signal range used by the sensor.
+        
+        @param newval : a string corresponding to the electric signal range used by the sensor
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("signalRange", rest_val)
+
+
+    def get_valueRange(self):
+        """
+        Returns the physical value range measured by the sensor.
+        
+        @return a string corresponding to the physical value range measured by the sensor
+        
+        On failure, throws an exception or returns YGenericSensor.VALUERANGE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+                return YGenericSensor.VALUERANGE_INVALID
+        return self._valueRange
+
+    def set_valueRange(self, newval):
+        """
+        Changes the physical value range measured by the sensor. The range change may have a side effect
+        on the display resolution, as it may be adapted automatically.
+        
+        @param newval : a string corresponding to the physical value range measured by the sensor
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("valueRange", rest_val)
+
+
+    def set_resolution(self, newval):
+        """
+        Changes the resolution of the measured physical values. The resolution corresponds to the numerical precision
+        when displaying value. It does not change the precision of the measure itself.
+        
+        @param newval : a floating point number corresponding to the resolution of the measured physical values
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(round(newval*65536.0,1))
+        return self._setAttr("resolution", rest_val)
+
+
     def get_resolution(self):
         """
         Returns the resolution of the measured values. The resolution corresponds to the numerical precision
@@ -298,27 +426,27 @@ class YPressure(YFunction):
         
         @return a floating point number corresponding to the resolution of the measured values
         
-        On failure, throws an exception or returns YPressure.RESOLUTION_INVALID.
+        On failure, throws an exception or returns YGenericSensor.RESOLUTION_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YPressure.RESOLUTION_INVALID
+                return YGenericSensor.RESOLUTION_INVALID
         return self._resolution
 
-    def nextPressure(self):
+    def nextGenericSensor(self):
         """
-        Continues the enumeration of pressure sensors started using yFirstPressure().
+        Continues the enumeration of generic sensors started using yFirstGenericSensor().
         
-        @return a pointer to a YPressure object, corresponding to
-                a pressure sensor currently online, or a None pointer
-                if there are no more pressure sensors to enumerate.
+        @return a pointer to a YGenericSensor object, corresponding to
+                a generic sensor currently online, or a None pointer
+                if there are no more generic sensors to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
             return None
         if hwidRef.value == "":
             return None
-        return YPressure.FindPressure(hwidRef.value)
+        return YGenericSensor.FindGenericSensor(hwidRef.value)
 
     def registerValueCallback(self, callback):
         """
@@ -349,14 +477,14 @@ class YPressure(YFunction):
         if self._callback is not None:
             self._callback(self, value)
 
-#--- (end of YPressure implementation)
+#--- (end of YGenericSensor implementation)
 
-#--- (Pressure functions)
+#--- (GenericSensor functions)
 
     @staticmethod 
-    def FindPressure(func):
+    def FindGenericSensor(func):
         """
-        Retrieves a pressure sensor for a given identifier.
+        Retrieves a generic sensor for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -366,33 +494,33 @@ class YPressure(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
         
-        This function does not require that the pressure sensor is online at the time
+        This function does not require that the generic sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YPressure.isOnline() to test if the pressure sensor is
+        Use the method YGenericSensor.isOnline() to test if the generic sensor is
         indeed online at a given time. In case of ambiguity when looking for
-        a pressure sensor by logical name, no error is notified: the first instance
+        a generic sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
         
-        @param func : a string that uniquely characterizes the pressure sensor
+        @param func : a string that uniquely characterizes the generic sensor
         
-        @return a YPressure object allowing you to drive the pressure sensor.
+        @return a YGenericSensor object allowing you to drive the generic sensor.
         """
-        if func in YPressure._PressureCache:
-            return YPressure._PressureCache[func]
-        res =YPressure(func)
-        YPressure._PressureCache[func] =  res
+        if func in YGenericSensor._GenericSensorCache:
+            return YGenericSensor._GenericSensorCache[func]
+        res =YGenericSensor(func)
+        YGenericSensor._GenericSensorCache[func] =  res
         return res
 
     @staticmethod 
-    def  FirstPressure():
+    def  FirstGenericSensor():
         """
-        Starts the enumeration of pressure sensors currently accessible.
-        Use the method YPressure.nextPressure() to iterate on
-        next pressure sensors.
+        Starts the enumeration of generic sensors currently accessible.
+        Use the method YGenericSensor.nextGenericSensor() to iterate on
+        next generic sensors.
         
-        @return a pointer to a YPressure object, corresponding to
-                the first pressure sensor currently online, or a None pointer
+        @return a pointer to a YGenericSensor object, corresponding to
+                the first generic sensor currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
@@ -405,7 +533,7 @@ class YPressure(YFunction):
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
         p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("Pressure", 0, p, size,  neededsizeRef, errmsgRef)
+        err = YAPI.apiGetFunctionsByClass("GenericSensor", 0, p, size,  neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
@@ -413,11 +541,11 @@ class YPressure(YFunction):
         if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
             return None
 
-        return YPressure.FindPressure(serialRef.value + "." + funcIdRef.value)
+        return YGenericSensor.FindGenericSensor(serialRef.value + "." + funcIdRef.value)
 
     @staticmethod 
-    def _PressureCleanup():
+    def _GenericSensorCleanup():
         pass
 
-  #--- (end of Pressure functions)
+  #--- (end of GenericSensor functions)
 

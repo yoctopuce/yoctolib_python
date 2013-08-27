@@ -29,7 +29,9 @@ if m.isOnline():
         print("beacon:       ON")
     else:
         print("beacon:       OFF")
-
+    print("upTime:       " + str(m.get_upTime()/1000)+" sec")
+    print("USB current:  " + str(m.get_usbCurrent())+" mA")
+    print("logs:\n" + m.get_lastLogs())    
 else:
     print(sys.argv[1] + " not connected (check identification and USB cable)")
 

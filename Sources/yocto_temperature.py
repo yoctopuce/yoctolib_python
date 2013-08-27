@@ -1,39 +1,39 @@
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 11112 2013-04-16 14:51:20Z mvuilleu $
+#* $Id: yocto_temperature.py 12324 2013-08-13 15:10:31Z mvuilleu $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
 #* - - - - - - - - - License information: - - - - - - - - - 
 #*
-#* Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+#*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
-#* 1) If you have obtained this file from www.yoctopuce.com,
-#*    Yoctopuce Sarl licenses to you (hereafter Licensee) the
-#*    right to use, modify, copy, and integrate this source file
-#*    into your own solution for the sole purpose of interfacing
-#*    a Yoctopuce product with Licensee's solution.
+#*  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+#*  non-exclusive license to use, modify, copy and integrate this
+#*  file into your software for the sole purpose of interfacing 
+#*  with Yoctopuce products. 
 #*
-#*    The use of this file and all relationship between Yoctopuce 
-#*    and Licensee are governed by Yoctopuce General Terms and 
-#*    Conditions.
+#*  You may reproduce and distribute copies of this file in 
+#*  source or object form, as long as the sole purpose of this
+#*  code is to interface with Yoctopuce products. You must retain 
+#*  this notice in the distributed source file.
 #*
-#*    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
-#*    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
-#*    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
-#*    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
-#*    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
-#*    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
-#*    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
-#*    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
-#*    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
-#*    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
-#*    WARRANTY, OR OTHERWISE.
+#*  You should refer to Yoctopuce General Terms and Conditions
+#*  for additional information regarding your rights and 
+#*  obligations.
 #*
-#* 2) If your intent is not to interface with Yoctopuce products,
-#*    you are not entitled to use, read or create any derived
-#*    material from this source file.
+#*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+#*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+#*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+#*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+#*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+#*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+#*  WARRANTY, OR OTHERWISE.
 #*
 #*********************************************************************/
 
@@ -61,8 +61,8 @@ class YTemperature(YFunction):
     LOWESTVALUE_INVALID             = YAPI.INVALID_DOUBLE
     HIGHESTVALUE_INVALID            = YAPI.INVALID_DOUBLE
     CURRENTRAWVALUE_INVALID         = YAPI.INVALID_DOUBLE
-    RESOLUTION_INVALID              = YAPI.INVALID_DOUBLE
     CALIBRATIONPARAM_INVALID        = YAPI.INVALID_STRING
+    RESOLUTION_INVALID              = YAPI.INVALID_DOUBLE
     CALIBRATIONOFFSET_INVALID       = YAPI.INVALID_LONG
 
     SENSORTYPE_DIGITAL              = 0
@@ -73,6 +73,9 @@ class YTemperature(YFunction):
     SENSORTYPE_TYPE_R               = 5
     SENSORTYPE_TYPE_S               = 6
     SENSORTYPE_TYPE_T               = 7
+    SENSORTYPE_PT100_4WIRES         = 8
+    SENSORTYPE_PT100_3WIRES         = 9
+    SENSORTYPE_PT100_2WIRES         = 10
     SENSORTYPE_INVALID              = -1
 
 
@@ -84,7 +87,6 @@ class YTemperature(YFunction):
 
     def __init__(self,func):
         super(YTemperature,self).__init__("Temperature", func)
-        #--- (YTemperature implementation)
         self._callback = None
         self._logicalName = YTemperature.LOGICALNAME_INVALID
         self._advertisedValue = YTemperature.ADVERTISEDVALUE_INVALID
@@ -93,8 +95,8 @@ class YTemperature(YFunction):
         self._lowestValue = YTemperature.LOWESTVALUE_INVALID
         self._highestValue = YTemperature.HIGHESTVALUE_INVALID
         self._currentRawValue = YTemperature.CURRENTRAWVALUE_INVALID
-        self._resolution = YTemperature.RESOLUTION_INVALID
         self._calibrationParam = YTemperature.CALIBRATIONPARAM_INVALID
+        self._resolution = YTemperature.RESOLUTION_INVALID
         self._sensorType = YTemperature.SENSORTYPE_INVALID
         self._calibrationOffset = -32767
 
@@ -115,10 +117,10 @@ class YTemperature(YFunction):
                 self._highestValue = round(member.ivalue/6553.6) / 10
             elif member.name == "currentRawValue":
                 self._currentRawValue = member.ivalue/65536.0
-            elif member.name == "resolution":
-                self._resolution = 1.0 / round(65536.0/member.ivalue)
             elif member.name == "calibrationParam":
                 self._calibrationParam = member.svalue
+            elif member.name == "resolution":
+                self._resolution = 1.0 / round(65536.0/member.ivalue) if member.ivalue > 100 else 0.001 / round(67.0/member.ivalue)
             elif member.name == "sensorType":
                 self._sensorType = member.ivalue
         return 0
@@ -262,25 +264,6 @@ class YTemperature(YFunction):
                 return YTemperature.CURRENTRAWVALUE_INVALID
         return self._currentRawValue
 
-    def set_resolution(self, newval):
-        rest_val = str(round(newval*65536.0,1))
-        return self._setAttr("resolution", rest_val)
-
-
-    def get_resolution(self):
-        """
-        Returns the resolution of the measured values. The resolution corresponds to the numerical precision
-        of the values, which is not always the same as the actual precision of the sensor.
-        
-        @return a floating point number corresponding to the resolution of the measured values
-        
-        On failure, throws an exception or returns YTemperature.RESOLUTION_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YTemperature.RESOLUTION_INVALID
-        return self._resolution
-
     def get_calibrationParam(self):
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
@@ -298,7 +281,7 @@ class YTemperature(YFunction):
         a possible perturbation of the measure caused by an enclosure. It is possible
         to configure up to five correction points. Correction points must be provided
         in ascending order, and be in the range of the sensor. The device will automatically
-        perform a lineat interpolatation of the error correction between specified
+        perform a linear interpolation of the error correction between specified
         points. Remember to call the saveToFlash() method of the module if the
         modification must be kept.
         
@@ -323,14 +306,29 @@ class YTemperature(YFunction):
                 return self._lastErrorType
         return YAPI._decodeCalibrationPoints(self._calibrationParam,None,rawValues,refValues,self._resolution,self._calibrationOffset)
 
+    def get_resolution(self):
+        """
+        Returns the resolution of the measured values. The resolution corresponds to the numerical precision
+        of the values, which is not always the same as the actual precision of the sensor.
+        
+        @return a floating point number corresponding to the resolution of the measured values
+        
+        On failure, throws an exception or returns YTemperature.RESOLUTION_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+                return YTemperature.RESOLUTION_INVALID
+        return self._resolution
+
     def get_sensorType(self):
         """
-        Returns the tempeture sensor type.
+        Returns the temperature sensor type.
         
         @return a value among YTemperature.SENSORTYPE_DIGITAL, YTemperature.SENSORTYPE_TYPE_K,
         YTemperature.SENSORTYPE_TYPE_E, YTemperature.SENSORTYPE_TYPE_J, YTemperature.SENSORTYPE_TYPE_N,
-        YTemperature.SENSORTYPE_TYPE_R, YTemperature.SENSORTYPE_TYPE_S and YTemperature.SENSORTYPE_TYPE_T
-        corresponding to the tempeture sensor type
+        YTemperature.SENSORTYPE_TYPE_R, YTemperature.SENSORTYPE_TYPE_S, YTemperature.SENSORTYPE_TYPE_T,
+        YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES and
+        YTemperature.SENSORTYPE_PT100_2WIRES corresponding to the temperature sensor type
         
         On failure, throws an exception or returns YTemperature.SENSORTYPE_INVALID.
         """
@@ -342,14 +340,16 @@ class YTemperature(YFunction):
     def set_sensorType(self, newval):
         """
         Modify the temperature sensor type.  This function is used to
-        to define the type of thermo couple (K,E...) used with the device.
+        to define the type of thermocouple (K,E...) used with the device.
         This will have no effect if module is using a digital sensor.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
         
         @param newval : a value among YTemperature.SENSORTYPE_DIGITAL, YTemperature.SENSORTYPE_TYPE_K,
         YTemperature.SENSORTYPE_TYPE_E, YTemperature.SENSORTYPE_TYPE_J, YTemperature.SENSORTYPE_TYPE_N,
-        YTemperature.SENSORTYPE_TYPE_R, YTemperature.SENSORTYPE_TYPE_S and YTemperature.SENSORTYPE_TYPE_T
+        YTemperature.SENSORTYPE_TYPE_R, YTemperature.SENSORTYPE_TYPE_S, YTemperature.SENSORTYPE_TYPE_T,
+        YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES and
+        YTemperature.SENSORTYPE_PT100_2WIRES
         
         @return YAPI.SUCCESS if the call succeeds.
         

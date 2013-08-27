@@ -28,15 +28,15 @@ def setLedState(led,state):
 
 errmsg=YRefParam()
 
-if len(sys.argv)<2 :  usage()
+#if len(sys.argv)<2 :  usage()
 
-target=sys.argv[1]
+#target=sys.argv[1]
 
 # Setup the API to use local USB devices
 if YAPI.RegisterHub("usb", errmsg)!= YAPI.SUCCESS:
     sys.exit("init error"+errmsg.value)
 
-
+target="any"
 if target=='any':
     # retreive any RGB led
     led = YLed.FirstLed()

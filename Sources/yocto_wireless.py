@@ -1,52 +1,107 @@
 #*********************************************************************
 #*
-#* $Id: yocto_wireless.py 9921 2013-02-20 09:39:16Z seb $
+#* $Id: yocto_wireless.py 12337 2013-08-14 15:22:22Z mvuilleu $
 #*
 #* Implements yFindWireless(), the high-level API for Wireless functions
 #*
 #* - - - - - - - - - License information: - - - - - - - - - 
 #*
-#* Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+#*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
-#* 1) If you have obtained this file from www.yoctopuce.com,
-#*    Yoctopuce Sarl licenses to you (hereafter Licensee) the
-#*    right to use, modify, copy, and integrate this source file
-#*    into your own solution for the sole purpose of interfacing
-#*    a Yoctopuce product with Licensee's solution.
+#*  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+#*  non-exclusive license to use, modify, copy and integrate this
+#*  file into your software for the sole purpose of interfacing 
+#*  with Yoctopuce products. 
 #*
-#*    The use of this file and all relationship between Yoctopuce 
-#*    and Licensee are governed by Yoctopuce General Terms and 
-#*    Conditions.
+#*  You may reproduce and distribute copies of this file in 
+#*  source or object form, as long as the sole purpose of this
+#*  code is to interface with Yoctopuce products. You must retain 
+#*  this notice in the distributed source file.
 #*
-#*    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
-#*    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
-#*    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
-#*    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
-#*    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
-#*    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
-#*    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
-#*    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
-#*    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
-#*    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
-#*    WARRANTY, OR OTHERWISE.
+#*  You should refer to Yoctopuce General Terms and Conditions
+#*  for additional information regarding your rights and 
+#*  obligations.
 #*
-#* 2) If your intent is not to interface with Yoctopuce products,
-#*    you are not entitled to use, read or create any derived
-#*    material from this source file.
+#*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+#*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+#*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+#*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+#*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+#*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+#*  WARRANTY, OR OTHERWISE.
 #*
 #*********************************************************************/
 
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
+
+class YWlanRecord:
+    """
+    
+    """
+
+    #--- (generated code: YWlanRecord definitions)
+
+
+
+    _WlanRecordCache ={}
+
+    #--- (end of generated code: YWlanRecord definitions)
+
+
+
+    def __init__(self,json):
+        self._ssid = ""
+        self._channel  = -1
+        self._sec = ""
+        self._rssi = -1
+        for member in json.members:
+            if member.name == "ssid":
+                self._ssid = member.svalue
+            if member.name == "sec":
+                self._sec = member.svalue
+            elif member.name == "channel":
+                self._channel = member.ivalue
+            elif member.name == "rssi":
+                self._rssi = member.ivalue
+
+
+    #--- (generated code: YWlanRecord implementation)
+
+    def get_ssid(self ):
+        return self._ssid
+
+    def get_channel(self ):
+        return self._channel
+
+    def get_security(self ):
+        return self._sec
+
+    def get_linkQuality(self ):
+        return self._rssi
+
+#--- (end of generated code: YWlanRecord implementation)
+
+#--- (WlanRecord generated code: functions)
+
+
+#--- (end of WlanRecord generated code: functions)
+
+
+
 class YWireless(YFunction):
-    #--- (globals)
+    #--- (generated code: globals)
 
 
-    #--- (end of globals)
+    #--- (end of generated code: globals)
 
-    #--- (YWireless definitions)
+    #--- (generated code: YWireless definitions)
 
 
     LOGICALNAME_INVALID             = YAPI.INVALID_STRING
@@ -67,13 +122,12 @@ class YWireless(YFunction):
 
     _WirelessCache ={}
 
-    #--- (end of YWireless definitions)
+    #--- (end of generated code: YWireless definitions)
 
-    #--- (YWireless implementation)
+    #--- (generated code: YWireless implementation)
 
     def __init__(self,func):
         super(YWireless,self).__init__("Wireless", func)
-        #--- (YWireless implementation)
         self._callback = None
         self._logicalName = YWireless.LOGICALNAME_INVALID
         self._advertisedValue = YWireless.ADVERTISEDVALUE_INVALID
@@ -246,7 +300,7 @@ class YWireless(YFunction):
         """
         Changes the configuration of the wireless lan interface to create an ad-hoc
         wireless network, without using an access point. If a security key is specified,
-        the network will be protected by WEP128, since WPA is not standardized for
+        the network is protected by WEP128, since WPA is not standardized for
         ad-hoc networks.
         Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
         
@@ -259,6 +313,26 @@ class YWireless(YFunction):
         """
         rest_val = "ADHOC:"+ssid+"\\"+securityKey
         return self._setAttr("wlanConfig", rest_val)
+    def get_detectedWlans(self ):
+        """
+        Returns a list of YWlanRecord objects which describe detected Wireless networks.
+        This list is not updated when the module is already connected to an acces point (infrastructure mode).
+        To force an update of this list, adhocNetwork() must be called to disconnect
+        the module from the current network. The returned list must be unallocated by caller,
+        
+        @return a list of YWlanRecord objects, containing the SSID, channel,
+                link quality and the type of security of the wireless network.
+        
+        On failure, throws an exception or returns an empty list.
+        """
+        
+        list = []
+        res = []
+        json = self._download("wlan.json?by=name")
+        list = self._json_get_array(json)
+        for y in list : res.append( YWlanRecord(y))
+        return res
+
 
     def nextWireless(self):
         """
@@ -304,9 +378,9 @@ class YWireless(YFunction):
         if self._callback is not None:
             self._callback(self, value)
 
-#--- (end of YWireless implementation)
+#--- (end of generated code: YWireless implementation)
 
-#--- (Wireless functions)
+#--- (generated code: Wireless functions)
 
     @staticmethod 
     def FindWireless(func):
@@ -374,5 +448,5 @@ class YWireless(YFunction):
     def _WirelessCleanup():
         pass
 
-  #--- (end of Wireless functions)
+  #--- (end of generated code: Wireless functions)
 

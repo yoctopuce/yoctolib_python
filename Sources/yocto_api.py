@@ -1,3 +1,43 @@
+#*********************************************************************
+#*
+#* $Id: yocto_api.py 12326 2013-08-13 15:52:20Z mvuilleu $
+#*
+#* High-level programming interface, common to all modules
+#*
+#* - - - - - - - - - License information: - - - - - - - - - 
+#*
+#*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+#*
+#*  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+#*  non-exclusive license to use, modify, copy and integrate this
+#*  file into your software for the sole purpose of interfacing 
+#*  with Yoctopuce products. 
+#*
+#*  You may reproduce and distribute copies of this file in 
+#*  source or object form, as long as the sole purpose of this
+#*  code is to interface with Yoctopuce products. You must retain 
+#*  this notice in the distributed source file.
+#*
+#*  You should refer to Yoctopuce General Terms and Conditions
+#*  for additional information regarding your rights and 
+#*  obligations.
+#*
+#*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+#*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+#*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+#*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+#*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+#*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+#*  WARRANTY, OR OTHERWISE.
+#*
+#*********************************************************************/
+
+__docformat__ = 'restructuredtext en'
 import ctypes
 import platform
 #import abc  (not supported in 2.5.x)
@@ -107,9 +147,6 @@ class YAPI:
 
         class Tjstate:
             JSTART,JWAITFORNAME,JWAITFORENDOFNAME, JWAITFORCOLON,JWAITFORDATA,JWAITFORNEXTSTRUCTMEMBER,JWAITFORNEXTARRAYITEM,JSCOMPLETED,JWAITFORSTRINGVALUE,JWAITFORINTVALUE,JWAITFORBOOLVALUE= range(11)
-
-
-
 
         def __init__(self,jsonData,withHttpHeader=True):
             jsonData = jsonData.decode("latin1")
@@ -428,7 +465,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.01"
     YOCTO_API_VERSION_BCD = 0x0101
 
-    YOCTO_API_BUILD_NO = "11167"
+    YOCTO_API_BUILD_NO = "12553"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -448,6 +485,7 @@ class YAPI:
     YOCTO_PUBVAL_LEN = 16
     YOCTO_PASS_LEN = 20
     YOCTO_REALM_LEN = 20
+    YIOHDL_SIZE = 8
     INVALID_YHANDLE = 0
 
     yUnknowSize = 1024
@@ -492,6 +530,8 @@ class YAPI:
 
         libpath = os.path.dirname(__file__)
         system = platform.system()
+        if libpath=='':
+            libpath = '.'
         if system=='Windows':
             if arch=='32bit' :
                 YAPI._yApiCLibFile= libpath+"\\cdll\\yapi.dll"
@@ -536,6 +576,8 @@ class YAPI:
             system = platform.system()
             arch = platform.architecture()[0]
             machine = platform.machine()
+            if libpath=='':
+                libpath = '.'
             #
             #  WINDOWS
             #
@@ -575,6 +617,9 @@ class YAPI:
             else:
                 raise NotImplementedError("unsupported platform "+system+", contact support@yoctopuce.com.")
 
+        if not os.path.exists(YAPI._yApiCLibFile):
+            raise ImportError("YAPI shared library is missing ("+YAPI._yApiCLibFile+"), make sure it is available and accessible.")
+           
         # try to load main librray
         libloaded = False
         try:
@@ -849,6 +894,7 @@ class YAPI:
     EXHAUSTED = -10                # you have run out of a limited ressource, check the documentation
     DOUBLE_ACCES = -11             # you have two process that try to acces to the same device
     UNAUTHORIZED = -12             # unauthorized access to password-protected device
+    RTC_NOT_READY = -13            # real-time clock has not been initialized (or time was lost)
 
 
     #--- (end of generated code: globals)
@@ -1006,7 +1052,6 @@ class YAPI:
     @staticmethod
     def _decimalToDouble(val):
         negate=False
-        res=YAPI.INVALID_DOUBLE
         if not val:
             return 0.0
         if val > 32767:
@@ -1026,9 +1071,6 @@ class YAPI:
     @staticmethod
     def _doubleToDecimal(val):
         negate = False
-        #double  comp, mant;
-        #int     decpow;
-        #long     res;
 
         if val == 0.0:
             return 0
@@ -1052,27 +1094,25 @@ class YAPI:
 
     @staticmethod
     def _encodeCalibrationPoints(rawValues,refValues,resolution,calibrationOffset,actualCparams):
-        npt = len(refValues)
-        if len(rawValues) < len(refValues) : len(rawValues)
-        #int rawVal, refVal;
-        #int calibType;
-        #int minRaw = 0;
-        #String res;
-        minRaw = 0
-        if not npt:
+        npt = len(refValues) if len(rawValues) < len(refValues) else len(rawValues)
+        if npt == 0:
             return ""
 
+        minRaw = 0
         if actualCparams == "":
-            calibType =10 + npt
+            calibType = 10 + npt
         else:
             pos = actualCparams.find(',')
-            calibType = int(actualCparams.substring(0,pos))
-            if calibType <=10:
-                calibType = npt
+            if pos < 0:
+                calibType = 0
             else:
-                calibType = 10+npt
+                calibType = int(actualCparams[0:pos])
+        if calibType <= 10:
+            calibType = npt
+        else:
+            calibType = 10+npt
         res = str(calibType)
-        if calibType<=10 :
+        if calibType <= 10:
             for i in range(0,npt):
                 rawVal = int( (rawValues[i] / resolution - calibrationOffset + .5))
                 if minRaw <= rawVal < 65536:
@@ -1833,7 +1873,7 @@ class YDevice:
         # first / is expected within very first characters of the query
         p = 0
         while p < 10 and YGetByte(request,p) != 47: # chr(47) = '/'
-            p = p + 1
+            p += 1
         newrequest = request[0:p]+self._subpath.encode("ASCII")+request[p+1:]
         return YAPI.SUCCESS, newrequest
 
@@ -1859,7 +1899,7 @@ class YDevice:
             if not errmsgRef is None: errmsgRef.value = newrequest
             return res
         #yapiHTTPRequestSyncStart(&iohdl, _rootdevice, fullrequest.c_str(), &reply, &replysize, errbuff)
-        iohdl   = ctypes.create_string_buffer(8)
+        iohdl   = ctypes.create_string_buffer(YAPI.YIOHDL_SIZE)
         errbuf  = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         root_c  = ctypes.create_string_buffer(self._rootdevice.encode("ASCII"))
         newrequest_c = ctypes.create_string_buffer(newrequest)
@@ -2170,8 +2210,8 @@ class YFunction(object):
         buffer = self._request(request)
         if len(buffer) == 0:
             self._throw(YAPI.IO_ERROR,"http request failed")
-            return YAPI.IO_ERROR;
-        return YAPI.SUCCESS;
+            return YAPI.IO_ERROR
+        return YAPI.SUCCESS
 
     def _download(self, url):
         request = "GET /"+url+" HTTP/1.1\r\n\r\n"
@@ -2255,12 +2295,12 @@ class YFunction(object):
         # Resolve the function name
         res = self._getDescriptor(fundescRef, errmsgRef)
         if not YAPI.YISERR(res) and not YAPI.YISERR(YAPI._yapiGetFunctionInfo(fundescRef.value, ctypes.byref(devdesc), snum, funcid, fname, None, errbuff)):
-            if fname.value != "":
+            if YByte2String(fname.value) != "":
                 funcid = fname
             dname   =  ctypes.create_string_buffer(YAPI.YOCTO_FUNCTION_LEN)
-            moddescr = YAPI.yapiGetFunction("Module",snum.value,errmsgRef)
+            moddescr = YAPI.yapiGetFunction("Module",YByte2String(snum.value),errmsgRef)
             if not YAPI.YISERR(moddescr) and not YAPI.YISERR(YAPI._yapiGetFunctionInfo(moddescr, ctypes.byref(devdesc), None, None, dname, None, errbuff)):
-                if dname.value != "":
+                if YByte2String(dname.value) != "":
                     return "%s.%s" %(YByte2String(dname.value),YByte2String(funcid.value))
             return "%s.%s" %(YByte2String(snum.value),YByte2String(funcid.value))
         self._throw(YAPI.DEVICE_NOT_FOUND, errmsgRef.value)
@@ -2539,13 +2579,10 @@ class YModule(YFunction):
 
     #--- (end of generated code: YModule definitions)
 
-    def __init__(self,func):
-        super(YModule,self).__init__("Module", func)
         #--- (generated code: YModule implementation)
 
     def __init__(self,func):
         super(YModule,self).__init__("Module", func)
-        #--- (YModule implementation)
         self._callback = None
         self._productName = YModule.PRODUCTNAME_INVALID
         self._serialNumber = YModule.SERIALNUMBER_INVALID
@@ -2912,6 +2949,18 @@ class YModule(YFunction):
         return self._download("icon2d.png")
         
 
+    def get_lastLogs(self ):
+        """
+        Returns a string with last logs of the module. This method return only
+        logs that are still in the module.
+        
+        @return a string with last logs of the module.
+        """
+        
+        content = self._download("logs.txt")
+        return content
+        
+
 
     def nextModule(self):
         """
@@ -2972,9 +3021,9 @@ class YModule(YFunction):
         res = self._getDescriptor(fundescRef, errmsgRef)
         if not YAPI.YISERR(res) and not YAPI.YISERR(YAPI._yapiGetFunctionInfo(fundescRef.value, ctypes.byref(devdesc), snum, funcid, fname, None, errbuff)):
             dname   =  ctypes.create_string_buffer(YAPI.YOCTO_FUNCTION_LEN)
-            moddescr = YAPI.yapiGetFunction("Module",snum.value,errmsgRef)
+            moddescr = YAPI.yapiGetFunction("Module",YByte2String(snum.value),errmsgRef)
             if not YAPI.YISERR(moddescr) and not YAPI.YISERR(YAPI._yapiGetFunctionInfo(moddescr, ctypes.byref(devdesc), None, None, dname, None, errbuff)):
-                if dname.value != "":
+                if YByte2String(dname.value) != "":
                     return "%s" %(YByte2String(dname.value))
             return "%s" %(YByte2String(snum.value))
         self._throw(YAPI.DEVICE_NOT_FOUND, errmsgRef.value)

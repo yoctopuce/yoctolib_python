@@ -1,8 +1,8 @@
 #*********************************************************************
 #*
-#* $Id: yocto_led.py 12324 2013-08-13 15:10:31Z mvuilleu $
+#* $Id: yocto_realtimeclock.py 12324 2013-08-13 15:10:31Z mvuilleu $
 #*
-#* Implements yFindLed(), the high-level API for Led functions
+#* Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #*
 #* - - - - - - - - - License information: - - - - - - - - - 
 #*
@@ -40,11 +40,12 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
-class YLed(YFunction):
+class YRealTimeClock(YFunction):
     """
-    Yoctopuce application programming interface
-    allows you not only to drive the intensity of the led, but also to
-    have it blink at various preset frequencies.
+    The RealTimeClock function maintains and provides current date and time, even accross power cut
+    lasting several days. It is the base for automated wake-up functions provided by the WakeUpScheduler.
+    The current time may represent a local time as well as an UTC time, but no automatic time change
+    will occur to account for daylight saving time.
     
     """
     #--- (globals)
@@ -52,39 +53,35 @@ class YLed(YFunction):
 
     #--- (end of globals)
 
-    #--- (YLed definitions)
+    #--- (YRealTimeClock definitions)
 
 
     LOGICALNAME_INVALID             = YAPI.INVALID_STRING
     ADVERTISEDVALUE_INVALID         = YAPI.INVALID_STRING
-    LUMINOSITY_INVALID              = YAPI.INVALID_LONG
+    UNIXTIME_INVALID                = YAPI.INVALID_LONG
+    DATETIME_INVALID                = YAPI.INVALID_STRING
+    UTCOFFSET_INVALID               = YAPI.INVALID_LONG
 
-    POWER_OFF                       = 0
-    POWER_ON                        = 1
-    POWER_INVALID                   = -1
-    BLINKING_STILL                  = 0
-    BLINKING_RELAX                  = 1
-    BLINKING_AWARE                  = 2
-    BLINKING_RUN                    = 3
-    BLINKING_CALL                   = 4
-    BLINKING_PANIC                  = 5
-    BLINKING_INVALID                = -1
+    TIMESET_FALSE                   = 0
+    TIMESET_TRUE                    = 1
+    TIMESET_INVALID                 = -1
 
 
-    _LedCache ={}
+    _RealTimeClockCache ={}
 
-    #--- (end of YLed definitions)
+    #--- (end of YRealTimeClock definitions)
 
-    #--- (YLed implementation)
+    #--- (YRealTimeClock implementation)
 
     def __init__(self,func):
-        super(YLed,self).__init__("Led", func)
+        super(YRealTimeClock,self).__init__("RealTimeClock", func)
         self._callback = None
-        self._logicalName = YLed.LOGICALNAME_INVALID
-        self._advertisedValue = YLed.ADVERTISEDVALUE_INVALID
-        self._power = YLed.POWER_INVALID
-        self._luminosity = YLed.LUMINOSITY_INVALID
-        self._blinking = YLed.BLINKING_INVALID
+        self._logicalName = YRealTimeClock.LOGICALNAME_INVALID
+        self._advertisedValue = YRealTimeClock.ADVERTISEDVALUE_INVALID
+        self._unixTime = YRealTimeClock.UNIXTIME_INVALID
+        self._dateTime = YRealTimeClock.DATETIME_INVALID
+        self._utcOffset = YRealTimeClock.UTCOFFSET_INVALID
+        self._timeSet = YRealTimeClock.TIMESET_INVALID
 
     def _parse(self, j):
         if j.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: return -1
@@ -93,35 +90,37 @@ class YLed(YFunction):
                 self._logicalName = member.svalue
             elif member.name == "advertisedValue":
                 self._advertisedValue = member.svalue
-            elif member.name == "power":
-                self._power = member.ivalue
-            elif member.name == "luminosity":
-                self._luminosity = member.ivalue
-            elif member.name == "blinking":
-                self._blinking = member.ivalue
+            elif member.name == "unixTime":
+                self._unixTime = member.ivalue
+            elif member.name == "dateTime":
+                self._dateTime = member.svalue
+            elif member.name == "utcOffset":
+                self._utcOffset = member.ivalue
+            elif member.name == "timeSet":
+                self._timeSet = member.ivalue
         return 0
 
     def get_logicalName(self):
         """
-        Returns the logical name of the led.
+        Returns the logical name of the clock.
         
-        @return a string corresponding to the logical name of the led
+        @return a string corresponding to the logical name of the clock
         
-        On failure, throws an exception or returns YLed.LOGICALNAME_INVALID.
+        On failure, throws an exception or returns YRealTimeClock.LOGICALNAME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YLed.LOGICALNAME_INVALID
+                return YRealTimeClock.LOGICALNAME_INVALID
         return self._logicalName
 
     def set_logicalName(self, newval):
         """
-        Changes the logical name of the led. You can use yCheckLogicalName()
+        Changes the logical name of the clock. You can use yCheckLogicalName()
         prior to this call to make sure that your parameter is valid.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
         
-        @param newval : a string corresponding to the logical name of the led
+        @param newval : a string corresponding to the logical name of the clock
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -133,114 +132,117 @@ class YLed(YFunction):
 
     def get_advertisedValue(self):
         """
-        Returns the current value of the led (no more than 6 characters).
+        Returns the current value of the clock (no more than 6 characters).
         
-        @return a string corresponding to the current value of the led (no more than 6 characters)
+        @return a string corresponding to the current value of the clock (no more than 6 characters)
         
-        On failure, throws an exception or returns YLed.ADVERTISEDVALUE_INVALID.
+        On failure, throws an exception or returns YRealTimeClock.ADVERTISEDVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YLed.ADVERTISEDVALUE_INVALID
+                return YRealTimeClock.ADVERTISEDVALUE_INVALID
         return self._advertisedValue
 
-    def get_power(self):
+    def get_unixTime(self):
         """
-        Returns the current led state.
+        Returns the current time in Unix format (number of elapsed seconds since Jan 1st, 1970).
         
-        @return either YLed.POWER_OFF or YLed.POWER_ON, according to the current led state
+        @return an integer corresponding to the current time in Unix format (number of elapsed seconds
+        since Jan 1st, 1970)
         
-        On failure, throws an exception or returns YLed.POWER_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YLed.POWER_INVALID
-        return self._power
-
-    def set_power(self, newval):
-        """
-        Changes the state of the led.
-        
-        @param newval : either YLed.POWER_OFF or YLed.POWER_ON, according to the state of the led
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val =  "1" if newval > 0 else "0"
-        return self._setAttr("power", rest_val)
-
-
-    def get_luminosity(self):
-        """
-        Returns the current led intensity (in per cent).
-        
-        @return an integer corresponding to the current led intensity (in per cent)
-        
-        On failure, throws an exception or returns YLed.LUMINOSITY_INVALID.
+        On failure, throws an exception or returns YRealTimeClock.UNIXTIME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YLed.LUMINOSITY_INVALID
-        return self._luminosity
+                return YRealTimeClock.UNIXTIME_INVALID
+        return self._unixTime
 
-    def set_luminosity(self, newval):
+    def set_unixTime(self, newval):
         """
-        Changes the current led intensity (in per cent).
+        Changes the current time. Time is specifid in Unix format (number of elapsed seconds since Jan 1st, 1970).
+        If current UTC time is known, utcOffset will be automatically adjusted for the new specified time.
         
-        @param newval : an integer corresponding to the current led intensity (in per cent)
+        @param newval : an integer corresponding to the current time
         
         @return YAPI.SUCCESS if the call succeeds.
         
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
-        return self._setAttr("luminosity", rest_val)
+        return self._setAttr("unixTime", rest_val)
 
 
-    def get_blinking(self):
+    def get_dateTime(self):
         """
-        Returns the current led signaling mode.
+        Returns the current time in the form "YYYY/MM/DD hh:mm:ss"
         
-        @return a value among YLed.BLINKING_STILL, YLed.BLINKING_RELAX, YLed.BLINKING_AWARE,
-        YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current led signaling mode
+        @return a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
         
-        On failure, throws an exception or returns YLed.BLINKING_INVALID.
+        On failure, throws an exception or returns YRealTimeClock.DATETIME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YLed.BLINKING_INVALID
-        return self._blinking
+                return YRealTimeClock.DATETIME_INVALID
+        return self._dateTime
 
-    def set_blinking(self, newval):
+    def get_utcOffset(self):
         """
-        Changes the current led signaling mode.
+        Returns the number of seconds between current time and UTC time (time zone).
         
-        @param newval : a value among YLed.BLINKING_STILL, YLed.BLINKING_RELAX, YLed.BLINKING_AWARE,
-        YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current led signaling mode
+        @return an integer corresponding to the number of seconds between current time and UTC time (time zone)
+        
+        On failure, throws an exception or returns YRealTimeClock.UTCOFFSET_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+                return YRealTimeClock.UTCOFFSET_INVALID
+        return self._utcOffset
+
+    def set_utcOffset(self, newval):
+        """
+        Changes the number of seconds between current time and UTC time (time zone).
+        The timezone is automatically rounded to the nearest multiple of 15 minutes.
+        If current UTC time is known, the current time will automatically be updated according to the
+        selected time zone.
+        
+        @param newval : an integer corresponding to the number of seconds between current time and UTC time (time zone)
         
         @return YAPI.SUCCESS if the call succeeds.
         
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
-        return self._setAttr("blinking", rest_val)
+        return self._setAttr("utcOffset", rest_val)
 
 
-    def nextLed(self):
+    def get_timeSet(self):
         """
-        Continues the enumeration of leds started using yFirstLed().
+        Returns true if the clock has been set, and false otherwise.
         
-        @return a pointer to a YLed object, corresponding to
-                a led currently online, or a None pointer
-                if there are no more leds to enumerate.
+        @return either YRealTimeClock.TIMESET_FALSE or YRealTimeClock.TIMESET_TRUE, according to true if
+        the clock has been set, and false otherwise
+        
+        On failure, throws an exception or returns YRealTimeClock.TIMESET_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+                return YRealTimeClock.TIMESET_INVALID
+        return self._timeSet
+
+    def nextRealTimeClock(self):
+        """
+        Continues the enumeration of clocks started using yFirstRealTimeClock().
+        
+        @return a pointer to a YRealTimeClock object, corresponding to
+                a clock currently online, or a None pointer
+                if there are no more clocks to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
             return None
         if hwidRef.value == "":
             return None
-        return YLed.FindLed(hwidRef.value)
+        return YRealTimeClock.FindRealTimeClock(hwidRef.value)
 
     def registerValueCallback(self, callback):
         """
@@ -271,14 +273,14 @@ class YLed(YFunction):
         if self._callback is not None:
             self._callback(self, value)
 
-#--- (end of YLed implementation)
+#--- (end of YRealTimeClock implementation)
 
-#--- (Led functions)
+#--- (RealTimeClock functions)
 
     @staticmethod 
-    def FindLed(func):
+    def FindRealTimeClock(func):
         """
-        Retrieves a led for a given identifier.
+        Retrieves a clock for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -288,33 +290,33 @@ class YLed(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
         
-        This function does not require that the led is online at the time
+        This function does not require that the clock is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YLed.isOnline() to test if the led is
+        Use the method YRealTimeClock.isOnline() to test if the clock is
         indeed online at a given time. In case of ambiguity when looking for
-        a led by logical name, no error is notified: the first instance
+        a clock by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
         
-        @param func : a string that uniquely characterizes the led
+        @param func : a string that uniquely characterizes the clock
         
-        @return a YLed object allowing you to drive the led.
+        @return a YRealTimeClock object allowing you to drive the clock.
         """
-        if func in YLed._LedCache:
-            return YLed._LedCache[func]
-        res =YLed(func)
-        YLed._LedCache[func] =  res
+        if func in YRealTimeClock._RealTimeClockCache:
+            return YRealTimeClock._RealTimeClockCache[func]
+        res =YRealTimeClock(func)
+        YRealTimeClock._RealTimeClockCache[func] =  res
         return res
 
     @staticmethod 
-    def  FirstLed():
+    def  FirstRealTimeClock():
         """
-        Starts the enumeration of leds currently accessible.
-        Use the method YLed.nextLed() to iterate on
-        next leds.
+        Starts the enumeration of clocks currently accessible.
+        Use the method YRealTimeClock.nextRealTimeClock() to iterate on
+        next clocks.
         
-        @return a pointer to a YLed object, corresponding to
-                the first led currently online, or a None pointer
+        @return a pointer to a YRealTimeClock object, corresponding to
+                the first clock currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
@@ -327,7 +329,7 @@ class YLed(YFunction):
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
         p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("Led", 0, p, size,  neededsizeRef, errmsgRef)
+        err = YAPI.apiGetFunctionsByClass("RealTimeClock", 0, p, size,  neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
@@ -335,11 +337,11 @@ class YLed(YFunction):
         if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
             return None
 
-        return YLed.FindLed(serialRef.value + "." + funcIdRef.value)
+        return YRealTimeClock.FindRealTimeClock(serialRef.value + "." + funcIdRef.value)
 
     @staticmethod 
-    def _LedCleanup():
+    def _RealTimeClockCleanup():
         pass
 
-  #--- (end of Led functions)
+  #--- (end of RealTimeClock functions)
 

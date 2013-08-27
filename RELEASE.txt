@@ -1,6 +1,13 @@
-- Add YAPI.SelectArchitecture() method to force an specific architecture (useful on ARM system to select between ARMHF and ARMEL)
-- Fix possible crash when disconnecting a black-listed device on Mac OS X
-- Fix segmentation fault during YAPI.FreeAPI() on Linux system with ARM processor
-- Improve handling of device disconnection in the middle of a request close
-- Publish library to GitHub
-- Publish library to PyPI
+- clarify license agreement
+- Improve robustness of low-level USB stack 
+- better behavior for loading cdll from command line 
+- fix calibrateFromPoints method
+- Verify that the YAPI shared library is present during initialization
+- fix 5 seconds timeout on YAPI.FreeAPI() when connected through the network
+- fix value notifications that were dropped on plugged devices
+- fix possible 100% CPU load when the API was connecting to an IP Hub
+- fix potential segmentation fault when unplugging device in bootloader
+- fix memory leak
+- remove some unnecessary file of VisualStudio projects
+- minor fixes for mono compatibility
+- fix get_friendlyName() for Python 3.x

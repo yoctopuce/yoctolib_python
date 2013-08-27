@@ -1,8 +1,8 @@
 #*********************************************************************
 #*
-#* $Id: yocto_led.py 12324 2013-08-13 15:10:31Z mvuilleu $
+#* $Id: yocto_oscontrol.py 12337 2013-08-14 15:22:22Z mvuilleu $
 #*
-#* Implements yFindLed(), the high-level API for Led functions
+#* Implements yFindOsControl(), the high-level API for OsControl functions
 #*
 #* - - - - - - - - - License information: - - - - - - - - - 
 #*
@@ -40,11 +40,11 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
-class YLed(YFunction):
+class YOsControl(YFunction):
     """
-    Yoctopuce application programming interface
-    allows you not only to drive the intensity of the led, but also to
-    have it blink at various preset frequencies.
+    The OScontrol object allows some control over the operating system running a VirtualHub.
+    OsControl is available on the VirtualHub software only. This feature must be activated at the VirtualHub
+    start up with -o option.
     
     """
     #--- (globals)
@@ -52,39 +52,27 @@ class YLed(YFunction):
 
     #--- (end of globals)
 
-    #--- (YLed definitions)
+    #--- (YOsControl definitions)
 
 
     LOGICALNAME_INVALID             = YAPI.INVALID_STRING
     ADVERTISEDVALUE_INVALID         = YAPI.INVALID_STRING
-    LUMINOSITY_INVALID              = YAPI.INVALID_LONG
-
-    POWER_OFF                       = 0
-    POWER_ON                        = 1
-    POWER_INVALID                   = -1
-    BLINKING_STILL                  = 0
-    BLINKING_RELAX                  = 1
-    BLINKING_AWARE                  = 2
-    BLINKING_RUN                    = 3
-    BLINKING_CALL                   = 4
-    BLINKING_PANIC                  = 5
-    BLINKING_INVALID                = -1
+    SHUTDOWNCOUNTDOWN_INVALID       = YAPI.INVALID_LONG
 
 
-    _LedCache ={}
 
-    #--- (end of YLed definitions)
+    _OsControlCache ={}
 
-    #--- (YLed implementation)
+    #--- (end of YOsControl definitions)
+
+    #--- (YOsControl implementation)
 
     def __init__(self,func):
-        super(YLed,self).__init__("Led", func)
+        super(YOsControl,self).__init__("OsControl", func)
         self._callback = None
-        self._logicalName = YLed.LOGICALNAME_INVALID
-        self._advertisedValue = YLed.ADVERTISEDVALUE_INVALID
-        self._power = YLed.POWER_INVALID
-        self._luminosity = YLed.LUMINOSITY_INVALID
-        self._blinking = YLed.BLINKING_INVALID
+        self._logicalName = YOsControl.LOGICALNAME_INVALID
+        self._advertisedValue = YOsControl.ADVERTISEDVALUE_INVALID
+        self._shutdownCountdown = YOsControl.SHUTDOWNCOUNTDOWN_INVALID
 
     def _parse(self, j):
         if j.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: return -1
@@ -93,35 +81,32 @@ class YLed(YFunction):
                 self._logicalName = member.svalue
             elif member.name == "advertisedValue":
                 self._advertisedValue = member.svalue
-            elif member.name == "power":
-                self._power = member.ivalue
-            elif member.name == "luminosity":
-                self._luminosity = member.ivalue
-            elif member.name == "blinking":
-                self._blinking = member.ivalue
+            elif member.name == "shutdownCountdown":
+                self._shutdownCountdown = member.ivalue
         return 0
 
     def get_logicalName(self):
         """
-        Returns the logical name of the led.
+        Returns the logical name of the OS control, corresponding to the network name of the module.
         
-        @return a string corresponding to the logical name of the led
+        @return a string corresponding to the logical name of the OS control, corresponding to the network
+        name of the module
         
-        On failure, throws an exception or returns YLed.LOGICALNAME_INVALID.
+        On failure, throws an exception or returns YOsControl.LOGICALNAME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YLed.LOGICALNAME_INVALID
+                return YOsControl.LOGICALNAME_INVALID
         return self._logicalName
 
     def set_logicalName(self, newval):
         """
-        Changes the logical name of the led. You can use yCheckLogicalName()
+        Changes the logical name of the OS control. You can use yCheckLogicalName()
         prior to this call to make sure that your parameter is valid.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
         
-        @param newval : a string corresponding to the logical name of the led
+        @param newval : a string corresponding to the logical name of the OS control
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -133,114 +118,64 @@ class YLed(YFunction):
 
     def get_advertisedValue(self):
         """
-        Returns the current value of the led (no more than 6 characters).
+        Returns the current value of the OS control (no more than 6 characters).
         
-        @return a string corresponding to the current value of the led (no more than 6 characters)
+        @return a string corresponding to the current value of the OS control (no more than 6 characters)
         
-        On failure, throws an exception or returns YLed.ADVERTISEDVALUE_INVALID.
+        On failure, throws an exception or returns YOsControl.ADVERTISEDVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YLed.ADVERTISEDVALUE_INVALID
+                return YOsControl.ADVERTISEDVALUE_INVALID
         return self._advertisedValue
 
-    def get_power(self):
+    def get_shutdownCountdown(self):
         """
-        Returns the current led state.
+        Returns the remaining number of seconds before the OS shutdown, or zero when no
+        shutdown has been scheduled.
         
-        @return either YLed.POWER_OFF or YLed.POWER_ON, according to the current led state
+        @return an integer corresponding to the remaining number of seconds before the OS shutdown, or zero when no
+                shutdown has been scheduled
         
-        On failure, throws an exception or returns YLed.POWER_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YLed.POWER_INVALID
-        return self._power
-
-    def set_power(self, newval):
-        """
-        Changes the state of the led.
-        
-        @param newval : either YLed.POWER_OFF or YLed.POWER_ON, according to the state of the led
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val =  "1" if newval > 0 else "0"
-        return self._setAttr("power", rest_val)
-
-
-    def get_luminosity(self):
-        """
-        Returns the current led intensity (in per cent).
-        
-        @return an integer corresponding to the current led intensity (in per cent)
-        
-        On failure, throws an exception or returns YLed.LUMINOSITY_INVALID.
+        On failure, throws an exception or returns YOsControl.SHUTDOWNCOUNTDOWN_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YLed.LUMINOSITY_INVALID
-        return self._luminosity
+                return YOsControl.SHUTDOWNCOUNTDOWN_INVALID
+        return self._shutdownCountdown
 
-    def set_luminosity(self, newval):
-        """
-        Changes the current led intensity (in per cent).
-        
-        @param newval : an integer corresponding to the current led intensity (in per cent)
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
+    def set_shutdownCountdown(self, newval):
         rest_val = str(newval)
-        return self._setAttr("luminosity", rest_val)
+        return self._setAttr("shutdownCountdown", rest_val)
 
 
-    def get_blinking(self):
+    def shutdown(self , secBeforeShutDown):
         """
-        Returns the current led signaling mode.
+        Schedules an OS shutdown after a given number of seconds.
         
-        @return a value among YLed.BLINKING_STILL, YLed.BLINKING_RELAX, YLed.BLINKING_AWARE,
-        YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current led signaling mode
-        
-        On failure, throws an exception or returns YLed.BLINKING_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YLed.BLINKING_INVALID
-        return self._blinking
-
-    def set_blinking(self, newval):
-        """
-        Changes the current led signaling mode.
-        
-        @param newval : a value among YLed.BLINKING_STILL, YLed.BLINKING_RELAX, YLed.BLINKING_AWARE,
-        YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current led signaling mode
+        @param secBeforeShutDown : number of seconds before shutdown
         
         @return YAPI.SUCCESS if the call succeeds.
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = str(newval)
-        return self._setAttr("blinking", rest_val)
+        rest_val = str(secBeforeShutDown)
+        return self._setAttr("shutdownCountdown", rest_val)
 
-
-    def nextLed(self):
+    def nextOsControl(self):
         """
-        Continues the enumeration of leds started using yFirstLed().
+        Continues the enumeration of OS control started using yFirstOsControl().
         
-        @return a pointer to a YLed object, corresponding to
-                a led currently online, or a None pointer
-                if there are no more leds to enumerate.
+        @return a pointer to a YOsControl object, corresponding to
+                OS control currently online, or a None pointer
+                if there are no more OS control to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
             return None
         if hwidRef.value == "":
             return None
-        return YLed.FindLed(hwidRef.value)
+        return YOsControl.FindOsControl(hwidRef.value)
 
     def registerValueCallback(self, callback):
         """
@@ -271,14 +206,14 @@ class YLed(YFunction):
         if self._callback is not None:
             self._callback(self, value)
 
-#--- (end of YLed implementation)
+#--- (end of YOsControl implementation)
 
-#--- (Led functions)
+#--- (OsControl functions)
 
     @staticmethod 
-    def FindLed(func):
+    def FindOsControl(func):
         """
-        Retrieves a led for a given identifier.
+        Retrieves OS control for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -288,33 +223,33 @@ class YLed(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
         
-        This function does not require that the led is online at the time
+        This function does not require that the OS control is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YLed.isOnline() to test if the led is
+        Use the method YOsControl.isOnline() to test if the OS control is
         indeed online at a given time. In case of ambiguity when looking for
-        a led by logical name, no error is notified: the first instance
+        OS control by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
         
-        @param func : a string that uniquely characterizes the led
+        @param func : a string that uniquely characterizes the OS control
         
-        @return a YLed object allowing you to drive the led.
+        @return a YOsControl object allowing you to drive the OS control.
         """
-        if func in YLed._LedCache:
-            return YLed._LedCache[func]
-        res =YLed(func)
-        YLed._LedCache[func] =  res
+        if func in YOsControl._OsControlCache:
+            return YOsControl._OsControlCache[func]
+        res =YOsControl(func)
+        YOsControl._OsControlCache[func] =  res
         return res
 
     @staticmethod 
-    def  FirstLed():
+    def  FirstOsControl():
         """
-        Starts the enumeration of leds currently accessible.
-        Use the method YLed.nextLed() to iterate on
-        next leds.
+        Starts the enumeration of OS control currently accessible.
+        Use the method YOsControl.nextOsControl() to iterate on
+        next OS control.
         
-        @return a pointer to a YLed object, corresponding to
-                the first led currently online, or a None pointer
+        @return a pointer to a YOsControl object, corresponding to
+                the first OS control currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
@@ -327,7 +262,7 @@ class YLed(YFunction):
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
         p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("Led", 0, p, size,  neededsizeRef, errmsgRef)
+        err = YAPI.apiGetFunctionsByClass("OsControl", 0, p, size,  neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
@@ -335,11 +270,11 @@ class YLed(YFunction):
         if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
             return None
 
-        return YLed.FindLed(serialRef.value + "." + funcIdRef.value)
+        return YOsControl.FindOsControl(serialRef.value + "." + funcIdRef.value)
 
     @staticmethod 
-    def _LedCleanup():
+    def _OsControlCleanup():
         pass
 
-  #--- (end of Led functions)
+  #--- (end of OsControl functions)
 
