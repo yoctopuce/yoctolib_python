@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_wireless.py 12337 2013-08-14 15:22:22Z mvuilleu $
+#* $Id: yocto_wireless.py 14618 2014-01-19 03:08:44Z mvuilleu $
 #*
 #* Implements yFindWireless(), the high-level API for Wireless functions
 #*
@@ -41,25 +41,22 @@
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
 
-class YWlanRecord:
-    """
-    
-    """
 
+#--- (generated code: YWlanRecord class start)
+#noinspection PyProtectedMember
+class YWlanRecord(object):
+#--- (end of generated code: YWlanRecord class start)
     #--- (generated code: YWlanRecord definitions)
-
-
-
-    _WlanRecordCache ={}
-
     #--- (end of generated code: YWlanRecord definitions)
 
-
-
-    def __init__(self,json):
-        self._ssid = ""
-        self._channel  = -1
-        self._sec = ""
+    def __init__(self, json):
+    #--- (generated code: YWlanRecord attributes)
+        self._ssid = ''
+        self._channel = 0
+        self._sec = ''
+        self._rssi = 0
+        #--- (end of generated code: YWlanRecord attributes)
+        self._channel = -1
         self._rssi = -1
         for member in json.members:
             if member.name == "ssid":
@@ -71,147 +68,93 @@ class YWlanRecord:
             elif member.name == "rssi":
                 self._rssi = member.ivalue
 
-
     #--- (generated code: YWlanRecord implementation)
-
-    def get_ssid(self ):
+    def get_ssid(self):
         return self._ssid
 
-    def get_channel(self ):
+    def get_channel(self):
         return self._channel
 
-    def get_security(self ):
+    def get_security(self):
         return self._sec
 
-    def get_linkQuality(self ):
+    def get_linkQuality(self):
         return self._rssi
 
 #--- (end of generated code: YWlanRecord implementation)
 
 #--- (WlanRecord generated code: functions)
-
-
 #--- (end of WlanRecord generated code: functions)
 
 
-
+#--- (generated code: YWireless class start)
+#noinspection PyProtectedMember
 class YWireless(YFunction):
-    #--- (generated code: globals)
-
-
-    #--- (end of generated code: globals)
-
+    """
+    YWireless functions provides control over wireless network parameters
+    and status for devices that are wireless-enabled.
+    
+    """
+#--- (end of generated code: YWireless class start)
     #--- (generated code: YWireless definitions)
-
-
-    LOGICALNAME_INVALID             = YAPI.INVALID_STRING
-    ADVERTISEDVALUE_INVALID         = YAPI.INVALID_STRING
-    LINKQUALITY_INVALID             = YAPI.INVALID_LONG
-    SSID_INVALID                    = YAPI.INVALID_STRING
-    CHANNEL_INVALID                 = YAPI.INVALID_LONG
-    MESSAGE_INVALID                 = YAPI.INVALID_STRING
-    WLANCONFIG_INVALID              = YAPI.INVALID_STRING
-
-    SECURITY_UNKNOWN                = 0
-    SECURITY_OPEN                   = 1
-    SECURITY_WEP                    = 2
-    SECURITY_WPA                    = 3
-    SECURITY_WPA2                   = 4
-    SECURITY_INVALID                = -1
-
-
-    _WirelessCache ={}
-
+    LINKQUALITY_INVALID = YAPI.INVALID_UINT
+    SSID_INVALID = YAPI.INVALID_STRING
+    CHANNEL_INVALID = YAPI.INVALID_UINT
+    MESSAGE_INVALID = YAPI.INVALID_STRING
+    WLANCONFIG_INVALID = YAPI.INVALID_STRING
+    SECURITY_UNKNOWN = 0
+    SECURITY_OPEN = 1
+    SECURITY_WEP = 2
+    SECURITY_WPA = 3
+    SECURITY_WPA2 = 4
+    SECURITY_INVALID = -1
     #--- (end of generated code: YWireless definitions)
 
-    #--- (generated code: YWireless implementation)
-
-    def __init__(self,func):
-        super(YWireless,self).__init__("Wireless", func)
+    def __init__(self, func):
+        super(YWireless, self).__init__(func)
+        self._className = "Wireless"
+        #--- (generated code: YWireless attributes)
         self._callback = None
-        self._logicalName = YWireless.LOGICALNAME_INVALID
-        self._advertisedValue = YWireless.ADVERTISEDVALUE_INVALID
         self._linkQuality = YWireless.LINKQUALITY_INVALID
         self._ssid = YWireless.SSID_INVALID
         self._channel = YWireless.CHANNEL_INVALID
         self._security = YWireless.SECURITY_INVALID
         self._message = YWireless.MESSAGE_INVALID
         self._wlanConfig = YWireless.WLANCONFIG_INVALID
+        #--- (end of generated code: YWireless attributes)
 
-    def _parse(self, j):
-        if j.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: return -1
-        for member in j.members:
-            if member.name == "logicalName":
-                self._logicalName = member.svalue
-            elif member.name == "advertisedValue":
-                self._advertisedValue = member.svalue
-            elif member.name == "linkQuality":
-                self._linkQuality = member.ivalue
-            elif member.name == "ssid":
-                self._ssid = member.svalue
-            elif member.name == "channel":
-                self._channel = member.ivalue
-            elif member.name == "security":
-                self._security = member.ivalue
-            elif member.name == "message":
-                self._message = member.svalue
-            elif member.name == "wlanConfig":
-                self._wlanConfig = member.svalue
-        return 0
-
-    def get_logicalName(self):
-        """
-        Returns the logical name of the wireless lan interface.
-        
-        @return a string corresponding to the logical name of the wireless lan interface
-        
-        On failure, throws an exception or returns YWireless.LOGICALNAME_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YWireless.LOGICALNAME_INVALID
-        return self._logicalName
-
-    def set_logicalName(self, newval):
-        """
-        Changes the logical name of the wireless lan interface. You can use yCheckLogicalName()
-        prior to this call to make sure that your parameter is valid.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
-        
-        @param newval : a string corresponding to the logical name of the wireless lan interface
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = newval
-        return self._setAttr("logicalName", rest_val)
-
-
-    def get_advertisedValue(self):
-        """
-        Returns the current value of the wireless lan interface (no more than 6 characters).
-        
-        @return a string corresponding to the current value of the wireless lan interface (no more than 6 characters)
-        
-        On failure, throws an exception or returns YWireless.ADVERTISEDVALUE_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YWireless.ADVERTISEDVALUE_INVALID
-        return self._advertisedValue
+    #--- (generated code: YWireless implementation)
+    def _parseAttr(self, member):
+        if member.name == "linkQuality":
+            self._linkQuality = member.ivalue
+            return 1
+        if member.name == "ssid":
+            self._ssid = member.svalue
+            return 1
+        if member.name == "channel":
+            self._channel = member.ivalue
+            return 1
+        if member.name == "security":
+            self._security = member.ivalue
+            return 1
+        if member.name == "message":
+            self._message = member.svalue
+            return 1
+        if member.name == "wlanConfig":
+            self._wlanConfig = member.svalue
+            return 1
+        super(YWireless, self)._parseAttr(member)
 
     def get_linkQuality(self):
         """
-        Returns the link quality, expressed in per cents.
+        Returns the link quality, expressed in percent.
         
-        @return an integer corresponding to the link quality, expressed in per cents
+        @return an integer corresponding to the link quality, expressed in percent
         
         On failure, throws an exception or returns YWireless.LINKQUALITY_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.LINKQUALITY_INVALID
         return self._linkQuality
 
@@ -224,7 +167,7 @@ class YWireless(YFunction):
         On failure, throws an exception or returns YWireless.SSID_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.SSID_INVALID
         return self._ssid
 
@@ -232,12 +175,13 @@ class YWireless(YFunction):
         """
         Returns the 802.11 channel currently used, or 0 when the selected network has not been found.
         
-        @return an integer corresponding to the 802
+        @return an integer corresponding to the 802.11 channel currently used, or 0 when the selected
+        network has not been found
         
         On failure, throws an exception or returns YWireless.CHANNEL_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.CHANNEL_INVALID
         return self._channel
 
@@ -252,26 +196,26 @@ class YWireless(YFunction):
         On failure, throws an exception or returns YWireless.SECURITY_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.SECURITY_INVALID
         return self._security
 
     def get_message(self):
         """
-        Returns the last status message from the wireless interface.
+        Returns the latest status message from the wireless interface.
         
-        @return a string corresponding to the last status message from the wireless interface
+        @return a string corresponding to the latest status message from the wireless interface
         
         On failure, throws an exception or returns YWireless.MESSAGE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.MESSAGE_INVALID
         return self._message
 
     def get_wlanConfig(self):
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.WLANCONFIG_INVALID
         return self._wlanConfig
 
@@ -279,8 +223,7 @@ class YWireless(YFunction):
         rest_val = newval
         return self._setAttr("wlanConfig", rest_val)
 
-
-    def joinNetwork(self , ssid,securityKey):
+    def joinNetwork(self, ssid, securityKey):
         """
         Changes the configuration of the wireless lan interface to connect to an existing
         access point (infrastructure mode).
@@ -293,10 +236,10 @@ class YWireless(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = "INFRA:"+ssid+"\\"+securityKey
+        rest_val = "INFRA:" + ssid + "\\" + securityKey
         return self._setAttr("wlanConfig", rest_val)
 
-    def adhocNetwork(self , ssid,securityKey):
+    def adhocNetwork(self, ssid, securityKey):
         """
         Changes the configuration of the wireless lan interface to create an ad-hoc
         wireless network, without using an access point. If a security key is specified,
@@ -311,78 +254,10 @@ class YWireless(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = "ADHOC:"+ssid+"\\"+securityKey
+        rest_val = "ADHOC:" + ssid + "\\" + securityKey
         return self._setAttr("wlanConfig", rest_val)
-    def get_detectedWlans(self ):
-        """
-        Returns a list of YWlanRecord objects which describe detected Wireless networks.
-        This list is not updated when the module is already connected to an acces point (infrastructure mode).
-        To force an update of this list, adhocNetwork() must be called to disconnect
-        the module from the current network. The returned list must be unallocated by caller,
-        
-        @return a list of YWlanRecord objects, containing the SSID, channel,
-                link quality and the type of security of the wireless network.
-        
-        On failure, throws an exception or returns an empty list.
-        """
-        
-        list = []
-        res = []
-        json = self._download("wlan.json?by=name")
-        list = self._json_get_array(json)
-        for y in list : res.append( YWlanRecord(y))
-        return res
 
-
-    def nextWireless(self):
-        """
-        Continues the enumeration of wireless lan interfaces started using yFirstWireless().
-        
-        @return a pointer to a YWireless object, corresponding to
-                a wireless lan interface currently online, or a None pointer
-                if there are no more wireless lan interfaces to enumerate.
-        """
-        hwidRef = YRefParam()
-        if YAPI.YISERR(self._nextFunction(hwidRef)):
-            return None
-        if hwidRef.value == "":
-            return None
-        return YWireless.FindWireless(hwidRef.value)
-
-    def registerValueCallback(self, callback):
-        """
-        Registers the callback function that is invoked on every change of advertised value.
-        The callback is invoked only during the execution of ySleep or yHandleEvents.
-        This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-        one of these two functions periodically. To unregister a callback, pass a None pointer as argument.
-        
-        @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the function object of which the value has changed, and the character string describing
-                the new advertised value.
-        @noreturn
-        """
-        if callback is not None:
-            self._registerFuncCallback(self)
-        else:
-            self._unregisterFuncCallback(self)
-        self._callback = callback
-
-    def set_callback(self, callback):
-        self.registerValueCallback(callback)
-
-    def setCallback(self, callback):
-        self.registerValueCallback(callback)
-
-
-    def advertiseValue(self,value):
-        if self._callback is not None:
-            self._callback(self, value)
-
-#--- (end of generated code: YWireless implementation)
-
-#--- (generated code: Wireless functions)
-
-    @staticmethod 
+    @staticmethod
     def FindWireless(func):
         """
         Retrieves a wireless lan interface for a given identifier.
@@ -407,14 +282,57 @@ class YWireless(YFunction):
         
         @return a YWireless object allowing you to drive the wireless lan interface.
         """
-        if func in YWireless._WirelessCache:
-            return YWireless._WirelessCache[func]
-        res =YWireless(func)
-        YWireless._WirelessCache[func] =  res
+        # obj
+        obj = YFunction._FindFromCache("Wireless", func)
+        if obj is None:
+            obj = YWireless(func)
+            YFunction._AddToCache("Wireless", func, obj)
+        return obj
+
+    def get_detectedWlans(self):
+        """
+        Returns a list of YWlanRecord objects that describe detected Wireless networks.
+        This list is not updated when the module is already connected to an acces point (infrastructure mode).
+        To force an update of this list, adhocNetwork() must be called to disconnect
+        the module from the current network. The returned list must be unallocated by the caller.
+        
+        @return a list of YWlanRecord objects, containing the SSID, channel,
+                link quality and the type of security of the wireless network.
+        
+        On failure, throws an exception or returns an empty list.
+        """
+        # json
+        wlanlist = []
+        res = []
+        # // may throw an exception
+        json = self._download("wlan.json?by=name")
+        wlanlist = self._json_get_array(json)
+        del res[:]
+        for y in wlanlist:
+            res.append(YWlanRecord(y))
         return res
 
-    @staticmethod 
-    def  FirstWireless():
+    def nextWireless(self):
+        """
+        Continues the enumeration of wireless lan interfaces started using yFirstWireless().
+        
+        @return a pointer to a YWireless object, corresponding to
+                a wireless lan interface currently online, or a None pointer
+                if there are no more wireless lan interfaces to enumerate.
+        """
+        hwidRef = YRefParam()
+        if YAPI.YISERR(self._nextFunction(hwidRef)):
+            return None
+        if hwidRef.value == "":
+            return None
+        return YWireless.FindWireless(hwidRef.value)
+
+#--- (end of generated code: YWireless implementation)
+
+#--- (generated code: Wireless functions)
+
+    @staticmethod
+    def FirstWireless():
         """
         Starts the enumeration of wireless lan interfaces currently accessible.
         Use the method YWireless.nextWireless() to iterate on
@@ -433,20 +351,16 @@ class YWireless(YFunction):
         errmsgRef = YRefParam()
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
-        p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("Wireless", 0, p, size,  neededsizeRef, errmsgRef)
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("Wireless", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
 
-        if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
         return YWireless.FindWireless(serialRef.value + "." + funcIdRef.value)
 
-    @staticmethod 
-    def _WirelessCleanup():
-        pass
-
-  #--- (end of generated code: Wireless functions)
-
+#--- (end of generated code: Wireless functions)

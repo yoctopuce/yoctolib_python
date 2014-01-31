@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_oscontrol.py 12337 2013-08-14 15:22:22Z mvuilleu $
+#* $Id: yocto_oscontrol.py 14275 2014-01-09 14:20:38Z seb $
 #*
 #* Implements yFindOsControl(), the high-level API for OsControl functions
 #*
@@ -40,6 +40,10 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
+
+
+#--- (YOsControl class start)
+#noinspection PyProtectedMember
 class YOsControl(YFunction):
     """
     The OScontrol object allows some control over the operating system running a VirtualHub.
@@ -47,87 +51,27 @@ class YOsControl(YFunction):
     start up with -o option.
     
     """
-    #--- (globals)
-
-
-    #--- (end of globals)
-
+#--- (end of YOsControl class start)
+    #--- (YOsControl return codes)
+    #--- (end of YOsControl return codes)
     #--- (YOsControl definitions)
-
-
-    LOGICALNAME_INVALID             = YAPI.INVALID_STRING
-    ADVERTISEDVALUE_INVALID         = YAPI.INVALID_STRING
-    SHUTDOWNCOUNTDOWN_INVALID       = YAPI.INVALID_LONG
-
-
-
-    _OsControlCache ={}
-
+    SHUTDOWNCOUNTDOWN_INVALID = YAPI.INVALID_UINT
     #--- (end of YOsControl definitions)
 
-    #--- (YOsControl implementation)
-
-    def __init__(self,func):
-        super(YOsControl,self).__init__("OsControl", func)
+    def __init__(self, func):
+        super(YOsControl, self).__init__(func)
+        self._className = 'OsControl'
+        #--- (YOsControl attributes)
         self._callback = None
-        self._logicalName = YOsControl.LOGICALNAME_INVALID
-        self._advertisedValue = YOsControl.ADVERTISEDVALUE_INVALID
         self._shutdownCountdown = YOsControl.SHUTDOWNCOUNTDOWN_INVALID
+        #--- (end of YOsControl attributes)
 
-    def _parse(self, j):
-        if j.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: return -1
-        for member in j.members:
-            if member.name == "logicalName":
-                self._logicalName = member.svalue
-            elif member.name == "advertisedValue":
-                self._advertisedValue = member.svalue
-            elif member.name == "shutdownCountdown":
-                self._shutdownCountdown = member.ivalue
-        return 0
-
-    def get_logicalName(self):
-        """
-        Returns the logical name of the OS control, corresponding to the network name of the module.
-        
-        @return a string corresponding to the logical name of the OS control, corresponding to the network
-        name of the module
-        
-        On failure, throws an exception or returns YOsControl.LOGICALNAME_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YOsControl.LOGICALNAME_INVALID
-        return self._logicalName
-
-    def set_logicalName(self, newval):
-        """
-        Changes the logical name of the OS control. You can use yCheckLogicalName()
-        prior to this call to make sure that your parameter is valid.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
-        
-        @param newval : a string corresponding to the logical name of the OS control
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = newval
-        return self._setAttr("logicalName", rest_val)
-
-
-    def get_advertisedValue(self):
-        """
-        Returns the current value of the OS control (no more than 6 characters).
-        
-        @return a string corresponding to the current value of the OS control (no more than 6 characters)
-        
-        On failure, throws an exception or returns YOsControl.ADVERTISEDVALUE_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YOsControl.ADVERTISEDVALUE_INVALID
-        return self._advertisedValue
+    #--- (YOsControl implementation)
+    def _parseAttr(self, member):
+        if member.name == "shutdownCountdown":
+            self._shutdownCountdown = member.ivalue
+            return 1
+        super(YOsControl, self)._parseAttr(member)
 
     def get_shutdownCountdown(self):
         """
@@ -140,7 +84,7 @@ class YOsControl(YFunction):
         On failure, throws an exception or returns YOsControl.SHUTDOWNCOUNTDOWN_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YOsControl.SHUTDOWNCOUNTDOWN_INVALID
         return self._shutdownCountdown
 
@@ -148,69 +92,7 @@ class YOsControl(YFunction):
         rest_val = str(newval)
         return self._setAttr("shutdownCountdown", rest_val)
 
-
-    def shutdown(self , secBeforeShutDown):
-        """
-        Schedules an OS shutdown after a given number of seconds.
-        
-        @param secBeforeShutDown : number of seconds before shutdown
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = str(secBeforeShutDown)
-        return self._setAttr("shutdownCountdown", rest_val)
-
-    def nextOsControl(self):
-        """
-        Continues the enumeration of OS control started using yFirstOsControl().
-        
-        @return a pointer to a YOsControl object, corresponding to
-                OS control currently online, or a None pointer
-                if there are no more OS control to enumerate.
-        """
-        hwidRef = YRefParam()
-        if YAPI.YISERR(self._nextFunction(hwidRef)):
-            return None
-        if hwidRef.value == "":
-            return None
-        return YOsControl.FindOsControl(hwidRef.value)
-
-    def registerValueCallback(self, callback):
-        """
-        Registers the callback function that is invoked on every change of advertised value.
-        The callback is invoked only during the execution of ySleep or yHandleEvents.
-        This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-        one of these two functions periodically. To unregister a callback, pass a None pointer as argument.
-        
-        @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the function object of which the value has changed, and the character string describing
-                the new advertised value.
-        @noreturn
-        """
-        if callback is not None:
-            self._registerFuncCallback(self)
-        else:
-            self._unregisterFuncCallback(self)
-        self._callback = callback
-
-    def set_callback(self, callback):
-        self.registerValueCallback(callback)
-
-    def setCallback(self, callback):
-        self.registerValueCallback(callback)
-
-
-    def advertiseValue(self,value):
-        if self._callback is not None:
-            self._callback(self, value)
-
-#--- (end of YOsControl implementation)
-
-#--- (OsControl functions)
-
-    @staticmethod 
+    @staticmethod
     def FindOsControl(func):
         """
         Retrieves OS control for a given identifier.
@@ -235,14 +117,46 @@ class YOsControl(YFunction):
         
         @return a YOsControl object allowing you to drive the OS control.
         """
-        if func in YOsControl._OsControlCache:
-            return YOsControl._OsControlCache[func]
-        res =YOsControl(func)
-        YOsControl._OsControlCache[func] =  res
-        return res
+        # obj
+        obj = YFunction._FindFromCache("OsControl", func)
+        if obj is None:
+            obj = YOsControl(func)
+            YFunction._AddToCache("OsControl", func, obj)
+        return obj
 
-    @staticmethod 
-    def  FirstOsControl():
+    def shutdown(self, secBeforeShutDown):
+        """
+        Schedules an OS shutdown after a given number of seconds.
+        
+        @param secBeforeShutDown : number of seconds before shutdown
+        
+        @return YAPI.SUCCESS when the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_shutdownCountdown(secBeforeShutDown)
+
+    def nextOsControl(self):
+        """
+        Continues the enumeration of OS control started using yFirstOsControl().
+        
+        @return a pointer to a YOsControl object, corresponding to
+                OS control currently online, or a None pointer
+                if there are no more OS control to enumerate.
+        """
+        hwidRef = YRefParam()
+        if YAPI.YISERR(self._nextFunction(hwidRef)):
+            return None
+        if hwidRef.value == "":
+            return None
+        return YOsControl.FindOsControl(hwidRef.value)
+
+#--- (end of YOsControl implementation)
+
+#--- (OsControl functions)
+
+    @staticmethod
+    def FirstOsControl():
         """
         Starts the enumeration of OS control currently accessible.
         Use the method YOsControl.nextOsControl() to iterate on
@@ -261,20 +175,16 @@ class YOsControl(YFunction):
         errmsgRef = YRefParam()
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
-        p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("OsControl", 0, p, size,  neededsizeRef, errmsgRef)
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("OsControl", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
 
-        if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
         return YOsControl.FindOsControl(serialRef.value + "." + funcIdRef.value)
 
-    @staticmethod 
-    def _OsControlCleanup():
-        pass
-
-  #--- (end of OsControl functions)
-
+#--- (end of OsControl functions)

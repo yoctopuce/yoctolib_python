@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_dualpower.py 12324 2013-08-13 15:10:31Z mvuilleu $
+#* $Id: yocto_dualpower.py 14275 2014-01-09 14:20:38Z seb $
 #*
 #* Implements yFindDualPower(), the high-level API for DualPower functions
 #*
@@ -40,6 +40,10 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
+
+
+#--- (YDualPower class start)
+#noinspection PyProtectedMember
 class YDualPower(YFunction):
     """
     Yoctopuce application programming interface allows you to control
@@ -49,101 +53,44 @@ class YDualPower(YFunction):
     (external battery running out of power).
     
     """
-    #--- (globals)
-
-
-    #--- (end of globals)
-
+#--- (end of YDualPower class start)
+    #--- (YDualPower return codes)
+    #--- (end of YDualPower return codes)
     #--- (YDualPower definitions)
-
-
-    LOGICALNAME_INVALID             = YAPI.INVALID_STRING
-    ADVERTISEDVALUE_INVALID         = YAPI.INVALID_STRING
-    EXTVOLTAGE_INVALID              = YAPI.INVALID_LONG
-
-    POWERSTATE_OFF                  = 0
-    POWERSTATE_FROM_USB             = 1
-    POWERSTATE_FROM_EXT             = 2
-    POWERSTATE_INVALID              = -1
-    POWERCONTROL_AUTO               = 0
-    POWERCONTROL_FROM_USB           = 1
-    POWERCONTROL_FROM_EXT           = 2
-    POWERCONTROL_OFF                = 3
-    POWERCONTROL_INVALID            = -1
-
-
-    _DualPowerCache ={}
-
+    EXTVOLTAGE_INVALID = YAPI.INVALID_UINT
+    POWERSTATE_OFF = 0
+    POWERSTATE_FROM_USB = 1
+    POWERSTATE_FROM_EXT = 2
+    POWERSTATE_INVALID = -1
+    POWERCONTROL_AUTO = 0
+    POWERCONTROL_FROM_USB = 1
+    POWERCONTROL_FROM_EXT = 2
+    POWERCONTROL_OFF = 3
+    POWERCONTROL_INVALID = -1
     #--- (end of YDualPower definitions)
 
-    #--- (YDualPower implementation)
-
-    def __init__(self,func):
-        super(YDualPower,self).__init__("DualPower", func)
+    def __init__(self, func):
+        super(YDualPower, self).__init__(func)
+        self._className = 'DualPower'
+        #--- (YDualPower attributes)
         self._callback = None
-        self._logicalName = YDualPower.LOGICALNAME_INVALID
-        self._advertisedValue = YDualPower.ADVERTISEDVALUE_INVALID
         self._powerState = YDualPower.POWERSTATE_INVALID
         self._powerControl = YDualPower.POWERCONTROL_INVALID
         self._extVoltage = YDualPower.EXTVOLTAGE_INVALID
+        #--- (end of YDualPower attributes)
 
-    def _parse(self, j):
-        if j.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: return -1
-        for member in j.members:
-            if member.name == "logicalName":
-                self._logicalName = member.svalue
-            elif member.name == "advertisedValue":
-                self._advertisedValue = member.svalue
-            elif member.name == "powerState":
-                self._powerState = member.ivalue
-            elif member.name == "powerControl":
-                self._powerControl = member.ivalue
-            elif member.name == "extVoltage":
-                self._extVoltage = member.ivalue
-        return 0
-
-    def get_logicalName(self):
-        """
-        Returns the logical name of the power control.
-        
-        @return a string corresponding to the logical name of the power control
-        
-        On failure, throws an exception or returns YDualPower.LOGICALNAME_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YDualPower.LOGICALNAME_INVALID
-        return self._logicalName
-
-    def set_logicalName(self, newval):
-        """
-        Changes the logical name of the power control. You can use yCheckLogicalName()
-        prior to this call to make sure that your parameter is valid.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
-        
-        @param newval : a string corresponding to the logical name of the power control
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = newval
-        return self._setAttr("logicalName", rest_val)
-
-
-    def get_advertisedValue(self):
-        """
-        Returns the current value of the power control (no more than 6 characters).
-        
-        @return a string corresponding to the current value of the power control (no more than 6 characters)
-        
-        On failure, throws an exception or returns YDualPower.ADVERTISEDVALUE_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YDualPower.ADVERTISEDVALUE_INVALID
-        return self._advertisedValue
+    #--- (YDualPower implementation)
+    def _parseAttr(self, member):
+        if member.name == "powerState":
+            self._powerState = member.ivalue
+            return 1
+        if member.name == "powerControl":
+            self._powerControl = member.ivalue
+            return 1
+        if member.name == "extVoltage":
+            self._extVoltage = member.ivalue
+            return 1
+        super(YDualPower, self)._parseAttr(member)
 
     def get_powerState(self):
         """
@@ -156,7 +103,7 @@ class YDualPower(YFunction):
         On failure, throws an exception or returns YDualPower.POWERSTATE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDualPower.POWERSTATE_INVALID
         return self._powerState
 
@@ -171,7 +118,7 @@ class YDualPower(YFunction):
         On failure, throws an exception or returns YDualPower.POWERCONTROL_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDualPower.POWERCONTROL_INVALID
         return self._powerControl
 
@@ -190,7 +137,6 @@ class YDualPower(YFunction):
         rest_val = str(newval)
         return self._setAttr("powerControl", rest_val)
 
-
     def get_extVoltage(self):
         """
         Returns the measured voltage on the external power source, in millivolts.
@@ -200,59 +146,11 @@ class YDualPower(YFunction):
         On failure, throws an exception or returns YDualPower.EXTVOLTAGE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDualPower.EXTVOLTAGE_INVALID
         return self._extVoltage
 
-    def nextDualPower(self):
-        """
-        Continues the enumeration of dual power controls started using yFirstDualPower().
-        
-        @return a pointer to a YDualPower object, corresponding to
-                a dual power control currently online, or a None pointer
-                if there are no more dual power controls to enumerate.
-        """
-        hwidRef = YRefParam()
-        if YAPI.YISERR(self._nextFunction(hwidRef)):
-            return None
-        if hwidRef.value == "":
-            return None
-        return YDualPower.FindDualPower(hwidRef.value)
-
-    def registerValueCallback(self, callback):
-        """
-        Registers the callback function that is invoked on every change of advertised value.
-        The callback is invoked only during the execution of ySleep or yHandleEvents.
-        This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-        one of these two functions periodically. To unregister a callback, pass a None pointer as argument.
-        
-        @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the function object of which the value has changed, and the character string describing
-                the new advertised value.
-        @noreturn
-        """
-        if callback is not None:
-            self._registerFuncCallback(self)
-        else:
-            self._unregisterFuncCallback(self)
-        self._callback = callback
-
-    def set_callback(self, callback):
-        self.registerValueCallback(callback)
-
-    def setCallback(self, callback):
-        self.registerValueCallback(callback)
-
-
-    def advertiseValue(self,value):
-        if self._callback is not None:
-            self._callback(self, value)
-
-#--- (end of YDualPower implementation)
-
-#--- (DualPower functions)
-
-    @staticmethod 
+    @staticmethod
     def FindDualPower(func):
         """
         Retrieves a dual power control for a given identifier.
@@ -277,14 +175,34 @@ class YDualPower(YFunction):
         
         @return a YDualPower object allowing you to drive the power control.
         """
-        if func in YDualPower._DualPowerCache:
-            return YDualPower._DualPowerCache[func]
-        res =YDualPower(func)
-        YDualPower._DualPowerCache[func] =  res
-        return res
+        # obj
+        obj = YFunction._FindFromCache("DualPower", func)
+        if obj is None:
+            obj = YDualPower(func)
+            YFunction._AddToCache("DualPower", func, obj)
+        return obj
 
-    @staticmethod 
-    def  FirstDualPower():
+    def nextDualPower(self):
+        """
+        Continues the enumeration of dual power controls started using yFirstDualPower().
+        
+        @return a pointer to a YDualPower object, corresponding to
+                a dual power control currently online, or a None pointer
+                if there are no more dual power controls to enumerate.
+        """
+        hwidRef = YRefParam()
+        if YAPI.YISERR(self._nextFunction(hwidRef)):
+            return None
+        if hwidRef.value == "":
+            return None
+        return YDualPower.FindDualPower(hwidRef.value)
+
+#--- (end of YDualPower implementation)
+
+#--- (DualPower functions)
+
+    @staticmethod
+    def FirstDualPower():
         """
         Starts the enumeration of dual power controls currently accessible.
         Use the method YDualPower.nextDualPower() to iterate on
@@ -303,20 +221,16 @@ class YDualPower(YFunction):
         errmsgRef = YRefParam()
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
-        p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("DualPower", 0, p, size,  neededsizeRef, errmsgRef)
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("DualPower", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
 
-        if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
         return YDualPower.FindDualPower(serialRef.value + "." + funcIdRef.value)
 
-    @staticmethod 
-    def _DualPowerCleanup():
-        pass
-
-  #--- (end of DualPower functions)
-
+#--- (end of DualPower functions)

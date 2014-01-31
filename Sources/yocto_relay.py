@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_relay.py 12324 2013-08-13 15:10:31Z mvuilleu $
+#* $Id: yocto_relay.py 14229 2014-01-02 16:06:40Z seb $
 #*
 #* Implements yFindRelay(), the high-level API for Relay functions
 #*
@@ -40,6 +40,10 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
+
+
+#--- (YRelay class start)
+#noinspection PyProtectedMember
 class YRelay(YFunction):
     """
     The Yoctopuce application programming interface allows you to switch the relay state.
@@ -51,114 +55,78 @@ class YRelay(YFunction):
     active state. If you prefer the alternate default state, simply switch your cables on the board.
     
     """
-    #--- (globals)
-
-
-    #--- (end of globals)
-
+#--- (end of YRelay class start)
+    #--- (YRelay return codes)
+    #--- (end of YRelay return codes)
     #--- (YRelay definitions)
-
-
-    LOGICALNAME_INVALID             = YAPI.INVALID_STRING
-    ADVERTISEDVALUE_INVALID         = YAPI.INVALID_STRING
-    PULSETIMER_INVALID              = YAPI.INVALID_LONG
-    DELAYEDPULSETIMER_INVALID       = None
-    COUNTDOWN_INVALID               = YAPI.INVALID_LONG
-
-    STATE_A                         = 0
-    STATE_B                         = 1
-    STATE_INVALID                   = -1
-    OUTPUT_OFF                      = 0
-    OUTPUT_ON                       = 1
-    OUTPUT_INVALID                  = -1
-
-
-    _RelayCache ={}
-
+    MAXTIMEONSTATEA_INVALID = YAPI.INVALID_LONG
+    MAXTIMEONSTATEB_INVALID = YAPI.INVALID_LONG
+    PULSETIMER_INVALID = YAPI.INVALID_LONG
+    DELAYEDPULSETIMER_INVALID = None
+    COUNTDOWN_INVALID = YAPI.INVALID_LONG
+    STATE_A = 0
+    STATE_B = 1
+    STATE_INVALID = -1
+    STATEATPOWERON_UNCHANGED = 0
+    STATEATPOWERON_A = 1
+    STATEATPOWERON_B = 2
+    STATEATPOWERON_INVALID = -1
+    OUTPUT_OFF = 0
+    OUTPUT_ON = 1
+    OUTPUT_INVALID = -1
     #--- (end of YRelay definitions)
 
-    #--- (YRelay implementation)
-
-    def __init__(self,func):
-        super(YRelay,self).__init__("Relay", func)
+    def __init__(self, func):
+        super(YRelay, self).__init__(func)
+        self._className = 'Relay'
+        #--- (YRelay attributes)
         self._callback = None
-        self._logicalName = YRelay.LOGICALNAME_INVALID
-        self._advertisedValue = YRelay.ADVERTISEDVALUE_INVALID
         self._state = YRelay.STATE_INVALID
+        self._stateAtPowerOn = YRelay.STATEATPOWERON_INVALID
+        self._maxTimeOnStateA = YRelay.MAXTIMEONSTATEA_INVALID
+        self._maxTimeOnStateB = YRelay.MAXTIMEONSTATEB_INVALID
         self._output = YRelay.OUTPUT_INVALID
         self._pulseTimer = YRelay.PULSETIMER_INVALID
         self._delayedPulseTimer = YRelay.DELAYEDPULSETIMER_INVALID
         self._countdown = YRelay.COUNTDOWN_INVALID
+        #--- (end of YRelay attributes)
 
-    def _parse(self, j):
-        if j.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: return -1
-        for member in j.members:
-            if member.name == "logicalName":
-                self._logicalName = member.svalue
-            elif member.name == "advertisedValue":
-                self._advertisedValue = member.svalue
-            elif member.name == "state":
-                self._state = member.ivalue
-            elif member.name == "output":
-                self._output = member.ivalue
-            elif member.name == "pulseTimer":
-                self._pulseTimer = member.ivalue
-            elif member.name == "delayedPulseTimer":
-                if member.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: self._delayedPulseTimer = -1
-                self._delayedPulseTimer = {"moving":None,"target":None,"ms":None }
-                for submemb in member.members:
-                    if submemb.name == "moving":
-                        self._delayedPulseTimer["moving"]  = submemb.ivalue
-                    elif submemb.name == "target": 
-                        self._delayedPulseTimer["target"] = submemb.ivalue
-                    elif submemb.name == "ms": 
-                        self._delayedPulseTimer["ms"] = submemb.ivalue
-            elif member.name == "countdown":
-                self._countdown = member.ivalue
-        return 0
-
-    def get_logicalName(self):
-        """
-        Returns the logical name of the relay.
-        
-        @return a string corresponding to the logical name of the relay
-        
-        On failure, throws an exception or returns YRelay.LOGICALNAME_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YRelay.LOGICALNAME_INVALID
-        return self._logicalName
-
-    def set_logicalName(self, newval):
-        """
-        Changes the logical name of the relay. You can use yCheckLogicalName()
-        prior to this call to make sure that your parameter is valid.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
-        
-        @param newval : a string corresponding to the logical name of the relay
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = newval
-        return self._setAttr("logicalName", rest_val)
-
-
-    def get_advertisedValue(self):
-        """
-        Returns the current value of the relay (no more than 6 characters).
-        
-        @return a string corresponding to the current value of the relay (no more than 6 characters)
-        
-        On failure, throws an exception or returns YRelay.ADVERTISEDVALUE_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YRelay.ADVERTISEDVALUE_INVALID
-        return self._advertisedValue
+    #--- (YRelay implementation)
+    def _parseAttr(self, member):
+        if member.name == "state":
+            self._state = member.ivalue
+            return 1
+        if member.name == "stateAtPowerOn":
+            self._stateAtPowerOn = member.ivalue
+            return 1
+        if member.name == "maxTimeOnStateA":
+            self._maxTimeOnStateA = member.ivalue
+            return 1
+        if member.name == "maxTimeOnStateB":
+            self._maxTimeOnStateB = member.ivalue
+            return 1
+        if member.name == "output":
+            self._output = member.ivalue
+            return 1
+        if member.name == "pulseTimer":
+            self._pulseTimer = member.ivalue
+            return 1
+        if member.name == "delayedPulseTimer":
+            if member.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT:
+                self._delayedPulseTimer = -1
+            self._delayedPulseTimer = {"moving": None, "target": None, "ms": None}
+            for submemb in member.members:
+                if submemb.name == "moving":
+                    self._delayedPulseTimer["moving"] = submemb.ivalue
+                elif submemb.name == "target":
+                    self._delayedPulseTimer["target"] = submemb.ivalue
+                elif submemb.name == "ms":
+                    self._delayedPulseTimer["ms"] = submemb.ivalue
+            return 1
+        if member.name == "countdown":
+            self._countdown = member.ivalue
+            return 1
+        super(YRelay, self)._parseAttr(member)
 
     def get_state(self):
         """
@@ -170,7 +138,7 @@ class YRelay(YFunction):
         On failure, throws an exception or returns YRelay.STATE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.STATE_INVALID
         return self._state
 
@@ -185,9 +153,96 @@ class YRelay(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val =  "1" if newval > 0 else "0"
+        rest_val = "1" if newval > 0 else "0"
         return self._setAttr("state", rest_val)
 
+    def get_stateAtPowerOn(self):
+        """
+        Returns the state of the relays at device startup (A for the idle position, B for the active
+        position, UNCHANGED for no change).
+        
+        @return a value among YRelay.STATEATPOWERON_UNCHANGED, YRelay.STATEATPOWERON_A and
+        YRelay.STATEATPOWERON_B corresponding to the state of the relays at device startup (A for the idle
+        position, B for the active position, UNCHANGED for no change)
+        
+        On failure, throws an exception or returns YRelay.STATEATPOWERON_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YRelay.STATEATPOWERON_INVALID
+        return self._stateAtPowerOn
+
+    def set_stateAtPowerOn(self, newval):
+        """
+        Preset the state of the relays at device startup (A for the idle position,
+        B for the active position, UNCHANGED for no modification). Remember to call the matching module saveToFlash()
+        method, otherwise this call will have no effect.
+        
+        @param newval : a value among YRelay.STATEATPOWERON_UNCHANGED, YRelay.STATEATPOWERON_A and
+        YRelay.STATEATPOWERON_B
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("stateAtPowerOn", rest_val)
+
+    def get_maxTimeOnStateA(self):
+        """
+        Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
+        switching back in to B state. Zero means no maximum time.
+        
+        @return an integer
+        
+        On failure, throws an exception or returns YRelay.MAXTIMEONSTATEA_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YRelay.MAXTIMEONSTATEA_INVALID
+        return self._maxTimeOnStateA
+
+    def set_maxTimeOnStateA(self, newval):
+        """
+        Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
+        switching back in to B state. Use zero for no maximum time.
+        
+        @param newval : an integer
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("maxTimeOnStateA", rest_val)
+
+    def get_maxTimeOnStateB(self):
+        """
+        Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
+        switching back in to A state. Zero means no maximum time.
+        
+        @return an integer
+        
+        On failure, throws an exception or returns YRelay.MAXTIMEONSTATEB_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YRelay.MAXTIMEONSTATEB_INVALID
+        return self._maxTimeOnStateB
+
+    def set_maxTimeOnStateB(self, newval):
+        """
+        Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
+        switching back in to A state. Use zero for no maximum time.
+        
+        @param newval : an integer
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("maxTimeOnStateB", rest_val)
 
     def get_output(self):
         """
@@ -199,7 +254,7 @@ class YRelay(YFunction):
         On failure, throws an exception or returns YRelay.OUTPUT_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.OUTPUT_INVALID
         return self._output
 
@@ -214,9 +269,8 @@ class YRelay(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val =  "1" if newval > 0 else "0"
+        rest_val = "1" if newval > 0 else "0"
         return self._setAttr("output", rest_val)
-
 
     def get_pulseTimer(self):
         """
@@ -230,7 +284,7 @@ class YRelay(YFunction):
         On failure, throws an exception or returns YRelay.PULSETIMER_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.PULSETIMER_INVALID
         return self._pulseTimer
 
@@ -238,8 +292,7 @@ class YRelay(YFunction):
         rest_val = str(newval)
         return self._setAttr("pulseTimer", rest_val)
 
-
-    def pulse(self , ms_duration):
+    def pulse(self, ms_duration):
         """
         Sets the relay to output B (active) for a specified duration, then brings it
         automatically back to output A (idle state).
@@ -255,16 +308,15 @@ class YRelay(YFunction):
 
     def get_delayedPulseTimer(self):
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.DELAYEDPULSETIMER_INVALID
         return self._delayedPulseTimer
 
     def set_delayedPulseTimer(self, newval):
-        rest_val = str(newval.target)+":"+str(newval.ms)
+        rest_val = str(newval.target) + ":" + str(newval.ms)
         return self._setAttr("delayedPulseTimer", rest_val)
 
-
-    def delayedPulse(self , ms_delay,ms_duration):
+    def delayedPulse(self, ms_delay, ms_duration):
         """
         Schedules a pulse.
         
@@ -275,7 +327,7 @@ class YRelay(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = str(ms_delay)+":"+str(ms_duration)
+        rest_val = str(ms_delay) + ":" + str(ms_duration)
         return self._setAttr("delayedPulseTimer", rest_val)
 
     def get_countdown(self):
@@ -289,59 +341,11 @@ class YRelay(YFunction):
         On failure, throws an exception or returns YRelay.COUNTDOWN_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.COUNTDOWN_INVALID
         return self._countdown
 
-    def nextRelay(self):
-        """
-        Continues the enumeration of relays started using yFirstRelay().
-        
-        @return a pointer to a YRelay object, corresponding to
-                a relay currently online, or a None pointer
-                if there are no more relays to enumerate.
-        """
-        hwidRef = YRefParam()
-        if YAPI.YISERR(self._nextFunction(hwidRef)):
-            return None
-        if hwidRef.value == "":
-            return None
-        return YRelay.FindRelay(hwidRef.value)
-
-    def registerValueCallback(self, callback):
-        """
-        Registers the callback function that is invoked on every change of advertised value.
-        The callback is invoked only during the execution of ySleep or yHandleEvents.
-        This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-        one of these two functions periodically. To unregister a callback, pass a None pointer as argument.
-        
-        @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the function object of which the value has changed, and the character string describing
-                the new advertised value.
-        @noreturn
-        """
-        if callback is not None:
-            self._registerFuncCallback(self)
-        else:
-            self._unregisterFuncCallback(self)
-        self._callback = callback
-
-    def set_callback(self, callback):
-        self.registerValueCallback(callback)
-
-    def setCallback(self, callback):
-        self.registerValueCallback(callback)
-
-
-    def advertiseValue(self,value):
-        if self._callback is not None:
-            self._callback(self, value)
-
-#--- (end of YRelay implementation)
-
-#--- (Relay functions)
-
-    @staticmethod 
+    @staticmethod
     def FindRelay(func):
         """
         Retrieves a relay for a given identifier.
@@ -366,14 +370,34 @@ class YRelay(YFunction):
         
         @return a YRelay object allowing you to drive the relay.
         """
-        if func in YRelay._RelayCache:
-            return YRelay._RelayCache[func]
-        res =YRelay(func)
-        YRelay._RelayCache[func] =  res
-        return res
+        # obj
+        obj = YFunction._FindFromCache("Relay", func)
+        if obj is None:
+            obj = YRelay(func)
+            YFunction._AddToCache("Relay", func, obj)
+        return obj
 
-    @staticmethod 
-    def  FirstRelay():
+    def nextRelay(self):
+        """
+        Continues the enumeration of relays started using yFirstRelay().
+        
+        @return a pointer to a YRelay object, corresponding to
+                a relay currently online, or a None pointer
+                if there are no more relays to enumerate.
+        """
+        hwidRef = YRefParam()
+        if YAPI.YISERR(self._nextFunction(hwidRef)):
+            return None
+        if hwidRef.value == "":
+            return None
+        return YRelay.FindRelay(hwidRef.value)
+
+#--- (end of YRelay implementation)
+
+#--- (Relay functions)
+
+    @staticmethod
+    def FirstRelay():
         """
         Starts the enumeration of relays currently accessible.
         Use the method YRelay.nextRelay() to iterate on
@@ -392,20 +416,16 @@ class YRelay(YFunction):
         errmsgRef = YRefParam()
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
-        p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("Relay", 0, p, size,  neededsizeRef, errmsgRef)
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("Relay", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
 
-        if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
         return YRelay.FindRelay(serialRef.value + "." + funcIdRef.value)
 
-    @staticmethod 
-    def _RelayCleanup():
-        pass
-
-  #--- (end of Relay functions)
-
+#--- (end of Relay functions)

@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: pic24config.php 12323 2013-08-13 15:09:18Z mvuilleu $
+#* $Id: yocto_digitalio.py 14528 2014-01-16 16:19:06Z mvuilleu $
 #*
 #* Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #*
@@ -40,114 +40,72 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
+
+
+#--- (YDigitalIO class start)
+#noinspection PyProtectedMember
 class YDigitalIO(YFunction):
     """
-    ....
+    The Yoctopuce application programming interface allows you to switch the state of each
+    bit of the I/O port. You can switch all bits at once, or one by one. The library
+    can also automatically generate short pulses of a determined duration. Electrical behavior
+    of each I/O can be modified (open drain and reverse polarity).
     
     """
-    #--- (globals)
-
-
-    #--- (end of globals)
-
+#--- (end of YDigitalIO class start)
+    #--- (YDigitalIO return codes)
+    #--- (end of YDigitalIO return codes)
     #--- (YDigitalIO definitions)
-
-
-    LOGICALNAME_INVALID             = YAPI.INVALID_STRING
-    ADVERTISEDVALUE_INVALID         = YAPI.INVALID_STRING
-    PORTSTATE_INVALID               = YAPI.INVALID_LONG
-    PORTDIRECTION_INVALID           = YAPI.INVALID_LONG
-    PORTOPENDRAIN_INVALID           = YAPI.INVALID_LONG
-    PORTSIZE_INVALID                = YAPI.INVALID_LONG
-    COMMAND_INVALID                 = YAPI.INVALID_STRING
-
-    OUTPUTVOLTAGE_USB_5V            = 0
-    OUTPUTVOLTAGE_USB_3V3           = 1
-    OUTPUTVOLTAGE_EXT_V             = 2
-    OUTPUTVOLTAGE_INVALID           = -1
-
-
-    _DigitalIOCache ={}
-
+    PORTSTATE_INVALID = YAPI.INVALID_UINT
+    PORTDIRECTION_INVALID = YAPI.INVALID_UINT
+    PORTOPENDRAIN_INVALID = YAPI.INVALID_UINT
+    PORTPOLARITY_INVALID = YAPI.INVALID_UINT
+    PORTSIZE_INVALID = YAPI.INVALID_UINT
+    COMMAND_INVALID = YAPI.INVALID_STRING
+    OUTPUTVOLTAGE_USB_5V = 0
+    OUTPUTVOLTAGE_USB_3V = 1
+    OUTPUTVOLTAGE_EXT_V = 2
+    OUTPUTVOLTAGE_INVALID = -1
     #--- (end of YDigitalIO definitions)
 
-    #--- (YDigitalIO implementation)
-
-    def __init__(self,func):
-        super(YDigitalIO,self).__init__("DigitalIO", func)
+    def __init__(self, func):
+        super(YDigitalIO, self).__init__(func)
+        self._className = 'DigitalIO'
+        #--- (YDigitalIO attributes)
         self._callback = None
-        self._logicalName = YDigitalIO.LOGICALNAME_INVALID
-        self._advertisedValue = YDigitalIO.ADVERTISEDVALUE_INVALID
         self._portState = YDigitalIO.PORTSTATE_INVALID
         self._portDirection = YDigitalIO.PORTDIRECTION_INVALID
         self._portOpenDrain = YDigitalIO.PORTOPENDRAIN_INVALID
+        self._portPolarity = YDigitalIO.PORTPOLARITY_INVALID
         self._portSize = YDigitalIO.PORTSIZE_INVALID
         self._outputVoltage = YDigitalIO.OUTPUTVOLTAGE_INVALID
         self._command = YDigitalIO.COMMAND_INVALID
+        #--- (end of YDigitalIO attributes)
 
-    def _parse(self, j):
-        if j.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: return -1
-        for member in j.members:
-            if member.name == "logicalName":
-                self._logicalName = member.svalue
-            elif member.name == "advertisedValue":
-                self._advertisedValue = member.svalue
-            elif member.name == "portState":
-                self._portState = member.ivalue
-            elif member.name == "portDirection":
-                self._portDirection = member.ivalue
-            elif member.name == "portOpenDrain":
-                self._portOpenDrain = member.ivalue
-            elif member.name == "portSize":
-                self._portSize = member.ivalue
-            elif member.name == "outputVoltage":
-                self._outputVoltage = member.ivalue
-            elif member.name == "command":
-                self._command = member.svalue
-        return 0
-
-    def get_logicalName(self):
-        """
-        Returns the logical name of the digital IO port.
-        
-        @return a string corresponding to the logical name of the digital IO port
-        
-        On failure, throws an exception or returns YDigitalIO.LOGICALNAME_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YDigitalIO.LOGICALNAME_INVALID
-        return self._logicalName
-
-    def set_logicalName(self, newval):
-        """
-        Changes the logical name of the digital IO port. You can use yCheckLogicalName()
-        prior to this call to make sure that your parameter is valid.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
-        
-        @param newval : a string corresponding to the logical name of the digital IO port
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = newval
-        return self._setAttr("logicalName", rest_val)
-
-
-    def get_advertisedValue(self):
-        """
-        Returns the current value of the digital IO port (no more than 6 characters).
-        
-        @return a string corresponding to the current value of the digital IO port (no more than 6 characters)
-        
-        On failure, throws an exception or returns YDigitalIO.ADVERTISEDVALUE_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YDigitalIO.ADVERTISEDVALUE_INVALID
-        return self._advertisedValue
+    #--- (YDigitalIO implementation)
+    def _parseAttr(self, member):
+        if member.name == "portState":
+            self._portState = member.ivalue
+            return 1
+        if member.name == "portDirection":
+            self._portDirection = member.ivalue
+            return 1
+        if member.name == "portOpenDrain":
+            self._portOpenDrain = member.ivalue
+            return 1
+        if member.name == "portPolarity":
+            self._portPolarity = member.ivalue
+            return 1
+        if member.name == "portSize":
+            self._portSize = member.ivalue
+            return 1
+        if member.name == "outputVoltage":
+            self._outputVoltage = member.ivalue
+            return 1
+        if member.name == "command":
+            self._command = member.svalue
+            return 1
+        super(YDigitalIO, self)._parseAttr(member)
 
     def get_portState(self):
         """
@@ -158,7 +116,7 @@ class YDigitalIO(YFunction):
         On failure, throws an exception or returns YDigitalIO.PORTSTATE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.PORTSTATE_INVALID
         return self._portState
 
@@ -176,7 +134,6 @@ class YDigitalIO(YFunction):
         rest_val = str(newval)
         return self._setAttr("portState", rest_val)
 
-
     def get_portDirection(self):
         """
         Returns the IO direction of all bits of the port: 0 makes a bit an input, 1 makes it an output.
@@ -187,14 +144,14 @@ class YDigitalIO(YFunction):
         On failure, throws an exception or returns YDigitalIO.PORTDIRECTION_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.PORTDIRECTION_INVALID
         return self._portDirection
 
     def set_portDirection(self, newval):
         """
         Changes the IO direction of all bits of the port: 0 makes a bit an input, 1 makes it an output.
-        Remember to call the saveToFlash() method  to make sure the setting will be kept after a reboot.
+        Remember to call the saveToFlash() method  to make sure the setting is kept after a reboot.
         
         @param newval : an integer corresponding to the IO direction of all bits of the port: 0 makes a bit
         an input, 1 makes it an output
@@ -206,18 +163,18 @@ class YDigitalIO(YFunction):
         rest_val = str(newval)
         return self._setAttr("portDirection", rest_val)
 
-
     def get_portOpenDrain(self):
         """
-        Returns the electrical interface for each bit of the port. 0 makes a bit a regular input/output, 1 makes
-        it an open-drain (open-collector) input/output.
+        Returns the electrical interface for each bit of the port. For each bit set to 0  the matching I/O
+        works in the regular,
+        intuitive way, for each bit set to 1, the I/O works in reverse mode.
         
         @return an integer corresponding to the electrical interface for each bit of the port
         
         On failure, throws an exception or returns YDigitalIO.PORTOPENDRAIN_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.PORTOPENDRAIN_INVALID
         return self._portOpenDrain
 
@@ -225,7 +182,7 @@ class YDigitalIO(YFunction):
         """
         Changes the electrical interface for each bit of the port. 0 makes a bit a regular input/output, 1 makes
         it an open-drain (open-collector) input/output. Remember to call the
-        saveToFlash() method  to make sure the setting will be kept after a reboot.
+        saveToFlash() method  to make sure the setting is kept after a reboot.
         
         @param newval : an integer corresponding to the electrical interface for each bit of the port
         
@@ -236,6 +193,34 @@ class YDigitalIO(YFunction):
         rest_val = str(newval)
         return self._setAttr("portOpenDrain", rest_val)
 
+    def get_portPolarity(self):
+        """
+        Returns the polarity of all the bits of the port.  For each bit set to 0, the matching I/O works the regular,
+        intuitive way; for each bit set to 1, the I/O works in reverse mode.
+        
+        @return an integer corresponding to the polarity of all the bits of the port
+        
+        On failure, throws an exception or returns YDigitalIO.PORTPOLARITY_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YDigitalIO.PORTPOLARITY_INVALID
+        return self._portPolarity
+
+    def set_portPolarity(self, newval):
+        """
+        Changes the polarity of all the bits of the port: 0 makes a bit an input, 1 makes it an output.
+        Remember to call the saveToFlash() method  to make sure the setting will be kept after a reboot.
+        
+        @param newval : an integer corresponding to the polarity of all the bits of the port: 0 makes a bit
+        an input, 1 makes it an output
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("portPolarity", rest_val)
 
     def get_portSize(self):
         """
@@ -246,7 +231,7 @@ class YDigitalIO(YFunction):
         On failure, throws an exception or returns YDigitalIO.PORTSIZE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.PORTSIZE_INVALID
         return self._portSize
 
@@ -254,22 +239,22 @@ class YDigitalIO(YFunction):
         """
         Returns the voltage source used to drive output bits.
         
-        @return a value among YDigitalIO.OUTPUTVOLTAGE_USB_5V, YDigitalIO.OUTPUTVOLTAGE_USB_3V3 and
+        @return a value among YDigitalIO.OUTPUTVOLTAGE_USB_5V, YDigitalIO.OUTPUTVOLTAGE_USB_3V and
         YDigitalIO.OUTPUTVOLTAGE_EXT_V corresponding to the voltage source used to drive output bits
         
         On failure, throws an exception or returns YDigitalIO.OUTPUTVOLTAGE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.OUTPUTVOLTAGE_INVALID
         return self._outputVoltage
 
     def set_outputVoltage(self, newval):
         """
         Changes the voltage source used to drive output bits.
-        Remember to call the saveToFlash() method  to make sure the setting will be kept after a reboot.
+        Remember to call the saveToFlash() method  to make sure the setting is kept after a reboot.
         
-        @param newval : a value among YDigitalIO.OUTPUTVOLTAGE_USB_5V, YDigitalIO.OUTPUTVOLTAGE_USB_3V3 and
+        @param newval : a value among YDigitalIO.OUTPUTVOLTAGE_USB_5V, YDigitalIO.OUTPUTVOLTAGE_USB_3V and
         YDigitalIO.OUTPUTVOLTAGE_EXT_V corresponding to the voltage source used to drive output bits
         
         @return YAPI.SUCCESS if the call succeeds.
@@ -279,10 +264,9 @@ class YDigitalIO(YFunction):
         rest_val = str(newval)
         return self._setAttr("outputVoltage", rest_val)
 
-
     def get_command(self):
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.COMMAND_INVALID
         return self._command
 
@@ -290,167 +274,7 @@ class YDigitalIO(YFunction):
         rest_val = newval
         return self._setAttr("command", rest_val)
 
-    def set_bitState(self, bitno, bitval):
-        """
-        Set a single bit of the I/O port.
-        
-        @param bitno: the bit number; lowest bit is index 0
-        @param bitval: the value of the bit (1 or 0)
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        if not (bitval >= 0) : self._throw( YAPI.INVALID_ARGUMENT,  "invalid bitval")
-        if not (bitval <= 1) : self._throw( YAPI.INVALID_ARGUMENT,  "invalid bitval")
-        return self.set_command(""+str(chr(82+bitval))+""+ str(int( bitno)))
-        
-
-    def get_bitState(self, bitno):
-        """
-        Returns the value of a single bit of the I/O port.
-        
-        @param bitno: the bit number; lowest bit is index 0
-        
-        @return the bit value (0 or 1)
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        
-        portVal = self.get_portState()
-        return ((((portVal) >> (bitno))) & (1))
-        
-
-    def toggle_bitState(self, bitno):
-        """
-        Revert a single bit of the I/O port.
-        
-        @param bitno: the bit number; lowest bit is index 0
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        return self.set_command("T"+ str(int( bitno)))
-        
-
-    def set_bitDirection(self, bitno, bitdirection):
-        """
-        Change  the direction of a single bit from the I/O port.
-        
-        @param bitno: the bit number; lowest bit is index 0
-        @param bitdirection: direction to set, 0 makes the bit an input, 1 makes it an output.
-                Remember to call the   saveToFlash() method to make sure the setting will be kept after a reboot.
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        if not (bitdirection >= 0) : self._throw( YAPI.INVALID_ARGUMENT,  "invalid direction")
-        if not (bitdirection <= 1) : self._throw( YAPI.INVALID_ARGUMENT,  "invalid direction")
-        return self.set_command(""+str(chr(73+6*bitdirection))+""+ str(int( bitno)))
-        
-
-    def get_bitDirection(self, bitno):
-        """
-        Change  the direction of a single bit from the I/O port (0 means the bit is an input, 1  an output).
-        
-        @param bitno: the bit number; lowest bit is index 0
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        
-        portDir = self.get_portDirection()
-        return ((((portDir) >> (bitno))) & (1))
-        
-
-    def set_bitOpenDrain(self, bitno, opendrain):
-        """
-        Change  the electrical interface of a single bit from the I/O port.
-        
-        @param bitno: the bit number; lowest bit is index 0
-        @param opendrain: value to set, 0 makes a bit a regular input/output, 1 makes
-                it an open-drain (open-collector) input/output. Remember to call the
-                saveToFlash() method to make sure the setting will be kept after a reboot.
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        if not (opendrain >= 0) : self._throw( YAPI.INVALID_ARGUMENT,  "invalid state")
-        if not (opendrain <= 1) : self._throw( YAPI.INVALID_ARGUMENT,  "invalid state")
-        return self.set_command(""+str(chr(100-32*opendrain))+""+ str(int( bitno)))
-        
-
-    def get_bitOpenDrain(self, bitno):
-        """
-        Returns the type of electrical interface of a single bit from the I/O port. (0 means the bit is an
-        input, 1  an output).
-        
-        @param bitno: the bit number; lowest bit is index 0
-        
-        @return   0 means the a bit is a regular input/output, 1means the b it an open-drain
-        (open-collector) input/output.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        
-        portOpenDrain = self.get_portOpenDrain()
-        return ((((portOpenDrain) >> (bitno))) & (1))
-        
-
-
-    def nextDigitalIO(self):
-        """
-        Continues the enumeration of digital IO port started using yFirstDigitalIO().
-        
-        @return a pointer to a YDigitalIO object, corresponding to
-                a digital IO port currently online, or a None pointer
-                if there are no more digital IO port to enumerate.
-        """
-        hwidRef = YRefParam()
-        if YAPI.YISERR(self._nextFunction(hwidRef)):
-            return None
-        if hwidRef.value == "":
-            return None
-        return YDigitalIO.FindDigitalIO(hwidRef.value)
-
-    def registerValueCallback(self, callback):
-        """
-        Registers the callback function that is invoked on every change of advertised value.
-        The callback is invoked only during the execution of ySleep or yHandleEvents.
-        This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-        one of these two functions periodically. To unregister a callback, pass a None pointer as argument.
-        
-        @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the function object of which the value has changed, and the character string describing
-                the new advertised value.
-        @noreturn
-        """
-        if callback is not None:
-            self._registerFuncCallback(self)
-        else:
-            self._unregisterFuncCallback(self)
-        self._callback = callback
-
-    def set_callback(self, callback):
-        self.registerValueCallback(callback)
-
-    def setCallback(self, callback):
-        self.registerValueCallback(callback)
-
-
-    def advertiseValue(self,value):
-        if self._callback is not None:
-            self._callback(self, value)
-
-#--- (end of YDigitalIO implementation)
-
-#--- (DigitalIO functions)
-
-    @staticmethod 
+    @staticmethod
     def FindDigitalIO(func):
         """
         Retrieves a digital IO port for a given identifier.
@@ -475,18 +299,213 @@ class YDigitalIO(YFunction):
         
         @return a YDigitalIO object allowing you to drive the digital IO port.
         """
-        if func in YDigitalIO._DigitalIOCache:
-            return YDigitalIO._DigitalIOCache[func]
-        res =YDigitalIO(func)
-        YDigitalIO._DigitalIOCache[func] =  res
-        return res
+        # obj
+        obj = YFunction._FindFromCache("DigitalIO", func)
+        if obj is None:
+            obj = YDigitalIO(func)
+            YFunction._AddToCache("DigitalIO", func, obj)
+        return obj
 
-    @staticmethod 
-    def  FirstDigitalIO():
+    def set_bitState(self, bitno, bitstate):
         """
-        Starts the enumeration of digital IO port currently accessible.
+        Sets a single bit of the I/O port.
+        
+        @param bitno: the bit number; lowest bit has index 0
+        @param bitstate: the state of the bit (1 or 0)
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        if not (bitstate >= 0):
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid bitstate")
+        if not (bitstate <= 1):
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid bitstate")
+        return self.set_command("" + str(chr(82+bitstate)) + "" + str(int(bitno)))
+
+    def get_bitState(self, bitno):
+        """
+        Returns the state of a single bit of the I/O port.
+        
+        @param bitno: the bit number; lowest bit has index 0
+        
+        @return the bit state (0 or 1)
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # portVal
+        portVal = self.get_portState()
+        return ((((portVal) >> (bitno))) & (1))
+
+    def toggle_bitState(self, bitno):
+        """
+        Reverts a single bit of the I/O port.
+        
+        @param bitno: the bit number; lowest bit has index 0
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_command("T" + str(int(bitno)))
+
+    def set_bitDirection(self, bitno, bitdirection):
+        """
+        Changes  the direction of a single bit from the I/O port.
+        
+        @param bitno: the bit number; lowest bit has index 0
+        @param bitdirection: direction to set, 0 makes the bit an input, 1 makes it an output.
+                Remember to call the   saveToFlash() method to make sure the setting is kept after a reboot.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        if not (bitdirection >= 0):
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid direction")
+        if not (bitdirection <= 1):
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid direction")
+        return self.set_command("" + str(chr(73+6*bitdirection)) + "" + str(int(bitno)))
+
+    def get_bitDirection(self, bitno):
+        """
+        Returns the direction of a single bit from the I/O port (0 means the bit is an input, 1  an output).
+        
+        @param bitno: the bit number; lowest bit has index 0
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # portDir
+        portDir = self.get_portDirection()
+        return ((((portDir) >> (bitno))) & (1))
+
+    def set_bitPolarity(self, bitno, bitpolarity):
+        """
+        Changes the polarity of a single bit from the I/O port.
+        
+        @param bitno: the bit number; lowest bit has index 0.
+        @param bitpolarity: polarity to set, 0 makes the I/O work in regular mode, 1 makes the I/O  works
+        in reverse mode.
+                Remember to call the   saveToFlash() method to make sure the setting is kept after a reboot.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        if not (bitpolarity >= 0):
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid bitpolarity")
+        if not (bitpolarity <= 1):
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid bitpolarity")
+        return self.set_command("" + str(chr(110+4*bitpolarity)) + "" + str(int(bitno)))
+
+    def get_bitPolarity(self, bitno):
+        """
+        Returns the polarity of a single bit from the I/O port (0 means the I/O works in regular mode, 1
+        means the I/O  works in reverse mode).
+        
+        @param bitno: the bit number; lowest bit has index 0
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # portPol
+        portPol = self.get_portPolarity()
+        return ((((portPol) >> (bitno))) & (1))
+
+    def set_bitOpenDrain(self, bitno, opendrain):
+        """
+        Changes  the electrical interface of a single bit from the I/O port.
+        
+        @param bitno: the bit number; lowest bit has index 0
+        @param opendrain: 0 makes a bit a regular input/output, 1 makes
+                it an open-drain (open-collector) input/output. Remember to call the
+                saveToFlash() method to make sure the setting is kept after a reboot.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        if not (opendrain >= 0):
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid state")
+        if not (opendrain <= 1):
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid state")
+        return self.set_command("" + str(chr(100-32*opendrain)) + "" + str(int(bitno)))
+
+    def get_bitOpenDrain(self, bitno):
+        """
+        Returns the type of electrical interface of a single bit from the I/O port. (0 means the bit is an
+        input, 1  an output).
+        
+        @param bitno: the bit number; lowest bit has index 0
+        
+        @return   0 means the a bit is a regular input/output, 1 means the bit is an open-drain
+                (open-collector) input/output.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # portOpenDrain
+        portOpenDrain = self.get_portOpenDrain()
+        return ((((portOpenDrain) >> (bitno))) & (1))
+
+    def pulse(self, bitno, ms_duration):
+        """
+        Triggers a pulse on a single bit for a specified duration. The specified bit
+        will be turned to 1, and then back to 0 after the given duration.
+        
+        @param bitno: the bit number; lowest bit has index 0
+        @param ms_duration: desired pulse duration in milliseconds. Be aware that the device time
+                resolution is not guaranteed up to the millisecond.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_command("Z" + str(int(bitno)) + ",0," + str(int(ms_duration)))
+
+    def delayedPulse(self, bitno, ms_delay, ms_duration):
+        """
+        Schedules a pulse on a single bit for a specified duration. The specified bit
+        will be turned to 1, and then back to 0 after the given duration.
+        
+        @param bitno: the bit number; lowest bit has index 0
+        @param ms_delay : waiting time before the pulse, in milliseconds
+        @param ms_duration: desired pulse duration in milliseconds. Be aware that the device time
+                resolution is not guaranteed up to the millisecond.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_command("Z" + str(int(bitno)) + "," + str(int(ms_delay)) + "," + str(int(ms_duration)))
+
+    def nextDigitalIO(self):
+        """
+        Continues the enumeration of digital IO ports started using yFirstDigitalIO().
+        
+        @return a pointer to a YDigitalIO object, corresponding to
+                a digital IO port currently online, or a None pointer
+                if there are no more digital IO ports to enumerate.
+        """
+        hwidRef = YRefParam()
+        if YAPI.YISERR(self._nextFunction(hwidRef)):
+            return None
+        if hwidRef.value == "":
+            return None
+        return YDigitalIO.FindDigitalIO(hwidRef.value)
+
+#--- (end of YDigitalIO implementation)
+
+#--- (DigitalIO functions)
+
+    @staticmethod
+    def FirstDigitalIO():
+        """
+        Starts the enumeration of digital IO ports currently accessible.
         Use the method YDigitalIO.nextDigitalIO() to iterate on
-        next digital IO port.
+        next digital IO ports.
         
         @return a pointer to a YDigitalIO object, corresponding to
                 the first digital IO port currently online, or a None pointer
@@ -501,20 +520,16 @@ class YDigitalIO(YFunction):
         errmsgRef = YRefParam()
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
-        p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("DigitalIO", 0, p, size,  neededsizeRef, errmsgRef)
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("DigitalIO", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
 
-        if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
         return YDigitalIO.FindDigitalIO(serialRef.value + "." + funcIdRef.value)
 
-    @staticmethod 
-    def _DigitalIOCleanup():
-        pass
-
-  #--- (end of DigitalIO functions)
-
+#--- (end of DigitalIO functions)

@@ -4,9 +4,7 @@ import os,sys
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..","..","Sources"))
 from yocto_api import *
-from yocto_humidity import *
 from yocto_temperature import *
-from yocto_pressure import *
 
 def usage():
     scriptname = os.path.basename(sys.argv[0])
@@ -30,25 +28,15 @@ if YAPI.RegisterHub("usb", errmsg)!= YAPI.SUCCESS:
     sys.exit("init error"+errmsg.value)
 
 if target=='any':
-    # retreive any humidity sensor
-    sensor = YHumidity.FirstHumidity()
+    # retreive any temperature sensor
+    sensor = YTemperature.FirstTemperature()
     if sensor is None :
         die('No module connected')
-    m = sensor.get_module()
-    target = m.get_serialNumber()
-
 else:
-    m = YModule.FindModule(target)
-
-if not m.isOnline() : die('device not connected')
-
-humSensor = YHumidity.FindHumidity(target+'.humidity')
-pressSensor = YPressure.FindPressure(target+'.pressure')
-tempSensor = YTemperature.FindTemperature(target+'.temperature')
+    sensor= YTemperature.FindTemperature(target + '.temperature')
 
 
 while True:
-    print('%2.1f' % tempSensor.get_currentValue()+"°C   "\
-    + "%4.0f" % pressSensor.get_currentValue()+"mb  "\
-    + "%4.0f" % humSensor.get_currentValue()+"% (Ctrl-c to stop)  ")
+    if not(sensor.isOnline()):die('device not connected')
+    print("Temp :  "+ "%2.1f" % sensor.get_currentValue() + "°C (Ctrl-C to stop)")
     YAPI.Sleep(1000)

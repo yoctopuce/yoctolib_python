@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_servo.py 12324 2013-08-13 15:10:31Z mvuilleu $
+#* $Id: yocto_servo.py 14275 2014-01-09 14:20:38Z seb $
 #*
 #* Implements yFindServo(), the high-level API for Servo functions
 #*
@@ -40,6 +40,10 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
+
+
+#--- (YServo class start)
+#noinspection PyProtectedMember
 class YServo(YFunction):
     """
     Yoctopuce application programming interface allows you not only to move
@@ -48,106 +52,51 @@ class YServo(YFunction):
     synchronize two servos involved in a same move.
     
     """
-    #--- (globals)
-
-
-    #--- (end of globals)
-
+#--- (end of YServo class start)
+    #--- (YServo return codes)
+    #--- (end of YServo return codes)
     #--- (YServo definitions)
-
-
-    LOGICALNAME_INVALID             = YAPI.INVALID_STRING
-    ADVERTISEDVALUE_INVALID         = YAPI.INVALID_STRING
-    POSITION_INVALID                = YAPI.INVALID_LONG
-    RANGE_INVALID                   = YAPI.INVALID_LONG
-    NEUTRAL_INVALID                 = YAPI.INVALID_LONG
-    MOVE_INVALID                    = None
-
-
-
-    _ServoCache ={}
-
+    POSITION_INVALID = YAPI.INVALID_INT
+    RANGE_INVALID = YAPI.INVALID_UINT
+    NEUTRAL_INVALID = YAPI.INVALID_UINT
+    MOVE_INVALID = None
     #--- (end of YServo definitions)
 
-    #--- (YServo implementation)
-
-    def __init__(self,func):
-        super(YServo,self).__init__("Servo", func)
+    def __init__(self, func):
+        super(YServo, self).__init__(func)
+        self._className = 'Servo'
+        #--- (YServo attributes)
         self._callback = None
-        self._logicalName = YServo.LOGICALNAME_INVALID
-        self._advertisedValue = YServo.ADVERTISEDVALUE_INVALID
         self._position = YServo.POSITION_INVALID
         self._range = YServo.RANGE_INVALID
         self._neutral = YServo.NEUTRAL_INVALID
         self._move = YServo.MOVE_INVALID
+        #--- (end of YServo attributes)
 
-    def _parse(self, j):
-        if j.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: return -1
-        for member in j.members:
-            if member.name == "logicalName":
-                self._logicalName = member.svalue
-            elif member.name == "advertisedValue":
-                self._advertisedValue = member.svalue
-            elif member.name == "position":
-                self._position = member.ivalue
-            elif member.name == "range":
-                self._range = member.ivalue
-            elif member.name == "neutral":
-                self._neutral = member.ivalue
-            elif member.name == "move":
-                if member.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: self._move = -1
-                self._move = {"moving":None,"target":None,"ms":None }
-                for submemb in member.members:
-                    if submemb.name == "moving":
-                        self._move["moving"]  = submemb.ivalue
-                    elif submemb.name == "target": 
-                        self._move["target"] = submemb.ivalue
-                    elif submemb.name == "ms": 
-                        self._move["ms"] = submemb.ivalue
-        return 0
-
-    def get_logicalName(self):
-        """
-        Returns the logical name of the servo.
-        
-        @return a string corresponding to the logical name of the servo
-        
-        On failure, throws an exception or returns YServo.LOGICALNAME_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YServo.LOGICALNAME_INVALID
-        return self._logicalName
-
-    def set_logicalName(self, newval):
-        """
-        Changes the logical name of the servo. You can use yCheckLogicalName()
-        prior to this call to make sure that your parameter is valid.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
-        
-        @param newval : a string corresponding to the logical name of the servo
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = newval
-        return self._setAttr("logicalName", rest_val)
-
-
-    def get_advertisedValue(self):
-        """
-        Returns the current value of the servo (no more than 6 characters).
-        
-        @return a string corresponding to the current value of the servo (no more than 6 characters)
-        
-        On failure, throws an exception or returns YServo.ADVERTISEDVALUE_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YServo.ADVERTISEDVALUE_INVALID
-        return self._advertisedValue
+    #--- (YServo implementation)
+    def _parseAttr(self, member):
+        if member.name == "position":
+            self._position = member.ivalue
+            return 1
+        if member.name == "range":
+            self._range = member.ivalue
+            return 1
+        if member.name == "neutral":
+            self._neutral = member.ivalue
+            return 1
+        if member.name == "move":
+            if member.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT:
+                self._move = -1
+            self._move = {"moving": None, "target": None, "ms": None}
+            for submemb in member.members:
+                if submemb.name == "moving":
+                    self._move["moving"] = submemb.ivalue
+                elif submemb.name == "target":
+                    self._move["target"] = submemb.ivalue
+                elif submemb.name == "ms":
+                    self._move["ms"] = submemb.ivalue
+            return 1
+        super(YServo, self)._parseAttr(member)
 
     def get_position(self):
         """
@@ -158,7 +107,7 @@ class YServo(YFunction):
         On failure, throws an exception or returns YServo.POSITION_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YServo.POSITION_INVALID
         return self._position
 
@@ -175,7 +124,6 @@ class YServo(YFunction):
         rest_val = str(newval)
         return self._setAttr("position", rest_val)
 
-
     def get_range(self):
         """
         Returns the current range of use of the servo.
@@ -185,7 +133,7 @@ class YServo(YFunction):
         On failure, throws an exception or returns YServo.RANGE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YServo.RANGE_INVALID
         return self._range
 
@@ -207,7 +155,6 @@ class YServo(YFunction):
         rest_val = str(newval)
         return self._setAttr("range", rest_val)
 
-
     def get_neutral(self):
         """
         Returns the duration in microseconds of a neutral pulse for the servo.
@@ -217,7 +164,7 @@ class YServo(YFunction):
         On failure, throws an exception or returns YServo.NEUTRAL_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YServo.NEUTRAL_INVALID
         return self._neutral
 
@@ -239,19 +186,17 @@ class YServo(YFunction):
         rest_val = str(newval)
         return self._setAttr("neutral", rest_val)
 
-
     def get_move(self):
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YServo.MOVE_INVALID
         return self._move
 
     def set_move(self, newval):
-        rest_val = str(newval.target)+":"+str(newval.ms)
+        rest_val = str(newval.target) + ":" + str(newval.ms)
         return self._setAttr("move", rest_val)
 
-
-    def move(self , target,ms_duration):
+    def move(self, target, ms_duration):
         """
         Performs a smooth move at constant speed toward a given position.
         
@@ -262,58 +207,10 @@ class YServo(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = str(target)+":"+str(ms_duration)
+        rest_val = str(target) + ":" + str(ms_duration)
         return self._setAttr("move", rest_val)
 
-    def nextServo(self):
-        """
-        Continues the enumeration of servos started using yFirstServo().
-        
-        @return a pointer to a YServo object, corresponding to
-                a servo currently online, or a None pointer
-                if there are no more servos to enumerate.
-        """
-        hwidRef = YRefParam()
-        if YAPI.YISERR(self._nextFunction(hwidRef)):
-            return None
-        if hwidRef.value == "":
-            return None
-        return YServo.FindServo(hwidRef.value)
-
-    def registerValueCallback(self, callback):
-        """
-        Registers the callback function that is invoked on every change of advertised value.
-        The callback is invoked only during the execution of ySleep or yHandleEvents.
-        This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-        one of these two functions periodically. To unregister a callback, pass a None pointer as argument.
-        
-        @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the function object of which the value has changed, and the character string describing
-                the new advertised value.
-        @noreturn
-        """
-        if callback is not None:
-            self._registerFuncCallback(self)
-        else:
-            self._unregisterFuncCallback(self)
-        self._callback = callback
-
-    def set_callback(self, callback):
-        self.registerValueCallback(callback)
-
-    def setCallback(self, callback):
-        self.registerValueCallback(callback)
-
-
-    def advertiseValue(self,value):
-        if self._callback is not None:
-            self._callback(self, value)
-
-#--- (end of YServo implementation)
-
-#--- (Servo functions)
-
-    @staticmethod 
+    @staticmethod
     def FindServo(func):
         """
         Retrieves a servo for a given identifier.
@@ -338,14 +235,34 @@ class YServo(YFunction):
         
         @return a YServo object allowing you to drive the servo.
         """
-        if func in YServo._ServoCache:
-            return YServo._ServoCache[func]
-        res =YServo(func)
-        YServo._ServoCache[func] =  res
-        return res
+        # obj
+        obj = YFunction._FindFromCache("Servo", func)
+        if obj is None:
+            obj = YServo(func)
+            YFunction._AddToCache("Servo", func, obj)
+        return obj
 
-    @staticmethod 
-    def  FirstServo():
+    def nextServo(self):
+        """
+        Continues the enumeration of servos started using yFirstServo().
+        
+        @return a pointer to a YServo object, corresponding to
+                a servo currently online, or a None pointer
+                if there are no more servos to enumerate.
+        """
+        hwidRef = YRefParam()
+        if YAPI.YISERR(self._nextFunction(hwidRef)):
+            return None
+        if hwidRef.value == "":
+            return None
+        return YServo.FindServo(hwidRef.value)
+
+#--- (end of YServo implementation)
+
+#--- (Servo functions)
+
+    @staticmethod
+    def FirstServo():
         """
         Starts the enumeration of servos currently accessible.
         Use the method YServo.nextServo() to iterate on
@@ -364,20 +281,16 @@ class YServo(YFunction):
         errmsgRef = YRefParam()
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
-        p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("Servo", 0, p, size,  neededsizeRef, errmsgRef)
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("Servo", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
 
-        if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
         return YServo.FindServo(serialRef.value + "." + funcIdRef.value)
 
-    @staticmethod 
-    def _ServoCleanup():
-        pass
-
-  #--- (end of Servo functions)
-
+#--- (end of Servo functions)
