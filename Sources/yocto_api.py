@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_api.py 14799 2014-01-31 14:59:44Z seb $
+#* $Id: yocto_api.py 15282 2014-03-06 17:55:57Z martinm $
 #*
 #* High-level programming interface, common to all modules
 #*
@@ -107,6 +107,7 @@ else:
 
 # Ugly global var for Python 2 compatibility    
 yLogFct = None
+yDeviceLogFct = None
 yArrivalFct = None
 yRemovalFct = None
 yChangeFct = None
@@ -521,7 +522,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "14801"
+    YOCTO_API_BUILD_NO = "15466"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -923,7 +924,6 @@ class YAPI:
         YAPI._yapiSleep = YAPI._yApiCLib.yapiSleep
         YAPI._yapiSleep.restypes = ctypes.c_int
         YAPI._yapiSleep.argtypes = [ctypes.c_int, ctypes.c_char_p]
-        YAPI._ydllLoaded = True
 
         YAPI._yapiRegisterHubDiscoveryCallback = YAPI._yApiCLib.yapiRegisterHubDiscoveryCallback
         YAPI._yapiRegisterHubDiscoveryCallback.restypes = ctypes.c_int
@@ -932,6 +932,14 @@ class YAPI:
         YAPI._yapiTriggerHubDiscovery = YAPI._yApiCLib.yapiTriggerHubDiscovery
         YAPI._yapiTriggerHubDiscovery.restypes = ctypes.c_int
         YAPI._yapiTriggerHubDiscovery.argtypes = [ctypes.c_char_p]
+
+        YAPI._yapiRegisterDeviceLogCallback = YAPI._yApiCLib.yapiRegisterDeviceLogCallback
+        YAPI._yapiRegisterDeviceLogCallback.restypes = ctypes.c_int
+        YAPI._yapiRegisterDeviceLogCallback.argtypes = [ctypes.c_void_p]
+
+        YAPI._yapiStartStopDeviceLogCallback = YAPI._yApiCLib.yapiStartStopDeviceLogCallback
+        YAPI._yapiStartStopDeviceLogCallback.restypes = ctypes.c_int
+        YAPI._yapiStartStopDeviceLogCallback.argtypes = [ctypes.c_char_p, ctypes.c_int]
         YAPI._ydllLoaded = True
 
     #noinspection PyUnresolvedReferences
@@ -1073,6 +1081,9 @@ class YAPI:
     _yapiTimedReportFunc = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_double, POINTER(c_ubyte), ctypes.c_int)
 
     _yapiHubDiscoveryCallback = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_char_p)
+
+    _yapiDeviceLogCallback = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p)
+
 
     @staticmethod
     def YISERR(retcode):
@@ -1445,6 +1456,18 @@ class YAPI:
         YAPI._PlugEvents.append(ev)
 
     @staticmethod
+    def native_DeviceLogCallback(d, line):
+        infos = YAPI.emptyDeviceSt()
+        errmsgRef = YRefParam()
+        if YAPI.yapiGetDeviceInfo(d, infos, errmsgRef) != YAPI.SUCCESS:
+            return
+        modul = YModule.FindModule(YByte2String(infos.serial) + ".module")
+        callback = modul.get_logCallback()
+        if callback is not None:
+            callback(modul, YByte2String(line))
+        return 0
+
+    @staticmethod
     def yapiLockDeviceCallBack(errmsgRef=None):
         errmsg_buffer = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         #noinspection PyUnresolvedReferences
@@ -1706,6 +1729,8 @@ class YAPI:
         YAPI._yapiRegisterLogFunction(native_yLogFunctionAnchor)
         #noinspection PyUnresolvedReferences
         YAPI._yapiRegisterHubDiscoveryCallback(native_yHubDiscoveryAnchor)
+        #noinspection PyUnresolvedReferences
+        YAPI._yapiRegisterDeviceLogCallback(native_yDeviceLogAnchor)
 
         for i in range(21):
             YAPI.RegisterCalibrationHandler(i, YAPI.LinearCalibrationHandler)
@@ -1876,7 +1901,7 @@ class YAPI:
     def TriggerHubDiscovery(errmsg=None):
         """
         Force a hub discovery, if a callback as been registered with yRegisterDeviceRemovalCallback it
-        will be called for each net work hub that will respond to the discovery
+        will be called for each net work hub that will respond to the discovery.
         
         @param errmsg : a string passed by reference to receive any error message.
         
@@ -2623,7 +2648,7 @@ class YDataSet(object):
                                            stream.get_averageValue(),
                                            stream.get_maxValue())
                             self._preview.append(rec)
-                if len(self._streams) > 0:
+                if (len(self._streams) > 0) and (summaryTotalTime>0):
                     # update time boundaries with actual data
                     stream = self._streams[len(self._streams) - 1]
                     endtime = stream.get_startTimeUTC() + stream.get_duration()
@@ -3054,7 +3079,8 @@ native_yDeviceRemovalAnchor = YAPI._yapiDeviceUpdateFunc(YAPI.native_yDeviceRemo
 native_yDeviceChangeAnchor = YAPI._yapiDeviceUpdateFunc(YAPI.native_yDeviceChangeCallback)
 #noinspection PyProtectedMember
 native_yHubDiscoveryAnchor = YAPI._yapiHubDiscoveryCallback(YAPI.native_HubDiscoveryCallback)
-
+#noinspection PyProtectedMember
+native_yDeviceLogAnchor = YAPI._yapiDeviceLogCallback(YAPI.native_DeviceLogCallback)
 
 #--- (generated code: YFunction class start)
 #noinspection PyProtectedMember
@@ -3638,7 +3664,8 @@ class YFunction(object):
 
     def describe(self):
         """
-        Returns a short text that describes the function in the form TYPE(NAME)=SERIAL&#46;FUNCTIONID.
+        Returns a short text that describes unambiguously the instance of the function in the form
+        TYPE(NAME)=SERIAL&#46;FUNCTIONID.
         More precisely,
         TYPE       is the type of the function,
         NAME       it the name used for the first access to the function,
@@ -3864,6 +3891,36 @@ class YFunction(object):
     def setUserData(self, data):
         self.set_userData(data)
 
+#--- (generated code: Function functions)
+
+    @staticmethod
+    def FirstFunction():
+        """
+        comment from .yc definition
+        """
+        devRef = YRefParam()
+        neededsizeRef = YRefParam()
+        serialRef = YRefParam()
+        funcIdRef = YRefParam()
+        funcNameRef = YRefParam()
+        funcValRef = YRefParam()
+        errmsgRef = YRefParam()
+        size = YAPI.C_INTSIZE
+        #noinspection PyTypeChecker,PyCallingNonCallable
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("Function", 0, p, size, neededsizeRef, errmsgRef)
+
+        if YAPI.YISERR(err) or not neededsizeRef.value:
+            return None
+
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
+            return None
+
+        return YFunction.FindFunction(serialRef.value + "." + funcIdRef.value)
+
+#--- (end of generated code: Function functions)
+
 
 #--- (generated code: YModule class start)
 #noinspection PyProtectedMember
@@ -3914,6 +3971,7 @@ class YModule(YFunction):
         self._usbCurrent = YModule.USBCURRENT_INVALID
         self._rebootCountdown = YModule.REBOOTCOUNTDOWN_INVALID
         self._usbBandwidth = YModule.USBBANDWIDTH_INVALID
+        self._logCallback = None
         #--- (end of generated code: YModule attributes)
 
     #--- (generated code: YModule implementation)
@@ -4444,6 +4502,26 @@ class YModule(YFunction):
 
         return funcValRef.value
 
+    def registerLogCallback(self, callback):
+        """
+        todo
+        
+        @param callback : the callback function to call, or a None pointer. The callback function should take two
+                arguments: the function object of which the value has changed, and the character string describing
+                the new advertised value.
+        @noreturn
+        """
+        self._logCallback = callback
+        if self._logCallback is None:
+            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serial.encode("ASCII"))
+                                                    , 0)
+        else:
+            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serial.encode("ASCII"))
+                                                    , 1)
+            
+    def get_logCallback(self):
+        return self._logCallback
+
     #--- (generated code: Module functions)
 
     @staticmethod
@@ -4968,6 +5046,10 @@ class YSensor(YFunction):
                 values returned by the sensor for the correction points.
         @param refValues : array of floating point numbers, corresponding to the corrected
                 values for the correction points.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
         """
         # rest_val
         # // may throw an exception

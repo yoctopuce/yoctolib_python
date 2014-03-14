@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_servo.py 14275 2014-01-09 14:20:38Z seb $
+#* $Id: yocto_servo.py 15257 2014-03-06 10:19:36Z seb $
 #*
 #* Implements yFindServo(), the high-level API for Servo functions
 #*
@@ -10,24 +10,24 @@
 #*
 #*  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
 #*  non-exclusive license to use, modify, copy and integrate this
-#*  file into your software for the sole purpose of interfacing 
-#*  with Yoctopuce products. 
+#*  file into your software for the sole purpose of interfacing
+#*  with Yoctopuce products.
 #*
-#*  You may reproduce and distribute copies of this file in 
+#*  You may reproduce and distribute copies of this file in
 #*  source or object form, as long as the sole purpose of this
-#*  code is to interface with Yoctopuce products. You must retain 
+#*  code is to interface with Yoctopuce products. You must retain
 #*  this notice in the distributed source file.
 #*
 #*  You should refer to Yoctopuce General Terms and Conditions
-#*  for additional information regarding your rights and 
+#*  for additional information regarding your rights and
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
 #*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
-#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
-#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
 #*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
 #*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
 #*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
@@ -60,6 +60,13 @@ class YServo(YFunction):
     RANGE_INVALID = YAPI.INVALID_UINT
     NEUTRAL_INVALID = YAPI.INVALID_UINT
     MOVE_INVALID = None
+    POSITIONATPOWERON_INVALID = YAPI.INVALID_INT
+    ENABLED_FALSE = 0
+    ENABLED_TRUE = 1
+    ENABLED_INVALID = -1
+    ENABLEDATPOWERON_FALSE = 0
+    ENABLEDATPOWERON_TRUE = 1
+    ENABLEDATPOWERON_INVALID = -1
     #--- (end of YServo definitions)
 
     def __init__(self, func):
@@ -68,15 +75,21 @@ class YServo(YFunction):
         #--- (YServo attributes)
         self._callback = None
         self._position = YServo.POSITION_INVALID
+        self._enabled = YServo.ENABLED_INVALID
         self._range = YServo.RANGE_INVALID
         self._neutral = YServo.NEUTRAL_INVALID
         self._move = YServo.MOVE_INVALID
+        self._positionAtPowerOn = YServo.POSITIONATPOWERON_INVALID
+        self._enabledAtPowerOn = YServo.ENABLEDATPOWERON_INVALID
         #--- (end of YServo attributes)
 
     #--- (YServo implementation)
     def _parseAttr(self, member):
         if member.name == "position":
             self._position = member.ivalue
+            return 1
+        if member.name == "enabled":
+            self._enabled = member.ivalue
             return 1
         if member.name == "range":
             self._range = member.ivalue
@@ -95,6 +108,12 @@ class YServo(YFunction):
                     self._move["target"] = submemb.ivalue
                 elif submemb.name == "ms":
                     self._move["ms"] = submemb.ivalue
+            return 1
+        if member.name == "positionAtPowerOn":
+            self._positionAtPowerOn = member.ivalue
+            return 1
+        if member.name == "enabledAtPowerOn":
+            self._enabledAtPowerOn = member.ivalue
             return 1
         super(YServo, self)._parseAttr(member)
 
@@ -123,6 +142,32 @@ class YServo(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("position", rest_val)
+
+    def get_enabled(self):
+        """
+        Returns the state of the servos.
+        
+        @return either YServo.ENABLED_FALSE or YServo.ENABLED_TRUE, according to the state of the servos
+        
+        On failure, throws an exception or returns YServo.ENABLED_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YServo.ENABLED_INVALID
+        return self._enabled
+
+    def set_enabled(self, newval):
+        """
+        Stops or starts the servo.
+        
+        @param newval : either YServo.ENABLED_FALSE or YServo.ENABLED_TRUE
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("enabled", rest_val)
 
     def get_range(self):
         """
@@ -209,6 +254,61 @@ class YServo(YFunction):
         """
         rest_val = str(target) + ":" + str(ms_duration)
         return self._setAttr("move", rest_val)
+
+    def get_positionAtPowerOn(self):
+        """
+        Returns the servo position at device power up.
+        
+        @return an integer corresponding to the servo position at device power up
+        
+        On failure, throws an exception or returns YServo.POSITIONATPOWERON_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YServo.POSITIONATPOWERON_INVALID
+        return self._positionAtPowerOn
+
+    def set_positionAtPowerOn(self, newval):
+        """
+        Configure the servo position at device power up. Remember to call the matching
+        module saveToFlash() method, otherwise this call will have no effect.
+        
+        @param newval : an integer
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("positionAtPowerOn", rest_val)
+
+    def get_enabledAtPowerOn(self):
+        """
+        Returns the servo signal generator state at power up.
+        
+        @return either YServo.ENABLEDATPOWERON_FALSE or YServo.ENABLEDATPOWERON_TRUE, according to the
+        servo signal generator state at power up
+        
+        On failure, throws an exception or returns YServo.ENABLEDATPOWERON_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YServo.ENABLEDATPOWERON_INVALID
+        return self._enabledAtPowerOn
+
+    def set_enabledAtPowerOn(self, newval):
+        """
+        Configure the servo signal generator state at power up. Remember to call the matching module saveToFlash()
+        method, otherwise this call will have no effect.
+        
+        @param newval : either YServo.ENABLEDATPOWERON_FALSE or YServo.ENABLEDATPOWERON_TRUE
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("enabledAtPowerOn", rest_val)
 
     @staticmethod
     def FindServo(func):

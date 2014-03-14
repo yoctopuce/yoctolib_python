@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 14687 2014-01-23 11:01:59Z seb $
+#* $Id: yocto_display.py 15257 2014-03-06 10:19:36Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -1039,17 +1039,19 @@ class YDisplay(YFunction):
 
 #--- (end of generated code: YDisplay implementation)
 
-    """
-    Returns a YDisplayLayer object that can be used to draw on the specified
-    layer.
-    The content will only be displayed when the layer is active on the
-    screen (and not masked by other overlapping layers).
-    """
-
     def get_displayLayer(self, layerId):
-
+        """
+        Returns a YDisplayLayer object that can be used to draw on the specified
+        layer. The content is displayed only when the layer is active on the
+        screen (and not masked by other overlapping layers).
+        
+        @param layerId : the identifier of the layer (a number in range 0..layerCount-1)
+        
+        @return an YDisplayLayer object
+        
+        On failure, throws an exception or returns None.
+        """
         layercount = self.get_layerCount()
-
         if (layerId < 0) or (layerId >= layercount):
             self._throw(-1, "invalid DisplayLayer index, valid values are [0.." + str(layercount - 1) + "]")
             return None

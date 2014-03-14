@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_watchdog.py 14229 2014-01-02 16:06:40Z seb $
+#* $Id: yocto_watchdog.py 15434 2014-03-14 06:37:47Z mvuilleu $
 #*
 #* Implements yFindWatchdog(), the high-level API for Watchdog functions
 #*
@@ -10,24 +10,24 @@
 #*
 #*  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
 #*  non-exclusive license to use, modify, copy and integrate this
-#*  file into your software for the sole purpose of interfacing 
-#*  with Yoctopuce products. 
+#*  file into your software for the sole purpose of interfacing
+#*  with Yoctopuce products.
 #*
-#*  You may reproduce and distribute copies of this file in 
+#*  You may reproduce and distribute copies of this file in
 #*  source or object form, as long as the sole purpose of this
-#*  code is to interface with Yoctopuce products. You must retain 
+#*  code is to interface with Yoctopuce products. You must retain
 #*  this notice in the distributed source file.
 #*
 #*  You should refer to Yoctopuce General Terms and Conditions
-#*  for additional information regarding your rights and 
+#*  for additional information regarding your rights and
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
 #*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
-#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
-#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
 #*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
 #*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
 #*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
@@ -370,10 +370,10 @@ class YWatchdog(YFunction):
 
     def get_autoStart(self):
         """
-        Returns the watchdog runing state at module power up.
+        Returns the watchdog runing state at module power on.
         
         @return either YWatchdog.AUTOSTART_OFF or YWatchdog.AUTOSTART_ON, according to the watchdog runing
-        state at module power up
+        state at module power on
         
         On failure, throws an exception or returns YWatchdog.AUTOSTART_INVALID.
         """
@@ -384,11 +384,11 @@ class YWatchdog(YFunction):
 
     def set_autoStart(self, newval):
         """
-        Changes the watchdog runningsttae at module power up. Remember to call the
+        Changes the watchdog runningsttae at module power on. Remember to call the
         saveToFlash() method and then to reboot the module to apply this setting.
         
         @param newval : either YWatchdog.AUTOSTART_OFF or YWatchdog.AUTOSTART_ON, according to the watchdog
-        runningsttae at module power up
+        runningsttae at module power on
         
         @return YAPI.SUCCESS if the call succeeds.
         

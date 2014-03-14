@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_anbutton.py 14275 2014-01-09 14:20:38Z seb $
+#* $Id: yocto_anbutton.py 15257 2014-03-06 10:19:36Z seb $
 #*
 #* Implements yFindAnButton(), the high-level API for AnButton functions
 #*
@@ -10,24 +10,24 @@
 #*
 #*  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
 #*  non-exclusive license to use, modify, copy and integrate this
-#*  file into your software for the sole purpose of interfacing 
-#*  with Yoctopuce products. 
+#*  file into your software for the sole purpose of interfacing
+#*  with Yoctopuce products.
 #*
-#*  You may reproduce and distribute copies of this file in 
+#*  You may reproduce and distribute copies of this file in
 #*  source or object form, as long as the sole purpose of this
-#*  code is to interface with Yoctopuce products. You must retain 
+#*  code is to interface with Yoctopuce products. You must retain
 #*  this notice in the distributed source file.
 #*
 #*  You should refer to Yoctopuce General Terms and Conditions
-#*  for additional information regarding your rights and 
+#*  for additional information regarding your rights and
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
 #*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
-#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
-#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
 #*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
 #*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
 #*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
@@ -341,17 +341,6 @@ class YAnButton(YFunction):
         rest_val = str(newval)
         return self._setAttr("pulseCounter", rest_val)
 
-    def resetCounter(self):
-        """
-        Returns the pulse counter value as well as his timer
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = "0"
-        return self._setAttr("pulseCounter", rest_val)
-
     def get_pulseTimer(self):
         """
         Returns the timer of the pulses counter (ms)
@@ -396,6 +385,16 @@ class YAnButton(YFunction):
             obj = YAnButton(func)
             YFunction._AddToCache("AnButton", func, obj)
         return obj
+
+    def resetCounter(self):
+        """
+        Returns the pulse counter value as well as his timer
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_pulseCounter(0)
 
     def nextAnButton(self):
         """
