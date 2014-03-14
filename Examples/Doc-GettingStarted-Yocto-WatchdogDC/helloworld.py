@@ -38,9 +38,9 @@ else:
 
 if not(watchdog.isOnline()):die('device not connected')
 
-if state == 'reset' :
+if state == 'RESET' :
     watchdog.resetWatchdog()
-elif state == 'on' :
+elif state == 'ON' :
     watchdog.set_running(YWatchdog.RUNNING_ON)
 else:
     watchdog.set_running(YWatchdog.RUNNING_OFF)

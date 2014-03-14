@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupmonitor.py 12324 2013-08-13 15:10:31Z mvuilleu $
+#* $Id: yocto_wakeupmonitor.py 14229 2014-01-02 16:06:40Z seb $
 #*
 #* Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
 #*
@@ -40,53 +40,48 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
+
+
+#--- (YWakeUpMonitor class start)
+#noinspection PyProtectedMember
 class YWakeUpMonitor(YFunction):
-    #--- (globals)
-
-
-    #--- (end of globals)
-
+    """
+    The WakeUpMonitor function handles globally all wake-up sources, as well
+    as automated sleep mode.
+    
+    """
+#--- (end of YWakeUpMonitor class start)
+    #--- (YWakeUpMonitor return codes)
+    #--- (end of YWakeUpMonitor return codes)
     #--- (YWakeUpMonitor definitions)
-
-
-    LOGICALNAME_INVALID             = YAPI.INVALID_STRING
-    ADVERTISEDVALUE_INVALID         = YAPI.INVALID_STRING
-    POWERDURATION_INVALID           = YAPI.INVALID_LONG
-    SLEEPCOUNTDOWN_INVALID          = YAPI.INVALID_LONG
-    NEXTWAKEUP_INVALID              = YAPI.INVALID_LONG
-    RTCTIME_INVALID                 = YAPI.INVALID_LONG
-    ENDOFTIME_INVALID               = YAPI.INVALID_LONG
-
-    WAKEUPREASON_USBPOWER           = 0
-    WAKEUPREASON_EXTPOWER           = 1
-    WAKEUPREASON_ENDOFSLEEP         = 2
-    WAKEUPREASON_EXTSIG1            = 3
-    WAKEUPREASON_EXTSIG2            = 4
-    WAKEUPREASON_EXTSIG3            = 5
-    WAKEUPREASON_EXTSIG4            = 6
-    WAKEUPREASON_SCHEDULE1          = 7
-    WAKEUPREASON_SCHEDULE2          = 8
-    WAKEUPREASON_SCHEDULE3          = 9
-    WAKEUPREASON_SCHEDULE4          = 10
-    WAKEUPREASON_SCHEDULE5          = 11
-    WAKEUPREASON_SCHEDULE6          = 12
-    WAKEUPREASON_INVALID            = -1
-    WAKEUPSTATE_SLEEPING            = 0
-    WAKEUPSTATE_AWAKE               = 1
-    WAKEUPSTATE_INVALID             = -1
-
-
-    _WakeUpMonitorCache ={}
-
+    POWERDURATION_INVALID = YAPI.INVALID_INT
+    SLEEPCOUNTDOWN_INVALID = YAPI.INVALID_INT
+    NEXTWAKEUP_INVALID = YAPI.INVALID_LONG
+    RTCTIME_INVALID = YAPI.INVALID_LONG
+    WAKEUPREASON_USBPOWER = 0
+    WAKEUPREASON_EXTPOWER = 1
+    WAKEUPREASON_ENDOFSLEEP = 2
+    WAKEUPREASON_EXTSIG1 = 3
+    WAKEUPREASON_EXTSIG2 = 4
+    WAKEUPREASON_EXTSIG3 = 5
+    WAKEUPREASON_EXTSIG4 = 6
+    WAKEUPREASON_SCHEDULE1 = 7
+    WAKEUPREASON_SCHEDULE2 = 8
+    WAKEUPREASON_SCHEDULE3 = 9
+    WAKEUPREASON_SCHEDULE4 = 10
+    WAKEUPREASON_SCHEDULE5 = 11
+    WAKEUPREASON_SCHEDULE6 = 12
+    WAKEUPREASON_INVALID = -1
+    WAKEUPSTATE_SLEEPING = 0
+    WAKEUPSTATE_AWAKE = 1
+    WAKEUPSTATE_INVALID = -1
     #--- (end of YWakeUpMonitor definitions)
 
-    #--- (YWakeUpMonitor implementation)
-
-    def __init__(self,func):
-        super(YWakeUpMonitor,self).__init__("WakeUpMonitor", func)
+    def __init__(self, func):
+        super(YWakeUpMonitor, self).__init__(func)
+        self._className = 'WakeUpMonitor'
+        #--- (YWakeUpMonitor attributes)
         self._callback = None
-        self._logicalName = YWakeUpMonitor.LOGICALNAME_INVALID
-        self._advertisedValue = YWakeUpMonitor.ADVERTISEDVALUE_INVALID
         self._powerDuration = YWakeUpMonitor.POWERDURATION_INVALID
         self._sleepCountdown = YWakeUpMonitor.SLEEPCOUNTDOWN_INVALID
         self._nextWakeUp = YWakeUpMonitor.NEXTWAKEUP_INVALID
@@ -94,90 +89,49 @@ class YWakeUpMonitor(YFunction):
         self._wakeUpState = YWakeUpMonitor.WAKEUPSTATE_INVALID
         self._rtcTime = YWakeUpMonitor.RTCTIME_INVALID
         self._endOfTime = 2145960000
+        #--- (end of YWakeUpMonitor attributes)
 
-    def _parse(self, j):
-        if j.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: return -1
-        for member in j.members:
-            if member.name == "logicalName":
-                self._logicalName = member.svalue
-            elif member.name == "advertisedValue":
-                self._advertisedValue = member.svalue
-            elif member.name == "powerDuration":
-                self._powerDuration = member.ivalue
-            elif member.name == "sleepCountdown":
-                self._sleepCountdown = member.ivalue
-            elif member.name == "nextWakeUp":
-                self._nextWakeUp = member.ivalue
-            elif member.name == "wakeUpReason":
-                self._wakeUpReason = member.ivalue
-            elif member.name == "wakeUpState":
-                self._wakeUpState = member.ivalue
-            elif member.name == "rtcTime":
-                self._rtcTime = member.ivalue
-        return 0
-
-    def get_logicalName(self):
-        """
-        Returns the logical name of the monitor.
-        
-        @return a string corresponding to the logical name of the monitor
-        
-        On failure, throws an exception or returns YWakeUpMonitor.LOGICALNAME_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YWakeUpMonitor.LOGICALNAME_INVALID
-        return self._logicalName
-
-    def set_logicalName(self, newval):
-        """
-        Changes the logical name of the monitor. You can use yCheckLogicalName()
-        prior to this call to make sure that your parameter is valid.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
-        
-        @param newval : a string corresponding to the logical name of the monitor
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = newval
-        return self._setAttr("logicalName", rest_val)
-
-
-    def get_advertisedValue(self):
-        """
-        Returns the current value of the monitor (no more than 6 characters).
-        
-        @return a string corresponding to the current value of the monitor (no more than 6 characters)
-        
-        On failure, throws an exception or returns YWakeUpMonitor.ADVERTISEDVALUE_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YWakeUpMonitor.ADVERTISEDVALUE_INVALID
-        return self._advertisedValue
+    #--- (YWakeUpMonitor implementation)
+    def _parseAttr(self, member):
+        if member.name == "powerDuration":
+            self._powerDuration = member.ivalue
+            return 1
+        if member.name == "sleepCountdown":
+            self._sleepCountdown = member.ivalue
+            return 1
+        if member.name == "nextWakeUp":
+            self._nextWakeUp = member.ivalue
+            return 1
+        if member.name == "wakeUpReason":
+            self._wakeUpReason = member.ivalue
+            return 1
+        if member.name == "wakeUpState":
+            self._wakeUpState = member.ivalue
+            return 1
+        if member.name == "rtcTime":
+            self._rtcTime = member.ivalue
+            return 1
+        super(YWakeUpMonitor, self)._parseAttr(member)
 
     def get_powerDuration(self):
         """
-        Returns the maximal wake up time (seconds) before going to sleep automatically.
+        Returns the maximal wake up time (in seconds) before automatically going to sleep.
         
-        @return an integer corresponding to the maximal wake up time (seconds) before going to sleep automatically
+        @return an integer corresponding to the maximal wake up time (in seconds) before automatically going to sleep
         
         On failure, throws an exception or returns YWakeUpMonitor.POWERDURATION_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.POWERDURATION_INVALID
         return self._powerDuration
 
     def set_powerDuration(self, newval):
         """
-        Changes the maximal wake up time (seconds) before going to sleep automatically.
+        Changes the maximal wake up time (seconds) before automatically going to sleep.
         
-        @param newval : an integer corresponding to the maximal wake up time (seconds) before going to
-        sleep automatically
+        @param newval : an integer corresponding to the maximal wake up time (seconds) before automatically
+        going to sleep
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -186,25 +140,24 @@ class YWakeUpMonitor(YFunction):
         rest_val = str(newval)
         return self._setAttr("powerDuration", rest_val)
 
-
     def get_sleepCountdown(self):
         """
-        Returns the delay before next sleep.
+        Returns the delay before the  next sleep period.
         
-        @return an integer corresponding to the delay before next sleep
+        @return an integer corresponding to the delay before the  next sleep period
         
         On failure, throws an exception or returns YWakeUpMonitor.SLEEPCOUNTDOWN_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.SLEEPCOUNTDOWN_INVALID
         return self._sleepCountdown
 
     def set_sleepCountdown(self, newval):
         """
-        Changes the delay before next sleep.
+        Changes the delay before the next sleep period.
         
-        @param newval : an integer corresponding to the delay before next sleep
+        @param newval : an integer corresponding to the delay before the next sleep period
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -213,25 +166,24 @@ class YWakeUpMonitor(YFunction):
         rest_val = str(newval)
         return self._setAttr("sleepCountdown", rest_val)
 
-
     def get_nextWakeUp(self):
         """
-        Returns the next scheduled wake-up date/time (UNIX format)
+        Returns the next scheduled wake up date/time (UNIX format)
         
-        @return an integer corresponding to the next scheduled wake-up date/time (UNIX format)
+        @return an integer corresponding to the next scheduled wake up date/time (UNIX format)
         
         On failure, throws an exception or returns YWakeUpMonitor.NEXTWAKEUP_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.NEXTWAKEUP_INVALID
         return self._nextWakeUp
 
     def set_nextWakeUp(self, newval):
         """
-        Changes the days of the week where a wake up must take place.
+        Changes the days of the week when a wake up must take place.
         
-        @param newval : an integer corresponding to the days of the week where a wake up must take place
+        @param newval : an integer corresponding to the days of the week when a wake up must take place
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -240,10 +192,9 @@ class YWakeUpMonitor(YFunction):
         rest_val = str(newval)
         return self._setAttr("nextWakeUp", rest_val)
 
-
     def get_wakeUpReason(self):
         """
-        Return the last wake up reason.
+        Returns the latest wake up reason.
         
         @return a value among YWakeUpMonitor.WAKEUPREASON_USBPOWER, YWakeUpMonitor.WAKEUPREASON_EXTPOWER,
         YWakeUpMonitor.WAKEUPREASON_ENDOFSLEEP, YWakeUpMonitor.WAKEUPREASON_EXTSIG1,
@@ -251,12 +202,12 @@ class YWakeUpMonitor(YFunction):
         YWakeUpMonitor.WAKEUPREASON_EXTSIG4, YWakeUpMonitor.WAKEUPREASON_SCHEDULE1,
         YWakeUpMonitor.WAKEUPREASON_SCHEDULE2, YWakeUpMonitor.WAKEUPREASON_SCHEDULE3,
         YWakeUpMonitor.WAKEUPREASON_SCHEDULE4, YWakeUpMonitor.WAKEUPREASON_SCHEDULE5 and
-        YWakeUpMonitor.WAKEUPREASON_SCHEDULE6
+        YWakeUpMonitor.WAKEUPREASON_SCHEDULE6 corresponding to the latest wake up reason
         
         On failure, throws an exception or returns YWakeUpMonitor.WAKEUPREASON_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.WAKEUPREASON_INVALID
         return self._wakeUpReason
 
@@ -270,7 +221,7 @@ class YWakeUpMonitor(YFunction):
         On failure, throws an exception or returns YWakeUpMonitor.WAKEUPSTATE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.WAKEUPSTATE_INVALID
         return self._wakeUpState
 
@@ -278,139 +229,13 @@ class YWakeUpMonitor(YFunction):
         rest_val = str(newval)
         return self._setAttr("wakeUpState", rest_val)
 
-
     def get_rtcTime(self):
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.RTCTIME_INVALID
         return self._rtcTime
-    def wakeUp(self ):
-        """
-        Forces a wakeup.
-        """
-        # //fixme use real enum value instead of hardcoded int
-        return self.set_wakeUpState(YWakeUpMonitor.WAKEUPSTATE_AWAKE)
-        
 
-    def sleep(self, secBeforeSleep):
-        """
-        Go to sleep until the next wakeup condition is met,  the
-        RTC time must have been set before calling this function.
-        
-        @param secBeforeSleep : number of seconds before going into sleep mode,
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        
-        currTime = self.get_rtcTime()
-        if not (currTime != 0) : self._throw( YAPI.RTC_NOT_READY,  "RTC time not set")
-        self.set_nextWakeUp(self._endOfTime)
-        self.set_sleepCountdown(secBeforeSleep)
-        return YAPI.SUCCESS
-
-    def sleepFor(self, secUntilWakeUp, secBeforeSleep):
-        """
-        Go to sleep for a specific time or until the next wakeup condition is met, the
-        RTC time must have been set before calling this function. The count down before sleep
-        can be canceled with resetSleepCountDown.
-        
-        @param secUntilWakeUp : sleep duration, in secondes
-        @param secBeforeSleep : number of seconds before going into sleep mode
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        
-        currTime = self.get_rtcTime()
-        if not (currTime != 0) : self._throw( YAPI.RTC_NOT_READY,  "RTC time not set")
-        self.set_nextWakeUp(currTime+secUntilWakeUp)
-        self.set_sleepCountdown(secBeforeSleep)
-        return YAPI.SUCCESS
-
-    def sleepUntil(self, wakeUpTime, secBeforeSleep):
-        """
-        Go to sleep until a specific date is reached or until the next wakeup condition is met, the
-        RTC time must have been set before calling this function. The count down before sleep
-        can be canceled with resetSleepCountDown.
-        
-        @param wakeUpTime : wake-up datetime (UNIX format)
-        @param secBeforeSleep : number of seconds before going into sleep mode
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        
-        currTime = self.get_rtcTime()
-        if not (currTime != 0) : self._throw( YAPI.RTC_NOT_READY,  "RTC time not set")
-        self.set_nextWakeUp(wakeUpTime)
-        self.set_sleepCountdown(secBeforeSleep)
-        return YAPI.SUCCESS
-
-    def resetSleepCountDown(self ):
-        """
-        Reset the sleep countdown.
-        
-        @return YAPI.SUCCESS if the call succeeds.
-                On failure, throws an exception or returns a negative error code.
-        """
-        self.set_sleepCountdown(0)
-        self.set_nextWakeUp(0)
-        return YAPI.SUCCESS
-
-
-    def nextWakeUpMonitor(self):
-        """
-        Continues the enumeration of monitors started using yFirstWakeUpMonitor().
-        
-        @return a pointer to a YWakeUpMonitor object, corresponding to
-                a monitor currently online, or a None pointer
-                if there are no more monitors to enumerate.
-        """
-        hwidRef = YRefParam()
-        if YAPI.YISERR(self._nextFunction(hwidRef)):
-            return None
-        if hwidRef.value == "":
-            return None
-        return YWakeUpMonitor.FindWakeUpMonitor(hwidRef.value)
-
-    def registerValueCallback(self, callback):
-        """
-        Registers the callback function that is invoked on every change of advertised value.
-        The callback is invoked only during the execution of ySleep or yHandleEvents.
-        This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-        one of these two functions periodically. To unregister a callback, pass a None pointer as argument.
-        
-        @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the function object of which the value has changed, and the character string describing
-                the new advertised value.
-        @noreturn
-        """
-        if callback is not None:
-            self._registerFuncCallback(self)
-        else:
-            self._unregisterFuncCallback(self)
-        self._callback = callback
-
-    def set_callback(self, callback):
-        self.registerValueCallback(callback)
-
-    def setCallback(self, callback):
-        self.registerValueCallback(callback)
-
-
-    def advertiseValue(self,value):
-        if self._callback is not None:
-            self._callback(self, value)
-
-#--- (end of YWakeUpMonitor implementation)
-
-#--- (WakeUpMonitor functions)
-
-    @staticmethod 
+    @staticmethod
     def FindWakeUpMonitor(func):
         """
         Retrieves a monitor for a given identifier.
@@ -435,14 +260,113 @@ class YWakeUpMonitor(YFunction):
         
         @return a YWakeUpMonitor object allowing you to drive the monitor.
         """
-        if func in YWakeUpMonitor._WakeUpMonitorCache:
-            return YWakeUpMonitor._WakeUpMonitorCache[func]
-        res =YWakeUpMonitor(func)
-        YWakeUpMonitor._WakeUpMonitorCache[func] =  res
-        return res
+        # obj
+        obj = YFunction._FindFromCache("WakeUpMonitor", func)
+        if obj is None:
+            obj = YWakeUpMonitor(func)
+            YFunction._AddToCache("WakeUpMonitor", func, obj)
+        return obj
 
-    @staticmethod 
-    def  FirstWakeUpMonitor():
+    def wakeUp(self):
+        """
+        Forces a wake up.
+        """
+        # // may throw an exception
+        return self.set_wakeUpState(YWakeUpMonitor.WAKEUPSTATE_AWAKE)
+
+    def sleep(self, secBeforeSleep):
+        """
+        Goes to sleep until the next wake up condition is met,  the
+        RTC time must have been set before calling this function.
+        
+        @param secBeforeSleep : number of seconds before going into sleep mode,
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # currTime
+        currTime = self.get_rtcTime()
+        if not (currTime != 0):
+            self._throw(YAPI.RTC_NOT_READY, "RTC time not set")
+        self.set_nextWakeUp(self._endOfTime)
+        self.set_sleepCountdown(secBeforeSleep)
+        return YAPI.SUCCESS
+
+    def sleepFor(self, secUntilWakeUp, secBeforeSleep):
+        """
+        Goes to sleep for a specific duration or until the next wake up condition is met, the
+        RTC time must have been set before calling this function. The count down before sleep
+        can be canceled with resetSleepCountDown.
+        
+        @param secUntilWakeUp : sleep duration, in secondes
+        @param secBeforeSleep : number of seconds before going into sleep mode
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # currTime
+        currTime = self.get_rtcTime()
+        if not (currTime != 0):
+            self._throw(YAPI.RTC_NOT_READY, "RTC time not set")
+        self.set_nextWakeUp(currTime+secUntilWakeUp)
+        self.set_sleepCountdown(secBeforeSleep)
+        return YAPI.SUCCESS
+
+    def sleepUntil(self, wakeUpTime, secBeforeSleep):
+        """
+        Go to sleep until a specific date is reached or until the next wake up condition is met, the
+        RTC time must have been set before calling this function. The count down before sleep
+        can be canceled with resetSleepCountDown.
+        
+        @param wakeUpTime : wake-up datetime (UNIX format)
+        @param secBeforeSleep : number of seconds before going into sleep mode
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # currTime
+        currTime = self.get_rtcTime()
+        if not (currTime != 0):
+            self._throw(YAPI.RTC_NOT_READY, "RTC time not set")
+        self.set_nextWakeUp(wakeUpTime)
+        self.set_sleepCountdown(secBeforeSleep)
+        return YAPI.SUCCESS
+
+    def resetSleepCountDown(self):
+        """
+        Resets the sleep countdown.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        self.set_sleepCountdown(0)
+        self.set_nextWakeUp(0)
+        return YAPI.SUCCESS
+
+    def nextWakeUpMonitor(self):
+        """
+        Continues the enumeration of monitors started using yFirstWakeUpMonitor().
+        
+        @return a pointer to a YWakeUpMonitor object, corresponding to
+                a monitor currently online, or a None pointer
+                if there are no more monitors to enumerate.
+        """
+        hwidRef = YRefParam()
+        if YAPI.YISERR(self._nextFunction(hwidRef)):
+            return None
+        if hwidRef.value == "":
+            return None
+        return YWakeUpMonitor.FindWakeUpMonitor(hwidRef.value)
+
+#--- (end of YWakeUpMonitor implementation)
+
+#--- (WakeUpMonitor functions)
+
+    @staticmethod
+    def FirstWakeUpMonitor():
         """
         Starts the enumeration of monitors currently accessible.
         Use the method YWakeUpMonitor.nextWakeUpMonitor() to iterate on
@@ -461,20 +385,16 @@ class YWakeUpMonitor(YFunction):
         errmsgRef = YRefParam()
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
-        p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("WakeUpMonitor", 0, p, size,  neededsizeRef, errmsgRef)
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("WakeUpMonitor", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
 
-        if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
         return YWakeUpMonitor.FindWakeUpMonitor(serialRef.value + "." + funcIdRef.value)
 
-    @staticmethod 
-    def _WakeUpMonitorCleanup():
-        pass
-
-  #--- (end of WakeUpMonitor functions)
-
+#--- (end of WakeUpMonitor functions)

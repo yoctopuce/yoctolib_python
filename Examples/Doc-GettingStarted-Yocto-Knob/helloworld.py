@@ -42,8 +42,8 @@ if not(channel.isOnline()):
     die('device not connected')
 else:
     m = channel.get_module()
-    channel1 =YAnButton.FindAnButton(m.get_serialNumber() + '.anButton1')
-    channel5 =YAnButton.FindAnButton(m.get_serialNumber() + '.anButton2')
+    channel1 = YAnButton.FindAnButton(m.get_serialNumber() + '.anButton1')
+    channel5 = YAnButton.FindAnButton(m.get_serialNumber() + '.anButton5')
 
 done = False
 while not done:

@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_realtimeclock.py 12324 2013-08-13 15:10:31Z mvuilleu $
+#* $Id: yocto_realtimeclock.py 14229 2014-01-02 16:06:40Z seb $
 #*
 #* Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #*
@@ -40,6 +40,10 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
+
+
+#--- (YRealTimeClock class start)
+#noinspection PyProtectedMember
 class YRealTimeClock(YFunction):
     """
     The RealTimeClock function maintains and provides current date and time, even accross power cut
@@ -48,100 +52,44 @@ class YRealTimeClock(YFunction):
     will occur to account for daylight saving time.
     
     """
-    #--- (globals)
-
-
-    #--- (end of globals)
-
+#--- (end of YRealTimeClock class start)
+    #--- (YRealTimeClock return codes)
+    #--- (end of YRealTimeClock return codes)
     #--- (YRealTimeClock definitions)
-
-
-    LOGICALNAME_INVALID             = YAPI.INVALID_STRING
-    ADVERTISEDVALUE_INVALID         = YAPI.INVALID_STRING
-    UNIXTIME_INVALID                = YAPI.INVALID_LONG
-    DATETIME_INVALID                = YAPI.INVALID_STRING
-    UTCOFFSET_INVALID               = YAPI.INVALID_LONG
-
-    TIMESET_FALSE                   = 0
-    TIMESET_TRUE                    = 1
-    TIMESET_INVALID                 = -1
-
-
-    _RealTimeClockCache ={}
-
+    UNIXTIME_INVALID = YAPI.INVALID_LONG
+    DATETIME_INVALID = YAPI.INVALID_STRING
+    UTCOFFSET_INVALID = YAPI.INVALID_INT
+    TIMESET_FALSE = 0
+    TIMESET_TRUE = 1
+    TIMESET_INVALID = -1
     #--- (end of YRealTimeClock definitions)
 
-    #--- (YRealTimeClock implementation)
-
-    def __init__(self,func):
-        super(YRealTimeClock,self).__init__("RealTimeClock", func)
+    def __init__(self, func):
+        super(YRealTimeClock, self).__init__(func)
+        self._className = 'RealTimeClock'
+        #--- (YRealTimeClock attributes)
         self._callback = None
-        self._logicalName = YRealTimeClock.LOGICALNAME_INVALID
-        self._advertisedValue = YRealTimeClock.ADVERTISEDVALUE_INVALID
         self._unixTime = YRealTimeClock.UNIXTIME_INVALID
         self._dateTime = YRealTimeClock.DATETIME_INVALID
         self._utcOffset = YRealTimeClock.UTCOFFSET_INVALID
         self._timeSet = YRealTimeClock.TIMESET_INVALID
+        #--- (end of YRealTimeClock attributes)
 
-    def _parse(self, j):
-        if j.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: return -1
-        for member in j.members:
-            if member.name == "logicalName":
-                self._logicalName = member.svalue
-            elif member.name == "advertisedValue":
-                self._advertisedValue = member.svalue
-            elif member.name == "unixTime":
-                self._unixTime = member.ivalue
-            elif member.name == "dateTime":
-                self._dateTime = member.svalue
-            elif member.name == "utcOffset":
-                self._utcOffset = member.ivalue
-            elif member.name == "timeSet":
-                self._timeSet = member.ivalue
-        return 0
-
-    def get_logicalName(self):
-        """
-        Returns the logical name of the clock.
-        
-        @return a string corresponding to the logical name of the clock
-        
-        On failure, throws an exception or returns YRealTimeClock.LOGICALNAME_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YRealTimeClock.LOGICALNAME_INVALID
-        return self._logicalName
-
-    def set_logicalName(self, newval):
-        """
-        Changes the logical name of the clock. You can use yCheckLogicalName()
-        prior to this call to make sure that your parameter is valid.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
-        
-        @param newval : a string corresponding to the logical name of the clock
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = newval
-        return self._setAttr("logicalName", rest_val)
-
-
-    def get_advertisedValue(self):
-        """
-        Returns the current value of the clock (no more than 6 characters).
-        
-        @return a string corresponding to the current value of the clock (no more than 6 characters)
-        
-        On failure, throws an exception or returns YRealTimeClock.ADVERTISEDVALUE_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YRealTimeClock.ADVERTISEDVALUE_INVALID
-        return self._advertisedValue
+    #--- (YRealTimeClock implementation)
+    def _parseAttr(self, member):
+        if member.name == "unixTime":
+            self._unixTime = member.ivalue
+            return 1
+        if member.name == "dateTime":
+            self._dateTime = member.svalue
+            return 1
+        if member.name == "utcOffset":
+            self._utcOffset = member.ivalue
+            return 1
+        if member.name == "timeSet":
+            self._timeSet = member.ivalue
+            return 1
+        super(YRealTimeClock, self)._parseAttr(member)
 
     def get_unixTime(self):
         """
@@ -153,7 +101,7 @@ class YRealTimeClock(YFunction):
         On failure, throws an exception or returns YRealTimeClock.UNIXTIME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRealTimeClock.UNIXTIME_INVALID
         return self._unixTime
 
@@ -171,7 +119,6 @@ class YRealTimeClock(YFunction):
         rest_val = str(newval)
         return self._setAttr("unixTime", rest_val)
 
-
     def get_dateTime(self):
         """
         Returns the current time in the form "YYYY/MM/DD hh:mm:ss"
@@ -181,7 +128,7 @@ class YRealTimeClock(YFunction):
         On failure, throws an exception or returns YRealTimeClock.DATETIME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRealTimeClock.DATETIME_INVALID
         return self._dateTime
 
@@ -194,7 +141,7 @@ class YRealTimeClock(YFunction):
         On failure, throws an exception or returns YRealTimeClock.UTCOFFSET_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRealTimeClock.UTCOFFSET_INVALID
         return self._utcOffset
 
@@ -214,7 +161,6 @@ class YRealTimeClock(YFunction):
         rest_val = str(newval)
         return self._setAttr("utcOffset", rest_val)
 
-
     def get_timeSet(self):
         """
         Returns true if the clock has been set, and false otherwise.
@@ -225,59 +171,11 @@ class YRealTimeClock(YFunction):
         On failure, throws an exception or returns YRealTimeClock.TIMESET_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRealTimeClock.TIMESET_INVALID
         return self._timeSet
 
-    def nextRealTimeClock(self):
-        """
-        Continues the enumeration of clocks started using yFirstRealTimeClock().
-        
-        @return a pointer to a YRealTimeClock object, corresponding to
-                a clock currently online, or a None pointer
-                if there are no more clocks to enumerate.
-        """
-        hwidRef = YRefParam()
-        if YAPI.YISERR(self._nextFunction(hwidRef)):
-            return None
-        if hwidRef.value == "":
-            return None
-        return YRealTimeClock.FindRealTimeClock(hwidRef.value)
-
-    def registerValueCallback(self, callback):
-        """
-        Registers the callback function that is invoked on every change of advertised value.
-        The callback is invoked only during the execution of ySleep or yHandleEvents.
-        This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-        one of these two functions periodically. To unregister a callback, pass a None pointer as argument.
-        
-        @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the function object of which the value has changed, and the character string describing
-                the new advertised value.
-        @noreturn
-        """
-        if callback is not None:
-            self._registerFuncCallback(self)
-        else:
-            self._unregisterFuncCallback(self)
-        self._callback = callback
-
-    def set_callback(self, callback):
-        self.registerValueCallback(callback)
-
-    def setCallback(self, callback):
-        self.registerValueCallback(callback)
-
-
-    def advertiseValue(self,value):
-        if self._callback is not None:
-            self._callback(self, value)
-
-#--- (end of YRealTimeClock implementation)
-
-#--- (RealTimeClock functions)
-
-    @staticmethod 
+    @staticmethod
     def FindRealTimeClock(func):
         """
         Retrieves a clock for a given identifier.
@@ -302,14 +200,34 @@ class YRealTimeClock(YFunction):
         
         @return a YRealTimeClock object allowing you to drive the clock.
         """
-        if func in YRealTimeClock._RealTimeClockCache:
-            return YRealTimeClock._RealTimeClockCache[func]
-        res =YRealTimeClock(func)
-        YRealTimeClock._RealTimeClockCache[func] =  res
-        return res
+        # obj
+        obj = YFunction._FindFromCache("RealTimeClock", func)
+        if obj is None:
+            obj = YRealTimeClock(func)
+            YFunction._AddToCache("RealTimeClock", func, obj)
+        return obj
 
-    @staticmethod 
-    def  FirstRealTimeClock():
+    def nextRealTimeClock(self):
+        """
+        Continues the enumeration of clocks started using yFirstRealTimeClock().
+        
+        @return a pointer to a YRealTimeClock object, corresponding to
+                a clock currently online, or a None pointer
+                if there are no more clocks to enumerate.
+        """
+        hwidRef = YRefParam()
+        if YAPI.YISERR(self._nextFunction(hwidRef)):
+            return None
+        if hwidRef.value == "":
+            return None
+        return YRealTimeClock.FindRealTimeClock(hwidRef.value)
+
+#--- (end of YRealTimeClock implementation)
+
+#--- (RealTimeClock functions)
+
+    @staticmethod
+    def FirstRealTimeClock():
         """
         Starts the enumeration of clocks currently accessible.
         Use the method YRealTimeClock.nextRealTimeClock() to iterate on
@@ -328,20 +246,16 @@ class YRealTimeClock(YFunction):
         errmsgRef = YRefParam()
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
-        p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("RealTimeClock", 0, p, size,  neededsizeRef, errmsgRef)
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("RealTimeClock", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
 
-        if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
         return YRealTimeClock.FindRealTimeClock(serialRef.value + "." + funcIdRef.value)
 
-    @staticmethod 
-    def _RealTimeClockCleanup():
-        pass
-
-  #--- (end of RealTimeClock functions)
-
+#--- (end of RealTimeClock functions)

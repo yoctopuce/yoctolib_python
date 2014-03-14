@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupschedule.py 12469 2013-08-22 10:11:58Z seb $
+#* $Id: yocto_wakeupschedule.py 14275 2014-01-09 14:20:38Z seb $
 #*
 #* Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #*
@@ -40,44 +40,35 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
+
+
+#--- (YWakeUpSchedule class start)
+#noinspection PyProtectedMember
 class YWakeUpSchedule(YFunction):
     """
-    The WakeUpSchedule function implements a wake-up condition. The wake-up time is
-    specified as a set of months and/or days and/or hours and/or minutes where the
-    wake-up should happen.
+    The WakeUpSchedule function implements a wake up condition. The wake up time is
+    specified as a set of months and/or days and/or hours and/or minutes when the
+    wake up should happen.
     
     """
-    #--- (globals)
-
-
-    #--- (end of globals)
-
+#--- (end of YWakeUpSchedule class start)
+    #--- (YWakeUpSchedule return codes)
+    #--- (end of YWakeUpSchedule return codes)
     #--- (YWakeUpSchedule definitions)
-
-
-    LOGICALNAME_INVALID             = YAPI.INVALID_STRING
-    ADVERTISEDVALUE_INVALID         = YAPI.INVALID_STRING
-    MINUTESA_INVALID                = YAPI.INVALID_LONG
-    MINUTESB_INVALID                = YAPI.INVALID_LONG
-    HOURS_INVALID                   = YAPI.INVALID_LONG
-    WEEKDAYS_INVALID                = YAPI.INVALID_LONG
-    MONTHDAYS_INVALID               = YAPI.INVALID_LONG
-    MONTHS_INVALID                  = YAPI.INVALID_LONG
-    NEXTOCCURENCE_INVALID           = YAPI.INVALID_LONG
-
-
-
-    _WakeUpScheduleCache ={}
-
+    MINUTESA_INVALID = YAPI.INVALID_UINT
+    MINUTESB_INVALID = YAPI.INVALID_UINT
+    HOURS_INVALID = YAPI.INVALID_UINT
+    WEEKDAYS_INVALID = YAPI.INVALID_UINT
+    MONTHDAYS_INVALID = YAPI.INVALID_UINT
+    MONTHS_INVALID = YAPI.INVALID_UINT
+    NEXTOCCURENCE_INVALID = YAPI.INVALID_LONG
     #--- (end of YWakeUpSchedule definitions)
 
-    #--- (YWakeUpSchedule implementation)
-
-    def __init__(self,func):
-        super(YWakeUpSchedule,self).__init__("WakeUpSchedule", func)
+    def __init__(self, func):
+        super(YWakeUpSchedule, self).__init__(func)
+        self._className = 'WakeUpSchedule'
+        #--- (YWakeUpSchedule attributes)
         self._callback = None
-        self._logicalName = YWakeUpSchedule.LOGICALNAME_INVALID
-        self._advertisedValue = YWakeUpSchedule.ADVERTISEDVALUE_INVALID
         self._minutesA = YWakeUpSchedule.MINUTESA_INVALID
         self._minutesB = YWakeUpSchedule.MINUTESB_INVALID
         self._hours = YWakeUpSchedule.HOURS_INVALID
@@ -85,91 +76,51 @@ class YWakeUpSchedule(YFunction):
         self._monthDays = YWakeUpSchedule.MONTHDAYS_INVALID
         self._months = YWakeUpSchedule.MONTHS_INVALID
         self._nextOccurence = YWakeUpSchedule.NEXTOCCURENCE_INVALID
+        #--- (end of YWakeUpSchedule attributes)
 
-    def _parse(self, j):
-        if j.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT: return -1
-        for member in j.members:
-            if member.name == "logicalName":
-                self._logicalName = member.svalue
-            elif member.name == "advertisedValue":
-                self._advertisedValue = member.svalue
-            elif member.name == "minutesA":
-                self._minutesA = member.ivalue
-            elif member.name == "minutesB":
-                self._minutesB = member.ivalue
-            elif member.name == "hours":
-                self._hours = member.ivalue
-            elif member.name == "weekDays":
-                self._weekDays = member.ivalue
-            elif member.name == "monthDays":
-                self._monthDays = member.ivalue
-            elif member.name == "months":
-                self._months = member.ivalue
-            elif member.name == "nextOccurence":
-                self._nextOccurence = member.ivalue
-        return 0
-
-    def get_logicalName(self):
-        """
-        Returns the logical name of the wake-up schedule.
-        
-        @return a string corresponding to the logical name of the wake-up schedule
-        
-        On failure, throws an exception or returns YWakeUpSchedule.LOGICALNAME_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YWakeUpSchedule.LOGICALNAME_INVALID
-        return self._logicalName
-
-    def set_logicalName(self, newval):
-        """
-        Changes the logical name of the wake-up schedule. You can use yCheckLogicalName()
-        prior to this call to make sure that your parameter is valid.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
-        
-        @param newval : a string corresponding to the logical name of the wake-up schedule
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = newval
-        return self._setAttr("logicalName", rest_val)
-
-
-    def get_advertisedValue(self):
-        """
-        Returns the current value of the wake-up schedule (no more than 6 characters).
-        
-        @return a string corresponding to the current value of the wake-up schedule (no more than 6 characters)
-        
-        On failure, throws an exception or returns YWakeUpSchedule.ADVERTISEDVALUE_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
-                return YWakeUpSchedule.ADVERTISEDVALUE_INVALID
-        return self._advertisedValue
+    #--- (YWakeUpSchedule implementation)
+    def _parseAttr(self, member):
+        if member.name == "minutesA":
+            self._minutesA = member.ivalue
+            return 1
+        if member.name == "minutesB":
+            self._minutesB = member.ivalue
+            return 1
+        if member.name == "hours":
+            self._hours = member.ivalue
+            return 1
+        if member.name == "weekDays":
+            self._weekDays = member.ivalue
+            return 1
+        if member.name == "monthDays":
+            self._monthDays = member.ivalue
+            return 1
+        if member.name == "months":
+            self._months = member.ivalue
+            return 1
+        if member.name == "nextOccurence":
+            self._nextOccurence = member.ivalue
+            return 1
+        super(YWakeUpSchedule, self)._parseAttr(member)
 
     def get_minutesA(self):
         """
-        Returns the minutes 00-29 of each hour scheduled for wake-up.
+        Returns the minutes in the 00-29 interval of each hour scheduled for wake up.
         
-        @return an integer corresponding to the minutes 00-29 of each hour scheduled for wake-up
+        @return an integer corresponding to the minutes in the 00-29 interval of each hour scheduled for wake up
         
         On failure, throws an exception or returns YWakeUpSchedule.MINUTESA_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.MINUTESA_INVALID
         return self._minutesA
 
     def set_minutesA(self, newval):
         """
-        Changes the minutes 00-29 where a wake up must take place.
+        Changes the minutes in the 00-29 interval when a wake up must take place.
         
-        @param newval : an integer corresponding to the minutes 00-29 where a wake up must take place
+        @param newval : an integer corresponding to the minutes in the 00-29 interval when a wake up must take place
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -178,25 +129,24 @@ class YWakeUpSchedule(YFunction):
         rest_val = str(newval)
         return self._setAttr("minutesA", rest_val)
 
-
     def get_minutesB(self):
         """
-        Returns the minutes 30-59 of each hour scheduled for wake-up.
+        Returns the minutes in the 30-59 intervalof each hour scheduled for wake up.
         
-        @return an integer corresponding to the minutes 30-59 of each hour scheduled for wake-up
+        @return an integer corresponding to the minutes in the 30-59 intervalof each hour scheduled for wake up
         
         On failure, throws an exception or returns YWakeUpSchedule.MINUTESB_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.MINUTESB_INVALID
         return self._minutesB
 
     def set_minutesB(self, newval):
         """
-        Changes the minutes 30-59 where a wake up must take place.
+        Changes the minutes in the 30-59 interval when a wake up must take place.
         
-        @param newval : an integer corresponding to the minutes 30-59 where a wake up must take place
+        @param newval : an integer corresponding to the minutes in the 30-59 interval when a wake up must take place
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -205,25 +155,24 @@ class YWakeUpSchedule(YFunction):
         rest_val = str(newval)
         return self._setAttr("minutesB", rest_val)
 
-
     def get_hours(self):
         """
-        Returns the hours  scheduled for wake-up.
+        Returns the hours scheduled for wake up.
         
-        @return an integer corresponding to the hours  scheduled for wake-up
+        @return an integer corresponding to the hours scheduled for wake up
         
         On failure, throws an exception or returns YWakeUpSchedule.HOURS_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.HOURS_INVALID
         return self._hours
 
     def set_hours(self, newval):
         """
-        Changes the hours where a wake up must take place.
+        Changes the hours when a wake up must take place.
         
-        @param newval : an integer corresponding to the hours where a wake up must take place
+        @param newval : an integer corresponding to the hours when a wake up must take place
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -232,25 +181,24 @@ class YWakeUpSchedule(YFunction):
         rest_val = str(newval)
         return self._setAttr("hours", rest_val)
 
-
     def get_weekDays(self):
         """
-        Returns the days of week scheduled for wake-up.
+        Returns the days of the week scheduled for wake up.
         
-        @return an integer corresponding to the days of week scheduled for wake-up
+        @return an integer corresponding to the days of the week scheduled for wake up
         
         On failure, throws an exception or returns YWakeUpSchedule.WEEKDAYS_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.WEEKDAYS_INVALID
         return self._weekDays
 
     def set_weekDays(self, newval):
         """
-        Changes the days of the week where a wake up must take place.
+        Changes the days of the week when a wake up must take place.
         
-        @param newval : an integer corresponding to the days of the week where a wake up must take place
+        @param newval : an integer corresponding to the days of the week when a wake up must take place
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -259,25 +207,24 @@ class YWakeUpSchedule(YFunction):
         rest_val = str(newval)
         return self._setAttr("weekDays", rest_val)
 
-
     def get_monthDays(self):
         """
-        Returns the days of week scheduled for wake-up.
+        Returns the days of the month scheduled for wake up.
         
-        @return an integer corresponding to the days of week scheduled for wake-up
+        @return an integer corresponding to the days of the month scheduled for wake up
         
         On failure, throws an exception or returns YWakeUpSchedule.MONTHDAYS_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.MONTHDAYS_INVALID
         return self._monthDays
 
     def set_monthDays(self, newval):
         """
-        Changes the days of the week where a wake up must take place.
+        Changes the days of the month when a wake up must take place.
         
-        @param newval : an integer corresponding to the days of the week where a wake up must take place
+        @param newval : an integer corresponding to the days of the month when a wake up must take place
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -286,25 +233,24 @@ class YWakeUpSchedule(YFunction):
         rest_val = str(newval)
         return self._setAttr("monthDays", rest_val)
 
-
     def get_months(self):
         """
-        Returns the days of week scheduled for wake-up.
+        Returns the months scheduled for wake up.
         
-        @return an integer corresponding to the days of week scheduled for wake-up
+        @return an integer corresponding to the months scheduled for wake up
         
         On failure, throws an exception or returns YWakeUpSchedule.MONTHS_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.MONTHS_INVALID
         return self._months
 
     def set_months(self, newval):
         """
-        Changes the days of the week where a wake up must take place.
+        Changes the months when a wake up must take place.
         
-        @param newval : an integer corresponding to the days of the week where a wake up must take place
+        @param newval : an integer corresponding to the months when a wake up must take place
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -313,97 +259,23 @@ class YWakeUpSchedule(YFunction):
         rest_val = str(newval)
         return self._setAttr("months", rest_val)
 
-
     def get_nextOccurence(self):
         """
-        Returns the  nextwake up date/time (seconds) wake up occurence
+        Returns the date/time (seconds) of the next wake up occurence
         
-        @return an integer corresponding to the  nextwake up date/time (seconds) wake up occurence
+        @return an integer corresponding to the date/time (seconds) of the next wake up occurence
         
         On failure, throws an exception or returns YWakeUpSchedule.NEXTOCCURENCE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if YAPI.YISERR(self.load(YAPI.DefaultCacheValidity)):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.NEXTOCCURENCE_INVALID
         return self._nextOccurence
-    def get_minutes(self ):
-        """
-        Returns every the minutes of each hour scheduled for wake-up.
-        """
-        
-        res = self.get_minutesB()
-        res = res << 30
-        res = res + self.get_minutesA()
-        return res
 
-    def set_minutes(self, bitmap):
-        """
-        Changes all the minutes where a wake up must take place.
-        
-        @param bitmap : Minutes 00-59 of each hour scheduled for wake-up.,
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        self.set_minutesA(bitmap & 0x3fffffff)
-        bitmap = bitmap >> 30
-        return self.set_minutesB(bitmap & 0x3fffffff)
-        
-
-
-    def nextWakeUpSchedule(self):
-        """
-        Continues the enumeration of wake-up schedules started using yFirstWakeUpSchedule().
-        
-        @return a pointer to a YWakeUpSchedule object, corresponding to
-                a wake-up schedule currently online, or a None pointer
-                if there are no more wake-up schedules to enumerate.
-        """
-        hwidRef = YRefParam()
-        if YAPI.YISERR(self._nextFunction(hwidRef)):
-            return None
-        if hwidRef.value == "":
-            return None
-        return YWakeUpSchedule.FindWakeUpSchedule(hwidRef.value)
-
-    def registerValueCallback(self, callback):
-        """
-        Registers the callback function that is invoked on every change of advertised value.
-        The callback is invoked only during the execution of ySleep or yHandleEvents.
-        This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-        one of these two functions periodically. To unregister a callback, pass a None pointer as argument.
-        
-        @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the function object of which the value has changed, and the character string describing
-                the new advertised value.
-        @noreturn
-        """
-        if callback is not None:
-            self._registerFuncCallback(self)
-        else:
-            self._unregisterFuncCallback(self)
-        self._callback = callback
-
-    def set_callback(self, callback):
-        self.registerValueCallback(callback)
-
-    def setCallback(self, callback):
-        self.registerValueCallback(callback)
-
-
-    def advertiseValue(self,value):
-        if self._callback is not None:
-            self._callback(self, value)
-
-#--- (end of YWakeUpSchedule implementation)
-
-#--- (WakeUpSchedule functions)
-
-    @staticmethod 
+    @staticmethod
     def FindWakeUpSchedule(func):
         """
-        Retrieves a wake-up schedule for a given identifier.
+        Retrieves a wake up schedule for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -413,33 +285,79 @@ class YWakeUpSchedule(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
         
-        This function does not require that the wake-up schedule is online at the time
+        This function does not require that the wake up schedule is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YWakeUpSchedule.isOnline() to test if the wake-up schedule is
+        Use the method YWakeUpSchedule.isOnline() to test if the wake up schedule is
         indeed online at a given time. In case of ambiguity when looking for
-        a wake-up schedule by logical name, no error is notified: the first instance
+        a wake up schedule by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
         
-        @param func : a string that uniquely characterizes the wake-up schedule
+        @param func : a string that uniquely characterizes the wake up schedule
         
-        @return a YWakeUpSchedule object allowing you to drive the wake-up schedule.
+        @return a YWakeUpSchedule object allowing you to drive the wake up schedule.
         """
-        if func in YWakeUpSchedule._WakeUpScheduleCache:
-            return YWakeUpSchedule._WakeUpScheduleCache[func]
-        res =YWakeUpSchedule(func)
-        YWakeUpSchedule._WakeUpScheduleCache[func] =  res
+        # obj
+        obj = YFunction._FindFromCache("WakeUpSchedule", func)
+        if obj is None:
+            obj = YWakeUpSchedule(func)
+            YFunction._AddToCache("WakeUpSchedule", func, obj)
+        return obj
+
+    def get_minutes(self):
+        """
+        Returns all the minutes of each hour that are scheduled for wake up.
+        """
+        # res
+        # // may throw an exception
+        res = self.get_minutesB()
+        res = ((res) << (30))
+        res = res + self.get_minutesA()
         return res
 
-    @staticmethod 
-    def  FirstWakeUpSchedule():
+    def set_minutes(self, bitmap):
         """
-        Starts the enumeration of wake-up schedules currently accessible.
-        Use the method YWakeUpSchedule.nextWakeUpSchedule() to iterate on
-        next wake-up schedules.
+        Changes all the minutes where a wake up must take place.
+        
+        @param bitmap : Minutes 00-59 of each hour scheduled for wake up.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # // may throw an exception
+        self.set_minutesA(((bitmap) & (0x3fffffff)))
+        bitmap = ((bitmap) >> (30))
+        return self.set_minutesB(((bitmap) & (0x3fffffff)))
+
+    def nextWakeUpSchedule(self):
+        """
+        Continues the enumeration of wake up schedules started using yFirstWakeUpSchedule().
         
         @return a pointer to a YWakeUpSchedule object, corresponding to
-                the first wake-up schedule currently online, or a None pointer
+                a wake up schedule currently online, or a None pointer
+                if there are no more wake up schedules to enumerate.
+        """
+        hwidRef = YRefParam()
+        if YAPI.YISERR(self._nextFunction(hwidRef)):
+            return None
+        if hwidRef.value == "":
+            return None
+        return YWakeUpSchedule.FindWakeUpSchedule(hwidRef.value)
+
+#--- (end of YWakeUpSchedule implementation)
+
+#--- (WakeUpSchedule functions)
+
+    @staticmethod
+    def FirstWakeUpSchedule():
+        """
+        Starts the enumeration of wake up schedules currently accessible.
+        Use the method YWakeUpSchedule.nextWakeUpSchedule() to iterate on
+        next wake up schedules.
+        
+        @return a pointer to a YWakeUpSchedule object, corresponding to
+                the first wake up schedule currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
@@ -451,20 +369,16 @@ class YWakeUpSchedule(YFunction):
         errmsgRef = YRefParam()
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
-        p = (ctypes.c_int*1)()
-        err = YAPI.apiGetFunctionsByClass("WakeUpSchedule", 0, p, size,  neededsizeRef, errmsgRef)
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("WakeUpSchedule", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
 
-        if YAPI.YISERR(YAPI.yapiGetFunctionInfo(p[0],devRef, serialRef, funcIdRef, funcNameRef,funcValRef, errmsgRef)):
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
         return YWakeUpSchedule.FindWakeUpSchedule(serialRef.value + "." + funcIdRef.value)
 
-    @staticmethod 
-    def _WakeUpScheduleCleanup():
-        pass
-
-  #--- (end of WakeUpSchedule functions)
-
+#--- (end of WakeUpSchedule functions)
