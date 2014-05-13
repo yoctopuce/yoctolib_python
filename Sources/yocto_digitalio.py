@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_digitalio.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_digitalio.py 15998 2014-05-01 08:25:18Z seb $
 #*
 #* Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #*
@@ -310,8 +310,8 @@ class YDigitalIO(YFunction):
         """
         Sets a single bit of the I/O port.
         
-        @param bitno: the bit number; lowest bit has index 0
-        @param bitstate: the state of the bit (1 or 0)
+        @param bitno : the bit number; lowest bit has index 0
+        @param bitstate : the state of the bit (1 or 0)
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -327,7 +327,7 @@ class YDigitalIO(YFunction):
         """
         Returns the state of a single bit of the I/O port.
         
-        @param bitno: the bit number; lowest bit has index 0
+        @param bitno : the bit number; lowest bit has index 0
         
         @return the bit state (0 or 1)
         
@@ -341,7 +341,7 @@ class YDigitalIO(YFunction):
         """
         Reverts a single bit of the I/O port.
         
-        @param bitno: the bit number; lowest bit has index 0
+        @param bitno : the bit number; lowest bit has index 0
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -353,8 +353,8 @@ class YDigitalIO(YFunction):
         """
         Changes  the direction of a single bit from the I/O port.
         
-        @param bitno: the bit number; lowest bit has index 0
-        @param bitdirection: direction to set, 0 makes the bit an input, 1 makes it an output.
+        @param bitno : the bit number; lowest bit has index 0
+        @param bitdirection : direction to set, 0 makes the bit an input, 1 makes it an output.
                 Remember to call the   saveToFlash() method to make sure the setting is kept after a reboot.
         
         @return YAPI.SUCCESS if the call succeeds.
@@ -371,7 +371,7 @@ class YDigitalIO(YFunction):
         """
         Returns the direction of a single bit from the I/O port (0 means the bit is an input, 1  an output).
         
-        @param bitno: the bit number; lowest bit has index 0
+        @param bitno : the bit number; lowest bit has index 0
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -385,8 +385,8 @@ class YDigitalIO(YFunction):
         """
         Changes the polarity of a single bit from the I/O port.
         
-        @param bitno: the bit number; lowest bit has index 0.
-        @param bitpolarity: polarity to set, 0 makes the I/O work in regular mode, 1 makes the I/O  works
+        @param bitno : the bit number; lowest bit has index 0.
+        @param bitpolarity : polarity to set, 0 makes the I/O work in regular mode, 1 makes the I/O  works
         in reverse mode.
                 Remember to call the   saveToFlash() method to make sure the setting is kept after a reboot.
         
@@ -405,7 +405,7 @@ class YDigitalIO(YFunction):
         Returns the polarity of a single bit from the I/O port (0 means the I/O works in regular mode, 1
         means the I/O  works in reverse mode).
         
-        @param bitno: the bit number; lowest bit has index 0
+        @param bitno : the bit number; lowest bit has index 0
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -419,8 +419,8 @@ class YDigitalIO(YFunction):
         """
         Changes  the electrical interface of a single bit from the I/O port.
         
-        @param bitno: the bit number; lowest bit has index 0
-        @param opendrain: 0 makes a bit a regular input/output, 1 makes
+        @param bitno : the bit number; lowest bit has index 0
+        @param opendrain : 0 makes a bit a regular input/output, 1 makes
                 it an open-drain (open-collector) input/output. Remember to call the
                 saveToFlash() method to make sure the setting is kept after a reboot.
         
@@ -439,7 +439,7 @@ class YDigitalIO(YFunction):
         Returns the type of electrical interface of a single bit from the I/O port. (0 means the bit is an
         input, 1  an output).
         
-        @param bitno: the bit number; lowest bit has index 0
+        @param bitno : the bit number; lowest bit has index 0
         
         @return   0 means the a bit is a regular input/output, 1 means the bit is an open-drain
                 (open-collector) input/output.
@@ -455,8 +455,8 @@ class YDigitalIO(YFunction):
         Triggers a pulse on a single bit for a specified duration. The specified bit
         will be turned to 1, and then back to 0 after the given duration.
         
-        @param bitno: the bit number; lowest bit has index 0
-        @param ms_duration: desired pulse duration in milliseconds. Be aware that the device time
+        @param bitno : the bit number; lowest bit has index 0
+        @param ms_duration : desired pulse duration in milliseconds. Be aware that the device time
                 resolution is not guaranteed up to the millisecond.
         
         @return YAPI.SUCCESS if the call succeeds.
@@ -470,9 +470,9 @@ class YDigitalIO(YFunction):
         Schedules a pulse on a single bit for a specified duration. The specified bit
         will be turned to 1, and then back to 0 after the given duration.
         
-        @param bitno: the bit number; lowest bit has index 0
+        @param bitno : the bit number; lowest bit has index 0
         @param ms_delay : waiting time before the pulse, in milliseconds
-        @param ms_duration: desired pulse duration in milliseconds. Be aware that the device time
+        @param ms_duration : desired pulse duration in milliseconds. Be aware that the device time
                 resolution is not guaranteed up to the millisecond.
         
         @return YAPI.SUCCESS if the call succeeds.

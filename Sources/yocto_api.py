@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_api.py 15282 2014-03-06 17:55:57Z martinm $
+#* $Id: yocto_api.py 16091 2014-05-08 12:10:31Z seb $
 #*
 #* High-level programming interface, common to all modules
 #*
@@ -522,7 +522,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "15466"
+    YOCTO_API_BUILD_NO = "16182"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2495,7 +2495,7 @@ class YMeasure(object):
     def get_endTimeUTC(self):
         """
         Returns the end time of the measure, relative to the Jan 1, 1970 UTC
-        (Unix timestamp). When the recording rate is higher then 1 sample
+        (Unix timestamp). When the recording rate is higher than 1 sample
         per second, the timestamp may have a fractional part.
         
         @return an floating point number corresponding to the number of seconds
@@ -3282,7 +3282,7 @@ class YFunction(object):
             else:
                 uchangeval += c
 
-        requestRef.value += uchangeval + " \r\n\r\n"
+        requestRef.value += uchangeval + "&. \r\n\r\n"
         return YAPI.SUCCESS
 
     def _parse(self, j):
@@ -3576,7 +3576,7 @@ class YFunction(object):
         """
         Returns the unique hardware identifier of the function in the form SERIAL.FUNCTIONID.
         The unique hardware identifier is composed of the device serial
-        number and of the hardware identifier of the function. (for example RELAYLO1-123456.relay1)
+        number and of the hardware identifier of the function (for example RELAYLO1-123456.relay1).
         
         @return a string that uniquely identifies the function (ex: RELAYLO1-123456.relay1)
         
@@ -4211,21 +4211,6 @@ class YModule(YFunction):
                 return YModule.USBBANDWIDTH_INVALID
         return self._usbBandwidth
 
-    def set_usbBandwidth(self, newval):
-        """
-        Changes the number of USB interfaces used by the module. You must reboot the module
-        after changing this setting.
-        
-        @param newval : either YModule.USBBANDWIDTH_SIMPLE or YModule.USBBANDWIDTH_DOUBLE, according to the
-        number of USB interfaces used by the module
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = str(newval)
-        return self._setAttr("usbBandwidth", rest_val)
-
     @staticmethod
     def FindModule(func):
         """
@@ -4504,11 +4489,11 @@ class YModule(YFunction):
 
     def registerLogCallback(self, callback):
         """
-        todo
+        Registers a device log callback function. This callback will be called each time
+        that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
         
         @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the function object of which the value has changed, and the character string describing
-                the new advertised value.
+                arguments: the module object that emitted the log message, and the character string containing the log.
         @noreturn
         """
         self._logCallback = callback
@@ -4682,7 +4667,7 @@ class YSensor(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = str(round(newval * 65536.0, 1))
+        rest_val = str(int(round(newval * 65536.0, 1)))
         return self._setAttr("lowestValue", rest_val)
 
     def get_lowestValue(self):
@@ -4711,7 +4696,7 @@ class YSensor(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = str(round(newval * 65536.0, 1))
+        rest_val = str(int(round(newval * 65536.0, 1)))
         return self._setAttr("highestValue", rest_val)
 
     def get_highestValue(self):
@@ -4828,7 +4813,7 @@ class YSensor(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = str(round(newval * 65536.0, 1))
+        rest_val = str(int(round(newval * 65536.0, 1)))
         return self._setAttr("resolution", rest_val)
 
     def get_resolution(self):
@@ -5119,8 +5104,8 @@ class YSensor(YFunction):
             res = "" + str(int(npt))
             idx = 0
             while idx < npt:
-                iRaw = round(rawValues[idx] * self._scale - self._offset)
-                iRef = round(refValues[idx] * self._scale - self._offset)
+                iRaw = round(rawValues[idx] * self._scale + self._offset)
+                iRef = round(refValues[idx] * self._scale + self._offset)
                 res = "" + res + "," + str(int(iRaw)) + "," + str(int(iRef))
                 idx = idx + 1
         else:

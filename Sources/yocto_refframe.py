@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 15376 2014-03-10 16:22:13Z seb $
+#* $Id: yocto_refframe.py 15998 2014-05-01 08:25:18Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -146,7 +146,7 @@ class YRefFrame(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = str(round(newval * 65536.0, 1))
+        rest_val = str(int(round(newval * 65536.0, 1)))
         return self._setAttr("bearing", rest_val)
 
     def get_bearing(self):
@@ -252,12 +252,12 @@ class YRefFrame(YFunction):
         and horizontally, you must select its reference orientation (parallel to
         the earth surface) so that the measures are made relative to this position.
         
-        @param position: a value among the YRefFrame.MOUNTPOSITION enumeration
+        @param position : a value among the YRefFrame.MOUNTPOSITION enumeration
                 (YRefFrame.MOUNTPOSITION_BOTTOM,   YRefFrame.MOUNTPOSITION_TOP,
                 YRefFrame.MOUNTPOSITION_FRONT,    YRefFrame.MOUNTPOSITION_RIGHT,
                 YRefFrame.MOUNTPOSITION_REAR,     YRefFrame.MOUNTPOSITION_LEFT),
                 corresponding to the installation in a box, on one of the six faces.
-        @param orientation: a value among the enumeration YRefFrame.MOUNTORIENTATION
+        @param orientation : a value among the enumeration YRefFrame.MOUNTORIENTATION
                 (YRefFrame.MOUNTORIENTATION_TWELVE, YRefFrame.MOUNTORIENTATION_THREE,
                 YRefFrame.MOUNTORIENTATION_SIX,     YRefFrame.MOUNTORIENTATION_NINE)
                 corresponding to the orientation of the "X" arrow on the device,

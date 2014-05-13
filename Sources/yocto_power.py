@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_power.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_power.py 15521 2014-03-20 16:16:36Z mvuilleu $
 #*
 #* Implements yFindPower(), the high-level API for Power functions
 #*
@@ -98,7 +98,7 @@ class YPower(YSensor):
         return self._cosPhi
 
     def set_meter(self, newval):
-        rest_val = str(round(newval * 65536.0, 1))
+        rest_val = str(int(round(newval * 65536.0, 1)))
         return self._setAttr("meter", rest_val)
 
     def get_meter(self):

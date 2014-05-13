@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_lightsensor.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_lightsensor.py 15521 2014-03-20 16:16:36Z mvuilleu $
 #*
 #* Implements yFindLightSensor(), the high-level API for LightSensor functions
 #*
@@ -68,7 +68,7 @@ class YLightSensor(YSensor):
         super(YLightSensor, self)._parseAttr(member)
 
     def set_currentValue(self, newval):
-        rest_val = str(round(newval * 65536.0, 1))
+        rest_val = str(int(round(newval * 65536.0, 1)))
         return self._setAttr("currentValue", rest_val)
 
     def calibrate(self, calibratedVal):
@@ -85,7 +85,7 @@ class YLightSensor(YSensor):
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = str(round(calibratedVal * 65536.0, 1))
+        rest_val = str(int(round(calibratedVal * 65536.0, 1)))
         return self._setAttr("currentValue", rest_val)
 
     @staticmethod
