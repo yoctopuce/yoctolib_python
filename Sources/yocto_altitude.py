@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: pic24config.php 15635 2014-03-28 21:04:00Z mvuilleu $
+#* $Id: yocto_altitude.py 16185 2014-05-12 16:00:20Z seb $
 #*
 #* Implements yFindAltitude(), the high-level API for Altitude functions
 #*

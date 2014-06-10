@@ -48,9 +48,9 @@ tempSensor = YTemperature.FindTemperature(target+'.temperature')
 
 
 while True:
-    print("%4.1f" % altSensor.get_currentValue()+"m (QNH="\
-    + "%4.2f" % altSensor.get_qnh()+"hPa) "\
-    + "%4.1f" % pressSensor.get_currentValue()+"hPa  "\
-    + "%2.0f" % tempSensor.get_currentValue()+"deg C "\
-    + "(Ctrl-c to stop)")
+    print("%4.1f" % altSensor.get_currentValue()+"% (QNH="\
+        + "%4.1f" % altSensor.get_qnh()+"hPa)"\ 
+        + "%4.1f" % pressSensor.get_currentValue()+"hPa   "\
+        + "%2.0f" % tempSensor.get_currentValue()+"deg C "\
+        +  (Ctrl-c to stop)  ")
     YAPI.Sleep(1000)

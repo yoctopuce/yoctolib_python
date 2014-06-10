@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 14618 2014-01-19 03:08:44Z mvuilleu $
+#* $Id: yocto_files.py 16339 2014-05-30 09:26:57Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -57,7 +57,9 @@ class YFileRecord(object):
         #--- (end of generated code: YFileRecord attributes)
         self._crc = -1
         self._size = -1
-        for member in json.members:
+        j = YAPI.TJsonParser(json, False)
+        node = j.GetRootNode()
+        for member in node.members:
             if member.name == "name":
                 self._name = member.svalue
             elif member.name == "crc":

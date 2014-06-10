@@ -46,14 +46,14 @@ print('using ' + target)
 pwmoutput1 = YPwmOutput.FindPwmOutput(target + '.pwmOutput1')
 pwmoutput2 = YPwmOutput.FindPwmOutput(target + '.pwmOutput2')
 
-if not(pwmoutput.isOnline()):
+if not(pwmoutput1.isOnline()):
     die('device not connected')
 
-# output 1 : immediate change
-pwmoutput1.set_frequency(frequency);
-pwmoutput1.set_enabled(YPwmOutput.ENABLED_TRUE);
-pwmoutput1.set_dutyCycle(duty_cycle);
 # output 2 : smooth change
-pwmoutput2.set_frequency(frequency);
-pwmoutput2.set_enabled(YPwmOutput.ENABLED_TRUE);
-pwmoutput2.dutyCycleMove(duty_cycle, 3000);
+pwmoutput2.set_frequency(frequency)
+pwmoutput2.set_enabled(YPwmOutput.ENABLED_TRUE)
+pwmoutput2.dutyCycleMove(duty_cycle, 3000)
+# output 1 : immediate change
+pwmoutput1.set_frequency(frequency)
+pwmoutput1.set_enabled(YPwmOutput.ENABLED_TRUE)
+pwmoutput1.set_dutyCycle(duty_cycle)

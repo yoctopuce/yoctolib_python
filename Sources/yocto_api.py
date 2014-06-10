@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_api.py 16091 2014-05-08 12:10:31Z seb $
+#* $Id: yocto_api.py 16339 2014-05-30 09:26:57Z seb $
 #*
 #* High-level programming interface, common to all modules
 #*
@@ -210,7 +210,7 @@ class YAPI:
             if p.recordtype == YAPI.TJSONRECORDTYPE.JSON_STRING:
                 outbuffer = outbuffer + '"' + p.svalue + '"'
             elif p.recordtype == YAPI.TJSONRECORDTYPE.JSON_INTEGER:
-                outbuffer += p.ivalue
+                outbuffer += str(p.ivalue)
             elif p.recordtype == YAPI.TJSONRECORDTYPE.JSON_BOOLEAN:
                 if p.bvalue:
                     outbuffer += "TRUE"
@@ -522,7 +522,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "16182"
+    YOCTO_API_BUILD_NO = "16490"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1578,9 +1578,9 @@ class YAPI:
 
     @staticmethod
     def native_yTimedReportCallback(f, timestamp, data, dataLen):
-        report = YString2Byte("")
+        report = []
         for i in range(dataLen):
-            report = YAddByte(report, data[i])
+            report.append(int(data[i]))
         ev = YAPI._Event()
         ev.setTimedReport(f, timestamp, report)
         YAPI._DataEvents.append(ev)
@@ -3477,6 +3477,9 @@ class YFunction(object):
         
         On failure, throws an exception or returns a negative error code.
         """
+        if not YAPI.CheckLogicalName(newval):
+            self._throw(YAPI.INVALID_ARGUMENT, "Invalid name :" + newval)
+            return YAPI.INVALID_ARGUMENT
         rest_val = newval
         return self._setAttr("logicalName", rest_val)
 

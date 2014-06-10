@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_wireless.py 14618 2014-01-19 03:08:44Z mvuilleu $
+#* $Id: yocto_wireless.py 16339 2014-05-30 09:26:57Z seb $
 #*
 #* Implements yFindWireless(), the high-level API for Wireless functions
 #*
@@ -58,7 +58,9 @@ class YWlanRecord(object):
         #--- (end of generated code: YWlanRecord attributes)
         self._channel = -1
         self._rssi = -1
-        for member in json.members:
+        j = YAPI.TJsonParser(json, False)
+        node = j.GetRootNode()
+        for member in node.members:
             if member.name == "ssid":
                 self._ssid = member.svalue
             if member.name == "sec":
