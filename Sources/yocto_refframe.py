@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 15998 2014-05-01 08:25:18Z seb $
+#* $Id: yocto_refframe.py 17481 2014-09-03 09:38:35Z mvuilleu $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -56,6 +56,8 @@ class YRefFrame(YFunction):
 #--- (end of YRefFrame class start)
     #--- (YRefFrame return codes)
     #--- (end of YRefFrame return codes)
+    #--- (YRefFrame dlldef)
+    #--- (end of YRefFrame dlldef)
     #--- (YRefFrame definitions)
     class MOUNTPOSITION:
         def __init__(self):
@@ -106,7 +108,7 @@ class YRefFrame(YFunction):
             self._mountPos = member.ivalue
             return 1
         if member.name == "bearing":
-            self._bearing = member.ivalue / 65536.0
+            self._bearing = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "calibrationParam":
             self._calibrationParam = member.svalue
@@ -220,9 +222,9 @@ class YRefFrame(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        # pos
-        pos = self.get_mountPos()
-        return ((pos) >> (2))
+        # position
+        position = self.get_mountPos()
+        return ((position) >> (2))
 
     def get_mountOrientation(self):
         """
@@ -240,9 +242,9 @@ class YRefFrame(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        # pos
-        pos = self.get_mountPos()
-        return ((pos) & (3))
+        # position
+        position = self.get_mountPos()
+        return ((position) & (3))
 
     def set_mountPosition(self, position, orientation):
         """
@@ -270,9 +272,9 @@ class YRefFrame(YFunction):
         
         On failure, throws an exception or returns a negative error code.
         """
-        # pos
-        pos = ((position) << (2)) + orientation
-        return self.set_mountPos(pos)
+        # mixedPos
+        mixedPos = ((position) << (2)) + orientation
+        return self.set_mountPos(mixedPos)
 
     def _calibSort(self, start, stopidx):
         # idx
@@ -291,20 +293,20 @@ class YRefFrame(YFunction):
             while idx < stopidx:
                 b = self._calibDataAcc[idx]
                 if a > b:
-                    self._calibDataAcc[ idx-1] = b
-                    self._calibDataAcc[ idx] = a
+                    self._calibDataAcc[idx-1] = b
+                    self._calibDataAcc[idx] = a
                     xa = self._calibDataAccX[idx-1]
                     xb = self._calibDataAccX[idx]
-                    self._calibDataAccX[ idx-1] = xb
-                    self._calibDataAccX[ idx] = xa
+                    self._calibDataAccX[idx-1] = xb
+                    self._calibDataAccX[idx] = xa
                     xa = self._calibDataAccY[idx-1]
                     xb = self._calibDataAccY[idx]
-                    self._calibDataAccY[ idx-1] = xb
-                    self._calibDataAccY[ idx] = xa
+                    self._calibDataAccY[idx-1] = xb
+                    self._calibDataAccY[idx] = xa
                     xa = self._calibDataAccZ[idx-1]
                     xb = self._calibDataAccZ[idx]
-                    self._calibDataAccZ[ idx-1] = xb
-                    self._calibDataAccZ[ idx] = xa
+                    self._calibDataAccZ[idx-1] = xb
+                    self._calibDataAccZ[idx] = xa
                     changed = changed + 1
                 else:
                     a = b
@@ -341,7 +343,7 @@ class YRefFrame(YFunction):
         self._calibStageProgress = 0
         self._calibProgress = 1
         self._calibInternalPos = 0
-        self._calibPrevTick = ((YAPI.GetTickCount()) & (0x7FFFFFFF))
+        self._calibPrevTick = (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
         del self._calibOrient[:]
         del self._calibDataAccX[:]
         del self._calibDataAccY[:]
@@ -372,7 +374,7 @@ class YRefFrame(YFunction):
         # norm
         # orient
         # idx
-        # pos
+        # intpos
         # err
         # // make sure calibration has been started
         if self._calibStage == 0:
@@ -381,7 +383,7 @@ class YRefFrame(YFunction):
             return YAPI.SUCCESS
         
         # // make sure we leave at least 160ms between samples
-        currTick =  ((YAPI.GetTickCount()) & (0x7FFFFFFF))
+        currTick =  (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
         if ((currTick - self._calibPrevTick) & (0x7FFFFFFF)) < 160:
             return YAPI.SUCCESS
         # // load current accelerometer values, make sure we are on a straight angle
@@ -413,6 +415,7 @@ class YRefFrame(YFunction):
         self._calibPrevTick = currTick
         
         # // Determine the device orientation index
+        orient = 0
         if zSq > 0.5:
             if zVal > 0:
                 orient = 0
@@ -455,16 +458,16 @@ class YRefFrame(YFunction):
         self._calibDataAccZ.append(zVal)
         self._calibDataAcc.append(norm)
         self._calibInternalPos = self._calibInternalPos + 1
-        self._calibProgress = 1 + 16 * (self._calibStage - 1) + ((16 * self._calibInternalPos) / (self._calibCount))
+        self._calibProgress = 1 + 16 * (self._calibStage - 1) + int((16 * self._calibInternalPos) / (self._calibCount))
         if self._calibInternalPos < self._calibCount:
-            self._calibStageProgress = 1 + ((99 * self._calibInternalPos) / (self._calibCount))
+            self._calibStageProgress = 1 + int((99 * self._calibInternalPos) / (self._calibCount))
             return YAPI.SUCCESS
         
         # // Stage done, compute preliminary result
-        pos = (self._calibStage - 1) * self._calibCount
-        self._calibSort(pos, pos + self._calibCount)
-        pos = pos + ((self._calibCount) / (2))
-        self._calibLogMsg = "Stage " + str(int(self._calibStage)) + ": median is " + str(int(round(1000*self._calibDataAccX[pos]))) + "," + str(int(round(1000*self._calibDataAccY[pos]))) + "," + str(int(round(1000*self._calibDataAccZ[pos])))
+        intpos = (self._calibStage - 1) * self._calibCount
+        self._calibSort(intpos, intpos + self._calibCount)
+        intpos = intpos + int((self._calibCount) / (2))
+        self._calibLogMsg = "Stage " + str(int(self._calibStage)) + ": median is " + str(int(round(1000*self._calibDataAccX[intpos]))) + "," + str(int(round(1000*self._calibDataAccY[intpos]))) + "," + str(int(round(1000*self._calibDataAccZ[intpos])))
         
         # // move to next stage
         self._calibStage = self._calibStage + 1
@@ -480,32 +483,32 @@ class YRefFrame(YFunction):
         zVal = 0
         idx = 0
         while idx < 6:
-            pos = idx * self._calibCount + ((self._calibCount) / (2))
+            intpos = idx * self._calibCount + int((self._calibCount) / (2))
             orient = self._calibOrient[idx]
             if orient == 0 or orient == 1:
-                zVal = zVal + self._calibDataAccZ[pos]
+                zVal = zVal + self._calibDataAccZ[intpos]
             if orient == 2 or orient == 3:
-                xVal = xVal + self._calibDataAccX[pos]
+                xVal = xVal + self._calibDataAccX[intpos]
             if orient == 4 or orient == 5:
-                yVal = yVal + self._calibDataAccY[pos]
+                yVal = yVal + self._calibDataAccY[intpos]
             idx = idx + 1
         self._calibAccXOfs = xVal / 2.0
         self._calibAccYOfs = yVal / 2.0
         self._calibAccZOfs = zVal / 2.0
         
         # // Recompute all norms, taking into account the computed shift, and re-sort
-        pos = 0
-        while pos < len(self._calibDataAcc):
-            xVal = self._calibDataAccX[pos] - self._calibAccXOfs
-            yVal = self._calibDataAccY[pos] - self._calibAccYOfs
-            zVal = self._calibDataAccZ[pos] - self._calibAccZOfs
+        intpos = 0
+        while intpos < len(self._calibDataAcc):
+            xVal = self._calibDataAccX[intpos] - self._calibAccXOfs
+            yVal = self._calibDataAccY[intpos] - self._calibAccYOfs
+            zVal = self._calibDataAccZ[intpos] - self._calibAccZOfs
             norm = sqrt(xVal * xVal + yVal * yVal + zVal * zVal)
-            self._calibDataAcc[ pos] = norm
-            pos = pos + 1
+            self._calibDataAcc[intpos] = norm
+            intpos = intpos + 1
         idx = 0
         while idx < 6:
-            pos = idx * self._calibCount
-            self._calibSort(pos, pos + self._calibCount)
+            intpos = idx * self._calibCount
+            self._calibSort(intpos, intpos + self._calibCount)
             idx = idx + 1
         
         # // Compute the scaling factor for each axis
@@ -514,14 +517,14 @@ class YRefFrame(YFunction):
         zVal = 0
         idx = 0
         while idx < 6:
-            pos = idx * self._calibCount + ((self._calibCount) / (2))
+            intpos = idx * self._calibCount + int((self._calibCount) / (2))
             orient = self._calibOrient[idx]
             if orient == 0 or orient == 1:
-                zVal = zVal + self._calibDataAcc[pos]
+                zVal = zVal + self._calibDataAcc[intpos]
             if orient == 2 or orient == 3:
-                xVal = xVal + self._calibDataAcc[pos]
+                xVal = xVal + self._calibDataAcc[intpos]
             if orient == 4 or orient == 5:
-                yVal = yVal + self._calibDataAcc[pos]
+                yVal = yVal + self._calibDataAcc[intpos]
             idx = idx + 1
         self._calibAccXScale = xVal / 2.0
         self._calibAccYScale = yVal / 2.0
@@ -617,8 +620,10 @@ class YRefFrame(YFunction):
         scaleZ = round(2048.0 / self._calibAccZScale) - 2048
         if scaleX < -2048 or scaleX >= 2048 or scaleY < -2048 or scaleY >= 2048 or scaleZ < -2048 or scaleZ >= 2048:
             scaleExp = 3
+        else:
             if scaleX < -1024 or scaleX >= 1024 or scaleY < -1024 or scaleY >= 1024 or scaleZ < -1024 or scaleZ >= 1024:
                 scaleExp = 2
+            else:
                 if scaleX < -512 or scaleX >= 512 or scaleY < -512 or scaleY >= 512 or scaleZ < -512 or scaleZ >= 512:
                     scaleExp = 1
                 else:

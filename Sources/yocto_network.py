@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_network.py 17582 2014-09-10 17:12:40Z mvuilleu $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -53,6 +53,8 @@ class YNetwork(YFunction):
 #--- (end of YNetwork class start)
     #--- (YNetwork return codes)
     #--- (end of YNetwork return codes)
+    #--- (YNetwork dlldef)
+    #--- (end of YNetwork dlldef)
     #--- (YNetwork definitions)
     MACADDRESS_INVALID = YAPI.INVALID_STRING
     IPADDRESS_INVALID = YAPI.INVALID_STRING
@@ -267,41 +269,6 @@ class YNetwork(YFunction):
 
     def set_ipConfig(self, newval):
         rest_val = newval
-        return self._setAttr("ipConfig", rest_val)
-
-    def useDHCP(self, fallbackIpAddr, fallbackSubnetMaskLen, fallbackRouter):
-        """
-        Changes the configuration of the network interface to enable the use of an
-        IP address received from a DHCP server. Until an address is received from a DHCP
-        server, the module uses the IP parameters specified to this function.
-        Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-        
-        @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
-        @param fallbackSubnetMaskLen : fallback subnet mask length when no DHCP reply is received, as an
-                integer (eg. 24 means 255.255.255.0)
-        @param fallbackRouter : fallback router IP address, to be used when no DHCP reply is received
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = "DHCP:" + fallbackIpAddr + "/" + str(fallbackSubnetMaskLen )+ "/" + fallbackRouter
-        return self._setAttr("ipConfig", rest_val)
-
-    def useStaticIP(self, ipAddress, subnetMaskLen, router):
-        """
-        Changes the configuration of the network interface to use a static IP address.
-        Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-        
-        @param ipAddress : device IP address
-        @param subnetMaskLen : subnet mask length, as an integer (eg. 24 means 255.255.255.0)
-        @param router : router IP address (default gateway)
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = "STATIC:" + ipAddress + "/" + str(subnetMaskLen) + "/" + router
         return self._setAttr("ipConfig", rest_val)
 
     def get_primaryDNS(self):
@@ -734,6 +701,39 @@ class YNetwork(YFunction):
             obj = YNetwork(func)
             YFunction._AddToCache("Network", func, obj)
         return obj
+
+    def useDHCP(self, fallbackIpAddr, fallbackSubnetMaskLen, fallbackRouter):
+        """
+        Changes the configuration of the network interface to enable the use of an
+        IP address received from a DHCP server. Until an address is received from a DHCP
+        server, the module uses the IP parameters specified to this function.
+        Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+        
+        @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
+        @param fallbackSubnetMaskLen : fallback subnet mask length when no DHCP reply is received, as an
+                integer (eg. 24 means 255.255.255.0)
+        @param fallbackRouter : fallback router IP address, to be used when no DHCP reply is received
+        
+        @return YAPI.SUCCESS when the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_ipConfig("DHCP:" + fallbackIpAddr + "/" + str(int(fallbackSubnetMaskLen)) + "/" + fallbackRouter)
+
+    def useStaticIP(self, ipAddress, subnetMaskLen, router):
+        """
+        Changes the configuration of the network interface to use a static IP address.
+        Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+        
+        @param ipAddress : device IP address
+        @param subnetMaskLen : subnet mask length, as an integer (eg. 24 means 255.255.255.0)
+        @param router : router IP address (default gateway)
+        
+        @return YAPI.SUCCESS when the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_ipConfig("STATIC:" + ipAddress + "/" + str(int(subnetMaskLen)) + "/" + router)
 
     def ping(self, host):
         """

@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_pwmpowersource.py 15529 2014-03-20 17:54:15Z seb $
+#* $Id: yocto_pwmpowersource.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
 #*
@@ -53,6 +53,8 @@ class YPwmPowerSource(YFunction):
 #--- (end of YPwmPowerSource class start)
     #--- (YPwmPowerSource return codes)
     #--- (end of YPwmPowerSource return codes)
+    #--- (YPwmPowerSource dlldef)
+    #--- (end of YPwmPowerSource dlldef)
     #--- (YPwmPowerSource definitions)
     POWERMODE_USB_5V = 0
     POWERMODE_USB_3V = 1

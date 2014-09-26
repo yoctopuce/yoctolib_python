@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_altitude.py 16185 2014-05-12 16:00:20Z seb $
+#* $Id: yocto_altitude.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindAltitude(), the high-level API for Altitude functions
 #*
@@ -53,6 +53,8 @@ class YAltitude(YSensor):
 #--- (end of YAltitude class start)
     #--- (YAltitude return codes)
     #--- (end of YAltitude return codes)
+    #--- (YAltitude dlldef)
+    #--- (end of YAltitude dlldef)
     #--- (YAltitude definitions)
     QNH_INVALID = YAPI.INVALID_DOUBLE
     #--- (end of YAltitude definitions)
@@ -68,7 +70,7 @@ class YAltitude(YSensor):
     #--- (YAltitude implementation)
     def _parseAttr(self, member):
         if member.name == "qnh":
-            self._qnh = member.ivalue / 65536.0
+            self._qnh = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         super(YAltitude, self)._parseAttr(member)
 

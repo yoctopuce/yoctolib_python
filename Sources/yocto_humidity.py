@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_humidity.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_humidity.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindHumidity(), the high-level API for Humidity functions
 #*
@@ -53,6 +53,8 @@ class YHumidity(YSensor):
 #--- (end of YHumidity class start)
     #--- (YHumidity return codes)
     #--- (end of YHumidity return codes)
+    #--- (YHumidity dlldef)
+    #--- (end of YHumidity dlldef)
     #--- (YHumidity definitions)
     #--- (end of YHumidity definitions)
 

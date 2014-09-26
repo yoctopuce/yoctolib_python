@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_lightsensor.py 15521 2014-03-20 16:16:36Z mvuilleu $
+#* $Id: yocto_lightsensor.py 17655 2014-09-16 12:24:27Z mvuilleu $
 #*
 #* Implements yFindLightSensor(), the high-level API for LightSensor functions
 #*
@@ -53,7 +53,15 @@ class YLightSensor(YSensor):
 #--- (end of YLightSensor class start)
     #--- (YLightSensor return codes)
     #--- (end of YLightSensor return codes)
+    #--- (YLightSensor dlldef)
+    #--- (end of YLightSensor dlldef)
     #--- (YLightSensor definitions)
+    MEASURETYPE_HUMAN_EYE = 0
+    MEASURETYPE_WIDE_SPECTRUM = 1
+    MEASURETYPE_INFRARED = 2
+    MEASURETYPE_HIGH_RATE = 3
+    MEASURETYPE_HIGH_ENERGY = 4
+    MEASURETYPE_INVALID = -1
     #--- (end of YLightSensor definitions)
 
     def __init__(self, func):
@@ -61,10 +69,14 @@ class YLightSensor(YSensor):
         self._className = 'LightSensor'
         #--- (YLightSensor attributes)
         self._callback = None
+        self._measureType = YLightSensor.MEASURETYPE_INVALID
         #--- (end of YLightSensor attributes)
 
     #--- (YLightSensor implementation)
     def _parseAttr(self, member):
+        if member.name == "measureType":
+            self._measureType = member.ivalue
+            return 1
         super(YLightSensor, self)._parseAttr(member)
 
     def set_currentValue(self, newval):
@@ -87,6 +99,40 @@ class YLightSensor(YSensor):
         """
         rest_val = str(int(round(calibratedVal * 65536.0, 1)))
         return self._setAttr("currentValue", rest_val)
+
+    def get_measureType(self):
+        """
+        Returns the type of light measure.
+        
+        @return a value among YLightSensor.MEASURETYPE_HUMAN_EYE, YLightSensor.MEASURETYPE_WIDE_SPECTRUM,
+        YLightSensor.MEASURETYPE_INFRARED, YLightSensor.MEASURETYPE_HIGH_RATE and
+        YLightSensor.MEASURETYPE_HIGH_ENERGY corresponding to the type of light measure
+        
+        On failure, throws an exception or returns YLightSensor.MEASURETYPE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YLightSensor.MEASURETYPE_INVALID
+        return self._measureType
+
+    def set_measureType(self, newval):
+        """
+        Modify the light sensor type used in the device. The measure can either
+        approximate the response of the human eye, focus on a specific light
+        spectrum, depending on the capabilities of the light-sensitive cell.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+        
+        @param newval : a value among YLightSensor.MEASURETYPE_HUMAN_EYE,
+        YLightSensor.MEASURETYPE_WIDE_SPECTRUM, YLightSensor.MEASURETYPE_INFRARED,
+        YLightSensor.MEASURETYPE_HIGH_RATE and YLightSensor.MEASURETYPE_HIGH_ENERGY
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("measureType", rest_val)
 
     @staticmethod
     def FindLightSensor(func):

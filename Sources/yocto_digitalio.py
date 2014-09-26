@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_digitalio.py 15998 2014-05-01 08:25:18Z seb $
+#* $Id: yocto_digitalio.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #*
@@ -55,6 +55,8 @@ class YDigitalIO(YFunction):
 #--- (end of YDigitalIO class start)
     #--- (YDigitalIO return codes)
     #--- (end of YDigitalIO return codes)
+    #--- (YDigitalIO dlldef)
+    #--- (end of YDigitalIO dlldef)
     #--- (YDigitalIO definitions)
     PORTSTATE_INVALID = YAPI.INVALID_UINT
     PORTDIRECTION_INVALID = YAPI.INVALID_UINT

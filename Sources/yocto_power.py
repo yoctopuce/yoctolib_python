@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_power.py 15521 2014-03-20 16:16:36Z mvuilleu $
+#* $Id: yocto_power.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindPower(), the high-level API for Power functions
 #*
@@ -53,6 +53,8 @@ class YPower(YSensor):
 #--- (end of YPower class start)
     #--- (YPower return codes)
     #--- (end of YPower return codes)
+    #--- (YPower dlldef)
+    #--- (end of YPower dlldef)
     #--- (YPower definitions)
     COSPHI_INVALID = YAPI.INVALID_DOUBLE
     METER_INVALID = YAPI.INVALID_DOUBLE
@@ -72,10 +74,10 @@ class YPower(YSensor):
     #--- (YPower implementation)
     def _parseAttr(self, member):
         if member.name == "cosPhi":
-            self._cosPhi = member.ivalue / 65536.0
+            self._cosPhi = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "meter":
-            self._meter = member.ivalue / 65536.0
+            self._meter = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "meterTimer":
             self._meterTimer = member.ivalue

@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_temperature.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -53,6 +53,8 @@ class YTemperature(YSensor):
 #--- (end of YTemperature class start)
     #--- (YTemperature return codes)
     #--- (end of YTemperature return codes)
+    #--- (YTemperature dlldef)
+    #--- (end of YTemperature dlldef)
     #--- (YTemperature definitions)
     SENSORTYPE_DIGITAL = 0
     SENSORTYPE_TYPE_K = 1

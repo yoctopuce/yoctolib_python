@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_datalogger.py 14618 2014-01-19 03:08:44Z mvuilleu $
+#* $Id: yocto_datalogger.py 17674 2014-09-16 16:18:58Z seb $
 #*
 #* Implements yFindDataLogger(), the high-level API for DataLogger
 #*
@@ -64,6 +64,9 @@ class YDataLogger(YFunction):
     AUTOSTART_OFF = 0
     AUTOSTART_ON = 1
     AUTOSTART_INVALID = -1
+    BEACONDRIVEN_OFF = 0
+    BEACONDRIVEN_ON = 1
+    BEACONDRIVEN_INVALID = -1
     CLEARHISTORY_FALSE = 0
     CLEARHISTORY_TRUE = 1
     CLEARHISTORY_INVALID = -1
@@ -78,6 +81,7 @@ class YDataLogger(YFunction):
         self._timeUTC = YDataLogger.TIMEUTC_INVALID
         self._recording = YDataLogger.RECORDING_INVALID
         self._autoStart = YDataLogger.AUTOSTART_INVALID
+        self._beaconDriven = YDataLogger.BEACONDRIVEN_INVALID
         self._clearHistory = YDataLogger.CLEARHISTORY_INVALID
         #--- (end of generated code: YDataLogger attributes)
         self._dataLoggerURL = ""
@@ -95,6 +99,9 @@ class YDataLogger(YFunction):
             return 1
         if member.name == "autoStart":
             self._autoStart = member.ivalue
+            return 1
+        if member.name == "beaconDriven":
+            self._beaconDriven = member.ivalue
             return 1
         if member.name == "clearHistory":
             self._clearHistory = member.ivalue
@@ -199,6 +206,35 @@ class YDataLogger(YFunction):
         """
         rest_val = "1" if newval > 0 else "0"
         return self._setAttr("autoStart", rest_val)
+
+    def get_beaconDriven(self):
+        """
+        Return true if the data logger is synchronised with the localization beacon.
+        
+        @return either YDataLogger.BEACONDRIVEN_OFF or YDataLogger.BEACONDRIVEN_ON
+        
+        On failure, throws an exception or returns YDataLogger.BEACONDRIVEN_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YDataLogger.BEACONDRIVEN_INVALID
+        return self._beaconDriven
+
+    def set_beaconDriven(self, newval):
+        """
+        Changes the type of synchronisation of the data logger.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+        
+        @param newval : either YDataLogger.BEACONDRIVEN_OFF or YDataLogger.BEACONDRIVEN_ON, according to
+        the type of synchronisation of the data logger
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("beaconDriven", rest_val)
 
     def get_clearHistory(self):
         if self._cacheExpiration <= YAPI.GetTickCount():

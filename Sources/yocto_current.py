@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_current.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_current.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindCurrent(), the high-level API for Current functions
 #*
@@ -53,6 +53,8 @@ class YCurrent(YSensor):
 #--- (end of YCurrent class start)
     #--- (YCurrent return codes)
     #--- (end of YCurrent return codes)
+    #--- (YCurrent dlldef)
+    #--- (end of YCurrent dlldef)
     #--- (YCurrent definitions)
     #--- (end of YCurrent definitions)
 

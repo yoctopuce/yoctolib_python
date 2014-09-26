@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_colorled.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_colorled.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindColorLed(), the high-level API for ColorLed functions
 #*
@@ -57,6 +57,8 @@ class YColorLed(YFunction):
 #--- (end of YColorLed class start)
     #--- (YColorLed return codes)
     #--- (end of YColorLed return codes)
+    #--- (YColorLed dlldef)
+    #--- (end of YColorLed dlldef)
     #--- (YColorLed definitions)
     RGBCOLOR_INVALID = YAPI.INVALID_UINT
     HSLCOLOR_INVALID = YAPI.INVALID_UINT

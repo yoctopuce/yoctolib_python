@@ -9,11 +9,11 @@ from yocto_pwmoutput import *
 def usage():
     scriptname = os.path.basename(sys.argv[0])
     print("Usage:")
-    print(scriptname + " <serial_number>  <frequency> <duty_cycle>");
-    print(scriptname + " <logical_name> <frequency> <duty_cycle>");
-    print(scriptname + " any  <frequency> <duty_cycle>   (use any discovered device)");
-    print("     <frequency>: integer between 1Hz and 1000000Hz");
-    print("     <duty_cycle>: floating point number between 0.0 and 100.0");
+    print(scriptname + " <serial_number>  <frequency> <duty_cycle>")
+    print(scriptname + " <logical_name> <frequency> <duty_cycle>")
+    print(scriptname + " any  <frequency> <duty_cycle>   (use any discovered device)")
+    print("     <frequency>: integer between 1Hz and 1000000Hz")
+    print("     <duty_cycle>: floating point number between 0.0 and 100.0")
     print('Example:')
     print(scriptname + ' any 1000 22.5')
     sys.exit()

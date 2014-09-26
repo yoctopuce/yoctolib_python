@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupschedule.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_wakeupschedule.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #*
@@ -54,6 +54,8 @@ class YWakeUpSchedule(YFunction):
 #--- (end of YWakeUpSchedule class start)
     #--- (YWakeUpSchedule return codes)
     #--- (end of YWakeUpSchedule return codes)
+    #--- (YWakeUpSchedule dlldef)
+    #--- (end of YWakeUpSchedule dlldef)
     #--- (YWakeUpSchedule definitions)
     MINUTESA_INVALID = YAPI.INVALID_UINT
     MINUTESB_INVALID = YAPI.INVALID_UINT

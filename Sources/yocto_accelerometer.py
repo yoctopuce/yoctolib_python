@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_accelerometer.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_accelerometer.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindAccelerometer(), the high-level API for Accelerometer functions
 #*
@@ -53,10 +53,15 @@ class YAccelerometer(YSensor):
 #--- (end of YAccelerometer class start)
     #--- (YAccelerometer return codes)
     #--- (end of YAccelerometer return codes)
+    #--- (YAccelerometer dlldef)
+    #--- (end of YAccelerometer dlldef)
     #--- (YAccelerometer definitions)
     XVALUE_INVALID = YAPI.INVALID_DOUBLE
     YVALUE_INVALID = YAPI.INVALID_DOUBLE
     ZVALUE_INVALID = YAPI.INVALID_DOUBLE
+    GRAVITYCANCELLATION_OFF = 0
+    GRAVITYCANCELLATION_ON = 1
+    GRAVITYCANCELLATION_INVALID = -1
     #--- (end of YAccelerometer definitions)
 
     def __init__(self, func):
@@ -67,18 +72,22 @@ class YAccelerometer(YSensor):
         self._xValue = YAccelerometer.XVALUE_INVALID
         self._yValue = YAccelerometer.YVALUE_INVALID
         self._zValue = YAccelerometer.ZVALUE_INVALID
+        self._gravityCancellation = YAccelerometer.GRAVITYCANCELLATION_INVALID
         #--- (end of YAccelerometer attributes)
 
     #--- (YAccelerometer implementation)
     def _parseAttr(self, member):
         if member.name == "xValue":
-            self._xValue = member.ivalue / 65536.0
+            self._xValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "yValue":
-            self._yValue = member.ivalue / 65536.0
+            self._yValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "zValue":
-            self._zValue = member.ivalue / 65536.0
+            self._zValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
+            return 1
+        if member.name == "gravityCancellation":
+            self._gravityCancellation = member.ivalue
             return 1
         super(YAccelerometer, self)._parseAttr(member)
 
@@ -120,6 +129,16 @@ class YAccelerometer(YSensor):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAccelerometer.ZVALUE_INVALID
         return self._zValue
+
+    def get_gravityCancellation(self):
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YAccelerometer.GRAVITYCANCELLATION_INVALID
+        return self._gravityCancellation
+
+    def set_gravityCancellation(self, newval):
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("gravityCancellation", rest_val)
 
     @staticmethod
     def FindAccelerometer(func):

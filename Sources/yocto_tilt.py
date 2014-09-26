@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_tilt.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_tilt.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindTilt(), the high-level API for Tilt functions
 #*
@@ -53,6 +53,8 @@ class YTilt(YSensor):
 #--- (end of YTilt class start)
     #--- (YTilt return codes)
     #--- (end of YTilt return codes)
+    #--- (YTilt dlldef)
+    #--- (end of YTilt dlldef)
     #--- (YTilt definitions)
     AXIS_X = 0
     AXIS_Y = 1

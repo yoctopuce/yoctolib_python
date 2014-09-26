@@ -32,7 +32,7 @@ if target=='any':
     sensor = YVoc.FirstVoc()
     if sensor is None :
         die('No module connected')
-    print ("Using: "+sensor.get_module().get_serialNumber());    
+    print ("Using: "+sensor.get_module().get_serialNumber())
 else:
     sensor= YVoc.FindVoc(target + '.voc')
 

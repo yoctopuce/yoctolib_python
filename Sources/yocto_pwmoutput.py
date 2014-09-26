@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_pwmoutput.py 15529 2014-03-20 17:54:15Z seb $
+#* $Id: yocto_pwmoutput.py 17481 2014-09-03 09:38:35Z mvuilleu $
 #*
 #* Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #*
@@ -52,11 +52,13 @@ class YPwmOutput(YFunction):
 #--- (end of YPwmOutput class start)
     #--- (YPwmOutput return codes)
     #--- (end of YPwmOutput return codes)
+    #--- (YPwmOutput dlldef)
+    #--- (end of YPwmOutput dlldef)
     #--- (YPwmOutput definitions)
+    FREQUENCY_INVALID = YAPI.INVALID_DOUBLE
+    PERIOD_INVALID = YAPI.INVALID_DOUBLE
     DUTYCYCLE_INVALID = YAPI.INVALID_DOUBLE
     PULSEDURATION_INVALID = YAPI.INVALID_DOUBLE
-    FREQUENCY_INVALID = YAPI.INVALID_UINT
-    PERIOD_INVALID = YAPI.INVALID_DOUBLE
     PWMTRANSITION_INVALID = YAPI.INVALID_STRING
     DUTYCYCLEATPOWERON_INVALID = YAPI.INVALID_DOUBLE
     ENABLED_FALSE = 0
@@ -73,10 +75,10 @@ class YPwmOutput(YFunction):
         #--- (YPwmOutput attributes)
         self._callback = None
         self._enabled = YPwmOutput.ENABLED_INVALID
-        self._dutyCycle = YPwmOutput.DUTYCYCLE_INVALID
-        self._pulseDuration = YPwmOutput.PULSEDURATION_INVALID
         self._frequency = YPwmOutput.FREQUENCY_INVALID
         self._period = YPwmOutput.PERIOD_INVALID
+        self._dutyCycle = YPwmOutput.DUTYCYCLE_INVALID
+        self._pulseDuration = YPwmOutput.PULSEDURATION_INVALID
         self._pwmTransition = YPwmOutput.PWMTRANSITION_INVALID
         self._enabledAtPowerOn = YPwmOutput.ENABLEDATPOWERON_INVALID
         self._dutyCycleAtPowerOn = YPwmOutput.DUTYCYCLEATPOWERON_INVALID
@@ -87,17 +89,17 @@ class YPwmOutput(YFunction):
         if member.name == "enabled":
             self._enabled = member.ivalue
             return 1
-        if member.name == "dutyCycle":
-            self._dutyCycle = member.ivalue / 65536.0
-            return 1
-        if member.name == "pulseDuration":
-            self._pulseDuration = member.ivalue / 65536.0
-            return 1
         if member.name == "frequency":
-            self._frequency = member.ivalue
+            self._frequency = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "period":
-            self._period = member.ivalue / 65536.0
+            self._period = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
+            return 1
+        if member.name == "dutyCycle":
+            self._dutyCycle = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
+            return 1
+        if member.name == "pulseDuration":
+            self._pulseDuration = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "pwmTransition":
             self._pwmTransition = member.svalue
@@ -106,7 +108,7 @@ class YPwmOutput(YFunction):
             self._enabledAtPowerOn = member.ivalue
             return 1
         if member.name == "dutyCycleAtPowerOn":
-            self._dutyCycleAtPowerOn = member.ivalue / 65536.0
+            self._dutyCycleAtPowerOn = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         super(YPwmOutput, self)._parseAttr(member)
 
@@ -135,6 +137,59 @@ class YPwmOutput(YFunction):
         """
         rest_val = "1" if newval > 0 else "0"
         return self._setAttr("enabled", rest_val)
+
+    def set_frequency(self, newval):
+        """
+        Changes the PWM frequency. The duty cycle is kept unchanged thanks to an
+        automatic pulse width change.
+        
+        @param newval : a floating point number corresponding to the PWM frequency
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(int(round(newval * 65536.0, 1)))
+        return self._setAttr("frequency", rest_val)
+
+    def get_frequency(self):
+        """
+        Returns the PWM frequency in Hz.
+        
+        @return a floating point number corresponding to the PWM frequency in Hz
+        
+        On failure, throws an exception or returns YPwmOutput.FREQUENCY_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YPwmOutput.FREQUENCY_INVALID
+        return self._frequency
+
+    def set_period(self, newval):
+        """
+        Changes the PWM period in milliseconds.
+        
+        @param newval : a floating point number corresponding to the PWM period in milliseconds
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(int(round(newval * 65536.0, 1)))
+        return self._setAttr("period", rest_val)
+
+    def get_period(self):
+        """
+        Returns the PWM period in milliseconds.
+        
+        @return a floating point number corresponding to the PWM period in milliseconds
+        
+        On failure, throws an exception or returns YPwmOutput.PERIOD_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YPwmOutput.PERIOD_INVALID
+        return self._period
 
     def set_dutyCycle(self, newval):
         """
@@ -178,9 +233,10 @@ class YPwmOutput(YFunction):
 
     def get_pulseDuration(self):
         """
-        Returns the PWM pulse length in milliseconds.
+        Returns the PWM pulse length in milliseconds, as a floating point number.
         
-        @return a floating point number corresponding to the PWM pulse length in milliseconds
+        @return a floating point number corresponding to the PWM pulse length in milliseconds, as a
+        floating point number
         
         On failure, throws an exception or returns YPwmOutput.PULSEDURATION_INVALID.
         """
@@ -188,59 +244,6 @@ class YPwmOutput(YFunction):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmOutput.PULSEDURATION_INVALID
         return self._pulseDuration
-
-    def get_frequency(self):
-        """
-        Returns the PWM frequency in Hz.
-        
-        @return an integer corresponding to the PWM frequency in Hz
-        
-        On failure, throws an exception or returns YPwmOutput.FREQUENCY_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YPwmOutput.FREQUENCY_INVALID
-        return self._frequency
-
-    def set_frequency(self, newval):
-        """
-        Changes the PWM frequency. The duty cycle is kept unchanged thanks to an
-        automatic pulse width change.
-        
-        @param newval : an integer corresponding to the PWM frequency
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = str(newval)
-        return self._setAttr("frequency", rest_val)
-
-    def set_period(self, newval):
-        """
-        Changes the PWM period.
-        
-        @param newval : a floating point number corresponding to the PWM period
-        
-        @return YAPI.SUCCESS if the call succeeds.
-        
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = str(int(round(newval * 65536.0, 1)))
-        return self._setAttr("period", rest_val)
-
-    def get_period(self):
-        """
-        Returns the PWM period in milliseconds.
-        
-        @return a floating point number corresponding to the PWM period in milliseconds
-        
-        On failure, throws an exception or returns YPwmOutput.PERIOD_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YPwmOutput.PERIOD_INVALID
-        return self._period
 
     def get_pwmTransition(self):
         if self._cacheExpiration <= YAPI.GetTickCount():

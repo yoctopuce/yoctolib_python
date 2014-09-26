@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_oscontrol.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_oscontrol.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindOsControl(), the high-level API for OsControl functions
 #*
@@ -54,6 +54,8 @@ class YOsControl(YFunction):
 #--- (end of YOsControl class start)
     #--- (YOsControl return codes)
     #--- (end of YOsControl return codes)
+    #--- (YOsControl dlldef)
+    #--- (end of YOsControl dlldef)
     #--- (YOsControl definitions)
     SHUTDOWNCOUNTDOWN_INVALID = YAPI.INVALID_UINT
     #--- (end of YOsControl definitions)

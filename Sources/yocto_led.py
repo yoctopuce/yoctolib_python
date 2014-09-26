@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_led.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_led.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindLed(), the high-level API for Led functions
 #*
@@ -54,6 +54,8 @@ class YLed(YFunction):
 #--- (end of YLed class start)
     #--- (YLed return codes)
     #--- (end of YLed return codes)
+    #--- (YLed dlldef)
+    #--- (end of YLed dlldef)
     #--- (YLed definitions)
     LUMINOSITY_INVALID = YAPI.INVALID_UINT
     POWER_OFF = 0

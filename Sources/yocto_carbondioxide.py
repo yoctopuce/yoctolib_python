@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_carbondioxide.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_carbondioxide.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
 #*
@@ -53,6 +53,8 @@ class YCarbonDioxide(YSensor):
 #--- (end of YCarbonDioxide class start)
     #--- (YCarbonDioxide return codes)
     #--- (end of YCarbonDioxide return codes)
+    #--- (YCarbonDioxide dlldef)
+    #--- (end of YCarbonDioxide dlldef)
     #--- (YCarbonDioxide definitions)
     #--- (end of YCarbonDioxide definitions)
 

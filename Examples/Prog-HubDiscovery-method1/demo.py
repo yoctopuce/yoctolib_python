@@ -41,7 +41,7 @@ def HubDiscovered(serial, url  ):
     KnownHubs.append(serial)
 
     # disconnect from the hub
-    YAPI.UnregisterHub(url);
+    YAPI.UnregisterHub(url)
 
 errmsg=YRefParam()
 print("Waiting for hubs to signal themselves..." )

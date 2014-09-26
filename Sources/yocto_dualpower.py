@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_dualpower.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_dualpower.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindDualPower(), the high-level API for DualPower functions
 #*
@@ -56,6 +56,8 @@ class YDualPower(YFunction):
 #--- (end of YDualPower class start)
     #--- (YDualPower return codes)
     #--- (end of YDualPower return codes)
+    #--- (YDualPower dlldef)
+    #--- (end of YDualPower dlldef)
     #--- (YDualPower definitions)
     EXTVOLTAGE_INVALID = YAPI.INVALID_UINT
     POWERSTATE_OFF = 0

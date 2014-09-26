@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_compass.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_compass.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindCompass(), the high-level API for Compass functions
 #*
@@ -53,6 +53,8 @@ class YCompass(YSensor):
 #--- (end of YCompass class start)
     #--- (YCompass return codes)
     #--- (end of YCompass return codes)
+    #--- (YCompass dlldef)
+    #--- (end of YCompass dlldef)
     #--- (YCompass definitions)
     MAGNETICHEADING_INVALID = YAPI.INVALID_DOUBLE
     AXIS_X = 0
@@ -76,7 +78,7 @@ class YCompass(YSensor):
             self._axis = member.ivalue
             return 1
         if member.name == "magneticHeading":
-            self._magneticHeading = member.ivalue / 65536.0
+            self._magneticHeading = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         super(YCompass, self)._parseAttr(member)
 

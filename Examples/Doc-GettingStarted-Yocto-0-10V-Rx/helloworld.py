@@ -46,7 +46,7 @@ channel1 = YGenericSensor.FindGenericSensor(serial + '.genericSensor1')
 channel2 = YGenericSensor.FindGenericSensor(serial + '.genericSensor2')
 
 
-while channel1.isOnline() and channel1.isOnline():
+while channel1.isOnline() and channel2.isOnline():
     print("channel 1:  %f %s" % (channel1.get_currentValue(), channel1.get_unit()))
     print("channel 2:  %f %s" % (channel2.get_currentValue(), channel2.get_unit()))
     print(      "  (Ctrl-C to stop)")

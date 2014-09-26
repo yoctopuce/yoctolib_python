@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_hubport.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_hubport.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindHubPort(), the high-level API for HubPort functions
 #*
@@ -55,6 +55,8 @@ class YHubPort(YFunction):
 #--- (end of YHubPort class start)
     #--- (YHubPort return codes)
     #--- (end of YHubPort return codes)
+    #--- (YHubPort dlldef)
+    #--- (end of YHubPort dlldef)
     #--- (YHubPort definitions)
     BAUDRATE_INVALID = YAPI.INVALID_UINT
     ENABLED_FALSE = 0

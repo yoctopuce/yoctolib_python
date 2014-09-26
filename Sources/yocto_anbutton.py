@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_anbutton.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_anbutton.py 17674 2014-09-16 16:18:58Z seb $
 #*
 #* Implements yFindAnButton(), the high-level API for AnButton functions
 #*
@@ -57,6 +57,8 @@ class YAnButton(YFunction):
 #--- (end of YAnButton class start)
     #--- (YAnButton return codes)
     #--- (end of YAnButton return codes)
+    #--- (YAnButton dlldef)
+    #--- (end of YAnButton dlldef)
     #--- (YAnButton definitions)
     CALIBRATEDVALUE_INVALID = YAPI.INVALID_UINT
     RAWVALUE_INVALID = YAPI.INVALID_UINT
@@ -295,11 +297,11 @@ class YAnButton(YFunction):
     def get_lastTimePressed(self):
         """
         Returns the number of elapsed milliseconds between the module power on and the last time
-        the input button was pressed (the input contact transitionned from open to closed).
+        the input button was pressed (the input contact transitioned from open to closed).
         
         @return an integer corresponding to the number of elapsed milliseconds between the module power on
         and the last time
-                the input button was pressed (the input contact transitionned from open to closed)
+                the input button was pressed (the input contact transitioned from open to closed)
         
         On failure, throws an exception or returns YAnButton.LASTTIMEPRESSED_INVALID.
         """
@@ -311,11 +313,11 @@ class YAnButton(YFunction):
     def get_lastTimeReleased(self):
         """
         Returns the number of elapsed milliseconds between the module power on and the last time
-        the input button was released (the input contact transitionned from closed to open).
+        the input button was released (the input contact transitioned from closed to open).
         
         @return an integer corresponding to the number of elapsed milliseconds between the module power on
         and the last time
-                the input button was released (the input contact transitionned from closed to open)
+                the input button was released (the input contact transitioned from closed to open)
         
         On failure, throws an exception or returns YAnButton.LASTTIMERELEASED_INVALID.
         """

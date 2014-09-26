@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_genericsensor.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_genericsensor.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #*
@@ -53,11 +53,14 @@ class YGenericSensor(YSensor):
 #--- (end of YGenericSensor class start)
     #--- (YGenericSensor return codes)
     #--- (end of YGenericSensor return codes)
+    #--- (YGenericSensor dlldef)
+    #--- (end of YGenericSensor dlldef)
     #--- (YGenericSensor definitions)
     SIGNALVALUE_INVALID = YAPI.INVALID_DOUBLE
     SIGNALUNIT_INVALID = YAPI.INVALID_STRING
     SIGNALRANGE_INVALID = YAPI.INVALID_STRING
     VALUERANGE_INVALID = YAPI.INVALID_STRING
+    SIGNALBIAS_INVALID = YAPI.INVALID_DOUBLE
     #--- (end of YGenericSensor definitions)
 
     def __init__(self, func):
@@ -69,12 +72,13 @@ class YGenericSensor(YSensor):
         self._signalUnit = YGenericSensor.SIGNALUNIT_INVALID
         self._signalRange = YGenericSensor.SIGNALRANGE_INVALID
         self._valueRange = YGenericSensor.VALUERANGE_INVALID
+        self._signalBias = YGenericSensor.SIGNALBIAS_INVALID
         #--- (end of YGenericSensor attributes)
 
     #--- (YGenericSensor implementation)
     def _parseAttr(self, member):
         if member.name == "signalValue":
-            self._signalValue = member.ivalue / 65536.0
+            self._signalValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "signalUnit":
             self._signalUnit = member.svalue
@@ -84,6 +88,9 @@ class YGenericSensor(YSensor):
             return 1
         if member.name == "valueRange":
             self._valueRange = member.svalue
+            return 1
+        if member.name == "signalBias":
+            self._signalBias = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         super(YGenericSensor, self)._parseAttr(member)
 
@@ -169,8 +176,8 @@ class YGenericSensor(YSensor):
 
     def set_valueRange(self, newval):
         """
-        Changes the physical value range measured by the sensor. The range change may have a side effect
-        on the display resolution, as it may be adapted automatically.
+        Changes the physical value range measured by the sensor. As a side effect, the range modification may
+        automatically modify the display resolution.
         
         @param newval : a string corresponding to the physical value range measured by the sensor
         
@@ -180,6 +187,36 @@ class YGenericSensor(YSensor):
         """
         rest_val = newval
         return self._setAttr("valueRange", rest_val)
+
+    def set_signalBias(self, newval):
+        """
+        Changes the electric signal bias for zero shift adjustment.
+        If your electric signal reads positif when it should be zero, setup
+        a positive signalBias of the same value to fix the zero shift.
+        
+        @param newval : a floating point number corresponding to the electric signal bias for zero shift adjustment
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(int(round(newval * 65536.0, 1)))
+        return self._setAttr("signalBias", rest_val)
+
+    def get_signalBias(self):
+        """
+        Returns the electric signal bias for zero shift adjustment.
+        A positive bias means that the signal is over-reporting the measure,
+        while a negative bias means that the signal is underreporting the measure.
+        
+        @return a floating point number corresponding to the electric signal bias for zero shift adjustment
+        
+        On failure, throws an exception or returns YGenericSensor.SIGNALBIAS_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YGenericSensor.SIGNALBIAS_INVALID
+        return self._signalBias
 
     @staticmethod
     def FindGenericSensor(func):
@@ -212,6 +249,21 @@ class YGenericSensor(YSensor):
             obj = YGenericSensor(func)
             YFunction._AddToCache("GenericSensor", func, obj)
         return obj
+
+    def zeroAdjust(self):
+        """
+        Adjusts the signal bias so that the current signal value is need
+        precisely as zero.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # currSignal
+        # currBias
+        currSignal = self.get_signalValue()
+        currBias = self.get_signalBias()
+        return self.set_signalBias(currSignal + currBias)
 
     def nextGenericSensor(self):
         """

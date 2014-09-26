@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_motor.py 16185 2014-05-12 16:00:20Z seb $
+#* $Id: yocto_motor.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindMotor(), the high-level API for Motor functions
 #*
@@ -47,26 +47,28 @@ from yocto_api import *
 class YMotor(YFunction):
     """
     Yoctopuce application programming interface allows you to drive the
-    power sent to motor to make it turn both ways, but also to drive accelerations
+    power sent to the motor to make it turn both ways, but also to drive accelerations
     and decelerations. The motor will then accelerate automatically: you will not
     have to monitor it. The API also allows to slow down the motor by shortening
-    its terminals: the motor will then act as an electromagnetic break.
+    its terminals: the motor will then act as an electromagnetic brake.
     
     """
 #--- (end of YMotor class start)
     #--- (YMotor return codes)
     #--- (end of YMotor return codes)
+    #--- (YMotor dlldef)
+    #--- (end of YMotor dlldef)
     #--- (YMotor definitions)
     DRIVINGFORCE_INVALID = YAPI.INVALID_DOUBLE
-    BREAKINGFORCE_INVALID = YAPI.INVALID_DOUBLE
+    BRAKINGFORCE_INVALID = YAPI.INVALID_DOUBLE
     CUTOFFVOLTAGE_INVALID = YAPI.INVALID_DOUBLE
     OVERCURRENTLIMIT_INVALID = YAPI.INVALID_INT
-    FREQUENCY_INVALID = YAPI.INVALID_UINT
+    FREQUENCY_INVALID = YAPI.INVALID_DOUBLE
     STARTERTIME_INVALID = YAPI.INVALID_INT
     FAILSAFETIMEOUT_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
     MOTORSTATUS_IDLE = 0
-    MOTORSTATUS_BREAK = 1
+    MOTORSTATUS_BRAKE = 1
     MOTORSTATUS_FORWD = 2
     MOTORSTATUS_BACKWD = 3
     MOTORSTATUS_LOVOLT = 4
@@ -83,7 +85,7 @@ class YMotor(YFunction):
         self._callback = None
         self._motorStatus = YMotor.MOTORSTATUS_INVALID
         self._drivingForce = YMotor.DRIVINGFORCE_INVALID
-        self._breakingForce = YMotor.BREAKINGFORCE_INVALID
+        self._brakingForce = YMotor.BRAKINGFORCE_INVALID
         self._cutOffVoltage = YMotor.CUTOFFVOLTAGE_INVALID
         self._overCurrentLimit = YMotor.OVERCURRENTLIMIT_INVALID
         self._frequency = YMotor.FREQUENCY_INVALID
@@ -98,19 +100,19 @@ class YMotor(YFunction):
             self._motorStatus = member.ivalue
             return 1
         if member.name == "drivingForce":
-            self._drivingForce = member.ivalue / 65536.0
+            self._drivingForce = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
-        if member.name == "breakingForce":
-            self._breakingForce = member.ivalue / 65536.0
+        if member.name == "brakingForce":
+            self._brakingForce = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "cutOffVoltage":
-            self._cutOffVoltage = member.ivalue / 65536.0
+            self._cutOffVoltage = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "overCurrentLimit":
             self._overCurrentLimit = member.ivalue
             return 1
         if member.name == "frequency":
-            self._frequency = member.ivalue
+            self._frequency = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "starterTime":
             self._starterTime = member.ivalue
@@ -129,16 +131,16 @@ class YMotor(YFunction):
         IDLE   when the motor is stopped/in free wheel, ready to start;
         FORWD  when the controller is driving the motor forward;
         BACKWD when the controller is driving the motor backward;
-        BREAK  when the controller is breaking;
+        BRAKE  when the controller is braking;
         LOVOLT when the controller has detected a low voltage condition;
         HICURR when the controller has detected an overcurrent condition;
-        HIHEAT when the controller detected an overheat condition;
+        HIHEAT when the controller has detected an overheat condition;
         FAILSF when the controller switched on the failsafe security.
         
         When an error condition occurred (LOVOLT, HICURR, HIHEAT, FAILSF), the controller
         status must be explicitly reset using the resetStatus function.
         
-        @return a value among YMotor.MOTORSTATUS_IDLE, YMotor.MOTORSTATUS_BREAK, YMotor.MOTORSTATUS_FORWD,
+        @return a value among YMotor.MOTORSTATUS_IDLE, YMotor.MOTORSTATUS_BRAKE, YMotor.MOTORSTATUS_FORWD,
         YMotor.MOTORSTATUS_BACKWD, YMotor.MOTORSTATUS_LOVOLT, YMotor.MOTORSTATUS_HICURR,
         YMotor.MOTORSTATUS_HIHEAT and YMotor.MOTORSTATUS_FAILSF
         
@@ -159,7 +161,7 @@ class YMotor(YFunction):
         to 100%. If you want go easy on your mechanics and avoid excessive current consumption,
         try to avoid brutal power changes. For example, immediate transition from forward full power
         to reverse full power is a very bad idea. Each time the driving power is modified, the
-        breaking power is set to zero.
+        braking power is set to zero.
         
         @param newval : a floating point number corresponding to immediately the power sent to the motor
         
@@ -184,47 +186,47 @@ class YMotor(YFunction):
                 return YMotor.DRIVINGFORCE_INVALID
         return self._drivingForce
 
-    def set_breakingForce(self, newval):
+    def set_brakingForce(self, newval):
         """
-        Changes immediately the breaking force applied to the motor (in per cents).
-        The value 0 corresponds to no breaking (free wheel). When the breaking force
+        Changes immediately the braking force applied to the motor (in percents).
+        The value 0 corresponds to no braking (free wheel). When the braking force
         is changed, the driving power is set to zero. The value is a percentage.
         
-        @param newval : a floating point number corresponding to immediately the breaking force applied to
-        the motor (in per cents)
+        @param newval : a floating point number corresponding to immediately the braking force applied to
+        the motor (in percents)
         
         @return YAPI.SUCCESS if the call succeeds.
         
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(int(round(newval * 65536.0, 1)))
-        return self._setAttr("breakingForce", rest_val)
+        return self._setAttr("brakingForce", rest_val)
 
-    def get_breakingForce(self):
+    def get_brakingForce(self):
         """
-        Returns the breaking force applied to the motor, as a percentage.
-        The value 0 corresponds to no breaking (free wheel).
+        Returns the braking force applied to the motor, as a percentage.
+        The value 0 corresponds to no braking (free wheel).
         
-        @return a floating point number corresponding to the breaking force applied to the motor, as a percentage
+        @return a floating point number corresponding to the braking force applied to the motor, as a percentage
         
-        On failure, throws an exception or returns YMotor.BREAKINGFORCE_INVALID.
+        On failure, throws an exception or returns YMotor.BRAKINGFORCE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YMotor.BREAKINGFORCE_INVALID
-        return self._breakingForce
+                return YMotor.BRAKINGFORCE_INVALID
+        return self._brakingForce
 
     def set_cutOffVoltage(self, newval):
         """
-        Changes the threshold voltage under which the controller will automatically switch to error state
-        and prevent further current draw. This setting prevent damage to a battery that can
+        Changes the threshold voltage under which the controller automatically switches to error state
+        and prevents further current draw. This setting prevent damage to a battery that can
         occur when drawing current from an "empty" battery.
-        Note that whatever the cutoff threshold, the controller will switch to undervoltage
+        Note that whatever the cutoff threshold, the controller switches to undervoltage
         error state if the power supply goes under 3V, even for a very brief time.
         
         @param newval : a floating point number corresponding to the threshold voltage under which the
-        controller will automatically switch to error state
-                and prevent further current draw
+        controller automatically switches to error state
+                and prevents further current draw
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -235,13 +237,13 @@ class YMotor(YFunction):
 
     def get_cutOffVoltage(self):
         """
-        Returns the threshold voltage under which the controller will automatically switch to error state
-        and prevent further current draw. This setting prevent damage to a battery that can
+        Returns the threshold voltage under which the controller automatically switches to error state
+        and prevents further current draw. This setting prevents damage to a battery that can
         occur when drawing current from an "empty" battery.
         
         @return a floating point number corresponding to the threshold voltage under which the controller
-        will automatically switch to error state
-                and prevent further current draw
+        automatically switches to error state
+                and prevents further current draw
         
         On failure, throws an exception or returns YMotor.CUTOFFVOLTAGE_INVALID.
         """
@@ -252,11 +254,11 @@ class YMotor(YFunction):
 
     def get_overCurrentLimit(self):
         """
-        Returns the current threshold (in mA) above which the controller will automatically
-        switch to error state. A zero value means that there is no limit.
+        Returns the current threshold (in mA) above which the controller automatically
+        switches to error state. A zero value means that there is no limit.
         
-        @return an integer corresponding to the current threshold (in mA) above which the controller will automatically
-                switch to error state
+        @return an integer corresponding to the current threshold (in mA) above which the controller automatically
+                switches to error state
         
         On failure, throws an exception or returns YMotor.OVERCURRENTLIMIT_INVALID.
         """
@@ -267,14 +269,14 @@ class YMotor(YFunction):
 
     def set_overCurrentLimit(self, newval):
         """
-        Changes tthe current threshold (in mA) above which the controller will automatically
-        switch to error state. A zero value means that there is no limit. Note that whatever the
-        current limit is, the controller will switch to OVERCURRENT status if the current
+        Changes the current threshold (in mA) above which the controller automatically
+        switches to error state. A zero value means that there is no limit. Note that whatever the
+        current limit is, the controller switches to OVERCURRENT status if the current
         goes above 32A, even for a very brief time.
         
-        @param newval : an integer corresponding to tthe current threshold (in mA) above which the
-        controller will automatically
-                switch to error state
+        @param newval : an integer corresponding to the current threshold (in mA) above which the
+        controller automatically
+                switches to error state
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -283,19 +285,6 @@ class YMotor(YFunction):
         rest_val = str(newval)
         return self._setAttr("overCurrentLimit", rest_val)
 
-    def get_frequency(self):
-        """
-        Returns the PWM frequency used to control the motor.
-        
-        @return an integer corresponding to the PWM frequency used to control the motor
-        
-        On failure, throws an exception or returns YMotor.FREQUENCY_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YMotor.FREQUENCY_INVALID
-        return self._frequency
-
     def set_frequency(self, newval):
         """
         Changes the PWM frequency used to control the motor. Low frequency is usually
@@ -303,14 +292,27 @@ class YMotor(YFunction):
         generated. A higher frequency reduces the noise, but more energy is converted
         into heat.
         
-        @param newval : an integer corresponding to the PWM frequency used to control the motor
+        @param newval : a floating point number corresponding to the PWM frequency used to control the motor
         
         @return YAPI.SUCCESS if the call succeeds.
         
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = str(newval)
+        rest_val = str(int(round(newval * 65536.0, 1)))
         return self._setAttr("frequency", rest_val)
+
+    def get_frequency(self):
+        """
+        Returns the PWM frequency used to control the motor.
+        
+        @return a floating point number corresponding to the PWM frequency used to control the motor
+        
+        On failure, throws an exception or returns YMotor.FREQUENCY_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YMotor.FREQUENCY_INVALID
+        return self._frequency
 
     def get_starterTime(self):
         """
@@ -347,8 +349,8 @@ class YMotor(YFunction):
     def get_failSafeTimeout(self):
         """
         Returns the delay in milliseconds allowed for the controller to run autonomously without
-        receiving any instruction from the control process. Once this delay is elapsed,
-        the controller will automatically stop the motor and switch to FAILSAFE error.
+        receiving any instruction from the control process. When this delay has elapsed,
+        the controller automatically stops the motor and switches to FAILSAFE error.
         Failsafe security is disabled when the value is zero.
         
         @return an integer corresponding to the delay in milliseconds allowed for the controller to run
@@ -365,8 +367,8 @@ class YMotor(YFunction):
     def set_failSafeTimeout(self, newval):
         """
         Changes the delay in milliseconds allowed for the controller to run autonomously without
-        receiving any instruction from the control process. Once this delay is elapsed,
-        the controller will automatically stop the motor and switch to FAILSAFE error.
+        receiving any instruction from the control process. When this delay has elapsed,
+        the controller automatically stops the motor and switches to FAILSAFE error.
         Failsafe security is disabled when the value is zero.
         
         @param newval : an integer corresponding to the delay in milliseconds allowed for the controller to
@@ -426,7 +428,7 @@ class YMotor(YFunction):
         """
         Rearms the controller failsafe timer. When the motor is running and the failsafe feature
         is active, this function should be called periodically to prove that the control process
-        is running properly. Otherwise, the motor will be automatically stopped after the specified
+        is running properly. Otherwise, the motor is automatically stopped after the specified
         timeout. Calling a motor <i>set</i> function implicitely rearms the failsafe timer.
         """
         # // may throw an exception
@@ -444,7 +446,7 @@ class YMotor(YFunction):
         """
         Changes progressively the power sent to the moteur for a specific duration.
         
-        @param targetPower : desired motor power, in per cents (between -100% and +100%)
+        @param targetPower : desired motor power, in percents (between -100% and +100%)
         @param delay : duration (in ms) of the transition
         
         @return YAPI.SUCCESS if the call succeeds.
@@ -453,11 +455,11 @@ class YMotor(YFunction):
         """
         return self.set_command("P" + str(int(round(targetPower*10))) + "," + str(int(delay)))
 
-    def breakingForceMove(self, targetPower, delay):
+    def brakingForceMove(self, targetPower, delay):
         """
-        Changes progressively the breaking force applied to the motor for a specific duration.
+        Changes progressively the braking force applied to the motor for a specific duration.
         
-        @param targetPower : desired breaking force, in per cents
+        @param targetPower : desired braking force, in percents
         @param delay : duration (in ms) of the transition
         
         @return YAPI.SUCCESS if the call succeeds.

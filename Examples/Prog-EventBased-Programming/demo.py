@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import sys
+import os,sys
 
+# add ../../Sources to the PYTHONPATH
+sys.path.append(os.path.join("..","..","Sources"))
 from yocto_api import *
 from yocto_anbutton import *
 

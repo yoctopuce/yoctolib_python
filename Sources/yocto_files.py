@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 16339 2014-05-30 09:26:57Z seb $
+#* $Id: yocto_files.py 17674 2014-09-16 16:18:58Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -185,7 +185,7 @@ class YFiles(YFunction):
 
     def format_fs(self):
         """
-        Reinitializes the filesystem to its clean, unfragmented, empty state.
+        Reinitialize the filesystem to its clean, unfragmented, empty state.
         All files previously uploaded are permanently lost.
         
         @return YAPI.SUCCESS if the call succeeds.

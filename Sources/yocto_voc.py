@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_voc.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_voc.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindVoc(), the high-level API for Voc functions
 #*
@@ -53,6 +53,8 @@ class YVoc(YSensor):
 #--- (end of YVoc class start)
     #--- (YVoc return codes)
     #--- (end of YVoc return codes)
+    #--- (YVoc dlldef)
+    #--- (end of YVoc dlldef)
     #--- (YVoc definitions)
     #--- (end of YVoc definitions)
 

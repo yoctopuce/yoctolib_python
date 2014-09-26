@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_servo.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_servo.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindServo(), the high-level API for Servo functions
 #*
@@ -55,6 +55,8 @@ class YServo(YFunction):
 #--- (end of YServo class start)
     #--- (YServo return codes)
     #--- (end of YServo return codes)
+    #--- (YServo dlldef)
+    #--- (end of YServo dlldef)
     #--- (YServo definitions)
     POSITION_INVALID = YAPI.INVALID_INT
     RANGE_INVALID = YAPI.INVALID_UINT

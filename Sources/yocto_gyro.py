@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 15334 2014-03-07 20:33:05Z mvuilleu $
+#* $Id: yocto_gyro.py 17233 2014-08-20 12:53:36Z seb $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -157,7 +157,7 @@ def yInternalGyroCallback(YQt_obj, str_value):
     gyro = YQt_obj.get_userData()
     if gyro is None:
         return
-    tmp = YQt_obj.get_functionId().Substring(2)
+    tmp = YQt_obj.get_functionId()[2]
     idx = int(tmp)
     dbl_value = float(str_value)
     # noinspection PyProtectedMember
@@ -208,13 +208,13 @@ class YGyro(YSensor):
     #--- (generated code: YGyro implementation)
     def _parseAttr(self, member):
         if member.name == "xValue":
-            self._xValue = member.ivalue / 65536.0
+            self._xValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "yValue":
-            self._yValue = member.ivalue / 65536.0
+            self._yValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "zValue":
-            self._zValue = member.ivalue / 65536.0
+            self._zValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         super(YGyro, self)._parseAttr(member)
 
@@ -296,7 +296,7 @@ class YGyro(YSensor):
         # now_stamp
         # age_ms
         
-        now_stamp = ((YAPI.GetTickCount()) & (0x7FFFFFFF))
+        now_stamp = (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
         age_ms = (((now_stamp - self._qt_stamp)) & (0x7FFFFFFF))
         if (age_ms >= 10) or (self._qt_stamp == 0):
             if self.load(10) != YAPI.SUCCESS:
@@ -541,7 +541,7 @@ class YGyro(YSensor):
             self._z = qtValue
         if qtIndex < 4:
             return 0
-        self._qt_stamp = ((YAPI.GetTickCount()) & (0x7FFFFFFF))
+        self._qt_stamp = (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
         if self._quatCallback is not None:
             self._quatCallback(self, self._w, self._x, self._y, self._z)
         if self._anglesCallback is not None:

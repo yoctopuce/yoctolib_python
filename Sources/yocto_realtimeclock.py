@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_realtimeclock.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_realtimeclock.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #*
@@ -55,6 +55,8 @@ class YRealTimeClock(YFunction):
 #--- (end of YRealTimeClock class start)
     #--- (YRealTimeClock return codes)
     #--- (end of YRealTimeClock return codes)
+    #--- (YRealTimeClock dlldef)
+    #--- (end of YRealTimeClock dlldef)
     #--- (YRealTimeClock definitions)
     UNIXTIME_INVALID = YAPI.INVALID_LONG
     DATETIME_INVALID = YAPI.INVALID_STRING

@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_watchdog.py 15434 2014-03-14 06:37:47Z mvuilleu $
+#* $Id: yocto_watchdog.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindWatchdog(), the high-level API for Watchdog functions
 #*
@@ -57,6 +57,8 @@ class YWatchdog(YFunction):
 #--- (end of YWatchdog class start)
     #--- (YWatchdog return codes)
     #--- (end of YWatchdog return codes)
+    #--- (YWatchdog dlldef)
+    #--- (end of YWatchdog dlldef)
     #--- (YWatchdog definitions)
     MAXTIMEONSTATEA_INVALID = YAPI.INVALID_LONG
     MAXTIMEONSTATEB_INVALID = YAPI.INVALID_LONG

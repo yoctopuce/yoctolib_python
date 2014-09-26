@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_voltage.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_voltage.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindVoltage(), the high-level API for Voltage functions
 #*
@@ -53,6 +53,8 @@ class YVoltage(YSensor):
 #--- (end of YVoltage class start)
     #--- (YVoltage return codes)
     #--- (end of YVoltage return codes)
+    #--- (YVoltage dlldef)
+    #--- (end of YVoltage dlldef)
     #--- (YVoltage definitions)
     #--- (end of YVoltage definitions)
 

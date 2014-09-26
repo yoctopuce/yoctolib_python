@@ -1,11 +1,14 @@
-- set_logicalName() returns an error if the name is invalid
-- improve documentation
-- improve reliability of USB connection on Linux
-- improve handling of offline TCP hubs
-- fix set_beacon command on USB
-- fix timed notification in python 2.7
-- fix YFiles.get_list() and YWireless.get_list()
-- fix "Unable to start USB IO thread (ypkt_win:746)" error message
-- fix minor memory leak (few bytes per registered IP hub)
-- fix crash if YAPI::RegisterHub("usb") is called twice when another process uses the API
-- fix communication with old firmware that use dual interfaces settings
+- Add YPwmInput class to support Yocto-PWM-Rx
+- Add YSerialPort class to support Yocto-RS232
+- Add support for MODBUS devices using SerialPort class
+- Add support for SoftAP mode in the library
+- Add get_allSettings and set_allSettings method in YModule
+- Add high energy mode for Yocto-Light-V2
+- Add checkFirmware and updateFirmware method in YModule
+- Fix possible TCP disconnection with all YoctoHub
+- Fix possible problem with saving of calibration settings
+- Fix bug in position estimation callback function
+- Fix decoding of fractional timed reports with Python 2.x
+- Change frequency attribute of YMotor and YPwmOutput is now a double
+- OSX only: integrate missing fix from previous library (revision: 16182, 16490 and 17075)
+- minor fixes and improvement

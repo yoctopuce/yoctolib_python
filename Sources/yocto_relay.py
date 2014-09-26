@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_relay.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_relay.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindRelay(), the high-level API for Relay functions
 #*
@@ -58,6 +58,8 @@ class YRelay(YFunction):
 #--- (end of YRelay class start)
     #--- (YRelay return codes)
     #--- (end of YRelay return codes)
+    #--- (YRelay dlldef)
+    #--- (end of YRelay dlldef)
     #--- (YRelay definitions)
     MAXTIMEONSTATEA_INVALID = YAPI.INVALID_LONG
     MAXTIMEONSTATEB_INVALID = YAPI.INVALID_LONG

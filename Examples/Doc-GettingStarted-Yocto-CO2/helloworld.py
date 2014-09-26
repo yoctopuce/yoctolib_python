@@ -32,7 +32,7 @@ if target=='any':
     sensor = YCarbonDioxide.FirstCarbonDioxide()
     if sensor is None :
         die('No module connected')
-    print ("Using: "+sensor.get_module().get_serialNumber());    
+    print ("Using: "+sensor.get_module().get_serialNumber())
 else:
     sensor= YCarbonDioxide.FindCarbonDioxide(target + '.carbonDioxide')
 

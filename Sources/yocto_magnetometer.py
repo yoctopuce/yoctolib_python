@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_magnetometer.py 15257 2014-03-06 10:19:36Z seb $
+#* $Id: yocto_magnetometer.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindMagnetometer(), the high-level API for Magnetometer functions
 #*
@@ -53,6 +53,8 @@ class YMagnetometer(YSensor):
 #--- (end of YMagnetometer class start)
     #--- (YMagnetometer return codes)
     #--- (end of YMagnetometer return codes)
+    #--- (YMagnetometer dlldef)
+    #--- (end of YMagnetometer dlldef)
     #--- (YMagnetometer definitions)
     XVALUE_INVALID = YAPI.INVALID_DOUBLE
     YVALUE_INVALID = YAPI.INVALID_DOUBLE
@@ -72,13 +74,13 @@ class YMagnetometer(YSensor):
     #--- (YMagnetometer implementation)
     def _parseAttr(self, member):
         if member.name == "xValue":
-            self._xValue = member.ivalue / 65536.0
+            self._xValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "yValue":
-            self._yValue = member.ivalue / 65536.0
+            self._yValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "zValue":
-            self._zValue = member.ivalue / 65536.0
+            self._zValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         super(YMagnetometer, self)._parseAttr(member)
 

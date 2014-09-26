@@ -1,35 +1,35 @@
 #*********************************************************************
 #*
-#* $Id: yocto_api.py 16339 2014-05-30 09:26:57Z seb $
+#* $Id: yocto_api.py 17828 2014-09-25 16:00:31Z mvuilleu $
 #*
 #* High-level programming interface, common to all modules
 #*
-#* - - - - - - - - - License information: - - - - - - - - - 
+#* - - - - - - - - - License information: - - - - - - - - -
 #*
 #*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
 #*  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
 #*  non-exclusive license to use, modify, copy and integrate this
-#*  file into your software for the sole purpose of interfacing 
-#*  with Yoctopuce products. 
+#*  file into your software for the sole purpose of interfacing
+#*  with Yoctopuce products.
 #*
-#*  You may reproduce and distribute copies of this file in 
+#*  You may reproduce and distribute copies of this file in
 #*  source or object form, as long as the sole purpose of this
-#*  code is to interface with Yoctopuce products. You must retain 
+#*  code is to interface with Yoctopuce products. You must retain
 #*  this notice in the distributed source file.
 #*
 #*  You should refer to Yoctopuce General Terms and Conditions
-#*  for additional information regarding your rights and 
+#*  for additional information regarding your rights and
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
-#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
-#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
-#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
-#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
 #*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
 #*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
 #*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -37,8 +37,10 @@
 #*
 #*********************************************************************/
 
+from __future__ import division
 
 __docformat__ = 'restructuredtext en'
+
 import datetime
 import ctypes
 import platform
@@ -53,59 +55,67 @@ from ctypes import *
 #
 #  PYTHON 2.x VS PYTHON 3.x compatibility check
 #
-
-YByte2String = None
-YString2Byte = None
-YGetByte = None
-YAddByte = None
-
-
 def YByte2StringPython2x(binBuffer):
     return binBuffer.decode("latin-1")
-    #return str(binBuffer)
-
 
 def YString2BytePython2x(strBuffer):
     return strBuffer.encode("latin-1")
-    #return str(strBuffer)
-
 
 def YGetBytePython2x(binBuffer, idx):
     return ord(binBuffer[idx])
 
+def YSetBytePython2x(binBuffer, idx, b):
+    binBuffer[idx] = chr(b)
 
 def YAddBytePython2x(binBuffer, b):
     return binBuffer + chr(b)
+
+def YRelTickCountPython2x(dt):
+    td = dt - datetime.datetime(1970, 1, 1)
+    return int(round((td.seconds + td.days * 24 * 3600 * 1000) + td.microseconds / 1000))
 
 
 def YByte2StringPython3x(binBuffer):
     return binBuffer.decode("latin-1")
 
-
 def YString2BytePython3x(strBuffer):
     return strBuffer.encode("latin-1")
-
 
 def YGetBytePython3x(binBuffer, l):
     return binBuffer[l]
 
+def YSetBytePython3x(binBuffer, idx, b):
+    binBuffer[idx] = b
 
 def YAddBytePython3x(binBuffer, b):
     return binBuffer + bytes([b])
 
+def YRelTickCountPython3x(dt):
+    td = dt - datetime.datetime(1970, 1, 1)
+    return int(round(td.total_seconds() * 1000.0))
 
+
+YByte2String = None
+YString2Byte = None
+YGetByte = None
+YSetByte = None
+YAddByte = None
 if sys.version_info < (3, 0):
     YByte2String = YByte2StringPython2x
     YString2Byte = YString2BytePython2x
     YGetByte = YGetBytePython2x
+    YSetByte = YSetBytePython2x
     YAddByte = YAddBytePython2x
+    YRelTickCount = YRelTickCountPython2x
 else:
     YByte2String = YByte2StringPython3x
     YString2Byte = YString2BytePython3x
     YGetByte = YGetBytePython3x
+    YSetByte = YSetBytePython3x
     YAddByte = YAddBytePython3x
+    YRelTickCount = YRelTickCountPython3x
 
-# Ugly global var for Python 2 compatibility    
+# Ugly global var for Python 2 compatibility
 yLogFct = None
 yDeviceLogFct = None
 yArrivalFct = None
@@ -522,7 +532,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "16490"
+    YOCTO_API_BUILD_NO = "17849"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -544,6 +554,8 @@ class YAPI:
     YOCTO_REALM_LEN = 20
     YIOHDL_SIZE = 8
     INVALID_YHANDLE = 0
+
+    YOCTO_CALIB_TYPE_OFS = 30
 
     yUnknowSize = 1024
 
@@ -897,22 +909,6 @@ class YAPI:
         YAPI._yapiHTTPRequest.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int,
                                           ctypes.c_void_p, ctypes.c_char_p]
 
-        #  private extern static int _yapiGetBootloadersDevs(StringBuilder serials, u32 maxNbSerial,
-        # ref u32 totalBootladers, StringBuilder errmsgRef);
-        YAPI._yapiGetBootloadersDevs = YAPI._yApiCLib.yapiGetBootloadersDevs
-        YAPI._yapiGetBootloadersDevs.restypes = ctypes.c_int
-        YAPI._yapiGetBootloadersDevs.argtypes = [ctypes.c_char_p, ctypes.c_uint32, ctypes.c_void_p, ctypes.c_char_p]
-
-        #  private extern static int _yapiFlashDevice(ref yFlashArg args, StringBuilder errmsgRef);
-        YAPI._yapiFlashDevice = YAPI._yApiCLib.yapiFlashDevice
-        YAPI._yapiFlashDevice.restypes = ctypes.c_int
-        YAPI._yapiFlashDevice.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-
-        #  private extern static int _yapiVerifyDevice(ref yFlashArg args, StringBuilder errmsgRef);
-        YAPI._yapiVerifyDevice = YAPI._yApiCLib.yapiVerifyDevice
-        YAPI._yapiVerifyDevice.restypes = ctypes.c_int
-        YAPI._yapiVerifyDevice.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-
         #  private extern static int _yapiGetDevicePath(int devdesc, StringBuilder rootdevice, StringBuilder path,
         # int pathsize, ref int neededsize, StringBuilder errmsgRef);
         YAPI._yapiGetDevicePath = YAPI._yApiCLib.yapiGetDevicePath
@@ -940,6 +936,22 @@ class YAPI:
         YAPI._yapiStartStopDeviceLogCallback = YAPI._yApiCLib.yapiStartStopDeviceLogCallback
         YAPI._yapiStartStopDeviceLogCallback.restypes = ctypes.c_int
         YAPI._yapiStartStopDeviceLogCallback.argtypes = [ctypes.c_char_p, ctypes.c_int]
+
+        ##--- (generated code: YFunction dlldef)
+        YAPI._yapiGetAllJsonKeys = YAPI._yApiCLib.yapiGetAllJsonKeys
+        YAPI._yapiGetAllJsonKeys.restypes = ctypes.c_int
+        YAPI._yapiGetAllJsonKeys.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
+        YAPI._yapiCheckFirmware = YAPI._yApiCLib.yapiCheckFirmware
+        YAPI._yapiCheckFirmware.restypes = ctypes.c_int
+        YAPI._yapiCheckFirmware.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
+        YAPI._yapiGetBootloadersDevs = YAPI._yApiCLib.yapiGetBootloadersDevs
+        YAPI._yapiGetBootloadersDevs.restypes = ctypes.c_int
+        YAPI._yapiGetBootloadersDevs.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
+        YAPI._yapiUpdateFirmware = YAPI._yApiCLib.yapiUpdateFirmware
+        YAPI._yapiUpdateFirmware.restypes = ctypes.c_int
+        YAPI._yapiUpdateFirmware.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
+    #--- (end of generated code: YFunction dlldef)
+
         YAPI._ydllLoaded = True
 
     #noinspection PyUnresolvedReferences
@@ -1042,14 +1054,15 @@ class YAPI:
                     if YFunction._FunctionCallbacks[i].get_functionDescriptor() == self.fun_descr:
                         YFunction._FunctionCallbacks[i]._invokeValueCallback(self.value)
             elif self.ev == self.FUN_TIMEDREPORT:
-                for i in range(len(YFunction._TimedReportCallbackList)):
-                    if YFunction._TimedReportCallbackList[i].get_functionDescriptor() == self.fun_descr:
-                        sensor = YFunction._TimedReportCallbackList[i]
-                        sensor._invokeTimedReportCallback(sensor._decodeTimedReport(self.timestamp, self.report))
+                if self.report[0] <= 2:
+                    for i in range(len(YFunction._TimedReportCallbackList)):
+                        if YFunction._TimedReportCallbackList[i].get_functionDescriptor() == self.fun_descr:
+                            sensor = YFunction._TimedReportCallbackList[i]
+                            sensor._invokeTimedReportCallback(sensor._decodeTimedReport(self.timestamp, self.report))
 
     ##--- (generated code: YFunction return codes)
     # Yoctopuce error codes, used by default as function return value
-    SUCCESS = 0                    # everything worked allright
+    SUCCESS = 0                    # everything worked all right
     NOT_INITIALIZED = -1           # call yInitAPI() first !
     INVALID_ARGUMENT = -2          # one of the arguments passed to the function is invalid
     NOT_SUPPORTED = -3             # the operation attempted is (currently) not supported
@@ -1059,10 +1072,11 @@ class YAPI:
     TIMEOUT = -7                   # the device took too long to provide an answer
     IO_ERROR = -8                  # there was an I/O problem while talking to the device
     NO_MORE_DATA = -9              # there is no more data to read from
-    EXHAUSTED = -10                # you have run out of a limited ressource, check the documentation
-    DOUBLE_ACCES = -11             # you have two process that try to acces to the same device
+    EXHAUSTED = -10                # you have run out of a limited resource, check the documentation
+    DOUBLE_ACCES = -11             # you have two process that try to access to the same device
     UNAUTHORIZED = -12             # unauthorized access to password-protected device
     RTC_NOT_READY = -13            # real-time clock has not been initialized (or time was lost)
+    FILE_NOT_FOUND = -14           # the file is not found
 
     #--- (end of generated code: YFunction return codes)
 
@@ -1083,7 +1097,6 @@ class YAPI:
     _yapiHubDiscoveryCallback = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_char_p)
 
     _yapiDeviceLogCallback = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p)
-
 
     @staticmethod
     def YISERR(retcode):
@@ -1302,6 +1315,49 @@ class YAPI:
                 val += (ord(c) - ord('0')) << 10
             udat.append(val)
         return udat
+
+    @staticmethod
+    def _decodeFloats(sdat):
+        p = 0
+        idat = []
+        while p < len(sdat):
+            val = 0
+            sign = 1
+            dec = 0
+            decInc = 0
+            c = sdat[p]
+            p += 1
+            while c != '-' and (c < '0' or c > '9'):
+                if p >= len(sdat):
+                    return idat
+                c = sdat[p]
+                p += 1
+            if c == '-':
+                if p >= len(sdat):
+                    return idat
+                sign = -sign
+                c = sdat[p]
+                p += 1
+            while ('0' <= c <= '9') or c == '.':
+                if c == '.':
+                    decInc = 1
+                elif dec < 3:
+                    val = val * 10 + ord(c) - ord('0')
+                    dec += decInc
+                if p < len(sdat):
+                    c = sdat[p]
+                    p += 1
+                else:
+                    c = 0
+            if dec < 3:
+                if dec == 0:
+                    val *= 1000
+                elif dec == 1:
+                    val *= 100
+                elif dec == 2:
+                    val *= 10
+            idat.append(sign * val)
+        return idat
 
     #noinspection PyUnresolvedReferences
     @staticmethod
@@ -1594,14 +1650,18 @@ class YAPI:
     #noinspection PyUnusedLocal
     @staticmethod
     def LinearCalibrationHandler(rawValue, calibType, params, rawValues, refValues):
-        npt = calibType % 10
         x = rawValues[0]
         adj = refValues[0] - x
         i = 0
-        if npt > len(rawValues) + 1:
-            npt = len(rawValues) + 1
-        if npt > len(refValues) + 1:
-            npt = len(refValues) + 1
+
+        if calibType < YAPI.YOCTO_CALIB_TYPE_OFS:
+            npt = calibType % 10
+            if npt > len(rawValues):
+                npt = len(rawValues)
+            if npt > len(refValues):
+                npt = len(refValues)
+        else:
+            npt = len(refValues)
         while rawValue > rawValues[i] and i + 1 < npt:
             i += 1
             x2 = x
@@ -1660,7 +1720,7 @@ class YAPI:
         """
         version = YRefParam()
         date = YRefParam()
-        #load yapi functions form dynamic library  
+        #load yapi functions form dynamic library
         if not YAPI._ydllLoaded:
             YAPI.yloadYapiCDLL()
         YAPI.apiGetAPIVersion(version, date)
@@ -1734,6 +1794,7 @@ class YAPI:
 
         for i in range(21):
             YAPI.RegisterCalibrationHandler(i, YAPI.LinearCalibrationHandler)
+        YAPI.RegisterCalibrationHandler(YAPI.YOCTO_CALIB_TYPE_OFS, YAPI.LinearCalibrationHandler)
         YAPI._apiInitialized = True
         return res
 
@@ -1788,7 +1849,7 @@ class YAPI:
         If access control has been activated on the hub, virtual or not, you want to
         reach, the URL parameter should look like:
         
-        http://username:password@adresse:port
+        http://username:password@address:port
         
         You can call <i>RegisterHub</i> several times to connect to several machines.
         
@@ -2019,6 +2080,85 @@ class YAPI:
         YFunction._CalibHandlers.clear()
 
 
+#--- (generated code: YFirmwareUpdate class start)
+#noinspection PyProtectedMember
+class YFirmwareUpdate(object):
+    """
+    The YFirmwareUpdate class let you control the firmware update of a Yoctopuce
+    module. This class should not be instantiate directly, instead the method
+    updateFirmware should be called to get an instance of YFirmwareUpdate.
+    
+    """
+#--- (end of generated code: YFirmwareUpdate class start)
+    #--- (generated code: YFirmwareUpdate definitions)
+    #--- (end of generated code: YFirmwareUpdate definitions)
+
+    def __init__(self, serial, path, settings):
+        #--- (generated code: YFirmwareUpdate attributes)
+        self._serial = ''
+        self._settings = ''
+        self._firmwarepath = ''
+        self._progress_msg = ''
+        self._progress = 0
+        #--- (end of generated code: YFirmwareUpdate attributes)
+        self._serial = serial
+        self._settings = settings
+        self._firmwarepath = path
+
+    #--- (generated code: YFirmwareUpdate implementation)
+    def _processMore(self, newupdate):
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        # res
+        # serial
+        # firmwarepath
+        # settings
+        serial = self._serial
+        firmwarepath = self._firmwarepath
+        settings = YByte2String(self._settings)
+        res = YAPI._yapiUpdateFirmware(ctypes.create_string_buffer(serial), ctypes.create_string_buffer(firmwarepath), ctypes.create_string_buffer(settings), newupdate, errmsg)
+        self._progress = res
+        self._progress_msg = YByte2String(errmsg.value)
+        return res
+
+    def get_progress(self):
+        # m
+        self._processMore(0)
+        if (self._progress == 100) and (len(self._settings) != 0):
+            m = YModule.FindModule(self._serial)
+            if m.isOnline():
+                #
+                m.set_allSettings(self._settings)
+                self._settings = b" " * 0
+        return self._progress
+
+    def get_progressMessage(self):
+        """
+        Returns the last progress message of the firmware update process. If an error occur during the
+        firmware update process the error message is returned
+        
+        @return an string  with the last progress message, or the error message.
+        """
+        return self._progress_msg
+
+    def startUpdate(self):
+        """
+        Start the firmware update process. This method start the firmware update process in background. This method
+        return immediately. The progress of the firmware update can be monitored with methods get_progress()
+        and get_progressMessage().
+        
+        @return an integer in the range 0 to 100 (percentage of completion),
+                or a negative error code in case of failure.
+        
+        On failure returns a negative error code.
+        """
+        self._processMore(1)
+        return self._progress
+
+#--- (end of generated code: YFirmwareUpdate implementation)
+#--- (generated code: FirmwareUpdate functions)
+#--- (end of generated code: FirmwareUpdate functions)
+
+
 #--- (generated code: YDataStream class start)
 #noinspection PyProtectedMember
 class YDataStream(object):
@@ -2054,6 +2194,7 @@ class YDataStream(object):
         self._isClosed = 0
         self._isAvg = 0
         self._isScal = 0
+        self._isScal32 = 0
         self._decimals = 0
         self._offset = 0
         self._scale = 0
@@ -2077,13 +2218,13 @@ class YDataStream(object):
     def _initFromDataSet(self, dataset, encoded):
         # val
         # i
+        # maxpos
         # iRaw
         # iRef
         # fRaw
         # fRef
         # duration_float
         iCalib = []
-        
         # // decode sequence header to extract data
         self._runNo = encoded[0] + (((encoded[1]) << (16)))
         self._utcStamp = encoded[2] + (((encoded[3]) << (16)))
@@ -2095,7 +2236,6 @@ class YDataStream(object):
         else:
             if ((val) & (0x200)) != 0:
                 self._samplesPerHour = self._samplesPerHour * 60
-        
         val = encoded[5]
         if val > 32767:
             val = val - 65536
@@ -2103,7 +2243,7 @@ class YDataStream(object):
         self._offset = val
         self._scale = encoded[6]
         self._isScal = (self._scale != 0)
-        
+        self._isScal32 = (len(encoded) >= 14)
         val = encoded[7]
         self._isClosed = (val != 0xffff)
         if val == 0xffff:
@@ -2122,26 +2262,42 @@ class YDataStream(object):
         self._caltyp = iCalib[0]
         if self._caltyp != 0:
             self._calhdl = YAPI._getCalibrationHandler(self._caltyp)
+            maxpos = len(iCalib)
             del self._calpar[:]
             del self._calraw[:]
             del self._calref[:]
-            i = 1
-            while i + 1 < len(iCalib):
-                iRaw = iCalib[i]
-                iRef = iCalib[i + 1]
-                self._calpar.append(iRaw)
-                self._calpar.append(iRef)
-                if self._isScal:
-                    fRaw = iRaw
-                    fRaw = (fRaw - self._offset) / self._scale
-                    fRef = iRef
-                    fRef = (fRef - self._offset) / self._scale
+            if self._isScal32:
+                i = 1
+                while i < maxpos:
+                    self._calpar.append(iCalib[i])
+                    i = i + 1
+                i = 1
+                while i + 1 < maxpos:
+                    fRaw = iCalib[i]
+                    fRaw = fRaw / 1000.0
+                    fRef = iCalib[i + 1]
+                    fRef = fRef / 1000.0
                     self._calraw.append(fRaw)
                     self._calref.append(fRef)
-                else:
-                    self._calraw.append(YAPI._decimalToDouble(iRaw))
-                    self._calref.append(YAPI._decimalToDouble(iRef))
-                i = i + 2
+                    i = i + 2
+            else:
+                i = 1
+                while i + 1 < maxpos:
+                    iRaw = iCalib[i]
+                    iRef = iCalib[i + 1]
+                    self._calpar.append(iRaw)
+                    self._calpar.append(iRef)
+                    if self._isScal:
+                        fRaw = iRaw
+                        fRaw = (fRaw - self._offset) / self._scale
+                        fRef = iRef
+                        fRef = (fRef - self._offset) / self._scale
+                        self._calraw.append(fRaw)
+                        self._calref.append(fRef)
+                    else:
+                        self._calraw.append(YAPI._decimalToDouble(iRaw))
+                        self._calref.append(YAPI._decimalToDouble(iRef))
+                    i = i + 2
         # // preload column names for backward-compatibility
         self._functionId = dataset.get_functionId()
         if self._isAvg:
@@ -2156,9 +2312,14 @@ class YDataStream(object):
             self._nCols = 1
         # // decode min/avg/max values for the sequence
         if self._nRows > 0:
-            self._minVal = self._decodeVal(encoded[8])
-            self._maxVal = self._decodeVal(encoded[9])
-            self._avgVal = self._decodeAvg(encoded[10] + (((encoded[11]) << (16))), self._nRows)
+            if self._isScal32:
+                self._avgVal = self._decodeAvg(encoded[8] + (((((encoded[9]) ^ (0x8000))) << (16))), 1)
+                self._minVal = self._decodeVal(encoded[10] + (((encoded[11]) << (16))))
+                self._maxVal = self._decodeVal(encoded[12] + (((encoded[13]) << (16))))
+            else:
+                self._minVal = self._decodeVal(encoded[8])
+                self._maxVal = self._decodeVal(encoded[9])
+                self._avgVal = self._decodeAvg(encoded[10] + (((encoded[11]) << (16))), self._nRows)
         return 0
 
     def parse(self, sdata):
@@ -2172,13 +2333,19 @@ class YDataStream(object):
         if self._isAvg:
             while idx + 3 < len(udat):
                 del dat[:]
-                dat.append(self._decodeVal(udat[idx]))
-                dat.append(self._decodeAvg(udat[idx + 2] + (((udat[idx + 3]) << (16))), 1))
-                dat.append(self._decodeVal(udat[idx + 1]))
+                if self._isScal32:
+                    dat.append(self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))))
+                    dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
+                    dat.append(self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))))
+                    idx = idx + 6
+                else:
+                    dat.append(self._decodeVal(udat[idx]))
+                    dat.append(self._decodeAvg(udat[idx + 2] + (((udat[idx + 3]) << (16))), 1))
+                    dat.append(self._decodeVal(udat[idx + 1]))
+                    idx = idx + 4
                 self._values.append(dat[:])
-                idx = idx + 4
         else:
-            if self._isScal:
+            if self._isScal and not (self._isScal32):
                 while idx < len(udat):
                     del dat[:]
                     dat.append(self._decodeVal(udat[idx]))
@@ -2187,7 +2354,7 @@ class YDataStream(object):
             else:
                 while idx + 1 < len(udat):
                     del dat[:]
-                    dat.append(self._decodeAvg(udat[idx] + (((udat[idx + 1]) << (16))), 1))
+                    dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
                     self._values.append(dat[:])
                     idx = idx + 2
         
@@ -2206,10 +2373,13 @@ class YDataStream(object):
     def _decodeVal(self, w):
         # val
         val = w
-        if self._isScal:
-            val = (val - self._offset) / self._scale
+        if self._isScal32:
+            val = val / 1000.0
         else:
-            val = YAPI._decimalToDouble(w)
+            if self._isScal:
+                val = (val - self._offset) / self._scale
+            else:
+                val = YAPI._decimalToDouble(w)
         if self._caltyp != 0:
             val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
         return val
@@ -2217,10 +2387,13 @@ class YDataStream(object):
     def _decodeAvg(self, dw, count):
         # val
         val = dw
-        if self._isScal:
-            val = (val / (100 * count) - self._offset) / self._scale
+        if self._isScal32:
+            val = val / 1000.0
         else:
-            val = val / (count * self._decexp)
+            if self._isScal:
+                val = (val / (100 * count) - self._offset) / self._scale
+            else:
+                val = val / (count * self._decexp)
         if self._caltyp != 0:
             val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
         return val
@@ -2274,7 +2447,7 @@ class YDataStream(object):
         
         @return an unsigned number corresponding to a number of milliseconds.
         """
-        return ((3600000) / (self._samplesPerHour))
+        return int((3600000) / (self._samplesPerHour))
 
     def get_dataSamplesInterval(self):
         return 3600.0 / self._samplesPerHour
@@ -2543,7 +2716,7 @@ class YDataSet(object):
     YDataSet objects make it possible to retrieve a set of recorded measures
     for a given sensor and a specified time interval. They can be used
     to load data points with a progress report. When the YDataSet object is
-    instanciated by the get_recordedData()  function, no data is
+    instantiated by the get_recordedData()  function, no data is
     yet loaded from the module. It is only when the loadMore()
     method is called over and over than data will be effectively loaded
     from the dataLogger.
@@ -2589,7 +2762,7 @@ class YDataSet(object):
         self._startTime = startTime
         self._endTime = endTime
         self._progress = -1
-        
+
     def _initFromJson(self, parent, json):
         self._parent = parent
         self._startTime = 0
@@ -2616,8 +2789,12 @@ class YDataSet(object):
                 self._functionId = member.svalue
             elif member.name == "unit":
                 self._unit = member.svalue
+            elif member.name == "calib":
+                self._calib = YAPI._decodeFloats(member.svalue)
+                self._calib[0] = round(self._calib[0] / 1000)
             elif member.name == "cal":
-                self._calib = YAPI._decodeWords(member.svalue)
+                if len(self._calib) == 0:
+                    self._calib = YAPI._decodeWords(member.svalue)
             elif member.name == "streams":
                 self._streams = []
                 self._preview = []
@@ -2648,7 +2825,7 @@ class YDataSet(object):
                                            stream.get_averageValue(),
                                            stream.get_maxValue())
                             self._preview.append(rec)
-                if (len(self._streams) > 0) and (summaryTotalTime>0):
+                if (len(self._streams) > 0) and (summaryTotalTime > 0):
                     # update time boundaries with actual data
                     stream = self._streams[len(self._streams) - 1]
                     endtime = stream.get_startTimeUTC() + stream.get_duration()
@@ -2693,6 +2870,8 @@ class YDataSet(object):
             return self.get_progress()
         tim = stream.get_startTimeUTC()
         itv = stream.get_dataSamplesInterval()
+        if tim < itv:
+            tim = itv
         nCols = len(dataRows[0])
         minCol = 0
         if nCols > 2:
@@ -2707,7 +2886,7 @@ class YDataSet(object):
         for y in dataRows:
             if (tim >= self._startTime) and ((self._endTime == 0) or (tim <= self._endTime)):
                 self._measures.append(YMeasure(tim - itv, tim, y[minCol], y[avgCol], y[maxCol]))
-                tim = tim + itv
+            tim = tim + itv
         
         return self.get_progress()
 
@@ -2784,7 +2963,7 @@ class YDataSet(object):
     def get_progress(self):
         """
         Returns the progress of the downloads of the measures from the data logger,
-        on a scale from 0 to 100. When the object is instanciated by get_dataSet,
+        on a scale from 0 to 100. When the object is instantiated by get_dataSet,
         the progress is zero. Each time loadMore() is invoked, the progress
         is updated, to reach the value 100 only once all measures have been loaded.
         
@@ -2795,7 +2974,7 @@ class YDataSet(object):
         # // index not yet loaded
         if self._progress >= len(self._streams):
             return 100
-        return ((1 + (1 + self._progress) * 98) / ((1 + len(self._streams))))
+        return int((1 + (1 + self._progress) * 98) / ((1 + len(self._streams))))
 
     def loadMore(self):
         """
@@ -3081,6 +3260,7 @@ native_yDeviceChangeAnchor = YAPI._yapiDeviceUpdateFunc(YAPI.native_yDeviceChang
 native_yHubDiscoveryAnchor = YAPI._yapiHubDiscoveryCallback(YAPI.native_HubDiscoveryCallback)
 #noinspection PyProtectedMember
 native_yDeviceLogAnchor = YAPI._yapiDeviceLogCallback(YAPI.native_DeviceLogCallback)
+
 
 #--- (generated code: YFunction class start)
 #noinspection PyProtectedMember
@@ -3394,7 +3574,7 @@ class YFunction(object):
             found += 1
         if found > len(result_buffer) - 4:
             self._throw(YAPI.IO_ERROR, "http request failed")
-            return YAPI.INVALID_STRING
+            return ''
         return result_buffer[found + 4:]
 
     def _json_get_key(self, json, key):
@@ -3417,7 +3597,7 @@ class YFunction(object):
             #( exception handling working in both  in 2.x and 3.x
             e = sys.exc_info()[1]
             self._throw(YAPI.IO_ERROR, "unexpected JSON structure: " + e.msg)
-            return YAPI.IO_ERROR
+            return []
         return j.GetAllChilds(None)
 
     def _json_get_string(self, json):
@@ -3428,7 +3608,7 @@ class YFunction(object):
             #( exception handling working in both  in 2.x and 3.x
             e = sys.exc_info()[1]
             self._throw(YAPI.IO_ERROR, "unexpected JSON structure: " + e.msg)
-            return YAPI.IO_ERROR
+            return ''
         node = j.GetRootNode()
         return node.items[0].svalue
 
@@ -3635,7 +3815,7 @@ class YFunction(object):
         Returns a global identifier of the function in the format MODULE_NAME&#46;FUNCTION_NAME.
         The returned string uses the logical names of the module and of the function if they are defined,
         otherwise the serial number of the module and the hardware identifier of the function
-        (for exemple: MyCustomName.relay1)
+        (for example: MyCustomName.relay1)
         
         @return a string that uniquely identifies the function using logical names
                 (ex: MyCustomName.relay1)
@@ -3706,7 +3886,7 @@ class YFunction(object):
         This method is mostly useful when using the Yoctopuce library with
         exceptions disabled.
         
-        @return a number corresponding to the code of the latest error that occured while
+        @return a number corresponding to the code of the latest error that occurred while
                 using the function object
         """
         return self._lastErrorType
@@ -3770,7 +3950,7 @@ class YFunction(object):
         By default, whenever accessing a device, all function attributes
         are kept in cache for the standard duration (5 ms). This method can be
         used to temporarily mark the cache as valid for a longer period, in order
-        to reduce network trafic for instance.
+        to reduce network traffic for instance.
         
         @param msValidity : an integer corresponding to the validity attributed to the
                 loaded function parameters, in milliseconds
@@ -3945,6 +4125,7 @@ class YModule(YFunction):
     UPTIME_INVALID = YAPI.INVALID_LONG
     USBCURRENT_INVALID = YAPI.INVALID_UINT
     REBOOTCOUNTDOWN_INVALID = YAPI.INVALID_INT
+    USERVAR_INVALID = YAPI.INVALID_INT
     PERSISTENTSETTINGS_LOADED = 0
     PERSISTENTSETTINGS_SAVED = 1
     PERSISTENTSETTINGS_MODIFIED = 2
@@ -3952,11 +4133,8 @@ class YModule(YFunction):
     BEACON_OFF = 0
     BEACON_ON = 1
     BEACON_INVALID = -1
-    USBBANDWIDTH_SIMPLE = 0
-    USBBANDWIDTH_DOUBLE = 1
-    USBBANDWIDTH_INVALID = -1
     #--- (end of generated code: YModule definitions)
-    
+
     def __init__(self, func):
         super(YModule, self).__init__(func)
         self._className = "Module"
@@ -3973,7 +4151,7 @@ class YModule(YFunction):
         self._upTime = YModule.UPTIME_INVALID
         self._usbCurrent = YModule.USBCURRENT_INVALID
         self._rebootCountdown = YModule.REBOOTCOUNTDOWN_INVALID
-        self._usbBandwidth = YModule.USBBANDWIDTH_INVALID
+        self._userVar = YModule.USERVAR_INVALID
         self._logCallback = None
         #--- (end of generated code: YModule attributes)
 
@@ -4012,8 +4190,8 @@ class YModule(YFunction):
         if member.name == "rebootCountdown":
             self._rebootCountdown = member.ivalue
             return 1
-        if member.name == "usbBandwidth":
-            self._usbBandwidth = member.ivalue
+        if member.name == "userVar":
+            self._userVar = member.ivalue
             return 1
         super(YModule, self)._parseAttr(member)
 
@@ -4200,19 +4378,33 @@ class YModule(YFunction):
         rest_val = str(newval)
         return self._setAttr("rebootCountdown", rest_val)
 
-    def get_usbBandwidth(self):
+    def get_userVar(self):
         """
-        Returns the number of USB interfaces used by the module.
+        Returns the value previously stored in this attribute.
+        On startup and after a device reboot, the value is always reset to zero.
         
-        @return either YModule.USBBANDWIDTH_SIMPLE or YModule.USBBANDWIDTH_DOUBLE, according to the number
-        of USB interfaces used by the module
+        @return an integer corresponding to the value previously stored in this attribute
         
-        On failure, throws an exception or returns YModule.USBBANDWIDTH_INVALID.
+        On failure, throws an exception or returns YModule.USERVAR_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YModule.USBBANDWIDTH_INVALID
-        return self._usbBandwidth
+                return YModule.USERVAR_INVALID
+        return self._userVar
+
+    def set_userVar(self, newval):
+        """
+        Returns the value previously stored in this attribute.
+        On startup and after a device reboot, the value is always reset to zero.
+        
+        @param newval : an integer
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("userVar", rest_val)
 
     @staticmethod
     def FindModule(func):
@@ -4287,6 +4479,511 @@ class YModule(YFunction):
         """
         return self.set_rebootCountdown(-secBeforeReboot)
 
+    def checkFirmware(self, path, onlynew):
+        """
+        Test if the byn file is valid for this module. This method is useful to test if the module need to be updated.
+        It's possible to pass an directory instead of a file. In this case this method return the path of
+        the most recent
+        appropriate byn file. If the parameter onlynew is true the function will discard firmware that are
+        older or equal to
+        the installed firmware.
+        
+        @param path    : the path of a byn file or a directory that contain byn files
+        @param onlynew : return only files that are strictly newer
+        
+        @return : the path of the byn file to use or a empty string if no byn files match the requirement
+        
+        On failure, throws an exception or returns a string that start with "error:".
+        """
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        smallbuff = ctypes.create_string_buffer(1024)
+        # bigbuff
+        # buffsize
+        fullsize = ctypes.c_int()
+        # res
+        # firmware_path
+        # serial
+        # release
+        if onlynew:
+            release = self.get_firmwareRelease()
+        else:
+            release = ""
+        # //may throw an exception
+        serial = self._serial
+        fullsize.value = 0
+        res = YAPI._yapiCheckFirmware(ctypes.create_string_buffer(serial), ctypes.create_string_buffer(release), ctypes.create_string_buffer(path), smallbuff, 1024, ctypes.byref(fullsize), errmsg)
+        if res < 0:
+            firmware_path = "error:" + YByte2String(errmsg.value)
+            return "error:" + YByte2String(errmsg.value)
+        if fullsize.value <= 1024:
+            firmware_path = YByte2String(smallbuff.value)
+        else:
+            buffsize = fullsize.value
+            bigbuff = ctypes.create_string_buffer(buffsize)
+            res = YAPI._yapiCheckFirmware(ctypes.create_string_buffer(serial), ctypes.create_string_buffer(release), ctypes.create_string_buffer(path), bigbuff, buffsize, ctypes.byref(fullsize), errmsg)
+            if res < 0:
+                self._throw(YAPI.INVALID_ARGUMENT, YByte2String(errmsg.value))
+                firmware_path = "error:" + YByte2String(errmsg.value)
+            else:
+                firmware_path = YByte2String(bigbuff.value)
+            bigbuff = None
+        return firmware_path
+
+    def updateFirmware(self, path):
+        """
+        Prepare a firmware upgrade of the module. This method return a object YFirmwareUpdate which
+        will handle the firmware upgrade process.
+        
+        @param path : the path of the byn file to use.
+        
+        @return : A object YFirmwareUpdate.
+        """
+        # serial
+        # settings
+        # // may throw an exception
+        serial = self.get_serialNumber()
+        settings = self.get_allSettings()
+        return YFirmwareUpdate(serial, path, settings)
+
+    def get_allSettings(self):
+        """
+        Returns all the setting of the module. Useful to backup all the logical name and calibrations parameters
+        of a connected module.
+        
+        @return a binary buffer with all settings.
+        
+        On failure, throws an exception or returns  YAPI.INVALID_STRING.
+        """
+        # // may throw an exception
+        return self._download("api.json")
+
+    def _flattenJsonStruct(self, jsoncomplex):
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        smallbuff = ctypes.create_string_buffer(1024)
+        # bigbuff
+        # buffsize
+        fullsize = ctypes.c_int()
+        # res
+        # jsonflat
+        # jsoncomplexstr
+        fullsize.value = 0
+        jsoncomplexstr = YByte2String(jsoncomplex)
+        res = YAPI._yapiGetAllJsonKeys(ctypes.create_string_buffer(jsoncomplexstr), smallbuff, 1024, ctypes.byref(fullsize), errmsg)
+        if res < 0:
+            self._throw(YAPI.INVALID_ARGUMENT, YByte2String(errmsg.value))
+            jsonflat = "error:" + YByte2String(errmsg.value)
+            return YString2Byte(jsonflat)
+        if fullsize.value <= 1024:
+            jsonflat = YByte2String(smallbuff.value)
+        else:
+            buffsize = fullsize.value
+            bigbuff = ctypes.create_string_buffer(buffsize)
+            res = YAPI._yapiGetAllJsonKeys(ctypes.create_string_buffer(jsoncomplexstr), bigbuff, buffsize, ctypes.byref(fullsize), errmsg)
+            if res < 0:
+                self._throw(YAPI.INVALID_ARGUMENT, YByte2String(errmsg.value))
+                jsonflat = "error:" + YByte2String(errmsg.value)
+            else:
+                jsonflat = YByte2String(bigbuff.value)
+            bigbuff = None
+        return YString2Byte(jsonflat)
+
+    def calibVersion(self, cparams):
+        if cparams == "0,":
+            return 3
+        if cparams.find(",") >= 0:
+            if cparams.find(" ") > 0:
+                return 3
+            else:
+                return 1
+        if cparams == "" or cparams == "0":
+            return 1
+        if (len(cparams) < 2) or (cparams.find(".") >= 0):
+            return 0
+        else:
+            return 2
+
+    def calibScale(self, unit_name, sensorType):
+        if unit_name == "g" or unit_name == "gauss" or unit_name == "W":
+            return 1000
+        if unit_name == "C":
+            if sensorType == "":
+                return 16
+            if int(sensorType) < 8:
+                return 16
+            else:
+                return 100
+        if unit_name == "m" or unit_name == "deg":
+            return 10
+        return 1
+
+    def calibOffset(self, unit_name):
+        if unit_name == "% RH" or unit_name == "mbar" or unit_name == "lx":
+            return 0
+        return 32767
+
+    def calibConvert(self, param, calibrationParam, unit_name, sensorType):
+        # paramVer
+        # funVer
+        # funScale
+        # funOffset
+        # paramScale
+        # paramOffset
+        words = []
+        words_str = []
+        calibData = []
+        iCalib = []
+        # calibType
+        # i
+        # maxSize
+        # ratio
+        # nPoints
+        # wordVal
+        # // Initial guess for parameter encoding
+        paramVer = self.calibVersion(param)
+        funVer = self.calibVersion(calibrationParam)
+        funScale = self.calibScale(unit_name, sensorType)
+        funOffset = self.calibOffset(unit_name)
+        paramScale = funScale
+        paramOffset = funOffset
+        if funVer < 3:
+            #
+            if funVer == 2:
+                words = YAPI._decodeWords(calibrationParam)
+                if (words[0] == 1366) and (words[1] == 12500):
+                    #
+                    funScale = 1
+                    funOffset = 0
+                else:
+                    funScale = words[1]
+                    funOffset = words[0]
+            else:
+                if funVer == 1:
+                    if calibrationParam == "" or (int(calibrationParam) > 10):
+                        funScale = 0
+        del calibData[:]
+        calibType = 0
+        if paramVer < 3:
+            #
+            if paramVer == 2:
+                words = YAPI._decodeWords(param)
+                if (words[0] == 1366) and (words[1] == 12500):
+                    #
+                    paramScale = 1
+                    paramOffset = 0
+                else:
+                    paramScale = words[1]
+                    paramOffset = words[0]
+                if (len(words) >= 3) and (words[2] > 0):
+                    maxSize = 3 + 2 * ((words[2]) % (10))
+                    if maxSize > len(words):
+                        maxSize = len(words)
+                    i = 3
+                    while i < maxSize:
+                        calibData.append(words[i])
+                        i = i + 1
+            else:
+                if paramVer == 1:
+                    words_str = (param).split(',')
+                    for y in words_str:
+                        words.append(int(y))
+                    if param == "" or (words[0] > 10):
+                        paramScale = 0
+                    if (len(words) > 0) and (words[0] > 0):
+                        maxSize = 1 + 2 * ((words[0]) % (10))
+                        if maxSize > len(words):
+                            maxSize = len(words)
+                        i = 1
+                        while i < maxSize:
+                            calibData.append(words[i])
+                            i = i + 1
+                else:
+                    if paramVer == 0:
+                        ratio = float(param)
+                        if ratio > 0:
+                            calibData.append(0.0)
+                            calibData.append(0.0)
+                            calibData.append(round(65535 / ratio))
+                            calibData.append(65535.0)
+            i = 0
+            while i < len(calibData):
+                if paramScale > 0:
+                    #
+                    calibData[i] = (calibData[i] - paramOffset) / paramScale
+                else:
+                    #
+                    calibData[i] = YAPI._decimalToDouble(round(calibData[i]))
+                i = i + 1
+        else:
+            #
+            iCalib = YAPI._decodeFloats(param)
+            calibType = round(iCalib[0] / 1000.0)
+            if calibType >= 30:
+                calibType = calibType - 30
+            i = 1
+            while i < len(iCalib):
+                calibData.append(iCalib[i] / 1000.0)
+                i = i + 1
+        if funVer >= 3:
+            #
+            if len(calibData) == 0:
+                param = "0,"
+            else:
+                param = str(30 + calibType)
+                i = 0
+                while i < len(calibData):
+                    if ((i) & (1)) > 0:
+                        param = param + ":"
+                    else:
+                        param = param + " "
+                    param = param + str(round(calibData[i] * 1000.0 / 1000.0))
+                    i = i + 1
+                param = param + ","
+        else:
+            if funVer >= 1:
+                #
+                nPoints = int((len(calibData)) / (2))
+                param = str(nPoints)
+                i = 0
+                while i < 2 * nPoints:
+                    if funScale == 0:
+                        wordVal = YAPI._doubleToDecimal(round(calibData[i]))
+                    else:
+                        wordVal = calibData[i] * funScale + funOffset
+                    param = param + "," + str(round(wordVal))
+                    i = i + 1
+            else:
+                #
+                if len(calibData) == 4:
+                    param = str(round(1000 * (calibData[3] - calibData[1]) / calibData[2] - calibData[0]))
+        return param
+
+    def set_allSettings(self, settings):
+        """
+        Restore all the setting of the module. Useful to restore all the logical name and calibrations parameters
+        of a module from a backup.
+        
+        @param settings : a binary buffer with all settings.
+        
+        @return YAPI.SUCCESS when the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        restoreLast = []
+        # old_json_flat
+        old_dslist = []
+        old_jpath = []
+        old_jpath_len = []
+        old_val = []
+        # actualSettings
+        new_dslist = []
+        new_jpath = []
+        new_jpath_len = []
+        new_val = []
+        # cpos
+        # eqpos
+        # leng
+        # i
+        # j
+        # njpath
+        # jpath
+        # fun
+        # attr
+        # value
+        # url
+        # tmp
+        # new_calib
+        # sensorType
+        # unit_name
+        # newval
+        # old_calib
+        # do_update
+        # found
+        old_json_flat = self._flattenJsonStruct(settings)
+        old_dslist = self._json_get_array(old_json_flat)
+        
+        
+        
+        for y in old_dslist:
+            #
+            leng = len(y)
+            y = (y)[1: 1 + leng - 2]
+            #
+            leng = len(y)
+            eqpos = y.find("=")
+            if (eqpos < 0) or (leng == 0):
+                self._throw(YAPI.INVALID_ARGUMENT, "Invalid settings")
+                return YAPI.INVALID_ARGUMENT
+            jpath = (y)[0: 0 + eqpos]
+            eqpos = eqpos + 1
+            value = (y)[eqpos: eqpos + leng - eqpos]
+            old_jpath.append(jpath)
+            old_jpath_len.append(len(jpath))
+            old_val.append(value)
+        
+        
+        
+        # // may throw an exception
+        actualSettings = self._download("api.json")
+        actualSettings = self._flattenJsonStruct(actualSettings)
+        new_dslist = self._json_get_array(actualSettings)
+        
+        
+        
+        for y in new_dslist:
+            #
+            leng = len(y)
+            y = (y)[1: 1 + leng - 2]
+            #
+            leng = len(y)
+            eqpos = y.find("=")
+            if (eqpos < 0) or (leng == 0):
+                self._throw(YAPI.INVALID_ARGUMENT, "Invalid settings")
+                return YAPI.INVALID_ARGUMENT
+            jpath = (y)[0: 0 + eqpos]
+            eqpos = eqpos + 1
+            value = (y)[eqpos: eqpos + leng - eqpos]
+            new_jpath.append(jpath)
+            new_jpath_len.append(len(jpath))
+            new_val.append(value)
+        
+        
+        
+        
+        i = 0
+        while i < len(new_jpath):
+            njpath = new_jpath[i]
+            leng = len(njpath)
+            cpos = njpath.find("/")
+            if (cpos < 0) or (leng == 0):
+                continue
+            fun = (njpath)[0: 0 + cpos]
+            cpos = cpos + 1
+            attr = (njpath)[cpos: cpos + leng - cpos]
+            do_update = True
+            if fun == "services":
+                do_update = False
+            if (do_update) and (attr == "firmwareRelease"):
+                do_update = False
+            if (do_update) and (attr == "usbCurrent"):
+                do_update = False
+            if (do_update) and (attr == "upTime"):
+                do_update = False
+            if (do_update) and (attr == "persistentSettings"):
+                do_update = False
+            if (do_update) and (attr == "adminPassword"):
+                do_update = False
+            if (do_update) and (attr == "userPassword"):
+                do_update = False
+            if (do_update) and (attr == "rebootCountdown"):
+                do_update = False
+            if (do_update) and (attr == "advertisedValue"):
+                do_update = False
+            if (do_update) and (attr == "poeCurrent"):
+                do_update = False
+            if (do_update) and (attr == "readiness"):
+                do_update = False
+            if (do_update) and (attr == "ipAddress"):
+                do_update = False
+            if (do_update) and (attr == "subnetMask"):
+                do_update = False
+            if (do_update) and (attr == "router"):
+                do_update = False
+            if (do_update) and (attr == "linkQuality"):
+                do_update = False
+            if (do_update) and (attr == "ssid"):
+                do_update = False
+            if (do_update) and (attr == "channel"):
+                do_update = False
+            if (do_update) and (attr == "security"):
+                do_update = False
+            if (do_update) and (attr == "message"):
+                do_update = False
+            if (do_update) and (attr == "currentValue"):
+                do_update = False
+            if (do_update) and (attr == "currentRawValue"):
+                do_update = False
+            if (do_update) and (attr == "currentRunIndex"):
+                do_update = False
+            if (do_update) and (attr == "pulseTimer"):
+                do_update = False
+            if (do_update) and (attr == "lastTimePressed"):
+                do_update = False
+            if (do_update) and (attr == "lastTimeReleased"):
+                do_update = False
+            if (do_update) and (attr == "filesCount"):
+                do_update = False
+            if (do_update) and (attr == "freeSpace"):
+                do_update = False
+            if (do_update) and (attr == "timeUTC"):
+                do_update = False
+            if (do_update) and (attr == "rtcTime"):
+                do_update = False
+            if (do_update) and (attr == "unixTime"):
+                do_update = False
+            if (do_update) and (attr == "dateTime"):
+                do_update = False
+            if (do_update) and (attr == "rawValue"):
+                do_update = False
+            if (do_update) and (attr == "lastMsg"):
+                do_update = False
+            if (do_update) and (attr == "delayedPulseTimer"):
+                do_update = False
+            if (do_update) and (attr == "rxCount"):
+                do_update = False
+            if (do_update) and (attr == "txCount"):
+                do_update = False
+            if (do_update) and (attr == "msgCount"):
+                do_update = False
+            if do_update:
+                if attr == "calibrationParam":
+                    old_calib = ""
+                    unit_name = ""
+                    sensorType = ""
+                    new_calib = new_val[i]
+                    j = 0
+                    found = False
+                    while (j < len(old_jpath)) and not (found):
+                        if (new_jpath_len[i] == old_jpath_len[j]) and (new_jpath[i] == old_jpath[j]):
+                            found = True
+                            old_calib = old_val[j]
+                        j = j + 1
+                    tmp = fun + "/unit"
+                    j = 0
+                    found = False
+                    while (j < len(new_jpath)) and not (found):
+                        if tmp == new_jpath[j]:
+                            found = True
+                            unit_name = new_jpath[j]
+                        j = j + 1
+                    tmp = fun + "/sensorType"
+                    j = 0
+                    found = False
+                    while (j < len(new_jpath)) and not (found):
+                        if tmp == new_jpath[j]:
+                            found = True
+                            sensorType = new_jpath[j]
+                        j = j + 1
+                    newval = self.calibConvert(new_val[i], old_calib, unit_name, sensorType)
+                    url = "api/" + fun + ".json?" + attr + "=" + newval
+                    self._download(url)
+                else:
+                    j = 0
+                    found = False
+                    while (j < len(old_jpath_len)) and not (found):
+                        if (new_jpath_len[i] == old_jpath_len[j]) and (new_jpath[i] == old_jpath[j]):
+                            found = True
+                            url = "api/" + fun + ".json?" + attr + "=" + old_val[j]
+                            if attr == "resolution":
+                                restoreLast.append(url)
+                            else:
+                                self._download(url)
+                        j = j + 1
+            i = i + 1
+        
+        for y in restoreLast:
+            self._download(y)
+        return YAPI.SUCCESS
+
     def download(self, pathname):
         """
         Downloads the specified built-in file and returns a binary buffer with its content.
@@ -4295,7 +4992,7 @@ class YModule(YFunction):
         
         @return a binary buffer with the file content
         
-        On failure, throws an exception or returns an empty content.
+        On failure, throws an exception or returns  YAPI.INVALID_STRING.
         """
         return self._download(pathname)
 
@@ -4305,6 +5002,7 @@ class YModule(YFunction):
         exceeds 1536 bytes.
         
         @return a binary buffer with module icon, in png format.
+                On failure, throws an exception or returns  YAPI.INVALID_STRING.
         """
         # // may throw an exception
         return self._download("icon2d.png")
@@ -4315,6 +5013,7 @@ class YModule(YFunction):
         logs that are still in the module.
         
         @return a string with last logs of the module.
+                On failure, throws an exception or returns  YAPI.INVALID_STRING.
         """
         # content
         # // may throw an exception
@@ -4501,12 +5200,10 @@ class YModule(YFunction):
         """
         self._logCallback = callback
         if self._logCallback is None:
-            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serial.encode("ASCII"))
-                                                    , 0)
+            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serial.encode("ASCII")), 0)
         else:
-            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serial.encode("ASCII"))
-                                                    , 1)
-            
+            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serial.encode("ASCII")), 1)
+
     def get_logCallback(self):
         return self._logCallback
 
@@ -4591,6 +5288,7 @@ class YSensor(YFunction):
         self._scale = 0
         self._decexp = 0
         self._isScal = 0
+        self._isScal32 = 0
         self._caltyp = 0
         self._calpar = []
         self._calraw = []
@@ -4604,16 +5302,16 @@ class YSensor(YFunction):
             self._unit = member.svalue
             return 1
         if member.name == "currentValue":
-            self._currentValue = member.ivalue / 65536.0
+            self._currentValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "lowestValue":
-            self._lowestValue = member.ivalue / 65536.0
+            self._lowestValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "highestValue":
-            self._highestValue = member.ivalue / 65536.0
+            self._highestValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "currentRawValue":
-            self._currentRawValue = member.ivalue / 65536.0
+            self._currentRawValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         if member.name == "logFrequency":
             self._logFrequency = member.svalue
@@ -4625,7 +5323,7 @@ class YSensor(YFunction):
             self._calibrationParam = member.svalue
             return 1
         if member.name == "resolution":
-            self._resolution = 1.0 / round(65536.0 / member.ivalue) if member.ivalue > 100 else 0.001 / round(67.0 / member.ivalue)
+            self._resolution = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         super(YSensor, self)._parseAttr(member)
 
@@ -4644,9 +5342,10 @@ class YSensor(YFunction):
 
     def get_currentValue(self):
         """
-        Returns the current value of the measure.
+        Returns the current value of the measure, in the specified unit, as a floating point number.
         
-        @return a floating point number corresponding to the current value of the measure
+        @return a floating point number corresponding to the current value of the measure, in the specified
+        unit, as a floating point number
         
         On failure, throws an exception or returns YSensor.CURRENTVALUE_INVALID.
         """
@@ -4720,9 +5419,11 @@ class YSensor(YFunction):
 
     def get_currentRawValue(self):
         """
-        Returns the uncalibrated, unrounded raw value returned by the sensor.
+        Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a
+        floating point number.
         
-        @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
+        @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by
+        the sensor, in the specified unit, as a floating point number
         
         On failure, throws an exception or returns YSensor.CURRENTRAWVALUE_INVALID.
         """
@@ -4873,90 +5574,118 @@ class YSensor(YFunction):
         # iRef
         # fRaw
         # fRef
+        self._caltyp = -1
+        self._scale = -1
+        self._isScal32 = False
+        del self._calpar[:]
+        del self._calraw[:]
+        del self._calref[:]
         # // Store inverted resolution, to provide better rounding
         if self._resolution > 0:
             self._iresol = round(1.0 / self._resolution)
         else:
-            return 0
-        
-        self._scale = -1
-        del self._calpar[:]
-        del self._calraw[:]
-        del self._calref[:]
-        
+            self._iresol = 10000
+            self._resolution = 0.0001
         # // Old format: supported when there is no calibration
         if self._calibrationParam == "" or self._calibrationParam == "0":
             self._caltyp = 0
             return 0
-        # // Old format: calibrated value will be provided by the device
         if self._calibrationParam.find(",") >= 0:
-            self._caltyp = -1
-            return 0
-        # // New format, decode parameters
-        iCalib = YAPI._decodeWords(self._calibrationParam)
-        # // In case of unknown format, calibrated value will be provided by the device
-        if len(iCalib) < 2:
-            self._caltyp = -1
-            return 0
-        
-        # // Save variable format (scale for scalar, or decimal exponent)
-        self._isScal = (iCalib[1] > 0)
-        if self._isScal:
-            self._offset = iCalib[0]
-            if self._offset > 32767:
-                self._offset = self._offset - 65536
-            self._scale = iCalib[1]
-            self._decexp = 0
-        else:
+            #
+            iCalib = YAPI._decodeFloats(self._calibrationParam)
+            self._caltyp = int((iCalib[0]) / (1000))
+            if self._caltyp > 0:
+                if self._caltyp < YAPI.YOCTO_CALIB_TYPE_OFS:
+                    #
+                    self._caltyp = -1
+                    return 0
+                self._calhdl = YAPI._getCalibrationHandler(self._caltyp)
+                if not (self._calhdl is not None):
+                    #
+                    self._caltyp = -1
+                    return 0
+            #
+            self._isScal = True
+            self._isScal32 = True
             self._offset = 0
-            self._scale = 1
-            self._decexp = 1.0
-            position = iCalib[0]
-            while position > 0:
-                self._decexp = self._decexp * 10
-                position = position - 1
-        
-        # // Shortcut when there is no calibration parameter
-        if len(iCalib) == 2:
-            self._caltyp = 0
-            return 0
-        
-        self._caltyp = iCalib[2]
-        self._calhdl = YAPI._getCalibrationHandler(self._caltyp)
-        # // parse calibration points
-        position = 3
-        if self._caltyp <= 10:
-            maxpos = self._caltyp
-        else:
-            if self._caltyp <= 20:
-                maxpos = self._caltyp - 10
-            else:
-                maxpos = 5
-        maxpos = 3 + 2 * maxpos
-        if maxpos > len(iCalib):
+            self._scale = 1000
             maxpos = len(iCalib)
-        del self._calpar[:]
-        del self._calraw[:]
-        del self._calref[:]
-        while position + 1 < maxpos:
-            iRaw = iCalib[position]
-            iRef = iCalib[position + 1]
-            self._calpar.append(iRaw)
-            self._calpar.append(iRef)
-            if self._isScal:
-                fRaw = iRaw
-                fRaw = (fRaw - self._offset) / self._scale
-                fRef = iRef
-                fRef = (fRef - self._offset) / self._scale
+            del self._calpar[:]
+            position = 1
+            while position < maxpos:
+                self._calpar.append(iCalib[position])
+                position = position + 1
+            del self._calraw[:]
+            del self._calref[:]
+            position = 1
+            while position + 1 < maxpos:
+                fRaw = iCalib[position]
+                fRaw = fRaw / 1000.0
+                fRef = iCalib[position + 1]
+                fRef = fRef / 1000.0
                 self._calraw.append(fRaw)
                 self._calref.append(fRef)
+                position = position + 2
+        else:
+            #
+            iCalib = YAPI._decodeWords(self._calibrationParam)
+            #
+            if len(iCalib) < 2:
+                self._caltyp = -1
+                return 0
+            #
+            self._isScal = (iCalib[1] > 0)
+            if self._isScal:
+                self._offset = iCalib[0]
+                if self._offset > 32767:
+                    self._offset = self._offset - 65536
+                self._scale = iCalib[1]
+                self._decexp = 0
             else:
-                self._calraw.append(YAPI._decimalToDouble(iRaw))
-                self._calref.append(YAPI._decimalToDouble(iRef))
-            position = position + 2
-        
-        
-        
+                self._offset = 0
+                self._scale = 1
+                self._decexp = 1.0
+                position = iCalib[0]
+                while position > 0:
+                    self._decexp = self._decexp * 10
+                    position = position - 1
+            #
+            if len(iCalib) == 2:
+                self._caltyp = 0
+                return 0
+            self._caltyp = iCalib[2]
+            self._calhdl = YAPI._getCalibrationHandler(self._caltyp)
+            #
+            if self._caltyp <= 10:
+                maxpos = self._caltyp
+            else:
+                if self._caltyp <= 20:
+                    maxpos = self._caltyp - 10
+                else:
+                    maxpos = 5
+            maxpos = 3 + 2 * maxpos
+            if maxpos > len(iCalib):
+                maxpos = len(iCalib)
+            del self._calpar[:]
+            del self._calraw[:]
+            del self._calref[:]
+            position = 3
+            while position + 1 < maxpos:
+                iRaw = iCalib[position]
+                iRef = iCalib[position + 1]
+                self._calpar.append(iRaw)
+                self._calpar.append(iRef)
+                if self._isScal:
+                    fRaw = iRaw
+                    fRaw = (fRaw - self._offset) / self._scale
+                    fRef = iRef
+                    fRef = (fRef - self._offset) / self._scale
+                    self._calraw.append(fRaw)
+                    self._calref.append(fRef)
+                else:
+                    self._calraw.append(YAPI._decimalToDouble(iRaw))
+                    self._calref.append(YAPI._decimalToDouble(iRef))
+                position = position + 2
         return 0
 
     def get_recordedData(self, startTime, endTime):
@@ -5060,14 +5789,12 @@ class YSensor(YFunction):
         """
         del rawValues[:]
         del refValues[:]
-        
         # // Load function parameters if not yet loaded
         if self._scale == 0:
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAPI.DEVICE_NOT_FOUND
-        
         if self._caltyp < 0:
-            self._throw(YAPI.NOT_SUPPORTED, "Device does not support new calibration parameters. Please upgrade your firmware")
+            self._throw(YAPI.NOT_SUPPORTED, "Calibration parameters format mismatch. Please upgrade your library or firmware.")
             return YAPI.NOT_SUPPORTED
         del rawValues[:]
         del refValues[:]
@@ -5083,43 +5810,47 @@ class YSensor(YFunction):
         # idx
         # iRaw
         # iRef
-        
         npt = len(rawValues)
         if npt != len(refValues):
             self._throw(YAPI.INVALID_ARGUMENT, "Invalid calibration parameters (size mismatch)")
             return YAPI.INVALID_STRING
-        
         # // Shortcut when building empty calibration parameters
         if npt == 0:
             return "0"
-        
         # // Load function parameters if not yet loaded
         if self._scale == 0:
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAPI.INVALID_STRING
-        
         # // Detect old firmware
         if (self._caltyp < 0) or (self._scale < 0):
-            self._throw(YAPI.NOT_SUPPORTED, "Device does not support new calibration parameters. Please upgrade your firmware")
+            self._throw(YAPI.NOT_SUPPORTED, "Calibration parameters format mismatch. Please upgrade your library or firmware.")
             return "0"
-        if self._isScal:
+        if self._isScal32:
             #
-            res = "" + str(int(npt))
+            res = "" + str(int(YAPI.YOCTO_CALIB_TYPE_OFS))
             idx = 0
             while idx < npt:
-                iRaw = round(rawValues[idx] * self._scale + self._offset)
-                iRef = round(refValues[idx] * self._scale + self._offset)
-                res = "" + res + "," + str(int(iRaw)) + "," + str(int(iRef))
+                res = "" + res + "," + str(rawValues[idx]) + "," + str(refValues[idx])
                 idx = idx + 1
         else:
-            #
-            res = "" + str(int(10 + npt))
-            idx = 0
-            while idx < npt:
-                iRaw = YAPI._doubleToDecimal(rawValues[idx])
-                iRef = YAPI._doubleToDecimal(refValues[idx])
-                res = "" + res + "," + str(int(iRaw)) + "," + str(int(iRef))
-                idx = idx + 1
+            if self._isScal:
+                #
+                res = "" + str(int(npt))
+                idx = 0
+                while idx < npt:
+                    iRaw = round(rawValues[idx] * self._scale + self._offset)
+                    iRef = round(refValues[idx] * self._scale + self._offset)
+                    res = "" + res + "," + str(int(iRaw)) + "," + str(int(iRef))
+                    idx = idx + 1
+            else:
+                #
+                res = "" + str(int(10 + npt))
+                idx = 0
+                while idx < npt:
+                    iRaw = YAPI._doubleToDecimal(rawValues[idx])
+                    iRef = YAPI._doubleToDecimal(refValues[idx])
+                    res = "" + res + "," + str(int(iRaw)) + "," + str(int(iRef))
+                    idx = idx + 1
         return res
 
     def _applyCalibration(self, rawValue):
@@ -5140,50 +5871,116 @@ class YSensor(YFunction):
         # minRaw
         # avgRaw
         # maxRaw
+        # sublen
+        # difRaw
         # startTime
         # endTime
         # minVal
         # avgVal
         # maxVal
-        
         startTime = self._prevTimedReport
         endTime = timestamp
         self._prevTimedReport = endTime
         if startTime == 0:
             startTime = endTime
-        if report[0] > 0:
+        if report[0] == 2:
             #
-            minRaw = report[1] + 0x100 * report[2]
-            maxRaw = report[3] + 0x100 * report[4]
-            avgRaw = report[5] + 0x100 * report[6] + 0x10000 * report[7]
-            byteVal = report[8]
-            if ((byteVal) & (0x80)) == 0:
-                avgRaw = avgRaw + 0x1000000 * byteVal
-            else:
-                avgRaw = avgRaw - 0x1000000 * (0x100 - byteVal)
-            minVal = self._decodeVal(minRaw)
-            avgVal = self._decodeAvg(avgRaw)
-            maxVal = self._decodeVal(maxRaw)
-        else:
-            #
-            poww = 1
-            avgRaw = 0
-            byteVal = 0
-            i = 1
-            while i < len(report):
-                byteVal = report[i]
-                avgRaw = avgRaw + poww * byteVal
-                poww = poww * 0x100
-                i = i + 1
-            if self._isScal:
-                avgVal = self._decodeVal(avgRaw)
-            else:
+            if len(report) <= 5:
+                #
+                poww = 1
+                avgRaw = 0
+                byteVal = 0
+                i = 1
+                while i < len(report):
+                    byteVal = report[i]
+                    avgRaw = avgRaw + poww * byteVal
+                    poww = poww * 0x100
+                    i = i + 1
                 if ((byteVal) & (0x80)) != 0:
                     avgRaw = avgRaw - poww
+                avgVal = avgRaw / 1000.0
+                if self._caltyp != 0:
+                    if self._calhdl is not None:
+                        avgVal = self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref)
+                minVal = avgVal
+                maxVal = avgVal
+            else:
+                #
+                sublen = 1 + ((report[1]) & (3))
+                poww = 1
+                avgRaw = 0
+                byteVal = 0
+                i = 2
+                while (sublen > 0) and (i < len(report)):
+                    byteVal = report[i]
+                    avgRaw = avgRaw + poww * byteVal
+                    poww = poww * 0x100
+                    i = i + 1
+                    sublen = sublen - 1
+                if ((byteVal) & (0x80)) != 0:
+                    avgRaw = avgRaw - poww
+                sublen = 1 + ((((report[1]) >> (2))) & (3))
+                poww = 1
+                difRaw = 0
+                while (sublen > 0) and (i < len(report)):
+                    byteVal = report[i]
+                    difRaw = avgRaw + poww * byteVal
+                    poww = poww * 0x100
+                    i = i + 1
+                    sublen = sublen - 1
+                minRaw = avgRaw - difRaw
+                sublen = 1 + ((((report[1]) >> (4))) & (3))
+                poww = 1
+                difRaw = 0
+                while (sublen > 0) and (i < len(report)):
+                    byteVal = report[i]
+                    difRaw = avgRaw + poww * byteVal
+                    poww = poww * 0x100
+                    i = i + 1
+                    sublen = sublen - 1
+                maxRaw = avgRaw + difRaw
+                avgVal = avgRaw / 1000.0
+                minVal = minRaw / 1000.0
+                maxVal = maxRaw / 1000.0
+                if self._caltyp != 0:
+                    if self._calhdl is not None:
+                        avgVal = self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref)
+                        minVal = self._calhdl(minVal, self._caltyp, self._calpar, self._calraw, self._calref)
+                        maxVal = self._calhdl(maxVal, self._caltyp, self._calpar, self._calraw, self._calref)
+        else:
+            #
+            if report[0] == 0:
+                #
+                poww = 1
+                avgRaw = 0
+                byteVal = 0
+                i = 1
+                while i < len(report):
+                    byteVal = report[i]
+                    avgRaw = avgRaw + poww * byteVal
+                    poww = poww * 0x100
+                    i = i + 1
+                if self._isScal:
+                    avgVal = self._decodeVal(avgRaw)
+                else:
+                    if ((byteVal) & (0x80)) != 0:
+                        avgRaw = avgRaw - poww
+                    avgVal = self._decodeAvg(avgRaw)
+                minVal = avgVal
+                maxVal = avgVal
+            else:
+                #
+                minRaw = report[1] + 0x100 * report[2]
+                maxRaw = report[3] + 0x100 * report[4]
+                avgRaw = report[5] + 0x100 * report[6] + 0x10000 * report[7]
+                byteVal = report[8]
+                if ((byteVal) & (0x80)) == 0:
+                    avgRaw = avgRaw + 0x1000000 * byteVal
+                else:
+                    avgRaw = avgRaw - 0x1000000 * (0x100 - byteVal)
+                minVal = self._decodeVal(minRaw)
                 avgVal = self._decodeAvg(avgRaw)
-            minVal = avgVal
-            maxVal = avgVal
-        
+                maxVal = self._decodeVal(maxRaw)
         return YMeasure(startTime, endTime, minVal, avgVal, maxVal)
 
     def _decodeVal(self, w):
@@ -5194,7 +5991,8 @@ class YSensor(YFunction):
         else:
             val = YAPI._decimalToDouble(w)
         if self._caltyp != 0:
-            val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+            if self._calhdl is not None:
+                val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
         return val
 
     def _decodeAvg(self, dw):
@@ -5205,7 +6003,8 @@ class YSensor(YFunction):
         else:
             val = val / self._decexp
         if self._caltyp != 0:
-            val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+            if self._calhdl is not None:
+                val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
         return val
 
     def nextSensor(self):

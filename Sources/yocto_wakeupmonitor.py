@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupmonitor.py 16424 2014-06-04 14:26:41Z seb $
+#* $Id: yocto_wakeupmonitor.py 17368 2014-08-29 16:46:36Z seb $
 #*
 #* Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
 #*
@@ -53,6 +53,8 @@ class YWakeUpMonitor(YFunction):
 #--- (end of YWakeUpMonitor class start)
     #--- (YWakeUpMonitor return codes)
     #--- (end of YWakeUpMonitor return codes)
+    #--- (YWakeUpMonitor dlldef)
+    #--- (end of YWakeUpMonitor dlldef)
     #--- (YWakeUpMonitor definitions)
     POWERDURATION_INVALID = YAPI.INVALID_INT
     SLEEPCOUNTDOWN_INVALID = YAPI.INVALID_INT
@@ -62,15 +64,8 @@ class YWakeUpMonitor(YFunction):
     WAKEUPREASON_EXTPOWER = 1
     WAKEUPREASON_ENDOFSLEEP = 2
     WAKEUPREASON_EXTSIG1 = 3
-    WAKEUPREASON_EXTSIG2 = 4
-    WAKEUPREASON_EXTSIG3 = 5
-    WAKEUPREASON_EXTSIG4 = 6
-    WAKEUPREASON_SCHEDULE1 = 7
-    WAKEUPREASON_SCHEDULE2 = 8
-    WAKEUPREASON_SCHEDULE3 = 9
-    WAKEUPREASON_SCHEDULE4 = 10
-    WAKEUPREASON_SCHEDULE5 = 11
-    WAKEUPREASON_SCHEDULE6 = 12
+    WAKEUPREASON_SCHEDULE1 = 4
+    WAKEUPREASON_SCHEDULE2 = 5
     WAKEUPREASON_INVALID = -1
     WAKEUPSTATE_SLEEPING = 0
     WAKEUPSTATE_AWAKE = 1
@@ -198,11 +193,8 @@ class YWakeUpMonitor(YFunction):
         
         @return a value among YWakeUpMonitor.WAKEUPREASON_USBPOWER, YWakeUpMonitor.WAKEUPREASON_EXTPOWER,
         YWakeUpMonitor.WAKEUPREASON_ENDOFSLEEP, YWakeUpMonitor.WAKEUPREASON_EXTSIG1,
-        YWakeUpMonitor.WAKEUPREASON_EXTSIG2, YWakeUpMonitor.WAKEUPREASON_EXTSIG3,
-        YWakeUpMonitor.WAKEUPREASON_EXTSIG4, YWakeUpMonitor.WAKEUPREASON_SCHEDULE1,
-        YWakeUpMonitor.WAKEUPREASON_SCHEDULE2, YWakeUpMonitor.WAKEUPREASON_SCHEDULE3,
-        YWakeUpMonitor.WAKEUPREASON_SCHEDULE4, YWakeUpMonitor.WAKEUPREASON_SCHEDULE5 and
-        YWakeUpMonitor.WAKEUPREASON_SCHEDULE6 corresponding to the latest wake up reason
+        YWakeUpMonitor.WAKEUPREASON_SCHEDULE1 and YWakeUpMonitor.WAKEUPREASON_SCHEDULE2 corresponding to
+        the latest wake up reason
         
         On failure, throws an exception or returns YWakeUpMonitor.WAKEUPREASON_INVALID.
         """
