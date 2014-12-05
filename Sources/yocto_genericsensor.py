@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_genericsensor.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_genericsensor.py 18262 2014-11-05 14:22:14Z seb $
 #*
 #* Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #*
@@ -61,6 +61,11 @@ class YGenericSensor(YSensor):
     SIGNALRANGE_INVALID = YAPI.INVALID_STRING
     VALUERANGE_INVALID = YAPI.INVALID_STRING
     SIGNALBIAS_INVALID = YAPI.INVALID_DOUBLE
+    SIGNALSAMPLING_HIGH_RATE = 0
+    SIGNALSAMPLING_HIGH_RATE_FILTERED = 1
+    SIGNALSAMPLING_LOW_NOISE = 2
+    SIGNALSAMPLING_LOW_NOISE_FILTERED = 3
+    SIGNALSAMPLING_INVALID = -1
     #--- (end of YGenericSensor definitions)
 
     def __init__(self, func):
@@ -73,6 +78,7 @@ class YGenericSensor(YSensor):
         self._signalRange = YGenericSensor.SIGNALRANGE_INVALID
         self._valueRange = YGenericSensor.VALUERANGE_INVALID
         self._signalBias = YGenericSensor.SIGNALBIAS_INVALID
+        self._signalSampling = YGenericSensor.SIGNALSAMPLING_INVALID
         #--- (end of YGenericSensor attributes)
 
     #--- (YGenericSensor implementation)
@@ -91,6 +97,9 @@ class YGenericSensor(YSensor):
             return 1
         if member.name == "signalBias":
             self._signalBias = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
+            return 1
+        if member.name == "signalSampling":
+            self._signalSampling = member.ivalue
             return 1
         super(YGenericSensor, self)._parseAttr(member)
 
@@ -217,6 +226,46 @@ class YGenericSensor(YSensor):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGenericSensor.SIGNALBIAS_INVALID
         return self._signalBias
+
+    def get_signalSampling(self):
+        """
+        Returns the electric signal sampling method to use.
+        The HIGH_RATE method uses the highest sampling frequency, without any filtering.
+        The HIGH_RATE_FILTERED method adds a windowed 7-sample median filter.
+        The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
+        The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
+        to get measures as stable as possible when working on a noisy signal.
+        
+        @return a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
+        YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE and
+        YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric signal sampling method to use
+        
+        On failure, throws an exception or returns YGenericSensor.SIGNALSAMPLING_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YGenericSensor.SIGNALSAMPLING_INVALID
+        return self._signalSampling
+
+    def set_signalSampling(self, newval):
+        """
+        Changes the electric signal sampling method to use.
+        The HIGH_RATE method uses the highest sampling frequency, without any filtering.
+        The HIGH_RATE_FILTERED method adds a windowed 7-sample median filter.
+        The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
+        The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
+        to get measures as stable as possible when working on a noisy signal.
+        
+        @param newval : a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
+        YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE and
+        YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric signal sampling method to use
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("signalSampling", rest_val)
 
     @staticmethod
     def FindGenericSensor(func):

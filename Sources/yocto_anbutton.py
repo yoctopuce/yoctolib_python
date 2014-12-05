@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_anbutton.py 17674 2014-09-16 16:18:58Z seb $
+#* $Id: yocto_anbutton.py 18361 2014-11-13 08:06:41Z mvuilleu $
 #*
 #* Implements yFindAnButton(), the high-level API for AnButton functions
 #*
@@ -390,7 +390,7 @@ class YAnButton(YFunction):
 
     def resetCounter(self):
         """
-        Returns the pulse counter value as well as his timer
+        Returns the pulse counter value as well as its timer.
         
         @return YAPI.SUCCESS if the call succeeds.
         

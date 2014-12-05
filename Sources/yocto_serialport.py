@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 17610 2014-09-13 11:30:24Z mvuilleu $
+#* $Id: yocto_serialport.py 18262 2014-11-05 14:22:14Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -64,8 +64,10 @@ class YSerialPort(YFunction):
     RXCOUNT_INVALID = YAPI.INVALID_UINT
     TXCOUNT_INVALID = YAPI.INVALID_UINT
     ERRCOUNT_INVALID = YAPI.INVALID_UINT
-    MSGCOUNT_INVALID = YAPI.INVALID_UINT
+    RXMSGCOUNT_INVALID = YAPI.INVALID_UINT
+    TXMSGCOUNT_INVALID = YAPI.INVALID_UINT
     LASTMSG_INVALID = YAPI.INVALID_STRING
+    STARTUPJOB_INVALID = YAPI.INVALID_STRING
     COMMAND_INVALID = YAPI.INVALID_STRING
     #--- (end of YSerialPort definitions)
 
@@ -79,8 +81,10 @@ class YSerialPort(YFunction):
         self._rxCount = YSerialPort.RXCOUNT_INVALID
         self._txCount = YSerialPort.TXCOUNT_INVALID
         self._errCount = YSerialPort.ERRCOUNT_INVALID
-        self._msgCount = YSerialPort.MSGCOUNT_INVALID
+        self._rxMsgCount = YSerialPort.RXMSGCOUNT_INVALID
+        self._txMsgCount = YSerialPort.TXMSGCOUNT_INVALID
         self._lastMsg = YSerialPort.LASTMSG_INVALID
+        self._startupJob = YSerialPort.STARTUPJOB_INVALID
         self._command = YSerialPort.COMMAND_INVALID
         self._rxptr = 0
         #--- (end of YSerialPort attributes)
@@ -102,11 +106,17 @@ class YSerialPort(YFunction):
         if member.name == "errCount":
             self._errCount = member.ivalue
             return 1
-        if member.name == "msgCount":
-            self._msgCount = member.ivalue
+        if member.name == "rxMsgCount":
+            self._rxMsgCount = member.ivalue
+            return 1
+        if member.name == "txMsgCount":
+            self._txMsgCount = member.ivalue
             return 1
         if member.name == "lastMsg":
             self._lastMsg = member.svalue
+            return 1
+        if member.name == "startupJob":
+            self._startupJob = member.svalue
             return 1
         if member.name == "command":
             self._command = member.svalue
@@ -228,18 +238,31 @@ class YSerialPort(YFunction):
                 return YSerialPort.ERRCOUNT_INVALID
         return self._errCount
 
-    def get_msgCount(self):
+    def get_rxMsgCount(self):
         """
         Returns the total number of messages received since last reset.
         
         @return an integer corresponding to the total number of messages received since last reset
         
-        On failure, throws an exception or returns YSerialPort.MSGCOUNT_INVALID.
+        On failure, throws an exception or returns YSerialPort.RXMSGCOUNT_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YSerialPort.MSGCOUNT_INVALID
-        return self._msgCount
+                return YSerialPort.RXMSGCOUNT_INVALID
+        return self._rxMsgCount
+
+    def get_txMsgCount(self):
+        """
+        Returns the total number of messages send since last reset.
+        
+        @return an integer corresponding to the total number of messages send since last reset
+        
+        On failure, throws an exception or returns YSerialPort.TXMSGCOUNT_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YSerialPort.TXMSGCOUNT_INVALID
+        return self._txMsgCount
 
     def get_lastMsg(self):
         """
@@ -253,6 +276,34 @@ class YSerialPort(YFunction):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSerialPort.LASTMSG_INVALID
         return self._lastMsg
+
+    def get_startupJob(self):
+        """
+        Returns the job file to use when the device is powered on.
+        
+        @return a string corresponding to the job file to use when the device is powered on
+        
+        On failure, throws an exception or returns YSerialPort.STARTUPJOB_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YSerialPort.STARTUPJOB_INVALID
+        return self._startupJob
+
+    def set_startupJob(self, newval):
+        """
+        Changes the job to use when the device is powered on.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+        
+        @param newval : a string corresponding to the job to use when the device is powered on
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("startupJob", rest_val)
 
     def get_command(self):
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -337,7 +388,6 @@ class YSerialPort(YFunction):
         """
         # buff
         # res
-        
         # // may throw an exception
         buff = self._download("cts.txt")
         if not (len(buff) == 1):
@@ -359,7 +409,6 @@ class YSerialPort(YFunction):
         # bufflen
         # idx
         # ch
-        
         buff = YString2Byte(text)
         bufflen = len(buff)
         if bufflen < 100:
@@ -461,7 +510,6 @@ class YSerialPort(YFunction):
         # bufflen
         # idx
         # ch
-        
         buff = YString2Byte("" + text + "\r\n")
         bufflen = len(buff)-2
         if bufflen < 100:
@@ -536,7 +584,7 @@ class YSerialPort(YFunction):
                 nChars = nChars - missing
         if nChars > bufflen:
             nChars = bufflen
-        self._rxptr = self._rxptr + nChars
+        self._rxptr = endpos - (bufflen - nChars)
         res = (YByte2String(buff))[0: 0 + nChars]
         return res
 
@@ -582,7 +630,7 @@ class YSerialPort(YFunction):
                 nBytes = nBytes - missing
         if nBytes > bufflen:
             nBytes = bufflen
-        self._rxptr = self._rxptr + nBytes
+        self._rxptr = endpos - (bufflen - nBytes)
         res = ""
         ofs = 0
         while ofs+3 < nBytes:
@@ -596,8 +644,8 @@ class YSerialPort(YFunction):
     def readLine(self):
         """
         Reads a single line (or message) from the receive buffer, starting at current stream position.
-        This function can only be used when the serial port is configured for a message protocol,
-        such as 'Line' mode or MODBUS protocols. It does not  work in plain stream modes, eg. 'Char' or 'Byte').
+        This function is intended to be used when the serial port is configured for a message protocol,
+        such as 'Line' mode or MODBUS protocols.
         
         If data at current stream position is not available anymore in the receive buffer,
         the function returns the oldest available line and moves the stream position just after.
@@ -630,9 +678,8 @@ class YSerialPort(YFunction):
     def readMessages(self, pattern, maxWait):
         """
         Searches for incoming messages in the serial port receive buffer matching a given pattern,
-        starting at current position. This function can only be used when the serial port is
-        configured for a message protocol, such as 'Line' mode or MODBUS protocols.
-        It does not work in plain stream modes, eg. 'Char' or 'Byte', for which there is no "start" of message.
+        starting at current position. This function will only compare and return printable characters
+        in the message strings. Binary protocols are handled as hexadecimal strings.
         
         The search returns all messages matching the expression provided as argument in the buffer.
         If no matching message is found, the search waits for one up to the specified maximum timeout
@@ -674,23 +721,31 @@ class YSerialPort(YFunction):
         
         return res
 
-    def read_seek(self, rxCountVal):
+    def read_seek(self, absPos):
         """
         Changes the current internal stream position to the specified value. This function
         does not affect the device, it only changes the value stored in the YSerialPort object
         for the next read operations.
         
-        @param rxCountVal : the absolute position index (value of rxCount) for next read operations.
+        @param absPos : the absolute position index for next read operations.
         
         @return nothing.
         """
-        self._rxptr = rxCountVal
+        self._rxptr = absPos
         return YAPI.SUCCESS
+
+    def read_tell(self):
+        """
+        Returns the current absolute stream position pointer of the YSerialPort object.
+        
+        @return the absolute position index for next read operations.
+        """
+        return self._rxptr
 
     def queryLine(self, query, maxWait):
         """
         Sends a text line query to the serial port, and reads the reply, if any.
-        This function can only be used when the serial port is configured for 'Line' protocol.
+        This function is intended to be used when the serial port is configured for 'Line' protocol.
         
         @param query : the line query to send (without CR/LF)
         @param maxWait : the maximum number of milliseconds to wait for a reply.
@@ -1211,6 +1266,36 @@ class YSerialPort(YFunction):
             regpos = regpos + 1
         
         return res
+
+    def uploadJob(self, jobfile, jsonDef):
+        """
+        Saves the job definition string (JSON data) into a job file.
+        The job file can be later enabled using selectJob().
+        
+        @param jobfile : name of the job file to save on the device filesystem
+        @param jsonDef : a string containing a JSON definition of the job
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        self._upload(jobfile, YString2Byte(jsonDef))
+        return YAPI.SUCCESS
+
+    def selectJob(self, jobfile):
+        """
+        Load and start processing the specified job file. The file must have
+        been previously created using the user interface or uploaded on the
+        device filesystem using the uploadJob() function.
+        
+        @param jobfile : name of the job file (on the device filesystem)
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # // may throw an exception
+        return self.sendCommand("J" + jobfile)
 
     def nextSerialPort(self):
         """

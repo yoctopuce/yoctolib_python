@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_temperature.py 18298 2014-11-07 12:49:15Z mvuilleu $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -56,6 +56,7 @@ class YTemperature(YSensor):
     #--- (YTemperature dlldef)
     #--- (end of YTemperature dlldef)
     #--- (YTemperature definitions)
+    COMMAND_INVALID = YAPI.INVALID_STRING
     SENSORTYPE_DIGITAL = 0
     SENSORTYPE_TYPE_K = 1
     SENSORTYPE_TYPE_E = 2
@@ -67,6 +68,9 @@ class YTemperature(YSensor):
     SENSORTYPE_PT100_4WIRES = 8
     SENSORTYPE_PT100_3WIRES = 9
     SENSORTYPE_PT100_2WIRES = 10
+    SENSORTYPE_RES_OHM = 11
+    SENSORTYPE_RES_NTC = 12
+    SENSORTYPE_RES_LINEAR = 13
     SENSORTYPE_INVALID = -1
     #--- (end of YTemperature definitions)
 
@@ -76,12 +80,16 @@ class YTemperature(YSensor):
         #--- (YTemperature attributes)
         self._callback = None
         self._sensorType = YTemperature.SENSORTYPE_INVALID
+        self._command = YTemperature.COMMAND_INVALID
         #--- (end of YTemperature attributes)
 
     #--- (YTemperature implementation)
     def _parseAttr(self, member):
         if member.name == "sensorType":
             self._sensorType = member.ivalue
+            return 1
+        if member.name == "command":
+            self._command = member.svalue
             return 1
         super(YTemperature, self)._parseAttr(member)
 
@@ -92,8 +100,10 @@ class YTemperature(YSensor):
         @return a value among YTemperature.SENSORTYPE_DIGITAL, YTemperature.SENSORTYPE_TYPE_K,
         YTemperature.SENSORTYPE_TYPE_E, YTemperature.SENSORTYPE_TYPE_J, YTemperature.SENSORTYPE_TYPE_N,
         YTemperature.SENSORTYPE_TYPE_R, YTemperature.SENSORTYPE_TYPE_S, YTemperature.SENSORTYPE_TYPE_T,
-        YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES and
-        YTemperature.SENSORTYPE_PT100_2WIRES corresponding to the temperature sensor type
+        YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES,
+        YTemperature.SENSORTYPE_PT100_2WIRES, YTemperature.SENSORTYPE_RES_OHM,
+        YTemperature.SENSORTYPE_RES_NTC and YTemperature.SENSORTYPE_RES_LINEAR corresponding to the
+        temperature sensor type
         
         On failure, throws an exception or returns YTemperature.SENSORTYPE_INVALID.
         """
@@ -113,8 +123,9 @@ class YTemperature(YSensor):
         @param newval : a value among YTemperature.SENSORTYPE_DIGITAL, YTemperature.SENSORTYPE_TYPE_K,
         YTemperature.SENSORTYPE_TYPE_E, YTemperature.SENSORTYPE_TYPE_J, YTemperature.SENSORTYPE_TYPE_N,
         YTemperature.SENSORTYPE_TYPE_R, YTemperature.SENSORTYPE_TYPE_S, YTemperature.SENSORTYPE_TYPE_T,
-        YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES and
-        YTemperature.SENSORTYPE_PT100_2WIRES
+        YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES,
+        YTemperature.SENSORTYPE_PT100_2WIRES, YTemperature.SENSORTYPE_RES_OHM,
+        YTemperature.SENSORTYPE_RES_NTC and YTemperature.SENSORTYPE_RES_LINEAR
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -122,6 +133,16 @@ class YTemperature(YSensor):
         """
         rest_val = str(newval)
         return self._setAttr("sensorType", rest_val)
+
+    def get_command(self):
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YTemperature.COMMAND_INVALID
+        return self._command
+
+    def set_command(self, newval):
+        rest_val = newval
+        return self._setAttr("command", rest_val)
 
     @staticmethod
     def FindTemperature(func):
@@ -154,6 +175,135 @@ class YTemperature(YSensor):
             obj = YTemperature(func)
             YFunction._AddToCache("Temperature", func, obj)
         return obj
+
+    def set_thermistorResponseTable(self, tempValues, resValues):
+        """
+        Record a thermistor response table, for interpolating the temperature from
+        the measured resistance. This function can only be used with temperature
+        sensor based on thermistors.
+        
+        @param tempValues : array of floating point numbers, corresponding to all
+                temperatures (in degrees Celcius) for which the resistance of the
+                thermistor is specified.
+        @param resValues : array of floating point numbers, corresponding to the resistance
+                values (in Ohms) for each of the temperature included in the first
+                argument, index by index.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # siz
+        # res
+        # idx
+        # found
+        # prev
+        # curr
+        # currTemp
+        # idxres
+        siz = len(tempValues)
+        if not (siz >= 2):
+            self._throw(YAPI.INVALID_ARGUMENT, "thermistor response table must have at least two points")
+        if not (siz == len(resValues)):
+            self._throw(YAPI.INVALID_ARGUMENT, "table sizes mismatch")
+        
+        # // may throw an exception
+        res = self.set_command("Z")
+        if not (res==YAPI.SUCCESS):
+            self._throw(YAPI.IO_ERROR, "unable to reset thermistor parameters")
+        
+        # // add records in growing resistance value
+        found = 1
+        prev = 0.0
+        while found > 0:
+            found = 0
+            curr = 99999999.0
+            currTemp = -999999.0
+            idx = 0
+            while idx < siz:
+                idxres = resValues[idx]
+                if (idxres > prev) and (idxres < curr):
+                    curr = idxres
+                    currTemp = tempValues[idx]
+                    found = 1
+                idx = idx + 1
+            if found > 0:
+                res = self.set_command("m" + str(int(round(1000*curr))) + ":" + str(int(round(1000*currTemp))))
+                if not (res==YAPI.SUCCESS):
+                    self._throw(YAPI.IO_ERROR, "unable to reset thermistor parameters")
+                prev = curr
+        return YAPI.SUCCESS
+
+    def loadThermistorResponseTable(self, tempValues, resValues):
+        """
+        Retrieves the thermistor response table previously configured using function
+        set_thermistorResponseTable. This function can only be used with
+        temperature sensor based on thermistors.
+        
+        @param tempValues : array of floating point numbers, that will be filled by the function
+                with all temperatures (in degrees Celcius) for which the resistance
+                of the thermistor is specified.
+        @param resValues : array of floating point numbers, that will be filled by the function
+                with the value (in Ohms) for each of the temperature included in the
+                first argument, index by index.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        # id
+        # bin_json
+        paramlist = []
+        templist = []
+        # siz
+        # idx
+        # temp
+        # found
+        # prev
+        # curr
+        # currRes
+        
+        del tempValues[:]
+        del resValues[:]
+        
+        # // may throw an exception
+        id = self.get_functionId()
+        id = (id)[11: 11 + len(id)-1]
+        bin_json = self._download("extra.json?page=" + id)
+        paramlist = self._json_get_array(bin_json)
+        # // first convert all temperatures to float
+        siz = ((len(paramlist)) >> (1))
+        del templist[:]
+        idx = 0
+        while idx < siz:
+            temp = float(paramlist[2*idx+1])/1000.0
+            templist.append(temp)
+            idx = idx + 1
+        # // then add records in growing temperature value
+        del tempValues[:]
+        del resValues[:]
+        found = 1
+        prev = -999999.0
+        while found > 0:
+            found = 0
+            curr = 999999.0
+            currRes = -999999.0
+            idx = 0
+            while idx < siz:
+                temp = templist[idx]
+                if (temp > prev) and (temp < curr):
+                    curr = temp
+                    currRes = float(paramlist[2*idx])/1000.0
+                    found = 1
+                idx = idx + 1
+            if found > 0:
+                tempValues.append(curr)
+                resValues.append(currRes)
+                prev = curr
+        
+        
+        
+        return YAPI.SUCCESS
 
     def nextTemperature(self):
         """

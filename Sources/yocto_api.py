@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_api.py 17828 2014-09-25 16:00:31Z mvuilleu $
+#* $Id: yocto_api.py 18628 2014-12-03 16:18:53Z seb $
 #*
 #* High-level programming interface, common to all modules
 #*
@@ -532,7 +532,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "17849"
+    YOCTO_API_BUILD_NO = "18640"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -944,9 +944,9 @@ class YAPI:
         YAPI._yapiCheckFirmware = YAPI._yApiCLib.yapiCheckFirmware
         YAPI._yapiCheckFirmware.restypes = ctypes.c_int
         YAPI._yapiCheckFirmware.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
-        YAPI._yapiGetBootloadersDevs = YAPI._yApiCLib.yapiGetBootloadersDevs
-        YAPI._yapiGetBootloadersDevs.restypes = ctypes.c_int
-        YAPI._yapiGetBootloadersDevs.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
+        YAPI._yapiGetBootloaders = YAPI._yApiCLib.yapiGetBootloaders
+        YAPI._yapiGetBootloaders.restypes = ctypes.c_int
+        YAPI._yapiGetBootloaders.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiUpdateFirmware = YAPI._yApiCLib.yapiUpdateFirmware
         YAPI._yapiUpdateFirmware.restypes = ctypes.c_int
         YAPI._yapiUpdateFirmware.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
@@ -1173,7 +1173,7 @@ class YAPI:
 
             if YAPI.GetTickCount() < timeout:
                 #noinspection PyUnresolvedReferences
-                res = YAPI._yapiSleep(1, errBuffer)
+                res = YAPI._yapiSleep(2, errBuffer)
                 if YAPI.YISERR(res):
                     if not errmsgRef is None:
                         errmsgRef.value = YByte2String(errBuffer.value)
@@ -2099,7 +2099,9 @@ class YFirmwareUpdate(object):
         self._settings = ''
         self._firmwarepath = ''
         self._progress_msg = ''
+        self._progress_c = 0
         self._progress = 0
+        self._restore_step = 0
         #--- (end of generated code: YFirmwareUpdate attributes)
         self._serial = serial
         self._settings = settings
@@ -2108,27 +2110,140 @@ class YFirmwareUpdate(object):
     #--- (generated code: YFirmwareUpdate implementation)
     def _processMore(self, newupdate):
         errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        # m
         # res
         # serial
         # firmwarepath
         # settings
-        serial = self._serial
-        firmwarepath = self._firmwarepath
-        settings = YByte2String(self._settings)
-        res = YAPI._yapiUpdateFirmware(ctypes.create_string_buffer(serial), ctypes.create_string_buffer(firmwarepath), ctypes.create_string_buffer(settings), newupdate, errmsg)
-        self._progress = res
-        self._progress_msg = YByte2String(errmsg.value)
-        return res
+        # prod_prefix
+        if self._progress_c < 100:
+            serial = self._serial
+            firmwarepath = self._firmwarepath
+            settings = YByte2String(self._settings)
+            res = YAPI._yapiUpdateFirmware(ctypes.create_string_buffer(YString2Byte(serial)), ctypes.create_string_buffer(YString2Byte(firmwarepath)), ctypes.create_string_buffer(YString2Byte(settings)), newupdate, errmsg)
+            if res < 0:
+                self._progress = res
+                self._progress_msg = YByte2String(errmsg.value)
+                return res
+            self._progress_c = res
+            self._progress = int((self._progress_c * 9) / (10))
+            self._progress_msg = YByte2String(errmsg.value)
+        else:
+            if (len(self._settings) != 0):
+                self._progress_msg = "restoring settings"
+                m = YModule.FindModule(self._serial + ".module")
+                if not (m.isOnline()):
+                    return self._progress
+                if self._progress < 95:
+                    prod_prefix = (m.get_productName())[0: 0 + 8]
+                    if prod_prefix == "YoctoHub":
+                        YAPI.Sleep(1000)
+                        self._progress = self._progress + 1
+                        return self._progress
+                    else:
+                        self._progress = 95
+                if self._progress < 100:
+                    #
+                    m.set_allSettings(self._settings)
+                    self._settings = b" " * 0
+                    self._progress = 100
+                    self._progress_msg = "success"
+            else:
+                self._progress =  100
+                self._progress_msg = "success"
+        return self._progress
+
+    @staticmethod
+    def GetAllBootLoaders():
+        """
+        Retrun a list of all modules in "update" mode. Only USB connected
+        devices are listed. If the module is connected to a YoctoHub, you have to
+        connect to the YoctoHub web interface.
+        
+        @return an array of strings containing the serial list of module in "update" mode.
+        """
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        smallbuff = ctypes.create_string_buffer(1024)
+        # bigbuff
+        # buffsize
+        fullsize = ctypes.c_int()
+        # yapi_res
+        # bootloader_list
+        bootladers = []
+        fullsize.value = 0
+        yapi_res = YAPI._yapiGetBootloaders(smallbuff, 1024, ctypes.byref(fullsize), errmsg)
+        if yapi_res < 0:
+            bootloader_list = "error:" + YByte2String(errmsg.value)
+            return bootladers
+        if fullsize.value <= 1024:
+            bootloader_list = YByte2String(smallbuff.value)
+        else:
+            buffsize = fullsize.value
+            bigbuff = ctypes.create_string_buffer(buffsize)
+            yapi_res = YAPI._yapiGetBootloaders(bigbuff, buffsize, ctypes.byref(fullsize), errmsg)
+            if yapi_res < 0:
+                bigbuff = None
+                return bootladers
+            else:
+                bootloader_list = YByte2String(bigbuff.value)
+            bigbuff = None
+        bootladers = (bootloader_list).split(',')
+        return bootladers
+
+    @staticmethod
+    def CheckFirmware(serial, path, minrelease):
+        """
+        Test if the byn file is valid for this module. It's possible to pass an directory instead of a file.
+        In this case this method return the path of the most recent appropriate byn file. This method will
+        ignore firmware that are older than mintrelase.
+        
+        @param serial  : the serial number of the module to update
+        @param path    : the path of a byn file or a directory that contain byn files
+        @param minrelease : an positif integer
+        
+        @return : the path of the byn file to use or a empty string if no byn files match the requirement
+        
+        On failure, returns a string that start with "error:".
+        """
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        smallbuff = ctypes.create_string_buffer(1024)
+        # bigbuff
+        # buffsize
+        fullsize = ctypes.c_int()
+        # res
+        # firmware_path
+        # release
+        fullsize.value = 0
+        release = str(minrelease)
+        res = YAPI._yapiCheckFirmware(ctypes.create_string_buffer(YString2Byte(serial)), ctypes.create_string_buffer(YString2Byte(release)), ctypes.create_string_buffer(YString2Byte(path)), smallbuff, 1024, ctypes.byref(fullsize), errmsg)
+        if res < 0:
+            firmware_path = "error:" + YByte2String(errmsg.value)
+            return "error:" + YByte2String(errmsg.value)
+        if fullsize.value <= 1024:
+            firmware_path = YByte2String(smallbuff.value)
+        else:
+            buffsize = fullsize.value
+            bigbuff = ctypes.create_string_buffer(buffsize)
+            res = YAPI._yapiCheckFirmware(ctypes.create_string_buffer(YString2Byte(serial)), ctypes.create_string_buffer(YString2Byte(release)), ctypes.create_string_buffer(YString2Byte(path)), bigbuff, buffsize, ctypes.byref(fullsize), errmsg)
+            if res < 0:
+                firmware_path = "error:" + YByte2String(errmsg.value)
+            else:
+                firmware_path = YByte2String(bigbuff.value)
+            bigbuff = None
+        return firmware_path
 
     def get_progress(self):
-        # m
+        """
+        Returns the progress of the firmware update, on a scale from 0 to 100. When the object is
+        instantiated the progress is zero. The value is updated During the firmware update process, until
+        the value of 100 is reached. The value of 100 mean that the firmware update is terminated with
+        success. If an error occur during the firmware update a negative value is returned, and the
+        error message can be retrieved with get_progressMessage.
+        
+        @return an integer in the range 0 to 100 (percentage of completion) or
+                or a negative error code in case of failure.
+        """
         self._processMore(0)
-        if (self._progress == 100) and (len(self._settings) != 0):
-            m = YModule.FindModule(self._serial)
-            if m.isOnline():
-                #
-                m.set_allSettings(self._settings)
-                self._settings = b" " * 0
         return self._progress
 
     def get_progressMessage(self):
@@ -2151,6 +2266,8 @@ class YFirmwareUpdate(object):
         
         On failure returns a negative error code.
         """
+        self._progress = 0
+        self._progress_c = 0
         self._processMore(1)
         return self._progress
 
@@ -3432,6 +3549,18 @@ class YFunction(object):
         hwidRef.value = serialRef.value + "." + funcIdRef.value
         return YAPI.SUCCESS
 
+    @staticmethod
+    def _escapeAttr(changeval):
+        uchangeval = ""
+        for c in changeval:
+            if c <= ' ' or \
+                    (c > 'z' and c != '~') or c == '"' or c == '%' or c == '&' or c == '+' or \
+                    c == '<' or c == '=' or c == '>' or c == '\\' or c == '^' or c == '`':
+                uchangeval += "%" + ('%02X' % ord(c))
+            else:
+                uchangeval += c
+        return uchangeval
+
     def _buildSetRequest(self, changeattr, changeval, requestRef, errmsgRef=None):
         fundescRef = YRefParam()
         funcid = ctypes.create_string_buffer(YAPI.YOCTO_FUNCTION_LEN)
@@ -3449,20 +3578,9 @@ class YFunction(object):
             self._throw(res, errmsgRef.value)
             return res
         requestRef.value = "GET /api/" + YByte2String(funcid.value) + "/"
-        uchangeval = ""
-
         if changeattr != "":
-            requestRef.value += changeattr + "?" + changeattr + "="
-
-        for c in changeval:
-            if c <= ' ' or \
-                    (c > 'z' and c != '~') or c == '"' or c == '%' or c == '&' or c == '+' or \
-                    c == '<' or c == '=' or c == '>' or c == '\\' or c == '^' or c == '`':
-                uchangeval += "%" + ('%02X' % ord(c))
-            else:
-                uchangeval += c
-
-        requestRef.value += uchangeval + "&. \r\n\r\n"
+            requestRef.value += changeattr + "?" + changeattr + "=" + self._escapeAttr(changeval)
+        requestRef.value += "&. \r\n\r\n"
         return YAPI.SUCCESS
 
     def _parse(self, j):
@@ -4495,39 +4613,15 @@ class YModule(YFunction):
         
         On failure, throws an exception or returns a string that start with "error:".
         """
-        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
-        smallbuff = ctypes.create_string_buffer(1024)
-        # bigbuff
-        # buffsize
-        fullsize = ctypes.c_int()
-        # res
-        # firmware_path
         # serial
         # release
         if onlynew:
-            release = self.get_firmwareRelease()
+            release = int(self.get_firmwareRelease())
         else:
-            release = ""
+            release = 0
         # //may throw an exception
-        serial = self._serial
-        fullsize.value = 0
-        res = YAPI._yapiCheckFirmware(ctypes.create_string_buffer(serial), ctypes.create_string_buffer(release), ctypes.create_string_buffer(path), smallbuff, 1024, ctypes.byref(fullsize), errmsg)
-        if res < 0:
-            firmware_path = "error:" + YByte2String(errmsg.value)
-            return "error:" + YByte2String(errmsg.value)
-        if fullsize.value <= 1024:
-            firmware_path = YByte2String(smallbuff.value)
-        else:
-            buffsize = fullsize.value
-            bigbuff = ctypes.create_string_buffer(buffsize)
-            res = YAPI._yapiCheckFirmware(ctypes.create_string_buffer(serial), ctypes.create_string_buffer(release), ctypes.create_string_buffer(path), bigbuff, buffsize, ctypes.byref(fullsize), errmsg)
-            if res < 0:
-                self._throw(YAPI.INVALID_ARGUMENT, YByte2String(errmsg.value))
-                firmware_path = "error:" + YByte2String(errmsg.value)
-            else:
-                firmware_path = YByte2String(bigbuff.value)
-            bigbuff = None
-        return firmware_path
+        serial = self.get_serialNumber()
+        return YFirmwareUpdate.CheckFirmware(serial,path, release)
 
     def updateFirmware(self, path):
         """
@@ -4568,7 +4662,7 @@ class YModule(YFunction):
         # jsoncomplexstr
         fullsize.value = 0
         jsoncomplexstr = YByte2String(jsoncomplex)
-        res = YAPI._yapiGetAllJsonKeys(ctypes.create_string_buffer(jsoncomplexstr), smallbuff, 1024, ctypes.byref(fullsize), errmsg)
+        res = YAPI._yapiGetAllJsonKeys(ctypes.create_string_buffer(YString2Byte(jsoncomplexstr)), smallbuff, 1024, ctypes.byref(fullsize), errmsg)
         if res < 0:
             self._throw(YAPI.INVALID_ARGUMENT, YByte2String(errmsg.value))
             jsonflat = "error:" + YByte2String(errmsg.value)
@@ -4578,7 +4672,7 @@ class YModule(YFunction):
         else:
             buffsize = fullsize.value
             bigbuff = ctypes.create_string_buffer(buffsize)
-            res = YAPI._yapiGetAllJsonKeys(ctypes.create_string_buffer(jsoncomplexstr), bigbuff, buffsize, ctypes.byref(fullsize), errmsg)
+            res = YAPI._yapiGetAllJsonKeys(ctypes.create_string_buffer(YString2Byte(jsoncomplexstr)), bigbuff, buffsize, ctypes.byref(fullsize), errmsg)
             if res < 0:
                 self._throw(YAPI.INVALID_ARGUMENT, YByte2String(errmsg.value))
                 jsonflat = "error:" + YByte2String(errmsg.value)
@@ -4773,12 +4867,12 @@ class YModule(YFunction):
         old_dslist = []
         old_jpath = []
         old_jpath_len = []
-        old_val = []
+        old_val_arr = []
         # actualSettings
         new_dslist = []
         new_jpath = []
         new_jpath_len = []
-        new_val = []
+        new_val_arr = []
         # cpos
         # eqpos
         # leng
@@ -4795,18 +4889,19 @@ class YModule(YFunction):
         # sensorType
         # unit_name
         # newval
+        # oldval
         # old_calib
         # do_update
         # found
+        oldval = ""
+        newval = ""
         old_json_flat = self._flattenJsonStruct(settings)
         old_dslist = self._json_get_array(old_json_flat)
         
         
         
         for y in old_dslist:
-            #
-            leng = len(y)
-            y = (y)[1: 1 + leng - 2]
+            y = self._json_get_string(YString2Byte(y))
             #
             leng = len(y)
             eqpos = y.find("=")
@@ -4818,7 +4913,7 @@ class YModule(YFunction):
             value = (y)[eqpos: eqpos + leng - eqpos]
             old_jpath.append(jpath)
             old_jpath_len.append(len(jpath))
-            old_val.append(value)
+            old_val_arr.append(value)
         
         
         
@@ -4831,8 +4926,7 @@ class YModule(YFunction):
         
         for y in new_dslist:
             #
-            leng = len(y)
-            y = (y)[1: 1 + leng - 2]
+            y = self._json_get_string(YString2Byte(y))
             #
             leng = len(y)
             eqpos = y.find("=")
@@ -4844,7 +4938,7 @@ class YModule(YFunction):
             value = (y)[eqpos: eqpos + leng - eqpos]
             new_jpath.append(jpath)
             new_jpath_len.append(len(jpath))
-            new_val.append(value)
+            new_val_arr.append(value)
         
         
         
@@ -4935,17 +5029,29 @@ class YModule(YFunction):
             if (do_update) and (attr == "msgCount"):
                 do_update = False
             if do_update:
+                do_update = False
+                newval = new_val_arr[i]
+                j = 0
+                found = False
+                while (j < len(old_jpath)) and not (found):
+                    if (new_jpath_len[i] == old_jpath_len[j]) and (new_jpath[i] == old_jpath[j]):
+                        found = True
+                        oldval = old_val_arr[j]
+                        if not (newval == oldval):
+                            do_update = True
+                    j = j + 1
+            if do_update:
                 if attr == "calibrationParam":
                     old_calib = ""
                     unit_name = ""
                     sensorType = ""
-                    new_calib = new_val[i]
+                    new_calib = newval
                     j = 0
                     found = False
                     while (j < len(old_jpath)) and not (found):
                         if (new_jpath_len[i] == old_jpath_len[j]) and (new_jpath[i] == old_jpath[j]):
                             found = True
-                            old_calib = old_val[j]
+                            old_calib = old_val_arr[j]
                         j = j + 1
                     tmp = fun + "/unit"
                     j = 0
@@ -4963,21 +5069,15 @@ class YModule(YFunction):
                             found = True
                             sensorType = new_jpath[j]
                         j = j + 1
-                    newval = self.calibConvert(new_val[i], old_calib, unit_name, sensorType)
-                    url = "api/" + fun + ".json?" + attr + "=" + newval
+                    newval = self.calibConvert(new_val_arr[i], old_calib, unit_name, sensorType)
+                    url = "api/" + fun + ".json?" + attr + "=" + self._escapeAttr(newval)
                     self._download(url)
                 else:
-                    j = 0
-                    found = False
-                    while (j < len(old_jpath_len)) and not (found):
-                        if (new_jpath_len[i] == old_jpath_len[j]) and (new_jpath[i] == old_jpath[j]):
-                            found = True
-                            url = "api/" + fun + ".json?" + attr + "=" + old_val[j]
-                            if attr == "resolution":
-                                restoreLast.append(url)
-                            else:
-                                self._download(url)
-                        j = j + 1
+                    url = "api/" + fun + ".json?" + attr + "=" + self._escapeAttr(oldval)
+                    if attr == "resolution":
+                        restoreLast.append(url)
+                    else:
+                        self._download(url)
             i = i + 1
         
         for y in restoreLast:
@@ -5688,6 +5788,34 @@ class YSensor(YFunction):
                 position = position + 2
         return 0
 
+    def startDataLogger(self):
+        """
+        Starts the data logger on the device. Note that the data logger
+        will only save the measures on this sensor if the logFrequency
+        is not set to "OFF".
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        """
+        # res
+        # // may throw an exception
+        res = self._download("api/dataLogger/recording?recording=1")
+        if not (len(res)>0):
+            self._throw(YAPI.IO_ERROR, "unable to start datalogger")
+        return YAPI.SUCCESS
+
+    def stopDataLogger(self):
+        """
+        Stops the datalogger on the device.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        """
+        # res
+        # // may throw an exception
+        res = self._download("api/dataLogger/recording?recording=0")
+        if not (len(res)>0):
+            self._throw(YAPI.IO_ERROR, "unable to stop datalogger")
+        return YAPI.SUCCESS
+
     def get_recordedData(self, startTime, endTime):
         """
         Retrieves a DataSet object holding historical data for this
@@ -5924,7 +6052,7 @@ class YSensor(YFunction):
                 difRaw = 0
                 while (sublen > 0) and (i < len(report)):
                     byteVal = report[i]
-                    difRaw = avgRaw + poww * byteVal
+                    difRaw = difRaw + poww * byteVal
                     poww = poww * 0x100
                     i = i + 1
                     sublen = sublen - 1
@@ -5934,7 +6062,7 @@ class YSensor(YFunction):
                 difRaw = 0
                 while (sublen > 0) and (i < len(report)):
                     byteVal = report[i]
-                    difRaw = avgRaw + poww * byteVal
+                    difRaw = difRaw + poww * byteVal
                     poww = poww * 0x100
                     i = i + 1
                     sublen = sublen - 1

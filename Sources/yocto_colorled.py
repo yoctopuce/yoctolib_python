@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_colorled.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_colorled.py 18524 2014-11-25 17:09:56Z seb $
 #*
 #* Implements yFindColorLed(), the high-level API for ColorLed functions
 #*
@@ -46,7 +46,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YColorLed(YFunction):
     """
-    Yoctopuce application programming interface
+    The Yoctopuce application programming interface
     allows you to drive a color led using RGB coordinates as well as HSL coordinates.
     The module performs all conversions form RGB to HSL automatically. It is then
     self-evident to turn on a led with a given hue and to progressively vary its
@@ -65,6 +65,10 @@ class YColorLed(YFunction):
     RGBMOVE_INVALID = None
     HSLMOVE_INVALID = None
     RGBCOLORATPOWERON_INVALID = YAPI.INVALID_UINT
+    BLINKSEQSIZE_INVALID = YAPI.INVALID_UINT
+    BLINKSEQMAXSIZE_INVALID = YAPI.INVALID_UINT
+    BLINKSEQSIGNATURE_INVALID = YAPI.INVALID_UINT
+    COMMAND_INVALID = YAPI.INVALID_STRING
     #--- (end of YColorLed definitions)
 
     def __init__(self, func):
@@ -77,6 +81,10 @@ class YColorLed(YFunction):
         self._rgbMove = YColorLed.RGBMOVE_INVALID
         self._hslMove = YColorLed.HSLMOVE_INVALID
         self._rgbColorAtPowerOn = YColorLed.RGBCOLORATPOWERON_INVALID
+        self._blinkSeqSize = YColorLed.BLINKSEQSIZE_INVALID
+        self._blinkSeqMaxSize = YColorLed.BLINKSEQMAXSIZE_INVALID
+        self._blinkSeqSignature = YColorLed.BLINKSEQSIGNATURE_INVALID
+        self._command = YColorLed.COMMAND_INVALID
         #--- (end of YColorLed attributes)
 
     #--- (YColorLed implementation)
@@ -113,6 +121,18 @@ class YColorLed(YFunction):
             return 1
         if member.name == "rgbColorAtPowerOn":
             self._rgbColorAtPowerOn = member.ivalue
+            return 1
+        if member.name == "blinkSeqSize":
+            self._blinkSeqSize = member.ivalue
+            return 1
+        if member.name == "blinkSeqMaxSize":
+            self._blinkSeqMaxSize = member.ivalue
+            return 1
+        if member.name == "blinkSeqSignature":
+            self._blinkSeqSignature = member.ivalue
+            return 1
+        if member.name == "command":
+            self._command = member.svalue
             return 1
         super(YColorLed, self)._parseAttr(member)
 
@@ -232,9 +252,6 @@ class YColorLed(YFunction):
     def set_rgbColorAtPowerOn(self, newval):
         """
         Changes the color that the led will display by default when the module is turned on.
-        This color will be displayed as soon as the module is powered on.
-        Remember to call the saveToFlash() method of the module if the
-        change should be kept.
         
         @param newval : an integer corresponding to the color that the led will display by default when the
         module is turned on
@@ -245,6 +262,58 @@ class YColorLed(YFunction):
         """
         rest_val = "0x" + '%X' % newval
         return self._setAttr("rgbColorAtPowerOn", rest_val)
+
+    def get_blinkSeqSize(self):
+        """
+        Returns the current length of the blinking sequence
+        
+        @return an integer corresponding to the current length of the blinking sequence
+        
+        On failure, throws an exception or returns YColorLed.BLINKSEQSIZE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YColorLed.BLINKSEQSIZE_INVALID
+        return self._blinkSeqSize
+
+    def get_blinkSeqMaxSize(self):
+        """
+        Returns the maximum length of the blinking sequence
+        
+        @return an integer corresponding to the maximum length of the blinking sequence
+        
+        On failure, throws an exception or returns YColorLed.BLINKSEQMAXSIZE_INVALID.
+        """
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YColorLed.BLINKSEQMAXSIZE_INVALID
+        return self._blinkSeqMaxSize
+
+    def get_blinkSeqSignature(self):
+        """
+        Return the blinking sequence signature. Since blinking
+        sequences cannot be read from the device, this can be used
+        to detect if a specific blinking sequence is already
+        programmed.
+        
+        @return an integer
+        
+        On failure, throws an exception or returns YColorLed.BLINKSEQSIGNATURE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YColorLed.BLINKSEQSIGNATURE_INVALID
+        return self._blinkSeqSignature
+
+    def get_command(self):
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YColorLed.COMMAND_INVALID
+        return self._command
+
+    def set_command(self, newval):
+        rest_val = newval
+        return self._setAttr("command", rest_val)
 
     @staticmethod
     def FindColorLed(func):
@@ -277,6 +346,65 @@ class YColorLed(YFunction):
             obj = YColorLed(func)
             YFunction._AddToCache("ColorLed", func, obj)
         return obj
+
+    def sendCommand(self, command):
+        # //may throw an exception
+        return self.set_command(command)
+
+    def addHslMoveToBlinkSeq(self, HSLcolor, msDelay):
+        """
+        Add a new transition to the blinking sequence, the move will
+        be performed in the HSL space.
+        
+        @param HSLcolor : desired HSL color when the traisntion is completed
+        @param msDelay : duration of the color transition, in milliseconds.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("H" + str(int(HSLcolor)) + "," + str(int(msDelay)))
+
+    def addRgbMoveToBlinkSeq(self, RGBcolor, msDelay):
+        """
+        Add a new transition to the blinking sequence, the move will
+        be performed in the RGB space.
+        
+        @param RGBcolor : desired RGB color when the transition is completed
+        @param msDelay : duration of the color transition, in milliseconds.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("R" + str(int(RGBcolor)) + "," + str(int(msDelay)))
+
+    def startBlinkSeq(self):
+        """
+        Starts the preprogrammed blinking sequence. The sequence will
+        run in loop until it is stopped by stopBlinkSeq or an explicit
+        change.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("S")
+
+    def stopBlinkSeq(self):
+        """
+        Stops the preprogrammed blinking sequence.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("X")
+
+    def resetBlinkSeq(self):
+        """
+        Resets the preprogrammed blinking sequence.
+        
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("Z")
 
     def nextColorLed(self):
         """

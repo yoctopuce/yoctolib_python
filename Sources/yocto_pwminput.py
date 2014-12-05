@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: pic24config.php 17551 2014-09-09 09:06:04Z mvuilleu $
+#* $Id: yocto_pwminput.py 18361 2014-11-13 08:06:41Z mvuilleu $
 #*
 #* Implements yFindPwmInput(), the high-level API for PwmInput functions
 #*
@@ -165,7 +165,7 @@ class YPwmInput(YSensor):
         """
         Returns the pulse counter value. Actually that
         counter is incremented twice per period. That counter is
-        limited  to 1 billions
+        limited  to 1 billion
         
         @return an integer corresponding to the pulse counter value
         
@@ -212,10 +212,10 @@ class YPwmInput(YSensor):
 
     def set_pwmReportMode(self, newval):
         """
-        Modify the  parameter  type(frequency/duty cycle, pulse width ou edge count) returned by the
+        Modifies the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
         get_currentValue function and callbacks.
-        The edge count value will be limited to the 6 lowest digit, for values greater than one million,
-        use get_pulseCounter().
+        The edge count value is limited to the 6 lowest digits. For values greater than one million, use
+        get_pulseCounter().
         
         @param newval : a value among YPwmInput.PWMREPORTMODE_PWM_DUTYCYCLE,
         YPwmInput.PWMREPORTMODE_PWM_FREQUENCY, YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION and
@@ -231,7 +231,7 @@ class YPwmInput(YSensor):
     @staticmethod
     def FindPwmInput(func):
         """
-        Retrieves a voltage sensor for a given identifier.
+        Retrieves a PWM input for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -241,17 +241,17 @@ class YPwmInput(YSensor):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
         
-        This function does not require that the voltage sensor is online at the time
+        This function does not require that the PWM input is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YPwmInput.isOnline() to test if the voltage sensor is
+        Use the method YPwmInput.isOnline() to test if the PWM input is
         indeed online at a given time. In case of ambiguity when looking for
-        a voltage sensor by logical name, no error is notified: the first instance
+        a PWM input by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
         
-        @param func : a string that uniquely characterizes the voltage sensor
+        @param func : a string that uniquely characterizes the PWM input
         
-        @return a YPwmInput object allowing you to drive the voltage sensor.
+        @return a YPwmInput object allowing you to drive the PWM input.
         """
         # obj
         obj = YFunction._FindFromCache("PwmInput", func)
@@ -262,7 +262,7 @@ class YPwmInput(YSensor):
 
     def resetCounter(self):
         """
-        Returns the pulse counter value as well as his timer
+        Returns the pulse counter value as well as its timer.
         
         @return YAPI.SUCCESS if the call succeeds.
         
@@ -272,11 +272,11 @@ class YPwmInput(YSensor):
 
     def nextPwmInput(self):
         """
-        Continues the enumeration of voltage sensors started using yFirstPwmInput().
+        Continues the enumeration of PWM inputs started using yFirstPwmInput().
         
         @return a pointer to a YPwmInput object, corresponding to
-                a voltage sensor currently online, or a None pointer
-                if there are no more voltage sensors to enumerate.
+                a PWM input currently online, or a None pointer
+                if there are no more PWM inputs to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -292,12 +292,12 @@ class YPwmInput(YSensor):
     @staticmethod
     def FirstPwmInput():
         """
-        Starts the enumeration of voltage sensors currently accessible.
+        Starts the enumeration of PWM inputs currently accessible.
         Use the method YPwmInput.nextPwmInput() to iterate on
-        next voltage sensors.
+        next PWM inputs.
         
         @return a pointer to a YPwmInput object, corresponding to
-                the first voltage sensor currently online, or a None pointer
+                the first PWM input currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
