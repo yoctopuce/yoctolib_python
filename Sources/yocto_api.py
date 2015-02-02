@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_api.py 18628 2014-12-03 16:18:53Z seb $
+#* $Id: yocto_api.py 19018 2015-01-19 14:55:53Z seb $
 #*
 #* High-level programming interface, common to all modules
 #*
@@ -532,7 +532,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "18640"
+    YOCTO_API_BUILD_NO = "19218"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1243,16 +1243,17 @@ class YAPI:
     @staticmethod
     def _decimalToDouble(val):
         negate = False
-        if not val:
+        mantis = val & 2047
+        if mantis == 0:
             return 0.0
         if val > 32767:
             negate = True
             val = 65536 - val
-        elif val < 0:
+        if val < 0:
             negate = True
             val = -val
         exp = val >> 11
-        res = (val & 2047) * YAPI.decExp[exp]
+        res = (mantis) * YAPI.decExp[exp]
         if negate:
             return -res
         else:
@@ -1492,6 +1493,7 @@ class YAPI:
 
     @staticmethod
     def native_yDeviceArrivalCallback(d):
+        YDevice.PlugDevice(d)
         infos = YAPI.emptyDeviceSt()
         errmsgRef = YRefParam()
         if YAPI.yapiGetDeviceInfo(d, infos, errmsgRef) != YAPI.SUCCESS:
@@ -2156,9 +2158,9 @@ class YFirmwareUpdate(object):
     @staticmethod
     def GetAllBootLoaders():
         """
-        Retrun a list of all modules in "update" mode. Only USB connected
-        devices are listed. If the module is connected to a YoctoHub, you have to
-        connect to the YoctoHub web interface.
+        Retruns a list of all the modules in "update" mode. Only USB connected
+        devices are listed. For modules connected to a YoctoHub, you must
+        connect yourself to the YoctoHub web interface.
         
         @return an array of strings containing the serial list of module in "update" mode.
         """
@@ -2235,12 +2237,12 @@ class YFirmwareUpdate(object):
     def get_progress(self):
         """
         Returns the progress of the firmware update, on a scale from 0 to 100. When the object is
-        instantiated the progress is zero. The value is updated During the firmware update process, until
-        the value of 100 is reached. The value of 100 mean that the firmware update is terminated with
-        success. If an error occur during the firmware update a negative value is returned, and the
+        instantiated, the progress is zero. The value is updated during the firmware update process until
+        the value of 100 is reached. The 100 value means that the firmware update was completed
+        successfully. If an error occurs during the firmware update, a negative value is returned, and the
         error message can be retrieved with get_progressMessage.
         
-        @return an integer in the range 0 to 100 (percentage of completion) or
+        @return an integer in the range 0 to 100 (percentage of completion)
                 or a negative error code in case of failure.
         """
         self._processMore(0)
@@ -2248,18 +2250,18 @@ class YFirmwareUpdate(object):
 
     def get_progressMessage(self):
         """
-        Returns the last progress message of the firmware update process. If an error occur during the
-        firmware update process the error message is returned
+        Returns the last progress message of the firmware update process. If an error occurs during the
+        firmware update process, the error message is returned
         
-        @return an string  with the last progress message, or the error message.
+        @return a string  with the latest progress message, or the error message.
         """
         return self._progress_msg
 
     def startUpdate(self):
         """
-        Start the firmware update process. This method start the firmware update process in background. This method
-        return immediately. The progress of the firmware update can be monitored with methods get_progress()
-        and get_progressMessage().
+        Starts the firmware update process. This method starts the firmware update process in background. This method
+        returns immediately. You can monitor the progress of the firmware update with the get_progress()
+        and get_progressMessage() methods.
         
         @return an integer in the range 0 to 100 (percentage of completion),
                 or a negative error code in case of failure.
@@ -3218,6 +3220,15 @@ class YDevice:
         dev = YDevice(devdescr)
         YAPI.YDevice_devCache.append(dev)
         return dev
+
+    @staticmethod
+    def PlugDevice(devdescr):
+        for idx in range(len(YAPI.YDevice_devCache)):
+            if YAPI.YDevice_devCache[idx]._devdescr == devdescr:
+                YAPI.YDevice_devCache[idx]._cacheStamp = datetime.datetime(year=1970, month=1, day=1)
+                YAPI.YDevice_devCache[idx]._subpathinit = False
+
+
 
     def _HTTPRequestPrepare(self, request):
         errbuf = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
@@ -4599,38 +4610,43 @@ class YModule(YFunction):
 
     def checkFirmware(self, path, onlynew):
         """
-        Test if the byn file is valid for this module. This method is useful to test if the module need to be updated.
-        It's possible to pass an directory instead of a file. In this case this method return the path of
-        the most recent
-        appropriate byn file. If the parameter onlynew is true the function will discard firmware that are
+        Tests whether the byn file is valid for this module. This method is useful to test if the module
+        needs to be updated.
+        It is possible to pass a directory as argument instead of a file. In this case, this method returns
+        the path of the most recent
+        appropriate byn file. If the parameter onlynew is true, the function discards firmware that are
         older or equal to
         the installed firmware.
         
-        @param path    : the path of a byn file or a directory that contain byn files
-        @param onlynew : return only files that are strictly newer
+        @param path    : the path of a byn file or a directory that contains byn files
+        @param onlynew : returns only files that are strictly newer
         
-        @return : the path of the byn file to use or a empty string if no byn files match the requirement
+        @return : the path of the byn file to use or a empty string if no byn files matches the requirement
         
         On failure, throws an exception or returns a string that start with "error:".
         """
         # serial
         # release
+        # tmp_res
         if onlynew:
             release = int(self.get_firmwareRelease())
         else:
             release = 0
         # //may throw an exception
         serial = self.get_serialNumber()
-        return YFirmwareUpdate.CheckFirmware(serial,path, release)
+        tmp_res = YFirmwareUpdate.CheckFirmware(serial,path, release)
+        if tmp_res.find("error:") == 0:
+            self._throw(YAPI.INVALID_ARGUMENT, tmp_res)
+        return tmp_res
 
     def updateFirmware(self, path):
         """
-        Prepare a firmware upgrade of the module. This method return a object YFirmwareUpdate which
-        will handle the firmware upgrade process.
+        Prepares a firmware update of the module. This method returns a YFirmwareUpdate object which
+        handles the firmware update process.
         
         @param path : the path of the byn file to use.
         
-        @return : A object YFirmwareUpdate.
+        @return : A YFirmwareUpdate object.
         """
         # serial
         # settings
@@ -4641,10 +4657,10 @@ class YModule(YFunction):
 
     def get_allSettings(self):
         """
-        Returns all the setting of the module. Useful to backup all the logical name and calibrations parameters
+        Returns all the settings of the module. Useful to backup all the logical names and calibrations parameters
         of a connected module.
         
-        @return a binary buffer with all settings.
+        @return a binary buffer with all the settings.
         
         On failure, throws an exception or returns  YAPI.INVALID_STRING.
         """
@@ -4853,10 +4869,10 @@ class YModule(YFunction):
 
     def set_allSettings(self, settings):
         """
-        Restore all the setting of the module. Useful to restore all the logical name and calibrations parameters
+        Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
         of a module from a backup.
         
-        @param settings : a binary buffer with all settings.
+        @param settings : a binary buffer with all the settings.
         
         @return YAPI.SUCCESS when the call succeeds.
         

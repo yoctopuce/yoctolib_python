@@ -1,6 +1,17 @@
-- Add firmware update API (YFirmwareUpdate class and helper method of YModules class)
-- Add thermistor configuration functions
-- Add startDataLogger and stopDataLogger to YSensor object
-- Add YBuzzer class
-- Fix handling of calibration parameters
-- Fix averaged timed reports
+- Add Yocto-Buzzer example
+- Add Yocto-RS232 examples
+- Add support for new type of flash memory
+- Add auto-detection of improper architecture on ARM (soft float vs hard float)
+- Improve GetAllBootLoaders to bootloaders plugged on TCP hubs too
+- Improve error reporting for firmware updates
+- Fix incorrect SSDP discovery expiration with RegisterHub(net)
+- Fix occasional timeout during firmware update
+- Fix TCP socket that stay in close-wait state during heavy traffic
+- Fix buffer overflow with TCP hub and authentication
+- Fix possible false device detection when connected to a network hub
+- Fix incomplete TCP upload on Unix
+- Fix deadlock on Unix during firmware update
+- Fix potential null pointer exception on rare network timeout
+- Fix overflow in decoding in malformed timed notifications
+- Fix query to devices after permuting devices between two networked hubs
+- Fix Yocto-3D switch between RIGHT/REAR device mount position

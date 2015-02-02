@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 18262 2014-11-05 14:22:14Z seb $
+#* $Id: yocto_serialport.py 19192 2015-01-30 16:30:16Z mvuilleu $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -67,8 +67,17 @@ class YSerialPort(YFunction):
     RXMSGCOUNT_INVALID = YAPI.INVALID_UINT
     TXMSGCOUNT_INVALID = YAPI.INVALID_UINT
     LASTMSG_INVALID = YAPI.INVALID_STRING
+    CURRENTJOB_INVALID = YAPI.INVALID_STRING
     STARTUPJOB_INVALID = YAPI.INVALID_STRING
     COMMAND_INVALID = YAPI.INVALID_STRING
+    VOLTAGELEVEL_OFF = 0
+    VOLTAGELEVEL_TTL3V = 1
+    VOLTAGELEVEL_TTL3VR = 2
+    VOLTAGELEVEL_TTL5V = 3
+    VOLTAGELEVEL_TTL5VR = 4
+    VOLTAGELEVEL_RS232 = 5
+    VOLTAGELEVEL_RS485 = 6
+    VOLTAGELEVEL_INVALID = -1
     #--- (end of YSerialPort definitions)
 
     def __init__(self, func):
@@ -78,12 +87,14 @@ class YSerialPort(YFunction):
         self._callback = None
         self._serialMode = YSerialPort.SERIALMODE_INVALID
         self._protocol = YSerialPort.PROTOCOL_INVALID
+        self._voltageLevel = YSerialPort.VOLTAGELEVEL_INVALID
         self._rxCount = YSerialPort.RXCOUNT_INVALID
         self._txCount = YSerialPort.TXCOUNT_INVALID
         self._errCount = YSerialPort.ERRCOUNT_INVALID
         self._rxMsgCount = YSerialPort.RXMSGCOUNT_INVALID
         self._txMsgCount = YSerialPort.TXMSGCOUNT_INVALID
         self._lastMsg = YSerialPort.LASTMSG_INVALID
+        self._currentJob = YSerialPort.CURRENTJOB_INVALID
         self._startupJob = YSerialPort.STARTUPJOB_INVALID
         self._command = YSerialPort.COMMAND_INVALID
         self._rxptr = 0
@@ -96,6 +107,9 @@ class YSerialPort(YFunction):
             return 1
         if member.name == "protocol":
             self._protocol = member.svalue
+            return 1
+        if member.name == "voltageLevel":
+            self._voltageLevel = member.ivalue
             return 1
         if member.name == "rxCount":
             self._rxCount = member.ivalue
@@ -114,6 +128,9 @@ class YSerialPort(YFunction):
             return 1
         if member.name == "lastMsg":
             self._lastMsg = member.svalue
+            return 1
+        if member.name == "currentJob":
+            self._currentJob = member.svalue
             return 1
         if member.name == "startupJob":
             self._startupJob = member.svalue
@@ -199,6 +216,42 @@ class YSerialPort(YFunction):
         rest_val = newval
         return self._setAttr("protocol", rest_val)
 
+    def get_voltageLevel(self):
+        """
+        Returns the voltage level used on the serial line.
+        
+        @return a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
+        YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
+        YSerialPort.VOLTAGELEVEL_RS232 and YSerialPort.VOLTAGELEVEL_RS485 corresponding to the voltage
+        level used on the serial line
+        
+        On failure, throws an exception or returns YSerialPort.VOLTAGELEVEL_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YSerialPort.VOLTAGELEVEL_INVALID
+        return self._voltageLevel
+
+    def set_voltageLevel(self, newval):
+        """
+        Changes the voltage type used on the serial line. Valid
+        values  will depend on the Yoctopuce device model featuring
+        the serial port feature.  Check your device documentation
+        to find out which values are valid for that specific model.
+        Trying to set an invalid value will have no effect.
+        
+        @param newval : a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
+        YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
+        YSerialPort.VOLTAGELEVEL_RS232 and YSerialPort.VOLTAGELEVEL_RS485 corresponding to the voltage type
+        used on the serial line
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("voltageLevel", rest_val)
+
     def get_rxCount(self):
         """
         Returns the total number of bytes received since last reset.
@@ -276,6 +329,34 @@ class YSerialPort(YFunction):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSerialPort.LASTMSG_INVALID
         return self._lastMsg
+
+    def get_currentJob(self):
+        """
+        Returns the name of the job file currently in use.
+        
+        @return a string corresponding to the name of the job file currently in use
+        
+        On failure, throws an exception or returns YSerialPort.CURRENTJOB_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YSerialPort.CURRENTJOB_INVALID
+        return self._currentJob
+
+    def set_currentJob(self, newval):
+        """
+        Changes the job to use when the device is powered on.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+        
+        @param newval : a string corresponding to the job to use when the device is powered on
+        
+        @return YAPI.SUCCESS if the call succeeds.
+        
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("currentJob", rest_val)
 
     def get_startupJob(self):
         """
@@ -379,7 +460,7 @@ class YSerialPort(YFunction):
 
     def get_CTS(self):
         """
-        Read the level of the CTS line. The CTS line is usually driven by
+        Reads the level of the CTS line. The CTS line is usually driven by
         the RTS signal of the connected serial device.
         
         @return 1 if the CTS line is high, 0 if the CTS line is low.
@@ -1295,7 +1376,7 @@ class YSerialPort(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # // may throw an exception
-        return self.sendCommand("J" + jobfile)
+        return self.set_currentJob(jobfile)
 
     def nextSerialPort(self):
         """

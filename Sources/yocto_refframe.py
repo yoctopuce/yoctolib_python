@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 17481 2014-09-03 09:38:35Z mvuilleu $
+#* $Id: yocto_refframe.py 19211 2015-02-02 13:18:41Z mvuilleu $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -62,7 +62,7 @@ class YRefFrame(YFunction):
     class MOUNTPOSITION:
         def __init__(self):
             pass
-        BOTTOM, TOP, FRONT, RIGHT, REAR, LEFT = range(6)
+        BOTTOM, TOP, FRONT, REAR, RIGHT, LEFT = range(6)
     class MOUNTORIENTATION:
         def __init__(self):
             pass

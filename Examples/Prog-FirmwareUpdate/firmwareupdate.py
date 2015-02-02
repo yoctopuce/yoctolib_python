@@ -26,11 +26,11 @@ def upgradeSerialList(all_serials):
             while 100 > status >= 0:
                 new_status = update.get_progress()
                 if new_status != status:
-                    print(str(status) + "% " + update.get_progressMessage())
+                    print(str(new_status) + "% " + update.get_progressMessage())
                 YAPI.Sleep(500, errmsg)
                 status = new_status
             if status < 0:
-                print("    " + str(status) + " Firmware Update failed: " + update.get_progressMessage())
+                print("Firmware Update failed: " + update.get_progressMessage())
                 exit(1)
             else:
                 if module.isOnline():
