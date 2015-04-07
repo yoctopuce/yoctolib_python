@@ -1,7 +1,3 @@
-- Add Yocto-RS485 example
-- Add additional functions to handle binary streams
-- Improve firmware updated robustness
-- Fix error returned during firmware update if device was already in "update mode"
-- Improve error reporting during firmware update.
-- Fix empty string that can be returned by GetAllBootLoaders
+- Fix race condition on heavy TCP load.
+- Fix potential memory leak on YAPI::FreeAPI
 - Fix bug that corrupt calibration during firmware update

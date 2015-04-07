@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_api.py 19854 2015-03-26 10:17:46Z seb $
+#* $Id: yocto_api.py 19900 2015-03-31 13:11:09Z seb $
 #*
 #* High-level programming interface, common to all modules
 #*
@@ -536,7 +536,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "19854"
+    YOCTO_API_BUILD_NO = "19938"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2183,7 +2183,6 @@ class YFirmwareUpdate(object):
         fullsize.value = 0
         yapi_res = YAPI._yapiGetBootloaders(smallbuff, 1024, ctypes.byref(fullsize), errmsg)
         if yapi_res < 0:
-            bootloader_list = "error:" + YByte2String(errmsg.value)
             return bootladers
         if fullsize.value <= 1024:
             bootloader_list = YByte2String(smallbuff.value)
