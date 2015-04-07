@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_dualpower.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_dualpower.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindDualPower(), the high-level API for DualPower functions
 #*
@@ -51,7 +51,7 @@ class YDualPower(YFunction):
     The module can also automatically disconnect the external power
     when a voltage drop is observed on the external power source
     (external battery running out of power).
-    
+
     """
 #--- (end of YDualPower class start)
     #--- (YDualPower return codes)
@@ -97,11 +97,11 @@ class YDualPower(YFunction):
     def get_powerState(self):
         """
         Returns the current power source for module functions that require lots of current.
-        
+
         @return a value among YDualPower.POWERSTATE_OFF, YDualPower.POWERSTATE_FROM_USB and
         YDualPower.POWERSTATE_FROM_EXT corresponding to the current power source for module functions that
         require lots of current
-        
+
         On failure, throws an exception or returns YDualPower.POWERSTATE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -112,11 +112,11 @@ class YDualPower(YFunction):
     def get_powerControl(self):
         """
         Returns the selected power source for module functions that require lots of current.
-        
+
         @return a value among YDualPower.POWERCONTROL_AUTO, YDualPower.POWERCONTROL_FROM_USB,
         YDualPower.POWERCONTROL_FROM_EXT and YDualPower.POWERCONTROL_OFF corresponding to the selected
         power source for module functions that require lots of current
-        
+
         On failure, throws an exception or returns YDualPower.POWERCONTROL_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -127,13 +127,13 @@ class YDualPower(YFunction):
     def set_powerControl(self, newval):
         """
         Changes the selected power source for module functions that require lots of current.
-        
+
         @param newval : a value among YDualPower.POWERCONTROL_AUTO, YDualPower.POWERCONTROL_FROM_USB,
         YDualPower.POWERCONTROL_FROM_EXT and YDualPower.POWERCONTROL_OFF corresponding to the selected
         power source for module functions that require lots of current
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -142,9 +142,9 @@ class YDualPower(YFunction):
     def get_extVoltage(self):
         """
         Returns the measured voltage on the external power source, in millivolts.
-        
+
         @return an integer corresponding to the measured voltage on the external power source, in millivolts
-        
+
         On failure, throws an exception or returns YDualPower.EXTVOLTAGE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -164,7 +164,7 @@ class YDualPower(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the power control is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YDualPower.isOnline() to test if the power control is
@@ -172,9 +172,9 @@ class YDualPower(YFunction):
         a dual power control by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the power control
-        
+
         @return a YDualPower object allowing you to drive the power control.
         """
         # obj
@@ -187,7 +187,7 @@ class YDualPower(YFunction):
     def nextDualPower(self):
         """
         Continues the enumeration of dual power controls started using yFirstDualPower().
-        
+
         @return a pointer to a YDualPower object, corresponding to
                 a dual power control currently online, or a None pointer
                 if there are no more dual power controls to enumerate.
@@ -209,7 +209,7 @@ class YDualPower(YFunction):
         Starts the enumeration of dual power controls currently accessible.
         Use the method YDualPower.nextDualPower() to iterate on
         next dual power controls.
-        
+
         @return a pointer to a YDualPower object, corresponding to
                 the first dual power control currently online, or a None pointer
                 if there are none.

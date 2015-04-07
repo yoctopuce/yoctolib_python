@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_colorled.py 18524 2014-11-25 17:09:56Z seb $
+#* $Id: yocto_colorled.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindColorLed(), the high-level API for ColorLed functions
 #*
@@ -52,7 +52,7 @@ class YColorLed(YFunction):
     self-evident to turn on a led with a given hue and to progressively vary its
     saturation or lightness. If needed, you can find more information on the
     difference between RGB and HSL in the section following this one.
-    
+
     """
 #--- (end of YColorLed class start)
     #--- (YColorLed return codes)
@@ -139,9 +139,9 @@ class YColorLed(YFunction):
     def get_rgbColor(self):
         """
         Returns the current RGB color of the led.
-        
+
         @return an integer corresponding to the current RGB color of the led
-        
+
         On failure, throws an exception or returns YColorLed.RGBCOLOR_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -152,11 +152,11 @@ class YColorLed(YFunction):
     def set_rgbColor(self, newval):
         """
         Changes the current color of the led, using a RGB color. Encoding is done as follows: 0xRRGGBB.
-        
+
         @param newval : an integer corresponding to the current color of the led, using a RGB color
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "0x" + '%X' % newval
@@ -165,9 +165,9 @@ class YColorLed(YFunction):
     def get_hslColor(self):
         """
         Returns the current HSL color of the led.
-        
+
         @return an integer corresponding to the current HSL color of the led
-        
+
         On failure, throws an exception or returns YColorLed.HSLCOLOR_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -178,11 +178,11 @@ class YColorLed(YFunction):
     def set_hslColor(self, newval):
         """
         Changes the current color of the led, using a color HSL. Encoding is done as follows: 0xHHSSLL.
-        
+
         @param newval : an integer corresponding to the current color of the led, using a color HSL
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "0x" + '%X' % newval
@@ -201,12 +201,12 @@ class YColorLed(YFunction):
     def rgbMove(self, rgb_target, ms_duration):
         """
         Performs a smooth transition in the RGB color space between the current color and a target color.
-        
+
         @param rgb_target  : desired RGB color at the end of the transition
         @param ms_duration : duration of the transition, in millisecond
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(rgb_target) + ":" + str(ms_duration)
@@ -225,12 +225,12 @@ class YColorLed(YFunction):
     def hslMove(self, hsl_target, ms_duration):
         """
         Performs a smooth transition in the HSL color space between the current color and a target color.
-        
+
         @param hsl_target  : desired HSL color at the end of the transition
         @param ms_duration : duration of the transition, in millisecond
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(hsl_target) + ":" + str(ms_duration)
@@ -239,9 +239,9 @@ class YColorLed(YFunction):
     def get_rgbColorAtPowerOn(self):
         """
         Returns the configured color to be displayed when the module is turned on.
-        
+
         @return an integer corresponding to the configured color to be displayed when the module is turned on
-        
+
         On failure, throws an exception or returns YColorLed.RGBCOLORATPOWERON_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -252,12 +252,12 @@ class YColorLed(YFunction):
     def set_rgbColorAtPowerOn(self, newval):
         """
         Changes the color that the led will display by default when the module is turned on.
-        
+
         @param newval : an integer corresponding to the color that the led will display by default when the
         module is turned on
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "0x" + '%X' % newval
@@ -266,9 +266,9 @@ class YColorLed(YFunction):
     def get_blinkSeqSize(self):
         """
         Returns the current length of the blinking sequence
-        
+
         @return an integer corresponding to the current length of the blinking sequence
-        
+
         On failure, throws an exception or returns YColorLed.BLINKSEQSIZE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -279,9 +279,9 @@ class YColorLed(YFunction):
     def get_blinkSeqMaxSize(self):
         """
         Returns the maximum length of the blinking sequence
-        
+
         @return an integer corresponding to the maximum length of the blinking sequence
-        
+
         On failure, throws an exception or returns YColorLed.BLINKSEQMAXSIZE_INVALID.
         """
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
@@ -295,9 +295,9 @@ class YColorLed(YFunction):
         sequences cannot be read from the device, this can be used
         to detect if a specific blinking sequence is already
         programmed.
-        
+
         @return an integer
-        
+
         On failure, throws an exception or returns YColorLed.BLINKSEQSIGNATURE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -327,7 +327,7 @@ class YColorLed(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the RGB led is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YColorLed.isOnline() to test if the RGB led is
@@ -335,9 +335,9 @@ class YColorLed(YFunction):
         an RGB led by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the RGB led
-        
+
         @return a YColorLed object allowing you to drive the RGB led.
         """
         # obj
@@ -355,10 +355,10 @@ class YColorLed(YFunction):
         """
         Add a new transition to the blinking sequence, the move will
         be performed in the HSL space.
-        
+
         @param HSLcolor : desired HSL color when the traisntion is completed
         @param msDelay : duration of the color transition, in milliseconds.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
@@ -368,10 +368,10 @@ class YColorLed(YFunction):
         """
         Add a new transition to the blinking sequence, the move will
         be performed in the RGB space.
-        
+
         @param RGBcolor : desired RGB color when the transition is completed
         @param msDelay : duration of the color transition, in milliseconds.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
@@ -382,7 +382,7 @@ class YColorLed(YFunction):
         Starts the preprogrammed blinking sequence. The sequence will
         run in loop until it is stopped by stopBlinkSeq or an explicit
         change.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
@@ -391,7 +391,7 @@ class YColorLed(YFunction):
     def stopBlinkSeq(self):
         """
         Stops the preprogrammed blinking sequence.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
@@ -400,7 +400,7 @@ class YColorLed(YFunction):
     def resetBlinkSeq(self):
         """
         Resets the preprogrammed blinking sequence.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
@@ -409,7 +409,7 @@ class YColorLed(YFunction):
     def nextColorLed(self):
         """
         Continues the enumeration of RGB leds started using yFirstColorLed().
-        
+
         @return a pointer to a YColorLed object, corresponding to
                 an RGB led currently online, or a None pointer
                 if there are no more RGB leds to enumerate.
@@ -431,7 +431,7 @@ class YColorLed(YFunction):
         Starts the enumeration of RGB leds currently accessible.
         Use the method YColorLed.nextColorLed() to iterate on
         next RGB leds.
-        
+
         @return a pointer to a YColorLed object, corresponding to
                 the first RGB led currently online, or a None pointer
                 if there are none.

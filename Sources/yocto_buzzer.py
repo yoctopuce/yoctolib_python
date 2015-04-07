@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_buzzer.py 18762 2014-12-16 16:00:39Z seb $
+#* $Id: yocto_buzzer.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindBuzzer(), the high-level API for Buzzer functions
 #*
@@ -49,7 +49,7 @@ class YBuzzer(YFunction):
     The Yoctopuce application programming interface allows you to
     choose the frequency and volume at which the buzzer must sound.
     You can also pre-program a play sequence.
-    
+
     """
 #--- (end of YBuzzer class start)
     #--- (YBuzzer return codes)
@@ -103,11 +103,11 @@ class YBuzzer(YFunction):
     def set_frequency(self, newval):
         """
         Changes the frequency of the signal sent to the buzzer. A zero value stops the buzzer.
-        
+
         @param newval : a floating point number corresponding to the frequency of the signal sent to the buzzer
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(int(round(newval * 65536.0, 1)))
@@ -116,9 +116,9 @@ class YBuzzer(YFunction):
     def get_frequency(self):
         """
         Returns the  frequency of the signal sent to the buzzer/speaker.
-        
+
         @return a floating point number corresponding to the  frequency of the signal sent to the buzzer/speaker
-        
+
         On failure, throws an exception or returns YBuzzer.FREQUENCY_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -129,9 +129,9 @@ class YBuzzer(YFunction):
     def get_volume(self):
         """
         Returns the volume of the signal sent to the buzzer/speaker.
-        
+
         @return an integer corresponding to the volume of the signal sent to the buzzer/speaker
-        
+
         On failure, throws an exception or returns YBuzzer.VOLUME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -142,11 +142,11 @@ class YBuzzer(YFunction):
     def set_volume(self, newval):
         """
         Changes the volume of the signal sent to the buzzer/speaker.
-        
+
         @param newval : an integer corresponding to the volume of the signal sent to the buzzer/speaker
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -155,9 +155,9 @@ class YBuzzer(YFunction):
     def get_playSeqSize(self):
         """
         Returns the current length of the playing sequence
-        
+
         @return an integer corresponding to the current length of the playing sequence
-        
+
         On failure, throws an exception or returns YBuzzer.PLAYSEQSIZE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -168,9 +168,9 @@ class YBuzzer(YFunction):
     def get_playSeqMaxSize(self):
         """
         Returns the maximum length of the playing sequence
-        
+
         @return an integer corresponding to the maximum length of the playing sequence
-        
+
         On failure, throws an exception or returns YBuzzer.PLAYSEQMAXSIZE_INVALID.
         """
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
@@ -184,9 +184,9 @@ class YBuzzer(YFunction):
         sequences cannot be read from the device, this can be used
         to detect if a specific playing sequence is already
         programmed.
-        
+
         @return an integer corresponding to the playing sequence signature
-        
+
         On failure, throws an exception or returns YBuzzer.PLAYSEQSIGNATURE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -216,7 +216,7 @@ class YBuzzer(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the buzzer is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YBuzzer.isOnline() to test if the buzzer is
@@ -224,9 +224,9 @@ class YBuzzer(YFunction):
         a buzzer by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the buzzer
-        
+
         @return a YBuzzer object allowing you to drive the buzzer.
         """
         # obj
@@ -243,10 +243,10 @@ class YBuzzer(YFunction):
     def addFreqMoveToPlaySeq(self, freq, msDelay):
         """
         Adds a new frequency transition to the playing sequence.
-        
+
         @param freq    : desired frequency when the transition is completed, in Hz
         @param msDelay : duration of the frequency transition, in milliseconds.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
@@ -255,10 +255,10 @@ class YBuzzer(YFunction):
     def addPulseToPlaySeq(self, freq, msDuration):
         """
         Adds a pulse to the playing sequence.
-        
+
         @param freq : pulse frequency, in Hz
         @param msDuration : pulse duration, in milliseconds.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
@@ -268,10 +268,10 @@ class YBuzzer(YFunction):
         """
         Adds a new volume transition to the playing sequence. Frequency stays untouched:
         if frequency is at zero, the transition has no effect.
-        
+
         @param volume    : desired volume when the transition is completed, as a percentage.
         @param msDuration : duration of the volume transition, in milliseconds.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
@@ -282,7 +282,7 @@ class YBuzzer(YFunction):
         Starts the preprogrammed playing sequence. The sequence
         runs in loop until it is stopped by stopPlaySeq or an explicit
         change.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
@@ -291,7 +291,7 @@ class YBuzzer(YFunction):
     def stopPlaySeq(self):
         """
         Stops the preprogrammed playing sequence and sets the frequency to zero.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
@@ -300,7 +300,7 @@ class YBuzzer(YFunction):
     def resetPlaySeq(self):
         """
         Resets the preprogrammed playing sequence and sets the frequency to zero.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
@@ -309,12 +309,12 @@ class YBuzzer(YFunction):
     def pulse(self, frequency, duration):
         """
         Activates the buzzer for a short duration.
-        
+
         @param frequency : pulse frequency, in hertz
         @param duration : pulse duration in millseconds
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_command("P" + str(int(frequency)) + "," + str(int(duration)))
@@ -322,12 +322,12 @@ class YBuzzer(YFunction):
     def freqMove(self, frequency, duration):
         """
         Makes the buzzer frequency change over a period of time.
-        
+
         @param frequency : frequency to reach, in hertz. A frequency under 25Hz stops the buzzer.
         @param duration :  pulse duration in millseconds
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_command("F" + str(int(frequency)) + "," + str(int(duration)))
@@ -335,12 +335,12 @@ class YBuzzer(YFunction):
     def volumeMove(self, volume, duration):
         """
         Makes the buzzer volume change over a period of time, frequency  stays untouched.
-        
+
         @param volume : volume to reach in %
         @param duration : change duration in millseconds
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_command("V" + str(int(volume)) + "," + str(int(duration)))
@@ -348,7 +348,7 @@ class YBuzzer(YFunction):
     def nextBuzzer(self):
         """
         Continues the enumeration of buzzers started using yFirstBuzzer().
-        
+
         @return a pointer to a YBuzzer object, corresponding to
                 a buzzer currently online, or a None pointer
                 if there are no more buzzers to enumerate.
@@ -370,7 +370,7 @@ class YBuzzer(YFunction):
         Starts the enumeration of buzzers currently accessible.
         Use the method YBuzzer.nextBuzzer() to iterate on
         next buzzers.
-        
+
         @return a pointer to a YBuzzer object, corresponding to
                 the first buzzer currently online, or a None pointer
                 if there are none.

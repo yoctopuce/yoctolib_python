@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_pwmpowersource.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_pwmpowersource.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
 #*
@@ -48,7 +48,7 @@ class YPwmPowerSource(YFunction):
     """
     The Yoctopuce application programming interface allows you to configure
     the voltage source used by all PWM on the same device.
-    
+
     """
 #--- (end of YPwmPowerSource class start)
     #--- (YPwmPowerSource return codes)
@@ -81,11 +81,11 @@ class YPwmPowerSource(YFunction):
     def get_powerMode(self):
         """
         Returns the selected power source for the PWM on the same device
-        
+
         @return a value among YPwmPowerSource.POWERMODE_USB_5V, YPwmPowerSource.POWERMODE_USB_3V,
         YPwmPowerSource.POWERMODE_EXT_V and YPwmPowerSource.POWERMODE_OPNDRN corresponding to the selected
         power source for the PWM on the same device
-        
+
         On failure, throws an exception or returns YPwmPowerSource.POWERMODE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -102,12 +102,12 @@ class YPwmPowerSource(YFunction):
         all PWM located on the same device are  affected.
         If you want the change to be kept after a device reboot, make sure  to call the matching
         module saveToFlash().
-        
+
         @param newval : a value among YPwmPowerSource.POWERMODE_USB_5V, YPwmPowerSource.POWERMODE_USB_3V,
         YPwmPowerSource.POWERMODE_EXT_V and YPwmPowerSource.POWERMODE_OPNDRN corresponding to  the PWM power source
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -125,7 +125,7 @@ class YPwmPowerSource(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the voltage source is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YPwmPowerSource.isOnline() to test if the voltage source is
@@ -133,9 +133,9 @@ class YPwmPowerSource(YFunction):
         a voltage source by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the voltage source
-        
+
         @return a YPwmPowerSource object allowing you to drive the voltage source.
         """
         # obj
@@ -148,7 +148,7 @@ class YPwmPowerSource(YFunction):
     def nextPwmPowerSource(self):
         """
         Continues the enumeration of Voltage sources started using yFirstPwmPowerSource().
-        
+
         @return a pointer to a YPwmPowerSource object, corresponding to
                 a voltage source currently online, or a None pointer
                 if there are no more Voltage sources to enumerate.
@@ -170,7 +170,7 @@ class YPwmPowerSource(YFunction):
         Starts the enumeration of Voltage sources currently accessible.
         Use the method YPwmPowerSource.nextPwmPowerSource() to iterate on
         next Voltage sources.
-        
+
         @return a pointer to a YPwmPowerSource object, corresponding to
                 the first source currently online, or a None pointer
                 if there are none.

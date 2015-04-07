@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_voltage.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_voltage.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindVoltage(), the high-level API for Voltage functions
 #*
@@ -46,9 +46,10 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YVoltage(YSensor):
     """
-    The Yoctopuce application programming interface allows you to read an instant
-    measure of the sensor, as well as the minimal and maximal values observed.
-    
+    The Yoctopuce class YVoltage allows you to read and configure Yoctopuce voltage
+    sensors. It inherits from YSensor class the core functions to read measurements,
+    register callback functions, access to the autonomous datalogger.
+
     """
 #--- (end of YVoltage class start)
     #--- (YVoltage return codes)
@@ -81,7 +82,7 @@ class YVoltage(YSensor):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the voltage sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YVoltage.isOnline() to test if the voltage sensor is
@@ -89,9 +90,9 @@ class YVoltage(YSensor):
         a voltage sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the voltage sensor
-        
+
         @return a YVoltage object allowing you to drive the voltage sensor.
         """
         # obj
@@ -104,7 +105,7 @@ class YVoltage(YSensor):
     def nextVoltage(self):
         """
         Continues the enumeration of voltage sensors started using yFirstVoltage().
-        
+
         @return a pointer to a YVoltage object, corresponding to
                 a voltage sensor currently online, or a None pointer
                 if there are no more voltage sensors to enumerate.
@@ -126,7 +127,7 @@ class YVoltage(YSensor):
         Starts the enumeration of voltage sensors currently accessible.
         Use the method YVoltage.nextVoltage() to iterate on
         next voltage sensors.
-        
+
         @return a pointer to a YVoltage object, corresponding to
                 the first voltage sensor currently online, or a None pointer
                 if there are none.

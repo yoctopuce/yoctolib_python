@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_segmenteddisplay.py 18762 2014-12-16 16:00:39Z seb $
+#* $Id: yocto_segmenteddisplay.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
 #*
@@ -47,7 +47,7 @@ from yocto_api import *
 class YSegmentedDisplay(YFunction):
     """
     The SegmentedDisplay class allows you to drive segmented displays.
-    
+
     """
 #--- (end of YSegmentedDisplay class start)
     #--- (YSegmentedDisplay return codes)
@@ -85,9 +85,9 @@ class YSegmentedDisplay(YFunction):
     def get_displayedText(self):
         """
         Returns the text currently displayed on the screen.
-        
+
         @return a string corresponding to the text currently displayed on the screen
-        
+
         On failure, throws an exception or returns YSegmentedDisplay.DISPLAYEDTEXT_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -98,11 +98,11 @@ class YSegmentedDisplay(YFunction):
     def set_displayedText(self, newval):
         """
         Changes the text currently displayed on the screen.
-        
+
         @param newval : a string corresponding to the text currently displayed on the screen
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
@@ -130,7 +130,7 @@ class YSegmentedDisplay(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the segmented displays is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YSegmentedDisplay.isOnline() to test if the segmented displays is
@@ -138,9 +138,9 @@ class YSegmentedDisplay(YFunction):
         a segmented display by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the segmented displays
-        
+
         @return a YSegmentedDisplay object allowing you to drive the segmented displays.
         """
         # obj
@@ -153,7 +153,7 @@ class YSegmentedDisplay(YFunction):
     def nextSegmentedDisplay(self):
         """
         Continues the enumeration of segmented displays started using yFirstSegmentedDisplay().
-        
+
         @return a pointer to a YSegmentedDisplay object, corresponding to
                 a segmented display currently online, or a None pointer
                 if there are no more segmented displays to enumerate.
@@ -175,7 +175,7 @@ class YSegmentedDisplay(YFunction):
         Starts the enumeration of segmented displays currently accessible.
         Use the method YSegmentedDisplay.nextSegmentedDisplay() to iterate on
         next segmented displays.
-        
+
         @return a pointer to a YSegmentedDisplay object, corresponding to
                 the first segmented displays currently online, or a None pointer
                 if there are none.

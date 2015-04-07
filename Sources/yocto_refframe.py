@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 19211 2015-02-02 13:18:41Z mvuilleu $
+#* $Id: yocto_refframe.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -51,7 +51,7 @@ class YRefFrame(YFunction):
     the proper reference frame. The class also implements a tridimensional
     sensor calibration process, which can compensate for local variations
     of standard gravity and improve the precision of the tilt sensors.
-    
+
     """
 #--- (end of YRefFrame class start)
     #--- (YRefFrame return codes)
@@ -130,22 +130,22 @@ class YRefFrame(YFunction):
         Changes the reference bearing used by the compass. The relative bearing
         indicated by the compass is the difference between the measured magnetic
         heading and the reference bearing indicated here.
-        
+
         For instance, if you setup as reference bearing the value of the earth
         magnetic declination, the compass will provide the orientation relative
         to the geographic North.
-        
+
         Similarly, when the sensor is not mounted along the standard directions
         because it has an additional yaw angle, you can set this angle in the reference
         bearing so that the compass provides the expected natural direction.
-        
+
         Remember to call the saveToFlash()
         method of the module if the modification must be kept.
-        
+
         @param newval : a floating point number corresponding to the reference bearing used by the compass
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(int(round(newval * 65536.0, 1)))
@@ -156,9 +156,9 @@ class YRefFrame(YFunction):
         Returns the reference bearing used by the compass. The relative bearing
         indicated by the compass is the difference between the measured magnetic
         heading and the reference bearing indicated here.
-        
+
         @return a floating point number corresponding to the reference bearing used by the compass
-        
+
         On failure, throws an exception or returns YRefFrame.BEARING_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -188,7 +188,7 @@ class YRefFrame(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the reference frame is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YRefFrame.isOnline() to test if the reference frame is
@@ -196,9 +196,9 @@ class YRefFrame(YFunction):
         a reference frame by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the reference frame
-        
+
         @return a YRefFrame object allowing you to drive the reference frame.
         """
         # obj
@@ -213,13 +213,13 @@ class YRefFrame(YFunction):
         Returns the installation position of the device, as configured
         in order to define the reference frame for the compass and the
         pitch/roll tilt sensors.
-        
+
         @return a value among the YRefFrame.MOUNTPOSITION enumeration
                 (YRefFrame.MOUNTPOSITION_BOTTOM,   YRefFrame.MOUNTPOSITION_TOP,
                 YRefFrame.MOUNTPOSITION_FRONT,    YRefFrame.MOUNTPOSITION_RIGHT,
                 YRefFrame.MOUNTPOSITION_REAR,     YRefFrame.MOUNTPOSITION_LEFT),
                 corresponding to the installation in a box, on one of the six faces.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         # position
@@ -231,7 +231,7 @@ class YRefFrame(YFunction):
         Returns the installation orientation of the device, as configured
         in order to define the reference frame for the compass and the
         pitch/roll tilt sensors.
-        
+
         @return a value among the enumeration YRefFrame.MOUNTORIENTATION
                 (YRefFrame.MOUNTORIENTATION_TWELVE, YRefFrame.MOUNTORIENTATION_THREE,
                 YRefFrame.MOUNTORIENTATION_SIX,     YRefFrame.MOUNTORIENTATION_NINE)
@@ -239,7 +239,7 @@ class YRefFrame(YFunction):
                 as on a clock dial seen from an observer in the center of the box.
                 On the bottom face, the 12H orientation points to the front, while
                 on the top face, the 12H orientation points to the rear.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         # position
@@ -253,7 +253,7 @@ class YRefFrame(YFunction):
         parallel to the earth surface. In case the device is not installed upright
         and horizontally, you must select its reference orientation (parallel to
         the earth surface) so that the measures are made relative to this position.
-        
+
         @param position : a value among the YRefFrame.MOUNTPOSITION enumeration
                 (YRefFrame.MOUNTPOSITION_BOTTOM,   YRefFrame.MOUNTPOSITION_TOP,
                 YRefFrame.MOUNTPOSITION_FRONT,    YRefFrame.MOUNTPOSITION_RIGHT,
@@ -266,10 +266,10 @@ class YRefFrame(YFunction):
                 as on a clock dial seen from an observer in the center of the box.
                 On the bottom face, the 12H orientation points to the front, while
                 on the top face, the 12H orientation points to the rear.
-        
+
         Remember to call the saveToFlash()
         method of the module if the modification must be kept.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         # mixedPos
@@ -318,7 +318,7 @@ class YRefFrame(YFunction):
         Initiates the sensors tridimensional calibration process.
         This calibration is used at low level for inertial position estimation
         and to enhance the precision of the tilt sensors.
-        
+
         After calling this method, the device should be moved according to the
         instructions provided by method get_3DCalibrationHint,
         and more3DCalibration should be invoked about 5 times per second.
@@ -327,7 +327,7 @@ class YRefFrame(YFunction):
         the computed calibration parameters can be applied using method
         save3DCalibration. The calibration process can be canceled
         at any time using method cancel3DCalibration.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         # // may throw an exception
@@ -359,7 +359,7 @@ class YRefFrame(YFunction):
         positioning the device according to the instructions provided by method
         get_3DCalibrationHint. Note that the instructions change during
         the calibration process.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         # // may throw an exception
@@ -539,7 +539,7 @@ class YRefFrame(YFunction):
         """
         Returns instructions to proceed to the tridimensional calibration initiated with
         method start3DCalibration.
-        
+
         @return a character string.
         """
         return self._calibStageHint
@@ -548,7 +548,7 @@ class YRefFrame(YFunction):
         """
         Returns the global process indicator for the tridimensional calibration
         initiated with method start3DCalibration.
-        
+
         @return an integer between 0 (not started) and 100 (stage completed).
         """
         return self._calibProgress
@@ -557,7 +557,7 @@ class YRefFrame(YFunction):
         """
         Returns index of the current stage of the calibration
         initiated with method start3DCalibration.
-        
+
         @return an integer, growing each time a calibration stage is completed.
         """
         return self._calibStage
@@ -566,7 +566,7 @@ class YRefFrame(YFunction):
         """
         Returns the process indicator for the current stage of the calibration
         initiated with method start3DCalibration.
-        
+
         @return an integer between 0 (not started) and 100 (stage completed).
         """
         return self._calibStageProgress
@@ -575,7 +575,7 @@ class YRefFrame(YFunction):
         """
         Returns the latest log message from the calibration process.
         When no new message is available, returns an empty string.
-        
+
         @return a character string.
         """
         # msg
@@ -588,7 +588,7 @@ class YRefFrame(YFunction):
         Applies the sensors tridimensional calibration parameters that have just been computed.
         Remember to call the saveToFlash()  method of the module if the changes
         must be kept when the device is restarted.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         # // may throw an exception
@@ -649,7 +649,7 @@ class YRefFrame(YFunction):
     def cancel3DCalibration(self):
         """
         Aborts the sensors tridimensional calibration process et restores normal settings.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         if self._calibStage == 0:
@@ -661,7 +661,7 @@ class YRefFrame(YFunction):
     def nextRefFrame(self):
         """
         Continues the enumeration of reference frames started using yFirstRefFrame().
-        
+
         @return a pointer to a YRefFrame object, corresponding to
                 a reference frame currently online, or a None pointer
                 if there are no more reference frames to enumerate.
@@ -683,7 +683,7 @@ class YRefFrame(YFunction):
         Starts the enumeration of reference frames currently accessible.
         Use the method YRefFrame.nextRefFrame() to iterate on
         next reference frames.
-        
+
         @return a pointer to a YRefFrame object, corresponding to
                 the first reference frame currently online, or a None pointer
                 if there are none.

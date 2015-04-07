@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_genericsensor.py 18262 2014-11-05 14:22:14Z seb $
+#* $Id: yocto_genericsensor.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #*
@@ -46,9 +46,12 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YGenericSensor(YSensor):
     """
-    The Yoctopuce application programming interface allows you to read an instant
-    measure of the sensor, as well as the minimal and maximal values observed.
-    
+    The YGenericSensor class allows you to read and configure Yoctopuce signal
+    transducers. It inherits from YSensor class the core functions to read measurements,
+    register callback functions, access to the autonomous datalogger.
+    This class adds the ability to configure the automatic conversion between the
+    measured signal and the corresponding engineering unit.
+
     """
 #--- (end of YGenericSensor class start)
     #--- (YGenericSensor return codes)
@@ -108,11 +111,11 @@ class YGenericSensor(YSensor):
         Changes the measuring unit for the measured value.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
-        
+
         @param newval : a string corresponding to the measuring unit for the measured value
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
@@ -121,9 +124,9 @@ class YGenericSensor(YSensor):
     def get_signalValue(self):
         """
         Returns the measured value of the electrical signal used by the sensor.
-        
+
         @return a floating point number corresponding to the measured value of the electrical signal used by the sensor
-        
+
         On failure, throws an exception or returns YGenericSensor.SIGNALVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -134,9 +137,9 @@ class YGenericSensor(YSensor):
     def get_signalUnit(self):
         """
         Returns the measuring unit of the electrical signal used by the sensor.
-        
+
         @return a string corresponding to the measuring unit of the electrical signal used by the sensor
-        
+
         On failure, throws an exception or returns YGenericSensor.SIGNALUNIT_INVALID.
         """
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
@@ -147,9 +150,9 @@ class YGenericSensor(YSensor):
     def get_signalRange(self):
         """
         Returns the electric signal range used by the sensor.
-        
+
         @return a string corresponding to the electric signal range used by the sensor
-        
+
         On failure, throws an exception or returns YGenericSensor.SIGNALRANGE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -160,11 +163,11 @@ class YGenericSensor(YSensor):
     def set_signalRange(self, newval):
         """
         Changes the electric signal range used by the sensor.
-        
+
         @param newval : a string corresponding to the electric signal range used by the sensor
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
@@ -173,9 +176,9 @@ class YGenericSensor(YSensor):
     def get_valueRange(self):
         """
         Returns the physical value range measured by the sensor.
-        
+
         @return a string corresponding to the physical value range measured by the sensor
-        
+
         On failure, throws an exception or returns YGenericSensor.VALUERANGE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -187,11 +190,11 @@ class YGenericSensor(YSensor):
         """
         Changes the physical value range measured by the sensor. As a side effect, the range modification may
         automatically modify the display resolution.
-        
+
         @param newval : a string corresponding to the physical value range measured by the sensor
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
@@ -202,11 +205,11 @@ class YGenericSensor(YSensor):
         Changes the electric signal bias for zero shift adjustment.
         If your electric signal reads positif when it should be zero, setup
         a positive signalBias of the same value to fix the zero shift.
-        
+
         @param newval : a floating point number corresponding to the electric signal bias for zero shift adjustment
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(int(round(newval * 65536.0, 1)))
@@ -217,9 +220,9 @@ class YGenericSensor(YSensor):
         Returns the electric signal bias for zero shift adjustment.
         A positive bias means that the signal is over-reporting the measure,
         while a negative bias means that the signal is underreporting the measure.
-        
+
         @return a floating point number corresponding to the electric signal bias for zero shift adjustment
-        
+
         On failure, throws an exception or returns YGenericSensor.SIGNALBIAS_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -235,11 +238,11 @@ class YGenericSensor(YSensor):
         The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
         The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
         to get measures as stable as possible when working on a noisy signal.
-        
+
         @return a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
         YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE and
         YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric signal sampling method to use
-        
+
         On failure, throws an exception or returns YGenericSensor.SIGNALSAMPLING_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -255,13 +258,13 @@ class YGenericSensor(YSensor):
         The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
         The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
         to get measures as stable as possible when working on a noisy signal.
-        
+
         @param newval : a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
         YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE and
         YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric signal sampling method to use
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -279,7 +282,7 @@ class YGenericSensor(YSensor):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the generic sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YGenericSensor.isOnline() to test if the generic sensor is
@@ -287,9 +290,9 @@ class YGenericSensor(YSensor):
         a generic sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the generic sensor
-        
+
         @return a YGenericSensor object allowing you to drive the generic sensor.
         """
         # obj
@@ -303,9 +306,9 @@ class YGenericSensor(YSensor):
         """
         Adjusts the signal bias so that the current signal value is need
         precisely as zero.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         # currSignal
@@ -317,7 +320,7 @@ class YGenericSensor(YSensor):
     def nextGenericSensor(self):
         """
         Continues the enumeration of generic sensors started using yFirstGenericSensor().
-        
+
         @return a pointer to a YGenericSensor object, corresponding to
                 a generic sensor currently online, or a None pointer
                 if there are no more generic sensors to enumerate.
@@ -339,7 +342,7 @@ class YGenericSensor(YSensor):
         Starts the enumeration of generic sensors currently accessible.
         Use the method YGenericSensor.nextGenericSensor() to iterate on
         next generic sensors.
-        
+
         @return a pointer to a YGenericSensor object, corresponding to
                 the first generic sensor currently online, or a None pointer
                 if there are none.

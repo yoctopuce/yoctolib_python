@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_carbondioxide.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_carbondioxide.py 19619 2015-03-05 18:11:23Z mvuilleu $
 #*
 #* Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
 #*
@@ -46,9 +46,11 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YCarbonDioxide(YSensor):
     """
-    The Yoctopuce application programming interface allows you to read an instant
-    measure of the sensor, as well as the minimal and maximal values observed.
-    
+    The Yoctopuce class YCarbonDioxide allows you to read and configure Yoctopuce CO2
+    sensors. It inherits from YSensor class the core functions to read measurements,
+    register callback functions, access to the autonomous datalogger.
+    This class adds the ability to perform manual calibration if reuired.
+
     """
 #--- (end of YCarbonDioxide class start)
     #--- (YCarbonDioxide return codes)
@@ -56,6 +58,8 @@ class YCarbonDioxide(YSensor):
     #--- (YCarbonDioxide dlldef)
     #--- (end of YCarbonDioxide dlldef)
     #--- (YCarbonDioxide definitions)
+    ABCPERIOD_INVALID = YAPI.INVALID_INT
+    COMMAND_INVALID = YAPI.INVALID_STRING
     #--- (end of YCarbonDioxide definitions)
 
     def __init__(self, func):
@@ -63,11 +67,60 @@ class YCarbonDioxide(YSensor):
         self._className = 'CarbonDioxide'
         #--- (YCarbonDioxide attributes)
         self._callback = None
+        self._abcPeriod = YCarbonDioxide.ABCPERIOD_INVALID
+        self._command = YCarbonDioxide.COMMAND_INVALID
         #--- (end of YCarbonDioxide attributes)
 
     #--- (YCarbonDioxide implementation)
     def _parseAttr(self, member):
+        if member.name == "abcPeriod":
+            self._abcPeriod = member.ivalue
+            return 1
+        if member.name == "command":
+            self._command = member.svalue
+            return 1
         super(YCarbonDioxide, self)._parseAttr(member)
+
+    def get_abcPeriod(self):
+        """
+        Returns the Automatic Baseline Calibration period, in hours. A negative value
+        means that automatic baseline calibration is disabled.
+
+        @return an integer corresponding to the Automatic Baseline Calibration period, in hours
+
+        On failure, throws an exception or returns YCarbonDioxide.ABCPERIOD_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YCarbonDioxide.ABCPERIOD_INVALID
+        return self._abcPeriod
+
+    def set_abcPeriod(self, newval):
+        """
+        Modifies Automatic Baseline Calibration period, in hours. If you need
+        to disable automatic baseline calibration (for instance when using the
+        sensor in an environment that is constantly above 400ppm CO2), set the
+        period to -1. Remember to call the saveToFlash() method of the
+        module if the modification must be kept.
+
+        @param newval : an integer
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("abcPeriod", rest_val)
+
+    def get_command(self):
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YCarbonDioxide.COMMAND_INVALID
+        return self._command
+
+    def set_command(self, newval):
+        rest_val = newval
+        return self._setAttr("command", rest_val)
 
     @staticmethod
     def FindCarbonDioxide(func):
@@ -81,7 +134,7 @@ class YCarbonDioxide(YSensor):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the CO2 sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YCarbonDioxide.isOnline() to test if the CO2 sensor is
@@ -89,9 +142,9 @@ class YCarbonDioxide(YSensor):
         a CO2 sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the CO2 sensor
-        
+
         @return a YCarbonDioxide object allowing you to drive the CO2 sensor.
         """
         # obj
@@ -101,10 +154,46 @@ class YCarbonDioxide(YSensor):
             YFunction._AddToCache("CarbonDioxide", func, obj)
         return obj
 
+    def triggetBaselineCalibration(self):
+        """
+        Triggers a baseline calibration at standard CO2 ambiant level (400ppm).
+        It is normally not necessary to manually calibrate the sensor, because
+        the built-in automatic baseline calibration procedure will automatically
+        fix any long-term drift based on the lowest level of CO2 observed over the
+        automatic calibration period. However, if you disable automatic baseline
+        calibration, you may want to manually trigger a calibration from time to
+        time. Before starting a baseline calibration, make sure to put the sensor
+        in a standard environment (e.g. outside in fresh air) at around 400ppm.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_command("BC")
+
+    def triggetZeroCalibration(self):
+        """
+        Triggers a zero calibration of the sensor on carbon dioxide-free air.
+        It is normally not necessary to manually calibrate the sensor, because
+        the built-in automatic baseline calibration procedure will automatically
+        fix any long-term drift based on the lowest level of CO2 observed over the
+        automatic calibration period. However, if you disable automatic baseline
+        calibration, you may want to manually trigger a calibration from time to
+        time. Before starting a zero calibration, you should circulate carbon
+        dioxide-free air within the sensor for a minute or two, using a small pipe
+        connected to the sensor. Please contact support@yoctopuce.com for more details
+        on the zero calibration procedure.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_command("ZC")
+
     def nextCarbonDioxide(self):
         """
         Continues the enumeration of CO2 sensors started using yFirstCarbonDioxide().
-        
+
         @return a pointer to a YCarbonDioxide object, corresponding to
                 a CO2 sensor currently online, or a None pointer
                 if there are no more CO2 sensors to enumerate.
@@ -126,7 +215,7 @@ class YCarbonDioxide(YSensor):
         Starts the enumeration of CO2 sensors currently accessible.
         Use the method YCarbonDioxide.nextCarbonDioxide() to iterate on
         next CO2 sensors.
-        
+
         @return a pointer to a YCarbonDioxide object, corresponding to
                 the first CO2 sensor currently online, or a None pointer
                 if there are none.

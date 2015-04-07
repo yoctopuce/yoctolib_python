@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_compass.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_compass.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindCompass(), the high-level API for Compass functions
 #*
@@ -46,9 +46,16 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YCompass(YSensor):
     """
-    The Yoctopuce application programming interface allows you to read an instant
-    measure of the sensor, as well as the minimal and maximal values observed.
-    
+    The YSensor class is the parent class for all Yoctopuce sensors. It can be
+    used to read the current value and unit of any sensor, read the min/max
+    value, configure autonomous recording frequency and access recorded data.
+    It also provide a function to register a callback invoked each time the
+    observed value changes, or at a predefined interval. Using this class rather
+    than a specific subclass makes it possible to create generic applications
+    that work with any Yoctopuce sensor, even those that do not yet exist.
+    Note: The YAnButton class is the only analog input which does not inherit
+    from YSensor.
+
     """
 #--- (end of YCompass class start)
     #--- (YCompass return codes)
@@ -91,9 +98,9 @@ class YCompass(YSensor):
     def get_magneticHeading(self):
         """
         Returns the magnetic heading, regardless of the configured bearing.
-        
+
         @return a floating point number corresponding to the magnetic heading, regardless of the configured bearing
-        
+
         On failure, throws an exception or returns YCompass.MAGNETICHEADING_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -113,7 +120,7 @@ class YCompass(YSensor):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the compass is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YCompass.isOnline() to test if the compass is
@@ -121,9 +128,9 @@ class YCompass(YSensor):
         a compass by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the compass
-        
+
         @return a YCompass object allowing you to drive the compass.
         """
         # obj
@@ -136,7 +143,7 @@ class YCompass(YSensor):
     def nextCompass(self):
         """
         Continues the enumeration of compasses started using yFirstCompass().
-        
+
         @return a pointer to a YCompass object, corresponding to
                 a compass currently online, or a None pointer
                 if there are no more compasses to enumerate.
@@ -158,7 +165,7 @@ class YCompass(YSensor):
         Starts the enumeration of compasses currently accessible.
         Use the method YCompass.nextCompass() to iterate on
         next compasses.
-        
+
         @return a pointer to a YCompass object, corresponding to
                 the first compass currently online, or a None pointer
                 if there are none.

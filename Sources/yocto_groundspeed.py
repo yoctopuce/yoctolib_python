@@ -1,8 +1,8 @@
 #*********************************************************************
 #*
-#* $Id: yocto_humidity.py 19610 2015-03-05 10:39:47Z seb $
+#* $Id: yocto_groundspeed.py 19746 2015-03-17 10:34:00Z seb $
 #*
-#* Implements yFindHumidity(), the high-level API for Humidity functions
+#* Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
 #*
 #* - - - - - - - - - License information: - - - - - - - - - 
 #*
@@ -42,38 +42,39 @@ __docformat__ = 'restructuredtext en'
 from yocto_api import *
 
 
-#--- (YHumidity class start)
+#--- (YGroundSpeed class start)
 #noinspection PyProtectedMember
-class YHumidity(YSensor):
+class YGroundSpeed(YSensor):
     """
-    The Yoctopuce class YHumidity allows you to read and configure Yoctopuce humidity
-    sensors. It inherits from YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    The Yoctopuce class YGroundSpeed allows you to read the ground speed from Yoctopuce
+    geolocalization sensors. It inherits from the YSensor class the core functions to
+    read measurements, register callback functions, access the autonomous
+    datalogger.
 
     """
-#--- (end of YHumidity class start)
-    #--- (YHumidity return codes)
-    #--- (end of YHumidity return codes)
-    #--- (YHumidity dlldef)
-    #--- (end of YHumidity dlldef)
-    #--- (YHumidity definitions)
-    #--- (end of YHumidity definitions)
+#--- (end of YGroundSpeed class start)
+    #--- (YGroundSpeed return codes)
+    #--- (end of YGroundSpeed return codes)
+    #--- (YGroundSpeed dlldef)
+    #--- (end of YGroundSpeed dlldef)
+    #--- (YGroundSpeed definitions)
+    #--- (end of YGroundSpeed definitions)
 
     def __init__(self, func):
-        super(YHumidity, self).__init__(func)
-        self._className = 'Humidity'
-        #--- (YHumidity attributes)
+        super(YGroundSpeed, self).__init__(func)
+        self._className = 'GroundSpeed'
+        #--- (YGroundSpeed attributes)
         self._callback = None
-        #--- (end of YHumidity attributes)
+        #--- (end of YGroundSpeed attributes)
 
-    #--- (YHumidity implementation)
+    #--- (YGroundSpeed implementation)
     def _parseAttr(self, member):
-        super(YHumidity, self)._parseAttr(member)
+        super(YGroundSpeed, self)._parseAttr(member)
 
     @staticmethod
-    def FindHumidity(func):
+    def FindGroundSpeed(func):
         """
-        Retrieves a humidity sensor for a given identifier.
+        Retrieves a ground speed sensor for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -83,53 +84,53 @@ class YHumidity(YSensor):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the humidity sensor is online at the time
+        This function does not require that the ground speed sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YHumidity.isOnline() to test if the humidity sensor is
+        Use the method YGroundSpeed.isOnline() to test if the ground speed sensor is
         indeed online at a given time. In case of ambiguity when looking for
-        a humidity sensor by logical name, no error is notified: the first instance
+        a ground speed sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
-        @param func : a string that uniquely characterizes the humidity sensor
+        @param func : a string that uniquely characterizes the ground speed sensor
 
-        @return a YHumidity object allowing you to drive the humidity sensor.
+        @return a YGroundSpeed object allowing you to drive the ground speed sensor.
         """
         # obj
-        obj = YFunction._FindFromCache("Humidity", func)
+        obj = YFunction._FindFromCache("GroundSpeed", func)
         if obj is None:
-            obj = YHumidity(func)
-            YFunction._AddToCache("Humidity", func, obj)
+            obj = YGroundSpeed(func)
+            YFunction._AddToCache("GroundSpeed", func, obj)
         return obj
 
-    def nextHumidity(self):
+    def nextGroundSpeed(self):
         """
-        Continues the enumeration of humidity sensors started using yFirstHumidity().
+        Continues the enumeration of ground speed sensors started using yFirstGroundSpeed().
 
-        @return a pointer to a YHumidity object, corresponding to
-                a humidity sensor currently online, or a None pointer
-                if there are no more humidity sensors to enumerate.
+        @return a pointer to a YGroundSpeed object, corresponding to
+                a ground speed sensor currently online, or a None pointer
+                if there are no more ground speed sensors to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
             return None
         if hwidRef.value == "":
             return None
-        return YHumidity.FindHumidity(hwidRef.value)
+        return YGroundSpeed.FindGroundSpeed(hwidRef.value)
 
-#--- (end of YHumidity implementation)
+#--- (end of YGroundSpeed implementation)
 
-#--- (Humidity functions)
+#--- (GroundSpeed functions)
 
     @staticmethod
-    def FirstHumidity():
+    def FirstGroundSpeed():
         """
-        Starts the enumeration of humidity sensors currently accessible.
-        Use the method YHumidity.nextHumidity() to iterate on
-        next humidity sensors.
+        Starts the enumeration of ground speed sensors currently accessible.
+        Use the method YGroundSpeed.nextGroundSpeed() to iterate on
+        next ground speed sensors.
 
-        @return a pointer to a YHumidity object, corresponding to
-                the first humidity sensor currently online, or a None pointer
+        @return a pointer to a YGroundSpeed object, corresponding to
+                the first ground speed sensor currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
@@ -142,7 +143,7 @@ class YHumidity(YSensor):
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
         p = (ctypes.c_int * 1)()
-        err = YAPI.apiGetFunctionsByClass("Humidity", 0, p, size, neededsizeRef, errmsgRef)
+        err = YAPI.apiGetFunctionsByClass("GroundSpeed", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
@@ -151,6 +152,6 @@ class YHumidity(YSensor):
                 YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
-        return YHumidity.FindHumidity(serialRef.value + "." + funcIdRef.value)
+        return YGroundSpeed.FindGroundSpeed(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of Humidity functions)
+#--- (end of GroundSpeed functions)

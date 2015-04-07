@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_tilt.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_tilt.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindTilt(), the high-level API for Tilt functions
 #*
@@ -46,9 +46,16 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YTilt(YSensor):
     """
-    The Yoctopuce application programming interface allows you to read an instant
-    measure of the sensor, as well as the minimal and maximal values observed.
-    
+    The YSensor class is the parent class for all Yoctopuce sensors. It can be
+    used to read the current value and unit of any sensor, read the min/max
+    value, configure autonomous recording frequency and access recorded data.
+    It also provide a function to register a callback invoked each time the
+    observed value changes, or at a predefined interval. Using this class rather
+    than a specific subclass makes it possible to create generic applications
+    that work with any Yoctopuce sensor, even those that do not yet exist.
+    Note: The YAnButton class is the only analog input which does not inherit
+    from YSensor.
+
     """
 #--- (end of YTilt class start)
     #--- (YTilt return codes)
@@ -95,7 +102,7 @@ class YTilt(YSensor):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the tilt sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YTilt.isOnline() to test if the tilt sensor is
@@ -103,9 +110,9 @@ class YTilt(YSensor):
         a tilt sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the tilt sensor
-        
+
         @return a YTilt object allowing you to drive the tilt sensor.
         """
         # obj
@@ -118,7 +125,7 @@ class YTilt(YSensor):
     def nextTilt(self):
         """
         Continues the enumeration of tilt sensors started using yFirstTilt().
-        
+
         @return a pointer to a YTilt object, corresponding to
                 a tilt sensor currently online, or a None pointer
                 if there are no more tilt sensors to enumerate.
@@ -140,7 +147,7 @@ class YTilt(YSensor):
         Starts the enumeration of tilt sensors currently accessible.
         Use the method YTilt.nextTilt() to iterate on
         next tilt sensors.
-        
+
         @return a pointer to a YTilt object, corresponding to
                 the first tilt sensor currently online, or a None pointer
                 if there are none.

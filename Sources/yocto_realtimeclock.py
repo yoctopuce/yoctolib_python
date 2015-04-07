@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_realtimeclock.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_realtimeclock.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #*
@@ -50,7 +50,7 @@ class YRealTimeClock(YFunction):
     lasting several days. It is the base for automated wake-up functions provided by the WakeUpScheduler.
     The current time may represent a local time as well as an UTC time, but no automatic time change
     will occur to account for daylight saving time.
-    
+
     """
 #--- (end of YRealTimeClock class start)
     #--- (YRealTimeClock return codes)
@@ -96,10 +96,10 @@ class YRealTimeClock(YFunction):
     def get_unixTime(self):
         """
         Returns the current time in Unix format (number of elapsed seconds since Jan 1st, 1970).
-        
+
         @return an integer corresponding to the current time in Unix format (number of elapsed seconds
         since Jan 1st, 1970)
-        
+
         On failure, throws an exception or returns YRealTimeClock.UNIXTIME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -111,11 +111,11 @@ class YRealTimeClock(YFunction):
         """
         Changes the current time. Time is specifid in Unix format (number of elapsed seconds since Jan 1st, 1970).
         If current UTC time is known, utcOffset will be automatically adjusted for the new specified time.
-        
+
         @param newval : an integer corresponding to the current time
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -124,9 +124,9 @@ class YRealTimeClock(YFunction):
     def get_dateTime(self):
         """
         Returns the current time in the form "YYYY/MM/DD hh:mm:ss"
-        
+
         @return a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
-        
+
         On failure, throws an exception or returns YRealTimeClock.DATETIME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -137,9 +137,9 @@ class YRealTimeClock(YFunction):
     def get_utcOffset(self):
         """
         Returns the number of seconds between current time and UTC time (time zone).
-        
+
         @return an integer corresponding to the number of seconds between current time and UTC time (time zone)
-        
+
         On failure, throws an exception or returns YRealTimeClock.UTCOFFSET_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -153,11 +153,11 @@ class YRealTimeClock(YFunction):
         The timezone is automatically rounded to the nearest multiple of 15 minutes.
         If current UTC time is known, the current time will automatically be updated according to the
         selected time zone.
-        
+
         @param newval : an integer corresponding to the number of seconds between current time and UTC time (time zone)
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -166,10 +166,10 @@ class YRealTimeClock(YFunction):
     def get_timeSet(self):
         """
         Returns true if the clock has been set, and false otherwise.
-        
+
         @return either YRealTimeClock.TIMESET_FALSE or YRealTimeClock.TIMESET_TRUE, according to true if
         the clock has been set, and false otherwise
-        
+
         On failure, throws an exception or returns YRealTimeClock.TIMESET_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -189,7 +189,7 @@ class YRealTimeClock(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the clock is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YRealTimeClock.isOnline() to test if the clock is
@@ -197,9 +197,9 @@ class YRealTimeClock(YFunction):
         a clock by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the clock
-        
+
         @return a YRealTimeClock object allowing you to drive the clock.
         """
         # obj
@@ -212,7 +212,7 @@ class YRealTimeClock(YFunction):
     def nextRealTimeClock(self):
         """
         Continues the enumeration of clocks started using yFirstRealTimeClock().
-        
+
         @return a pointer to a YRealTimeClock object, corresponding to
                 a clock currently online, or a None pointer
                 if there are no more clocks to enumerate.
@@ -234,7 +234,7 @@ class YRealTimeClock(YFunction):
         Starts the enumeration of clocks currently accessible.
         Use the method YRealTimeClock.nextRealTimeClock() to iterate on
         next clocks.
-        
+
         @return a pointer to a YRealTimeClock object, corresponding to
                 the first clock currently online, or a None pointer
                 if there are none.

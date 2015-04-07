@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 17582 2014-09-10 17:12:40Z mvuilleu $
+#* $Id: yocto_network.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -48,7 +48,7 @@ class YNetwork(YFunction):
     """
     YNetwork objects provide access to TCP/IP parameters of Yoctopuce
     modules that include a built-in network interface.
-    
+
     """
 #--- (end of YNetwork class start)
     #--- (YNetwork return codes)
@@ -195,11 +195,11 @@ class YNetwork(YFunction):
         Level 4 (DNS_4) is reached when the DNS server is reachable on the network.
         Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading the
         current time from an NTP server.
-        
+
         @return a value among YNetwork.READINESS_DOWN, YNetwork.READINESS_EXISTS,
         YNetwork.READINESS_LINKED, YNetwork.READINESS_LAN_OK and YNetwork.READINESS_WWW_OK corresponding to
         the current established working mode of the network interface
-        
+
         On failure, throws an exception or returns YNetwork.READINESS_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -211,9 +211,9 @@ class YNetwork(YFunction):
         """
         Returns the MAC address of the network interface. The MAC address is also available on a sticker
         on the module, in both numeric and barcode forms.
-        
+
         @return a string corresponding to the MAC address of the network interface
-        
+
         On failure, throws an exception or returns YNetwork.MACADDRESS_INVALID.
         """
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
@@ -225,9 +225,9 @@ class YNetwork(YFunction):
         """
         Returns the IP address currently in use by the device. The address may have been configured
         statically, or provided by a DHCP server.
-        
+
         @return a string corresponding to the IP address currently in use by the device
-        
+
         On failure, throws an exception or returns YNetwork.IPADDRESS_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -238,9 +238,9 @@ class YNetwork(YFunction):
     def get_subnetMask(self):
         """
         Returns the subnet mask currently used by the device.
-        
+
         @return a string corresponding to the subnet mask currently used by the device
-        
+
         On failure, throws an exception or returns YNetwork.SUBNETMASK_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -251,9 +251,9 @@ class YNetwork(YFunction):
     def get_router(self):
         """
         Returns the IP address of the router on the device subnet (default gateway).
-        
+
         @return a string corresponding to the IP address of the router on the device subnet (default gateway)
-        
+
         On failure, throws an exception or returns YNetwork.ROUTER_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -274,9 +274,9 @@ class YNetwork(YFunction):
     def get_primaryDNS(self):
         """
         Returns the IP address of the primary name server to be used by the module.
-        
+
         @return a string corresponding to the IP address of the primary name server to be used by the module
-        
+
         On failure, throws an exception or returns YNetwork.PRIMARYDNS_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -289,11 +289,11 @@ class YNetwork(YFunction):
         Changes the IP address of the primary name server to be used by the module.
         When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
         Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-        
+
         @param newval : a string corresponding to the IP address of the primary name server to be used by the module
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
@@ -302,9 +302,9 @@ class YNetwork(YFunction):
     def get_secondaryDNS(self):
         """
         Returns the IP address of the secondary name server to be used by the module.
-        
+
         @return a string corresponding to the IP address of the secondary name server to be used by the module
-        
+
         On failure, throws an exception or returns YNetwork.SECONDARYDNS_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -317,11 +317,11 @@ class YNetwork(YFunction):
         Changes the IP address of the secondary name server to be used by the module.
         When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
         Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-        
+
         @param newval : a string corresponding to the IP address of the secondary name server to be used by the module
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
@@ -331,10 +331,10 @@ class YNetwork(YFunction):
         """
         Returns a hash string if a password has been set for "user" user,
         or an empty string otherwise.
-        
+
         @return a string corresponding to a hash string if a password has been set for "user" user,
                 or an empty string otherwise
-        
+
         On failure, throws an exception or returns YNetwork.USERPASSWORD_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -349,11 +349,11 @@ class YNetwork(YFunction):
         empty string, a password is not required anymore.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
-        
+
         @param newval : a string corresponding to the password for the "user" user
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
@@ -363,10 +363,10 @@ class YNetwork(YFunction):
         """
         Returns a hash string if a password has been set for user "admin",
         or an empty string otherwise.
-        
+
         @return a string corresponding to a hash string if a password has been set for user "admin",
                 or an empty string otherwise
-        
+
         On failure, throws an exception or returns YNetwork.ADMINPASSWORD_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -381,11 +381,11 @@ class YNetwork(YFunction):
         empty string, a password is not required anymore.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
-        
+
         @param newval : a string corresponding to the password for the "admin" user
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
@@ -395,11 +395,11 @@ class YNetwork(YFunction):
         """
         Returns the activation state of the multicast announce protocols to allow easy
         discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
-        
+
         @return either YNetwork.DISCOVERABLE_FALSE or YNetwork.DISCOVERABLE_TRUE, according to the
         activation state of the multicast announce protocols to allow easy
                 discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
-        
+
         On failure, throws an exception or returns YNetwork.DISCOVERABLE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -411,13 +411,13 @@ class YNetwork(YFunction):
         """
         Changes the activation state of the multicast announce protocols to allow easy
         discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
-        
+
         @param newval : either YNetwork.DISCOVERABLE_FALSE or YNetwork.DISCOVERABLE_TRUE, according to the
         activation state of the multicast announce protocols to allow easy
                 discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
@@ -428,11 +428,11 @@ class YNetwork(YFunction):
         Returns the allowed downtime of the WWW link (in seconds) before triggering an automated
         reboot to try to recover Internet connectivity. A zero value disables automated reboot
         in case of Internet connectivity loss.
-        
+
         @return an integer corresponding to the allowed downtime of the WWW link (in seconds) before
         triggering an automated
                 reboot to try to recover Internet connectivity
-        
+
         On failure, throws an exception or returns YNetwork.WWWWATCHDOGDELAY_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -446,13 +446,13 @@ class YNetwork(YFunction):
         reboot to try to recover Internet connectivity. A zero value disables automated reboot
         in case of Internet connectivity loss. The smallest valid non-zero timeout is
         90 seconds.
-        
+
         @param newval : an integer corresponding to the allowed downtime of the WWW link (in seconds)
         before triggering an automated
                 reboot to try to recover Internet connectivity
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -461,9 +461,9 @@ class YNetwork(YFunction):
     def get_callbackUrl(self):
         """
         Returns the callback URL to notify of significant state changes.
-        
+
         @return a string corresponding to the callback URL to notify of significant state changes
-        
+
         On failure, throws an exception or returns YNetwork.CALLBACKURL_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -475,11 +475,11 @@ class YNetwork(YFunction):
         """
         Changes the callback URL to notify significant state changes. Remember to call the
         saveToFlash() method of the module if the modification must be kept.
-        
+
         @param newval : a string corresponding to the callback URL to notify significant state changes
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
@@ -488,11 +488,11 @@ class YNetwork(YFunction):
     def get_callbackMethod(self):
         """
         Returns the HTTP method used to notify callbacks for significant state changes.
-        
+
         @return a value among YNetwork.CALLBACKMETHOD_POST, YNetwork.CALLBACKMETHOD_GET and
         YNetwork.CALLBACKMETHOD_PUT corresponding to the HTTP method used to notify callbacks for
         significant state changes
-        
+
         On failure, throws an exception or returns YNetwork.CALLBACKMETHOD_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -503,13 +503,13 @@ class YNetwork(YFunction):
     def set_callbackMethod(self, newval):
         """
         Changes the HTTP method used to notify callbacks for significant state changes.
-        
+
         @param newval : a value among YNetwork.CALLBACKMETHOD_POST, YNetwork.CALLBACKMETHOD_GET and
         YNetwork.CALLBACKMETHOD_PUT corresponding to the HTTP method used to notify callbacks for
         significant state changes
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -518,12 +518,12 @@ class YNetwork(YFunction):
     def get_callbackEncoding(self):
         """
         Returns the encoding standard to use for representing notification values.
-        
+
         @return a value among YNetwork.CALLBACKENCODING_FORM, YNetwork.CALLBACKENCODING_JSON,
         YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV and
         YNetwork.CALLBACKENCODING_YOCTO_API corresponding to the encoding standard to use for representing
         notification values
-        
+
         On failure, throws an exception or returns YNetwork.CALLBACKENCODING_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -534,14 +534,14 @@ class YNetwork(YFunction):
     def set_callbackEncoding(self, newval):
         """
         Changes the encoding standard to use for representing notification values.
-        
+
         @param newval : a value among YNetwork.CALLBACKENCODING_FORM, YNetwork.CALLBACKENCODING_JSON,
         YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV and
         YNetwork.CALLBACKENCODING_YOCTO_API corresponding to the encoding standard to use for representing
         notification values
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -551,10 +551,10 @@ class YNetwork(YFunction):
         """
         Returns a hashed version of the notification callback credentials if set,
         or an empty string otherwise.
-        
+
         @return a string corresponding to a hashed version of the notification callback credentials if set,
                 or an empty string otherwise
-        
+
         On failure, throws an exception or returns YNetwork.CALLBACKCREDENTIALS_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -573,11 +573,11 @@ class YNetwork(YFunction):
         way to configure callback credentials, use function callbackLogin instead.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
-        
+
         @param newval : a string corresponding to the credentials required to connect to the callback address
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
@@ -589,12 +589,12 @@ class YNetwork(YFunction):
         log into it. The password is not stored into the module, only a hashed
         copy of the credentials are saved. Remember to call the
         saveToFlash() method of the module if the modification must be kept.
-        
+
         @param username : username required to log to the callback
         @param password : password required to log to the callback
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = username + ":" + password
@@ -603,9 +603,9 @@ class YNetwork(YFunction):
     def get_callbackMinDelay(self):
         """
         Returns the minimum waiting time between two callback notifications, in seconds.
-        
+
         @return an integer corresponding to the minimum waiting time between two callback notifications, in seconds
-        
+
         On failure, throws an exception or returns YNetwork.CALLBACKMINDELAY_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -616,12 +616,12 @@ class YNetwork(YFunction):
     def set_callbackMinDelay(self, newval):
         """
         Changes the minimum waiting time between two callback notifications, in seconds.
-        
+
         @param newval : an integer corresponding to the minimum waiting time between two callback
         notifications, in seconds
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -630,9 +630,9 @@ class YNetwork(YFunction):
     def get_callbackMaxDelay(self):
         """
         Returns the maximum waiting time between two callback notifications, in seconds.
-        
+
         @return an integer corresponding to the maximum waiting time between two callback notifications, in seconds
-        
+
         On failure, throws an exception or returns YNetwork.CALLBACKMAXDELAY_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -643,12 +643,12 @@ class YNetwork(YFunction):
     def set_callbackMaxDelay(self, newval):
         """
         Changes the maximum waiting time between two callback notifications, in seconds.
-        
+
         @param newval : an integer corresponding to the maximum waiting time between two callback
         notifications, in seconds
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -659,10 +659,10 @@ class YNetwork(YFunction):
         Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
         The current consumption is measured after converting PoE source to 5 Volt, and should
         never exceed 1800 mA.
-        
+
         @return an integer corresponding to the current consumed by the module from Power-over-Ethernet
         (PoE), in milli-amps
-        
+
         On failure, throws an exception or returns YNetwork.POECURRENT_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -682,7 +682,7 @@ class YNetwork(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the network interface is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YNetwork.isOnline() to test if the network interface is
@@ -690,9 +690,9 @@ class YNetwork(YFunction):
         a network interface by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the network interface
-        
+
         @return a YNetwork object allowing you to drive the network interface.
         """
         # obj
@@ -708,14 +708,14 @@ class YNetwork(YFunction):
         IP address received from a DHCP server. Until an address is received from a DHCP
         server, the module uses the IP parameters specified to this function.
         Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-        
+
         @param fallbackIpAddr : fallback IP address, to be used when no DHCP reply is received
         @param fallbackSubnetMaskLen : fallback subnet mask length when no DHCP reply is received, as an
                 integer (eg. 24 means 255.255.255.0)
         @param fallbackRouter : fallback router IP address, to be used when no DHCP reply is received
-        
+
         @return YAPI.SUCCESS when the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_ipConfig("DHCP:" + fallbackIpAddr + "/" + str(int(fallbackSubnetMaskLen)) + "/" + fallbackRouter)
@@ -724,13 +724,13 @@ class YNetwork(YFunction):
         """
         Changes the configuration of the network interface to use a static IP address.
         Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-        
+
         @param ipAddress : device IP address
         @param subnetMaskLen : subnet mask length, as an integer (eg. 24 means 255.255.255.0)
         @param router : router IP address (default gateway)
-        
+
         @return YAPI.SUCCESS when the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_ipConfig("STATIC:" + ipAddress + "/" + str(int(subnetMaskLen)) + "/" + router)
@@ -740,9 +740,9 @@ class YNetwork(YFunction):
         Pings str_host to test the network connectivity. Sends four ICMP ECHO_REQUEST requests from the
         module to the target str_host. This method returns a string with the result of the
         4 ICMP ECHO_REQUEST requests.
-        
+
         @param host : the hostname or the IP address of the target
-        
+
         @return a string with the result of the ping.
         """
         # content
@@ -753,7 +753,7 @@ class YNetwork(YFunction):
     def nextNetwork(self):
         """
         Continues the enumeration of network interfaces started using yFirstNetwork().
-        
+
         @return a pointer to a YNetwork object, corresponding to
                 a network interface currently online, or a None pointer
                 if there are no more network interfaces to enumerate.
@@ -775,7 +775,7 @@ class YNetwork(YFunction):
         Starts the enumeration of network interfaces currently accessible.
         Use the method YNetwork.nextNetwork() to iterate on
         next network interfaces.
-        
+
         @return a pointer to a YNetwork object, corresponding to
                 the first network interface currently online, or a None pointer
                 if there are none.

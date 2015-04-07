@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_relay.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_relay.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindRelay(), the high-level API for Relay functions
 #*
@@ -53,7 +53,7 @@ class YRelay(YFunction):
     On devices with two output for each relay (double throw), the two outputs are named A and B,
     with output A corresponding to the idle position (at power off) and the output B corresponding to the
     active state. If you prefer the alternate default state, simply switch your cables on the board.
-    
+
     """
 #--- (end of YRelay class start)
     #--- (YRelay return codes)
@@ -133,10 +133,10 @@ class YRelay(YFunction):
     def get_state(self):
         """
         Returns the state of the relays (A for the idle position, B for the active position).
-        
+
         @return either YRelay.STATE_A or YRelay.STATE_B, according to the state of the relays (A for the
         idle position, B for the active position)
-        
+
         On failure, throws an exception or returns YRelay.STATE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -147,12 +147,12 @@ class YRelay(YFunction):
     def set_state(self, newval):
         """
         Changes the state of the relays (A for the idle position, B for the active position).
-        
+
         @param newval : either YRelay.STATE_A or YRelay.STATE_B, according to the state of the relays (A
         for the idle position, B for the active position)
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
@@ -162,11 +162,11 @@ class YRelay(YFunction):
         """
         Returns the state of the relays at device startup (A for the idle position, B for the active
         position, UNCHANGED for no change).
-        
+
         @return a value among YRelay.STATEATPOWERON_UNCHANGED, YRelay.STATEATPOWERON_A and
         YRelay.STATEATPOWERON_B corresponding to the state of the relays at device startup (A for the idle
         position, B for the active position, UNCHANGED for no change)
-        
+
         On failure, throws an exception or returns YRelay.STATEATPOWERON_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -179,12 +179,12 @@ class YRelay(YFunction):
         Preset the state of the relays at device startup (A for the idle position,
         B for the active position, UNCHANGED for no modification). Remember to call the matching module saveToFlash()
         method, otherwise this call will have no effect.
-        
+
         @param newval : a value among YRelay.STATEATPOWERON_UNCHANGED, YRelay.STATEATPOWERON_A and
         YRelay.STATEATPOWERON_B
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -194,9 +194,9 @@ class YRelay(YFunction):
         """
         Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
         switching back in to B state. Zero means no maximum time.
-        
+
         @return an integer
-        
+
         On failure, throws an exception or returns YRelay.MAXTIMEONSTATEA_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -208,11 +208,11 @@ class YRelay(YFunction):
         """
         Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
         switching back in to B state. Use zero for no maximum time.
-        
+
         @param newval : an integer
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -222,9 +222,9 @@ class YRelay(YFunction):
         """
         Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
         switching back in to A state. Zero means no maximum time.
-        
+
         @return an integer
-        
+
         On failure, throws an exception or returns YRelay.MAXTIMEONSTATEB_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -236,11 +236,11 @@ class YRelay(YFunction):
         """
         Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
         switching back in to A state. Use zero for no maximum time.
-        
+
         @param newval : an integer
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -249,10 +249,10 @@ class YRelay(YFunction):
     def get_output(self):
         """
         Returns the output state of the relays, when used as a simple switch (single throw).
-        
+
         @return either YRelay.OUTPUT_OFF or YRelay.OUTPUT_ON, according to the output state of the relays,
         when used as a simple switch (single throw)
-        
+
         On failure, throws an exception or returns YRelay.OUTPUT_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -263,12 +263,12 @@ class YRelay(YFunction):
     def set_output(self, newval):
         """
         Changes the output state of the relays, when used as a simple switch (single throw).
-        
+
         @param newval : either YRelay.OUTPUT_OFF or YRelay.OUTPUT_ON, according to the output state of the
         relays, when used as a simple switch (single throw)
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
@@ -278,11 +278,11 @@ class YRelay(YFunction):
         """
         Returns the number of milliseconds remaining before the relays is returned to idle position
         (state A), during a measured pulse generation. When there is no ongoing pulse, returns zero.
-        
+
         @return an integer corresponding to the number of milliseconds remaining before the relays is
         returned to idle position
                 (state A), during a measured pulse generation
-        
+
         On failure, throws an exception or returns YRelay.PULSETIMER_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -298,11 +298,11 @@ class YRelay(YFunction):
         """
         Sets the relay to output B (active) for a specified duration, then brings it
         automatically back to output A (idle state).
-        
+
         @param ms_duration : pulse duration, in millisecondes
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(ms_duration)
@@ -321,12 +321,12 @@ class YRelay(YFunction):
     def delayedPulse(self, ms_delay, ms_duration):
         """
         Schedules a pulse.
-        
+
         @param ms_delay : waiting time before the pulse, in millisecondes
         @param ms_duration : pulse duration, in millisecondes
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(ms_delay) + ":" + str(ms_duration)
@@ -336,10 +336,10 @@ class YRelay(YFunction):
         """
         Returns the number of milliseconds remaining before a pulse (delayedPulse() call)
         When there is no scheduled pulse, returns zero.
-        
+
         @return an integer corresponding to the number of milliseconds remaining before a pulse (delayedPulse() call)
                 When there is no scheduled pulse, returns zero
-        
+
         On failure, throws an exception or returns YRelay.COUNTDOWN_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -359,7 +359,7 @@ class YRelay(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the relay is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YRelay.isOnline() to test if the relay is
@@ -367,9 +367,9 @@ class YRelay(YFunction):
         a relay by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the relay
-        
+
         @return a YRelay object allowing you to drive the relay.
         """
         # obj
@@ -382,7 +382,7 @@ class YRelay(YFunction):
     def nextRelay(self):
         """
         Continues the enumeration of relays started using yFirstRelay().
-        
+
         @return a pointer to a YRelay object, corresponding to
                 a relay currently online, or a None pointer
                 if there are no more relays to enumerate.
@@ -404,7 +404,7 @@ class YRelay(YFunction):
         Starts the enumeration of relays currently accessible.
         Use the method YRelay.nextRelay() to iterate on
         next relays.
-        
+
         @return a pointer to a YRelay object, corresponding to
                 the first relay currently online, or a None pointer
                 if there are none.

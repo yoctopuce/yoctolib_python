@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_power.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_power.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindPower(), the high-level API for Power functions
 #*
@@ -46,9 +46,11 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YPower(YSensor):
     """
-    The Yoctopuce application programming interface allows you to read an instant
-    measure of the sensor, as well as the minimal and maximal values observed.
-    
+    The Yoctopuce class YPower allows you to read and configure Yoctopuce power
+    sensors. It inherits from YSensor class the core functions to read measurements,
+    register callback functions, access to the autonomous datalogger.
+    This class adds the ability to access the energy counter and the power factor.
+
     """
 #--- (end of YPower class start)
     #--- (YPower return codes)
@@ -88,10 +90,10 @@ class YPower(YSensor):
         """
         Returns the power factor (the ratio between the real power consumed,
         measured in W, and the apparent power provided, measured in VA).
-        
+
         @return a floating point number corresponding to the power factor (the ratio between the real power consumed,
                 measured in W, and the apparent power provided, measured in VA)
-        
+
         On failure, throws an exception or returns YPower.COSPHI_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -107,10 +109,10 @@ class YPower(YSensor):
         """
         Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time.
         Note that this counter is reset at each start of the device.
-        
+
         @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
         integrating the power consumption over time
-        
+
         On failure, throws an exception or returns YPower.METER_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -121,9 +123,9 @@ class YPower(YSensor):
     def get_meterTimer(self):
         """
         Returns the elapsed time since last energy counter reset, in seconds.
-        
+
         @return an integer corresponding to the elapsed time since last energy counter reset, in seconds
-        
+
         On failure, throws an exception or returns YPower.METERTIMER_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -143,7 +145,7 @@ class YPower(YSensor):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the electrical power sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YPower.isOnline() to test if the electrical power sensor is
@@ -151,9 +153,9 @@ class YPower(YSensor):
         a electrical power sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the electrical power sensor
-        
+
         @return a YPower object allowing you to drive the electrical power sensor.
         """
         # obj
@@ -166,9 +168,9 @@ class YPower(YSensor):
     def reset(self):
         """
         Resets the energy counter.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_meter(0)
@@ -176,7 +178,7 @@ class YPower(YSensor):
     def nextPower(self):
         """
         Continues the enumeration of electrical power sensors started using yFirstPower().
-        
+
         @return a pointer to a YPower object, corresponding to
                 a electrical power sensor currently online, or a None pointer
                 if there are no more electrical power sensors to enumerate.
@@ -198,7 +200,7 @@ class YPower(YSensor):
         Starts the enumeration of electrical power sensors currently accessible.
         Use the method YPower.nextPower() to iterate on
         next electrical power sensors.
-        
+
         @return a pointer to a YPower object, corresponding to
                 the first electrical power sensor currently online, or a None pointer
                 if there are none.

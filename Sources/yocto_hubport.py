@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_hubport.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_hubport.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindHubPort(), the high-level API for HubPort functions
 #*
@@ -50,7 +50,7 @@ class YHubPort(YFunction):
     YoctoHub port and provide information about the device connected to it.
     The logical name of a YHubPort is always automatically set to the
     unique serial number of the Yoctopuce device connected to it.
-    
+
     """
 #--- (end of YHubPort class start)
     #--- (YHubPort return codes)
@@ -96,10 +96,10 @@ class YHubPort(YFunction):
     def get_enabled(self):
         """
         Returns true if the Yocto-hub port is powered, false otherwise.
-        
+
         @return either YHubPort.ENABLED_FALSE or YHubPort.ENABLED_TRUE, according to true if the Yocto-hub
         port is powered, false otherwise
-        
+
         On failure, throws an exception or returns YHubPort.ENABLED_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -111,12 +111,12 @@ class YHubPort(YFunction):
         """
         Changes the activation of the Yocto-hub port. If the port is enabled, the
         connected module is powered. Otherwise, port power is shut down.
-        
+
         @param newval : either YHubPort.ENABLED_FALSE or YHubPort.ENABLED_TRUE, according to the activation
         of the Yocto-hub port
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
@@ -125,10 +125,10 @@ class YHubPort(YFunction):
     def get_portState(self):
         """
         Returns the current state of the Yocto-hub port.
-        
+
         @return a value among YHubPort.PORTSTATE_OFF, YHubPort.PORTSTATE_OVRLD, YHubPort.PORTSTATE_ON,
         YHubPort.PORTSTATE_RUN and YHubPort.PORTSTATE_PROG corresponding to the current state of the Yocto-hub port
-        
+
         On failure, throws an exception or returns YHubPort.PORTSTATE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -141,9 +141,9 @@ class YHubPort(YFunction):
         Returns the current baud rate used by this Yocto-hub port, in kbps.
         The default value is 1000 kbps, but a slower rate may be used if communication
         problems are encountered.
-        
+
         @return an integer corresponding to the current baud rate used by this Yocto-hub port, in kbps
-        
+
         On failure, throws an exception or returns YHubPort.BAUDRATE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -163,7 +163,7 @@ class YHubPort(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the Yocto-hub port is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YHubPort.isOnline() to test if the Yocto-hub port is
@@ -171,9 +171,9 @@ class YHubPort(YFunction):
         a Yocto-hub port by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the Yocto-hub port
-        
+
         @return a YHubPort object allowing you to drive the Yocto-hub port.
         """
         # obj
@@ -186,7 +186,7 @@ class YHubPort(YFunction):
     def nextHubPort(self):
         """
         Continues the enumeration of Yocto-hub ports started using yFirstHubPort().
-        
+
         @return a pointer to a YHubPort object, corresponding to
                 a Yocto-hub port currently online, or a None pointer
                 if there are no more Yocto-hub ports to enumerate.
@@ -208,7 +208,7 @@ class YHubPort(YFunction):
         Starts the enumeration of Yocto-hub ports currently accessible.
         Use the method YHubPort.nextHubPort() to iterate on
         next Yocto-hub ports.
-        
+
         @return a pointer to a YHubPort object, corresponding to
                 the first Yocto-hub port currently online, or a None pointer
                 if there are none.

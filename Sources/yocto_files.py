@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 17674 2014-09-16 16:18:58Z seb $
+#* $Id: yocto_files.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -92,7 +92,7 @@ class YFiles(YFunction):
     on some devices, for instance to design a custom web UI
     (for networked devices) or to add fonts (on display
     devices).
-    
+
     """
 #--- (end of generated code: YFiles class start)
     #--- (generated code: YFiles definitions)
@@ -122,9 +122,9 @@ class YFiles(YFunction):
     def get_filesCount(self):
         """
         Returns the number of files currently loaded in the filesystem.
-        
+
         @return an integer corresponding to the number of files currently loaded in the filesystem
-        
+
         On failure, throws an exception or returns YFiles.FILESCOUNT_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -135,9 +135,9 @@ class YFiles(YFunction):
     def get_freeSpace(self):
         """
         Returns the free space for uploading new files to the filesystem, in bytes.
-        
+
         @return an integer corresponding to the free space for uploading new files to the filesystem, in bytes
-        
+
         On failure, throws an exception or returns YFiles.FREESPACE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -157,7 +157,7 @@ class YFiles(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the filesystem is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YFiles.isOnline() to test if the filesystem is
@@ -165,9 +165,9 @@ class YFiles(YFunction):
         a filesystem by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the filesystem
-        
+
         @return a YFiles object allowing you to drive the filesystem.
         """
         # obj
@@ -187,9 +187,9 @@ class YFiles(YFunction):
         """
         Reinitialize the filesystem to its clean, unfragmented, empty state.
         All files previously uploaded are permanently lost.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         # json
@@ -204,14 +204,14 @@ class YFiles(YFunction):
         """
         Returns a list of YFileRecord objects that describe files currently loaded
         in the filesystem.
-        
+
         @param pattern : an optional filter pattern, using star and question marks
                 as wildcards. When an empty pattern is provided, all file records
                 are returned.
-        
+
         @return a list of YFileRecord objects, containing the file path
                 and name, byte size and 32-bit CRC of the file content.
-        
+
         On failure, throws an exception or returns an empty list.
         """
         # json
@@ -227,11 +227,11 @@ class YFiles(YFunction):
     def download(self, pathname):
         """
         Downloads the requested file and returns a binary buffer with its content.
-        
+
         @param pathname : path and name of the file to download
-        
+
         @return a binary buffer with the file content
-        
+
         On failure, throws an exception or returns an empty content.
         """
         return self._download(pathname)
@@ -240,12 +240,12 @@ class YFiles(YFunction):
         """
         Uploads a file to the filesystem, to the specified full path name.
         If a file already exists with the same path name, its content is overwritten.
-        
+
         @param pathname : path and name of the new file to create
         @param content : binary buffer with the content to set
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self._upload(pathname, content)
@@ -258,11 +258,11 @@ class YFiles(YFunction):
         with the same path name will always reuse any space not freed previously.
         If you need to ensure that no space is taken by previously deleted files,
         you can use format_fs to fully reinitialize the filesystem.
-        
+
         @param pathname : path and name of the file to remove.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         # json
@@ -276,7 +276,7 @@ class YFiles(YFunction):
     def nextFiles(self):
         """
         Continues the enumeration of filesystems started using yFirstFiles().
-        
+
         @return a pointer to a YFiles object, corresponding to
                 a filesystem currently online, or a None pointer
                 if there are no more filesystems to enumerate.
@@ -298,7 +298,7 @@ class YFiles(YFunction):
         Starts the enumeration of filesystems currently accessible.
         Use the method YFiles.nextFiles() to iterate on
         next filesystems.
-        
+
         @return a pointer to a YFiles object, corresponding to
                 the first filesystem currently online, or a None pointer
                 if there are none.

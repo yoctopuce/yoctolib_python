@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_oscontrol.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_oscontrol.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindOsControl(), the high-level API for OsControl functions
 #*
@@ -49,7 +49,7 @@ class YOsControl(YFunction):
     The OScontrol object allows some control over the operating system running a VirtualHub.
     OsControl is available on the VirtualHub software only. This feature must be activated at the VirtualHub
     start up with -o option.
-    
+
     """
 #--- (end of YOsControl class start)
     #--- (YOsControl return codes)
@@ -79,10 +79,10 @@ class YOsControl(YFunction):
         """
         Returns the remaining number of seconds before the OS shutdown, or zero when no
         shutdown has been scheduled.
-        
+
         @return an integer corresponding to the remaining number of seconds before the OS shutdown, or zero when no
                 shutdown has been scheduled
-        
+
         On failure, throws an exception or returns YOsControl.SHUTDOWNCOUNTDOWN_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -106,7 +106,7 @@ class YOsControl(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the OS control is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YOsControl.isOnline() to test if the OS control is
@@ -114,9 +114,9 @@ class YOsControl(YFunction):
         OS control by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the OS control
-        
+
         @return a YOsControl object allowing you to drive the OS control.
         """
         # obj
@@ -129,11 +129,11 @@ class YOsControl(YFunction):
     def shutdown(self, secBeforeShutDown):
         """
         Schedules an OS shutdown after a given number of seconds.
-        
+
         @param secBeforeShutDown : number of seconds before shutdown
-        
+
         @return YAPI.SUCCESS when the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_shutdownCountdown(secBeforeShutDown)
@@ -141,7 +141,7 @@ class YOsControl(YFunction):
     def nextOsControl(self):
         """
         Continues the enumeration of OS control started using yFirstOsControl().
-        
+
         @return a pointer to a YOsControl object, corresponding to
                 OS control currently online, or a None pointer
                 if there are no more OS control to enumerate.
@@ -163,7 +163,7 @@ class YOsControl(YFunction):
         Starts the enumeration of OS control currently accessible.
         Use the method YOsControl.nextOsControl() to iterate on
         next OS control.
-        
+
         @return a pointer to a YOsControl object, corresponding to
                 the first OS control currently online, or a None pointer
                 if there are none.

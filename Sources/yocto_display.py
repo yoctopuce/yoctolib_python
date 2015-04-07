@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 17498 2014-09-03 19:21:24Z mvuilleu $
+#* $Id: yocto_display.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -49,7 +49,7 @@ class YDisplayLayer(object):
     (bitmaps, text, etc.). The content is displayed only when
     the layer is active on the screen (and not masked by other
     overlapping layers).
-    
+
     """
 #--- (end of generated code: YDisplayLayer class start)
 
@@ -99,9 +99,9 @@ class YDisplayLayer(object):
         Reinitializes the drawing pointer to the upper left position,
         and selects the most visible pen color. If you only want to erase the layer
         content, use the method clear() instead.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self._hidden = False
@@ -113,9 +113,9 @@ class YDisplayLayer(object):
         This method does not change any other attribute of the layer.
         To reinitialize the layer attributes to defaults settings, use the method
         reset() instead.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("x")
@@ -126,11 +126,11 @@ class YDisplayLayer(object):
         including text drawing. The pen color is provided as an RGB value.
         For grayscale or monochrome displays, the value is
         automatically converted to the proper range.
-        
+
         @param color : the desired pen color, as a 24-bit RGB value
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_push("c" + ("%06X" % color))
@@ -143,11 +143,11 @@ class YDisplayLayer(object):
         For monochrome displays (without gray levels), any value
         lower than 128 is rendered as black, and any value equal
         or above to 128 is non-black.
-        
+
         @param graylevel : the desired gray level, from 0 to 255
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_push("g" + str(int(graylevel)))
@@ -158,9 +158,9 @@ class YDisplayLayer(object):
         except for bitmap copy functions. Any point drawn using the eraser
         becomes transparent (as when the layer is empty), showing the other
         layers beneath it.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_push("e")
@@ -174,12 +174,12 @@ class YDisplayLayer(object):
         Anti-aliasing is enabled by default on grayscale and color displays,
         but you can disable it if you prefer. This setting has no effect
         on monochrome displays.
-        
+
         @param mode : <t>true</t> to enable antialiasing, <t>false</t> to
                 disable it.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_push("a" + ("1" if mode else "0"))
@@ -187,12 +187,12 @@ class YDisplayLayer(object):
     def drawPixel(self, x, y):
         """
         Draws a single pixel at the specified position.
-        
+
         @param x : the distance from left of layer, in pixels
         @param y : the distance from top of layer, in pixels
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("P" + str(int(x)) + "," + str(int(y)))
@@ -200,14 +200,14 @@ class YDisplayLayer(object):
     def drawRect(self, x1, y1, x2, y2):
         """
         Draws an empty rectangle at a specified position.
-        
+
         @param x1 : the distance from left of layer to the left border of the rectangle, in pixels
         @param y1 : the distance from top of layer to the top border of the rectangle, in pixels
         @param x2 : the distance from left of layer to the right border of the rectangle, in pixels
         @param y2 : the distance from top of layer to the bottom border of the rectangle, in pixels
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("R" + str(int(x1)) + "," + str(int(y1)) + "," + str(int(x2)) + "," + str(int(y2)))
@@ -215,14 +215,14 @@ class YDisplayLayer(object):
     def drawBar(self, x1, y1, x2, y2):
         """
         Draws a filled rectangular bar at a specified position.
-        
+
         @param x1 : the distance from left of layer to the left border of the rectangle, in pixels
         @param y1 : the distance from top of layer to the top border of the rectangle, in pixels
         @param x2 : the distance from left of layer to the right border of the rectangle, in pixels
         @param y2 : the distance from top of layer to the bottom border of the rectangle, in pixels
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("B" + str(int(x1)) + "," + str(int(y1)) + "," + str(int(x2)) + "," + str(int(y2)))
@@ -230,13 +230,13 @@ class YDisplayLayer(object):
     def drawCircle(self, x, y, r):
         """
         Draws an empty circle at a specified position.
-        
+
         @param x : the distance from left of layer to the center of the circle, in pixels
         @param y : the distance from top of layer to the center of the circle, in pixels
         @param r : the radius of the circle, in pixels
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("C" + str(int(x)) + "," + str(int(y)) + "," + str(int(r)))
@@ -244,13 +244,13 @@ class YDisplayLayer(object):
     def drawDisc(self, x, y, r):
         """
         Draws a filled disc at a given position.
-        
+
         @param x : the distance from left of layer to the center of the disc, in pixels
         @param y : the distance from top of layer to the center of the disc, in pixels
         @param r : the radius of the disc, in pixels
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("D" + str(int(x)) + "," + str(int(y)) + "," + str(int(r)))
@@ -262,11 +262,11 @@ class YDisplayLayer(object):
         uploaded to the device built-in memory. If you experience problems selecting a font
         file, check the device logs for any error message such as missing font file or bad font
         file format.
-        
+
         @param fontname : the font file name
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_push("&" + fontname + "" + str(chr(27)))
@@ -276,7 +276,7 @@ class YDisplayLayer(object):
         Draws a text string at the specified position. The point of the text that is aligned
         to the specified pixel position is called the anchor point, and can be chosen among
         several options. Text is rendered from left to right, without implicit wrapping.
-        
+
         @param x : the distance from left of layer to the text anchor point, in pixels
         @param y : the distance from top of layer to the text anchor point, in pixels
         @param anchor : the text anchor point, chosen among the YDisplayLayer.ALIGN enumeration:
@@ -289,9 +289,9 @@ class YDisplayLayer(object):
                 YDisplayLayer.ALIGN_TOP_RIGHT,   YDisplayLayer.ALIGN_CENTER_RIGHT,  
                 YDisplayLayer.ALIGN_BASELINE_RIGHT,   YDisplayLayer.ALIGN_BOTTOM_RIGHT.
         @param text : the text string to draw
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("T" + str(int(x)) + "," + str(int(y)) + "," + str(anchor) + "," + text + "" + str(chr(27)))
@@ -302,13 +302,13 @@ class YDisplayLayer(object):
         uploaded to the device built-in memory. If you experience problems using an image
         file, check the device logs for any error message such as missing image file or bad
         image file format.
-        
+
         @param x : the distance from left of layer to the left of the image, in pixels
         @param y : the distance from top of layer to the top of the image, in pixels
         @param imagename : the GIF file name
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("*" + str(int(x)) + "," + str(int(y)) + "," + imagename + "" + str(chr(27)))
@@ -322,16 +322,16 @@ class YDisplayLayer(object):
         layer selected pen color. Bits set to 0 are drawn using the specified background
         gray level, unless -1 is specified, in which case they are not drawn at all
         (as if transparent).
-        
+
         @param x : the distance from left of layer to the left of the bitmap, in pixels
         @param y : the distance from top of layer to the top of the bitmap, in pixels
         @param w : the width of the bitmap, in pixels
         @param bitmap : a binary object
         @param bgcol : the background gray level to use for zero bits (0 = black,
                 255 = white), or -1 to leave the pixels unchanged
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         # destname
@@ -341,12 +341,12 @@ class YDisplayLayer(object):
     def moveTo(self, x, y):
         """
         Moves the drawing pointer of this layer to the specified position.
-        
+
         @param x : the distance from left of layer, in pixels
         @param y : the distance from top of layer, in pixels
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_push("@" + str(int(x)) + "," + str(int(y)))
@@ -356,12 +356,12 @@ class YDisplayLayer(object):
         Draws a line from current drawing pointer position to the specified position.
         The specified destination pixel is included in the line. The pointer position
         is then moved to the end point of the line.
-        
+
         @param x : the distance from left of layer to the end point of the line, in pixels
         @param y : the distance from top of layer to the end point of the line, in pixels
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("-" + str(int(x)) + "," + str(int(y)))
@@ -373,11 +373,11 @@ class YDisplayLayer(object):
         of the next line when a newline character is met, or when the right margin
         is hit. When the new text to display extends below the lower margin, the
         console area is automatically scrolled up.
-        
+
         @param text : the message to display
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("!" + text + "" + str(chr(27)))
@@ -385,14 +385,14 @@ class YDisplayLayer(object):
     def setConsoleMargins(self, x1, y1, x2, y2):
         """
         Sets up display margins for the consoleOut function.
-        
+
         @param x1 : the distance from left of layer to the left margin, in pixels
         @param y1 : the distance from top of layer to the top margin, in pixels
         @param x2 : the distance from left of layer to the right margin, in pixels
         @param y2 : the distance from top of layer to the bottom margin, in pixels
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_push("m" + str(int(x1)) + "," + str(int(y1)) + "," + str(int(x2)) + "," + str(int(y2)))
@@ -401,12 +401,12 @@ class YDisplayLayer(object):
         """
         Sets up the background color used by the clearConsole function and by
         the console scrolling feature.
-        
+
         @param bgcol : the background gray level to use when scrolling (0 = black,
                 255 = white), or -1 for transparent
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_push("b" + str(int(bgcol)))
@@ -414,12 +414,12 @@ class YDisplayLayer(object):
     def setConsoleWordWrap(self, wordwrap):
         """
         Sets up the wrapping behaviour used by the consoleOut function.
-        
+
         @param wordwrap : true to wrap only between words,
                 false to wrap on the last column anyway.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_push("w" + ("1" if wordwrap else "0"))
@@ -428,9 +428,9 @@ class YDisplayLayer(object):
         """
         Blanks the console area within console margins, and resets the console pointer
         to the upper left corner of the console.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("^")
@@ -440,14 +440,14 @@ class YDisplayLayer(object):
         Sets the position of the layer relative to the display upper left corner.
         When smooth scrolling is used, the display offset of the layer is
         automatically updated during the next milliseconds to animate the move of the layer.
-        
+
         @param x : the distance from left of display to the upper left corner of the layer
         @param y : the distance from top of display to the upper left corner of the layer
         @param scrollTime : number of milliseconds to use for smooth scrolling, or
                 0 if the scrolling should be immediate.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("#" + str(int(x)) + "," + str(int(y)) + "," + str(int(scrollTime)))
@@ -458,9 +458,9 @@ class YDisplayLayer(object):
         on the screen until the next call to unhide(). Hiding the layer can positively
         affect the drawing speed, since it postpones the rendering until all operations are
         completed (double-buffering).
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self.command_push("h")
@@ -470,9 +470,9 @@ class YDisplayLayer(object):
     def unhide(self):
         """
         Shows the layer. Shows the layer again after a hide command.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self._hidden = False
@@ -481,7 +481,7 @@ class YDisplayLayer(object):
     def get_display(self):
         """
         Gets parent YDisplay. Returns the parent YDisplay object of the current YDisplayLayer.
-        
+
         @return an YDisplay object
         """
         return self._display
@@ -489,9 +489,9 @@ class YDisplayLayer(object):
     def get_displayWidth(self):
         """
         Returns the display width, in pixels.
-        
+
         @return an integer corresponding to the display width, in pixels
-        
+
         On failure, throws an exception or returns YDisplayLayer.DISPLAYWIDTH_INVALID.
         """
         return self._display.get_displayWidth()
@@ -499,9 +499,9 @@ class YDisplayLayer(object):
     def get_displayHeight(self):
         """
         Returns the display height, in pixels.
-        
+
         @return an integer corresponding to the display height, in pixels
-        
+
         On failure, throws an exception or returns YDisplayLayer.DISPLAYHEIGHT_INVALID.
         """
         return self._display.get_displayHeight()
@@ -509,9 +509,9 @@ class YDisplayLayer(object):
     def get_layerWidth(self):
         """
         Returns the width of the layers to draw on, in pixels.
-        
+
         @return an integer corresponding to the width of the layers to draw on, in pixels
-        
+
         On failure, throws an exception or returns YDisplayLayer.LAYERWIDTH_INVALID.
         """
         return self._display.get_layerWidth()
@@ -519,9 +519,9 @@ class YDisplayLayer(object):
     def get_layerHeight(self):
         """
         Returns the height of the layers to draw on, in pixels.
-        
+
         @return an integer corresponding to the height of the layers to draw on, in pixels
-        
+
         On failure, throws an exception or returns YDisplayLayer.LAYERHEIGHT_INVALID.
         """
         return self._display.get_layerHeight()
@@ -546,7 +546,7 @@ class YDisplay(YFunction):
     multi-layer rendering. Layers can be drawn offline, individually,
     and freely moved on the display. It can also replay recorded
     sequences (animations).
-    
+
     """
 #--- (end of generated code: YDisplay class start)
     #--- (generated code: YDisplay definitions)
@@ -633,10 +633,10 @@ class YDisplay(YFunction):
     def get_enabled(self):
         """
         Returns true if the screen is powered, false otherwise.
-        
+
         @return either YDisplay.ENABLED_FALSE or YDisplay.ENABLED_TRUE, according to true if the screen is
         powered, false otherwise
-        
+
         On failure, throws an exception or returns YDisplay.ENABLED_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -647,12 +647,12 @@ class YDisplay(YFunction):
     def set_enabled(self, newval):
         """
         Changes the power state of the display.
-        
+
         @param newval : either YDisplay.ENABLED_FALSE or YDisplay.ENABLED_TRUE, according to the power
         state of the display
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
@@ -661,9 +661,9 @@ class YDisplay(YFunction):
     def get_startupSeq(self):
         """
         Returns the name of the sequence to play when the displayed is powered on.
-        
+
         @return a string corresponding to the name of the sequence to play when the displayed is powered on
-        
+
         On failure, throws an exception or returns YDisplay.STARTUPSEQ_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -676,11 +676,11 @@ class YDisplay(YFunction):
         Changes the name of the sequence to play when the displayed is powered on.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
-        
+
         @param newval : a string corresponding to the name of the sequence to play when the displayed is powered on
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
@@ -689,9 +689,9 @@ class YDisplay(YFunction):
     def get_brightness(self):
         """
         Returns the luminosity of the  module informative leds (from 0 to 100).
-        
+
         @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
-        
+
         On failure, throws an exception or returns YDisplay.BRIGHTNESS_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -704,11 +704,11 @@ class YDisplay(YFunction):
         Changes the brightness of the display. The parameter is a value between 0 and
         100. Remember to call the saveToFlash() method of the module if the
         modification must be kept.
-        
+
         @param newval : an integer corresponding to the brightness of the display
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -717,11 +717,11 @@ class YDisplay(YFunction):
     def get_orientation(self):
         """
         Returns the currently selected display orientation.
-        
+
         @return a value among YDisplay.ORIENTATION_LEFT, YDisplay.ORIENTATION_UP,
         YDisplay.ORIENTATION_RIGHT and YDisplay.ORIENTATION_DOWN corresponding to the currently selected
         display orientation
-        
+
         On failure, throws an exception or returns YDisplay.ORIENTATION_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -733,12 +733,12 @@ class YDisplay(YFunction):
         """
         Changes the display orientation. Remember to call the saveToFlash()
         method of the module if the modification must be kept.
-        
+
         @param newval : a value among YDisplay.ORIENTATION_LEFT, YDisplay.ORIENTATION_UP,
         YDisplay.ORIENTATION_RIGHT and YDisplay.ORIENTATION_DOWN corresponding to the display orientation
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -747,9 +747,9 @@ class YDisplay(YFunction):
     def get_displayWidth(self):
         """
         Returns the display width, in pixels.
-        
+
         @return an integer corresponding to the display width, in pixels
-        
+
         On failure, throws an exception or returns YDisplay.DISPLAYWIDTH_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -760,9 +760,9 @@ class YDisplay(YFunction):
     def get_displayHeight(self):
         """
         Returns the display height, in pixels.
-        
+
         @return an integer corresponding to the display height, in pixels
-        
+
         On failure, throws an exception or returns YDisplay.DISPLAYHEIGHT_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -773,10 +773,10 @@ class YDisplay(YFunction):
     def get_displayType(self):
         """
         Returns the display type: monochrome, gray levels or full color.
-        
+
         @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY and
         YDisplay.DISPLAYTYPE_RGB corresponding to the display type: monochrome, gray levels or full color
-        
+
         On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
         """
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
@@ -787,9 +787,9 @@ class YDisplay(YFunction):
     def get_layerWidth(self):
         """
         Returns the width of the layers to draw on, in pixels.
-        
+
         @return an integer corresponding to the width of the layers to draw on, in pixels
-        
+
         On failure, throws an exception or returns YDisplay.LAYERWIDTH_INVALID.
         """
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
@@ -800,9 +800,9 @@ class YDisplay(YFunction):
     def get_layerHeight(self):
         """
         Returns the height of the layers to draw on, in pixels.
-        
+
         @return an integer corresponding to the height of the layers to draw on, in pixels
-        
+
         On failure, throws an exception or returns YDisplay.LAYERHEIGHT_INVALID.
         """
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
@@ -813,9 +813,9 @@ class YDisplay(YFunction):
     def get_layerCount(self):
         """
         Returns the number of available layers to draw on.
-        
+
         @return an integer corresponding to the number of available layers to draw on
-        
+
         On failure, throws an exception or returns YDisplay.LAYERCOUNT_INVALID.
         """
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
@@ -845,7 +845,7 @@ class YDisplay(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the display is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YDisplay.isOnline() to test if the display is
@@ -853,9 +853,9 @@ class YDisplay(YFunction):
         a display by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the display
-        
+
         @return a YDisplay object allowing you to drive the display.
         """
         # obj
@@ -870,9 +870,9 @@ class YDisplay(YFunction):
         Clears the display screen and resets all display layers to their default state.
         Using this function in a sequence will kill the sequence play-back. Don't use that
         function to reset the display at sequence start-up.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self.flushLayers()
@@ -883,12 +883,12 @@ class YDisplay(YFunction):
         """
         Smoothly changes the brightness of the screen to produce a fade-in or fade-out
         effect.
-        
+
         @param brightness : the new screen brightness
         @param duration : duration of the brightness transition, in milliseconds.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self.flushLayers()
@@ -899,9 +899,9 @@ class YDisplay(YFunction):
         Starts to record all display commands into a sequence, for later replay.
         The name used to store the sequence is specified when calling
         saveSequence(), once the recording is complete.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self.flushLayers()
@@ -914,11 +914,11 @@ class YDisplay(YFunction):
         Stops recording display commands and saves the sequence into the specified
         file on the display internal memory. The sequence can be later replayed
         using playSequence().
-        
+
         @param sequenceName : the name of the newly created sequence
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self.flushLayers()
@@ -932,11 +932,11 @@ class YDisplay(YFunction):
         """
         Replays a display sequence previously recorded using
         newSequence() and saveSequence().
-        
+
         @param sequenceName : the name of the newly created sequence
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self.flushLayers()
@@ -950,11 +950,11 @@ class YDisplay(YFunction):
         (without any immediate effect). It can also be used dynamically while
         playing a pre-recorded sequence, to suspend or resume the execution of
         the sequence. To cancel a delay, call the same method with a zero delay.
-        
+
         @param delay_ms : the duration to wait, in milliseconds
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self.flushLayers()
@@ -964,9 +964,9 @@ class YDisplay(YFunction):
         """
         Stops immediately any ongoing sequence replay.
         The display is left as is.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self.flushLayers()
@@ -977,12 +977,12 @@ class YDisplay(YFunction):
         Uploads an arbitrary file (for instance a GIF file) to the display, to the
         specified full path name. If a file already exists with the same path name,
         its content is overwritten.
-        
+
         @param pathname : path and name of the new file to create
         @param content : binary buffer with the content to set
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self._upload(pathname, content)
@@ -994,12 +994,12 @@ class YDisplay(YFunction):
         This method only affects the displayed content, but does not change any
         property of the layer object.
         Note that layer 0 has no transparency support (it is always completely opaque).
-        
+
         @param srcLayerId : the identifier of the source layer (a number in range 0..layerCount-1)
         @param dstLayerId : the identifier of the destination layer (a number in range 0..layerCount-1)
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self.flushLayers()
@@ -1013,12 +1013,12 @@ class YDisplay(YFunction):
         layer stays unchanged. When used between onae hidden layer and a visible layer,
         this method makes it possible to easily implement double-buffering.
         Note that layer 0 has no transparency support (it is always completely opaque).
-        
+
         @param layerIdA : the first layer (a number in range 0..layerCount-1)
         @param layerIdB : the second layer (a number in range 0..layerCount-1)
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         self.flushLayers()
@@ -1027,7 +1027,7 @@ class YDisplay(YFunction):
     def nextDisplay(self):
         """
         Continues the enumeration of displays started using yFirstDisplay().
-        
+
         @return a pointer to a YDisplay object, corresponding to
                 a display currently online, or a None pointer
                 if there are no more displays to enumerate.
@@ -1046,11 +1046,11 @@ class YDisplay(YFunction):
         Returns a YDisplayLayer object that can be used to draw on the specified
         layer. The content is displayed only when the layer is active on the
         screen (and not masked by other overlapping layers).
-        
+
         @param layerId : the identifier of the layer (a number in range 0..layerCount-1)
-        
+
         @return an YDisplayLayer object
-        
+
         On failure, throws an exception or returns None.
         """
         layercount = self.get_layerCount()
@@ -1089,7 +1089,7 @@ class YDisplay(YFunction):
         Starts the enumeration of displays currently accessible.
         Use the method YDisplay.nextDisplay() to iterate on
         next displays.
-        
+
         @return a pointer to a YDisplay object, corresponding to
                 the first display currently online, or a None pointer
                 if there are none.

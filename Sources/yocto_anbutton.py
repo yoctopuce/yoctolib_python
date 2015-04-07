@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_anbutton.py 18361 2014-11-13 08:06:41Z mvuilleu $
+#* $Id: yocto_anbutton.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindAnButton(), the high-level API for AnButton functions
 #*
@@ -52,7 +52,7 @@ class YAnButton(YFunction):
     or a joystick. The module is capable to calibrate itself on min and max values,
     in order to compute a calibrated value that varies proportionally with the
     potentiometer position, regardless of its total resistance.
-    
+
     """
 #--- (end of YAnButton class start)
     #--- (YAnButton return codes)
@@ -135,9 +135,9 @@ class YAnButton(YFunction):
     def get_calibratedValue(self):
         """
         Returns the current calibrated input value (between 0 and 1000, included).
-        
+
         @return an integer corresponding to the current calibrated input value (between 0 and 1000, included)
-        
+
         On failure, throws an exception or returns YAnButton.CALIBRATEDVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -148,9 +148,9 @@ class YAnButton(YFunction):
     def get_rawValue(self):
         """
         Returns the current measured input value as-is (between 0 and 4095, included).
-        
+
         @return an integer corresponding to the current measured input value as-is (between 0 and 4095, included)
-        
+
         On failure, throws an exception or returns YAnButton.RAWVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -161,9 +161,9 @@ class YAnButton(YFunction):
     def get_analogCalibration(self):
         """
         Tells if a calibration process is currently ongoing.
-        
+
         @return either YAnButton.ANALOGCALIBRATION_OFF or YAnButton.ANALOGCALIBRATION_ON
-        
+
         On failure, throws an exception or returns YAnButton.ANALOGCALIBRATION_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -175,11 +175,11 @@ class YAnButton(YFunction):
         """
         Starts or stops the calibration process. Remember to call the saveToFlash()
         method of the module at the end of the calibration if the modification must be kept.
-        
+
         @param newval : either YAnButton.ANALOGCALIBRATION_OFF or YAnButton.ANALOGCALIBRATION_ON
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
@@ -188,10 +188,10 @@ class YAnButton(YFunction):
     def get_calibrationMax(self):
         """
         Returns the maximal value measured during the calibration (between 0 and 4095, included).
-        
+
         @return an integer corresponding to the maximal value measured during the calibration (between 0
         and 4095, included)
-        
+
         On failure, throws an exception or returns YAnButton.CALIBRATIONMAX_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -204,13 +204,13 @@ class YAnButton(YFunction):
         Changes the maximal calibration value for the input (between 0 and 4095, included), without actually
         starting the automated calibration.  Remember to call the saveToFlash()
         method of the module if the modification must be kept.
-        
+
         @param newval : an integer corresponding to the maximal calibration value for the input (between 0
         and 4095, included), without actually
                 starting the automated calibration
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -219,10 +219,10 @@ class YAnButton(YFunction):
     def get_calibrationMin(self):
         """
         Returns the minimal value measured during the calibration (between 0 and 4095, included).
-        
+
         @return an integer corresponding to the minimal value measured during the calibration (between 0
         and 4095, included)
-        
+
         On failure, throws an exception or returns YAnButton.CALIBRATIONMIN_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -235,13 +235,13 @@ class YAnButton(YFunction):
         Changes the minimal calibration value for the input (between 0 and 4095, included), without actually
         starting the automated calibration.  Remember to call the saveToFlash()
         method of the module if the modification must be kept.
-        
+
         @param newval : an integer corresponding to the minimal calibration value for the input (between 0
         and 4095, included), without actually
                 starting the automated calibration
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -250,10 +250,10 @@ class YAnButton(YFunction):
     def get_sensitivity(self):
         """
         Returns the sensibility for the input (between 1 and 1000) for triggering user callbacks.
-        
+
         @return an integer corresponding to the sensibility for the input (between 1 and 1000) for
         triggering user callbacks
-        
+
         On failure, throws an exception or returns YAnButton.SENSITIVITY_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -269,12 +269,12 @@ class YAnButton(YFunction):
         Special case: when the value 1000 is used, the callback will only be thrown when the logical state
         of the input switches from pressed to released and back.
         Remember to call the saveToFlash() method of the module if the modification must be kept.
-        
+
         @param newval : an integer corresponding to the sensibility for the input (between 1 and 1000) for
         triggering user callbacks
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -283,10 +283,10 @@ class YAnButton(YFunction):
     def get_isPressed(self):
         """
         Returns true if the input (considered as binary) is active (closed contact), and false otherwise.
-        
+
         @return either YAnButton.ISPRESSED_FALSE or YAnButton.ISPRESSED_TRUE, according to true if the
         input (considered as binary) is active (closed contact), and false otherwise
-        
+
         On failure, throws an exception or returns YAnButton.ISPRESSED_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -298,11 +298,11 @@ class YAnButton(YFunction):
         """
         Returns the number of elapsed milliseconds between the module power on and the last time
         the input button was pressed (the input contact transitioned from open to closed).
-        
+
         @return an integer corresponding to the number of elapsed milliseconds between the module power on
         and the last time
                 the input button was pressed (the input contact transitioned from open to closed)
-        
+
         On failure, throws an exception or returns YAnButton.LASTTIMEPRESSED_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -314,11 +314,11 @@ class YAnButton(YFunction):
         """
         Returns the number of elapsed milliseconds between the module power on and the last time
         the input button was released (the input contact transitioned from closed to open).
-        
+
         @return an integer corresponding to the number of elapsed milliseconds between the module power on
         and the last time
                 the input button was released (the input contact transitioned from closed to open)
-        
+
         On failure, throws an exception or returns YAnButton.LASTTIMERELEASED_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -329,9 +329,9 @@ class YAnButton(YFunction):
     def get_pulseCounter(self):
         """
         Returns the pulse counter value
-        
+
         @return an integer corresponding to the pulse counter value
-        
+
         On failure, throws an exception or returns YAnButton.PULSECOUNTER_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -346,9 +346,9 @@ class YAnButton(YFunction):
     def get_pulseTimer(self):
         """
         Returns the timer of the pulses counter (ms)
-        
+
         @return an integer corresponding to the timer of the pulses counter (ms)
-        
+
         On failure, throws an exception or returns YAnButton.PULSETIMER_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -368,7 +368,7 @@ class YAnButton(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the analog input is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YAnButton.isOnline() to test if the analog input is
@@ -376,9 +376,9 @@ class YAnButton(YFunction):
         an analog input by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the analog input
-        
+
         @return a YAnButton object allowing you to drive the analog input.
         """
         # obj
@@ -391,9 +391,9 @@ class YAnButton(YFunction):
     def resetCounter(self):
         """
         Returns the pulse counter value as well as its timer.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_pulseCounter(0)
@@ -401,7 +401,7 @@ class YAnButton(YFunction):
     def nextAnButton(self):
         """
         Continues the enumeration of analog inputs started using yFirstAnButton().
-        
+
         @return a pointer to a YAnButton object, corresponding to
                 an analog input currently online, or a None pointer
                 if there are no more analog inputs to enumerate.
@@ -423,7 +423,7 @@ class YAnButton(YFunction):
         Starts the enumeration of analog inputs currently accessible.
         Use the method YAnButton.nextAnButton() to iterate on
         next analog inputs.
-        
+
         @return a pointer to a YAnButton object, corresponding to
                 the first analog input currently online, or a None pointer
                 if there are none.

@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_servo.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_servo.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindServo(), the high-level API for Servo functions
 #*
@@ -50,7 +50,7 @@ class YServo(YFunction):
     a servo to a given position, but also to specify the time interval
     in which the move should be performed. This makes it possible to
     synchronize two servos involved in a same move.
-    
+
     """
 #--- (end of YServo class start)
     #--- (YServo return codes)
@@ -122,9 +122,9 @@ class YServo(YFunction):
     def get_position(self):
         """
         Returns the current servo position.
-        
+
         @return an integer corresponding to the current servo position
-        
+
         On failure, throws an exception or returns YServo.POSITION_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -135,11 +135,11 @@ class YServo(YFunction):
     def set_position(self, newval):
         """
         Changes immediately the servo driving position.
-        
+
         @param newval : an integer corresponding to immediately the servo driving position
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -148,9 +148,9 @@ class YServo(YFunction):
     def get_enabled(self):
         """
         Returns the state of the servos.
-        
+
         @return either YServo.ENABLED_FALSE or YServo.ENABLED_TRUE, according to the state of the servos
-        
+
         On failure, throws an exception or returns YServo.ENABLED_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -161,11 +161,11 @@ class YServo(YFunction):
     def set_enabled(self, newval):
         """
         Stops or starts the servo.
-        
+
         @param newval : either YServo.ENABLED_FALSE or YServo.ENABLED_TRUE
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
@@ -174,9 +174,9 @@ class YServo(YFunction):
     def get_range(self):
         """
         Returns the current range of use of the servo.
-        
+
         @return an integer corresponding to the current range of use of the servo
-        
+
         On failure, throws an exception or returns YServo.RANGE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -192,11 +192,11 @@ class YServo(YFunction):
         from 0.5 [ms] to 2.5 [ms], you can select a range of 200%.
         Be aware that using a range higher than what is supported by the servo
         is likely to damage the servo.
-        
+
         @param newval : an integer corresponding to the range of use of the servo, specified in per cents
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -205,9 +205,9 @@ class YServo(YFunction):
     def get_neutral(self):
         """
         Returns the duration in microseconds of a neutral pulse for the servo.
-        
+
         @return an integer corresponding to the duration in microseconds of a neutral pulse for the servo
-        
+
         On failure, throws an exception or returns YServo.NEUTRAL_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -222,12 +222,12 @@ class YServo(YFunction):
         This setting makes it possible to shift the range of use of the servo.
         Be aware that using a range higher than what is supported by the servo is
         likely to damage the servo.
-        
+
         @param newval : an integer corresponding to the duration of the pulse corresponding to the neutral
         position of the servo
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -246,12 +246,12 @@ class YServo(YFunction):
     def move(self, target, ms_duration):
         """
         Performs a smooth move at constant speed toward a given position.
-        
+
         @param target      : new position at the end of the move
         @param ms_duration : total duration of the move, in milliseconds
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(target) + ":" + str(ms_duration)
@@ -260,9 +260,9 @@ class YServo(YFunction):
     def get_positionAtPowerOn(self):
         """
         Returns the servo position at device power up.
-        
+
         @return an integer corresponding to the servo position at device power up
-        
+
         On failure, throws an exception or returns YServo.POSITIONATPOWERON_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -274,11 +274,11 @@ class YServo(YFunction):
         """
         Configure the servo position at device power up. Remember to call the matching
         module saveToFlash() method, otherwise this call will have no effect.
-        
+
         @param newval : an integer
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -287,10 +287,10 @@ class YServo(YFunction):
     def get_enabledAtPowerOn(self):
         """
         Returns the servo signal generator state at power up.
-        
+
         @return either YServo.ENABLEDATPOWERON_FALSE or YServo.ENABLEDATPOWERON_TRUE, according to the
         servo signal generator state at power up
-        
+
         On failure, throws an exception or returns YServo.ENABLEDATPOWERON_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -302,11 +302,11 @@ class YServo(YFunction):
         """
         Configure the servo signal generator state at power up. Remember to call the matching module saveToFlash()
         method, otherwise this call will have no effect.
-        
+
         @param newval : either YServo.ENABLEDATPOWERON_FALSE or YServo.ENABLEDATPOWERON_TRUE
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
@@ -324,7 +324,7 @@ class YServo(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the servo is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YServo.isOnline() to test if the servo is
@@ -332,9 +332,9 @@ class YServo(YFunction):
         a servo by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the servo
-        
+
         @return a YServo object allowing you to drive the servo.
         """
         # obj
@@ -347,7 +347,7 @@ class YServo(YFunction):
     def nextServo(self):
         """
         Continues the enumeration of servos started using yFirstServo().
-        
+
         @return a pointer to a YServo object, corresponding to
                 a servo currently online, or a None pointer
                 if there are no more servos to enumerate.
@@ -369,7 +369,7 @@ class YServo(YFunction):
         Starts the enumeration of servos currently accessible.
         Use the method YServo.nextServo() to iterate on
         next servos.
-        
+
         @return a pointer to a YServo object, corresponding to
                 the first servo currently online, or a None pointer
                 if there are none.

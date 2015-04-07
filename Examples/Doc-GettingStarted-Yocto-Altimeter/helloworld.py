@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os,sys
+import os, sys
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..","..","Sources"))
 from yocto_api import *
@@ -48,7 +48,7 @@ tempSensor = YTemperature.FindTemperature(target+'.temperature')
 
 
 while True:
-    print("%4.1f" % altSensor.get_currentValue()+"% (QNH="\
+    print("%4.1f" % altSensor.get_currentValue()+"m (QNH="\
         + "%4.1f" % altSensor.get_qnh()+"hPa)"\ 
         + "%4.1f" % pressSensor.get_currentValue()+"hPa   "\
         + "%2.0f" % tempSensor.get_currentValue()+"deg C "\

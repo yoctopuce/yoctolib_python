@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_voc.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_voc.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindVoc(), the high-level API for Voc functions
 #*
@@ -46,9 +46,10 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YVoc(YSensor):
     """
-    The Yoctopuce application programming interface allows you to read an instant
-    measure of the sensor, as well as the minimal and maximal values observed.
-    
+    The Yoctopuce class YVoc allows you to read and configure Yoctopuce Volatile Organic
+    Compound sensors. It inherits from YSensor class the core functions to read measurements,
+    register callback functions, access to the autonomous datalogger.
+
     """
 #--- (end of YVoc class start)
     #--- (YVoc return codes)
@@ -81,7 +82,7 @@ class YVoc(YSensor):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the Volatile Organic Compound sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YVoc.isOnline() to test if the Volatile Organic Compound sensor is
@@ -89,9 +90,9 @@ class YVoc(YSensor):
         a Volatile Organic Compound sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the Volatile Organic Compound sensor
-        
+
         @return a YVoc object allowing you to drive the Volatile Organic Compound sensor.
         """
         # obj
@@ -104,7 +105,7 @@ class YVoc(YSensor):
     def nextVoc(self):
         """
         Continues the enumeration of Volatile Organic Compound sensors started using yFirstVoc().
-        
+
         @return a pointer to a YVoc object, corresponding to
                 a Volatile Organic Compound sensor currently online, or a None pointer
                 if there are no more Volatile Organic Compound sensors to enumerate.
@@ -126,7 +127,7 @@ class YVoc(YSensor):
         Starts the enumeration of Volatile Organic Compound sensors currently accessible.
         Use the method YVoc.nextVoc() to iterate on
         next Volatile Organic Compound sensors.
-        
+
         @return a pointer to a YVoc object, corresponding to
                 the first Volatile Organic Compound sensor currently online, or a None pointer
                 if there are none.

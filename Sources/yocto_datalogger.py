@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_datalogger.py 17674 2014-09-16 16:18:58Z seb $
+#* $Id: yocto_datalogger.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindDataLogger(), the high-level API for DataLogger
 #*
@@ -49,7 +49,7 @@ class YDataLogger(YFunction):
     data automatically, without requiring a permanent connection to a computer.
     The DataLogger function controls the global parameters of the internal data
     logger.
-    
+
     """
 #--- (end of generated code: YDataLogger class start)
 
@@ -112,10 +112,10 @@ class YDataLogger(YFunction):
         """
         Returns the current run number, corresponding to the number of times the module was
         powered on with the dataLogger enabled at some point.
-        
+
         @return an integer corresponding to the current run number, corresponding to the number of times the module was
                 powered on with the dataLogger enabled at some point
-        
+
         On failure, throws an exception or returns YDataLogger.CURRENTRUNINDEX_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -126,9 +126,9 @@ class YDataLogger(YFunction):
     def get_timeUTC(self):
         """
         Returns the Unix timestamp for current UTC time, if known.
-        
+
         @return an integer corresponding to the Unix timestamp for current UTC time, if known
-        
+
         On failure, throws an exception or returns YDataLogger.TIMEUTC_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -139,11 +139,11 @@ class YDataLogger(YFunction):
     def set_timeUTC(self, newval):
         """
         Changes the current UTC time reference used for recorded data.
-        
+
         @param newval : an integer corresponding to the current UTC time reference used for recorded data
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -152,10 +152,10 @@ class YDataLogger(YFunction):
     def get_recording(self):
         """
         Returns the current activation state of the data logger.
-        
+
         @return either YDataLogger.RECORDING_OFF or YDataLogger.RECORDING_ON, according to the current
         activation state of the data logger
-        
+
         On failure, throws an exception or returns YDataLogger.RECORDING_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -166,12 +166,12 @@ class YDataLogger(YFunction):
     def set_recording(self, newval):
         """
         Changes the activation state of the data logger to start/stop recording data.
-        
+
         @param newval : either YDataLogger.RECORDING_OFF or YDataLogger.RECORDING_ON, according to the
         activation state of the data logger to start/stop recording data
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
@@ -180,10 +180,10 @@ class YDataLogger(YFunction):
     def get_autoStart(self):
         """
         Returns the default activation state of the data logger on power up.
-        
+
         @return either YDataLogger.AUTOSTART_OFF or YDataLogger.AUTOSTART_ON, according to the default
         activation state of the data logger on power up
-        
+
         On failure, throws an exception or returns YDataLogger.AUTOSTART_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -196,12 +196,12 @@ class YDataLogger(YFunction):
         Changes the default activation state of the data logger on power up.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
-        
+
         @param newval : either YDataLogger.AUTOSTART_OFF or YDataLogger.AUTOSTART_ON, according to the
         default activation state of the data logger on power up
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
@@ -210,9 +210,9 @@ class YDataLogger(YFunction):
     def get_beaconDriven(self):
         """
         Return true if the data logger is synchronised with the localization beacon.
-        
+
         @return either YDataLogger.BEACONDRIVEN_OFF or YDataLogger.BEACONDRIVEN_ON
-        
+
         On failure, throws an exception or returns YDataLogger.BEACONDRIVEN_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -225,12 +225,12 @@ class YDataLogger(YFunction):
         Changes the type of synchronisation of the data logger.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
-        
+
         @param newval : either YDataLogger.BEACONDRIVEN_OFF or YDataLogger.BEACONDRIVEN_ON, according to
         the type of synchronisation of the data logger
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
@@ -258,7 +258,7 @@ class YDataLogger(YFunction):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the data logger is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YDataLogger.isOnline() to test if the data logger is
@@ -266,9 +266,9 @@ class YDataLogger(YFunction):
         a data logger by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the data logger
-        
+
         @return a YDataLogger object allowing you to drive the data logger.
         """
         # obj
@@ -282,9 +282,9 @@ class YDataLogger(YFunction):
         """
         Clears the data logger memory and discards all recorded data streams.
         This method also resets the current run index to zero.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_clearHistory(YDataLogger.CLEARHISTORY_TRUE)
@@ -293,13 +293,13 @@ class YDataLogger(YFunction):
         """
         Returns a list of YDataSet objects that can be used to retrieve
         all measures stored by the data logger.
-        
+
         This function only works if the device uses a recent firmware,
         as YDataSet objects are not supported by firmwares older than
         version 13000.
-        
+
         @return a list of YDataSet object.
-        
+
         On failure, throws an exception or returns an empty list.
         """
         return self.parse_dataSets(self._download("logger.json"))
@@ -317,7 +317,7 @@ class YDataLogger(YFunction):
     def nextDataLogger(self):
         """
         Continues the enumeration of data loggers started using yFirstDataLogger().
-        
+
         @return a pointer to a YDataLogger object, corresponding to
                 a data logger currently online, or a None pointer
                 if there are no more data loggers to enumerate.
@@ -376,16 +376,16 @@ class YDataLogger(YFunction):
         The caller must pass by reference an empty array to hold YDataStream
         objects, and the function fills it with objects describing available
         data sequences.
-        
+
         This is the old way to retrieve data from the DataLogger.
         For new applications, you should rather use get_dataSets()
         method, or call directly get_recordedData() on the
         sensor object.
-        
+
         @param v : an array of YDataStream objects to be filled in
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         jRef = YRefParam()
@@ -423,7 +423,7 @@ class YDataLogger(YFunction):
         Starts the enumeration of data loggers currently accessible.
         Use the method YDataLogger.nextDataLogger() to iterate on
         next data loggers.
-        
+
         @return a pointer to a YDataLogger object, corresponding to
                 the first data logger currently online, or a None pointer
                 if there are none.

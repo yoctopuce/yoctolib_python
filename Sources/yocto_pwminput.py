@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_pwminput.py 18361 2014-11-13 08:06:41Z mvuilleu $
+#* $Id: yocto_pwminput.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindPwmInput(), the high-level API for PwmInput functions
 #*
@@ -46,9 +46,12 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YPwmInput(YSensor):
     """
-    The Yoctopuce application programming interface allows you to read an instant
-    measure of the sensor, as well as the minimal and maximal values observed.
-    
+    The Yoctopuce class YPwmInput allows you to read and configure Yoctopuce PWM
+    sensors. It inherits from YSensor class the core functions to read measurements,
+    register callback functions, access to the autonomous datalogger.
+    This class adds the ability to configure the signal parameter used to transmit
+    information: the duty cacle, the frequency or the pulse width.
+
     """
 #--- (end of YPwmInput class start)
     #--- (YPwmInput return codes)
@@ -111,9 +114,9 @@ class YPwmInput(YSensor):
     def get_dutyCycle(self):
         """
         Returns the PWM duty cycle, in per cents.
-        
+
         @return a floating point number corresponding to the PWM duty cycle, in per cents
-        
+
         On failure, throws an exception or returns YPwmInput.DUTYCYCLE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -124,10 +127,10 @@ class YPwmInput(YSensor):
     def get_pulseDuration(self):
         """
         Returns the PWM pulse length in milliseconds, as a floating point number.
-        
+
         @return a floating point number corresponding to the PWM pulse length in milliseconds, as a
         floating point number
-        
+
         On failure, throws an exception or returns YPwmInput.PULSEDURATION_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -138,9 +141,9 @@ class YPwmInput(YSensor):
     def get_frequency(self):
         """
         Returns the PWM frequency in Hz.
-        
+
         @return a floating point number corresponding to the PWM frequency in Hz
-        
+
         On failure, throws an exception or returns YPwmInput.FREQUENCY_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -151,9 +154,9 @@ class YPwmInput(YSensor):
     def get_period(self):
         """
         Returns the PWM period in milliseconds.
-        
+
         @return a floating point number corresponding to the PWM period in milliseconds
-        
+
         On failure, throws an exception or returns YPwmInput.PERIOD_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -166,9 +169,9 @@ class YPwmInput(YSensor):
         Returns the pulse counter value. Actually that
         counter is incremented twice per period. That counter is
         limited  to 1 billion
-        
+
         @return an integer corresponding to the pulse counter value
-        
+
         On failure, throws an exception or returns YPwmInput.PULSECOUNTER_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -183,9 +186,9 @@ class YPwmInput(YSensor):
     def get_pulseTimer(self):
         """
         Returns the timer of the pulses counter (ms)
-        
+
         @return an integer corresponding to the timer of the pulses counter (ms)
-        
+
         On failure, throws an exception or returns YPwmInput.PULSETIMER_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -197,12 +200,12 @@ class YPwmInput(YSensor):
         """
         Returns the parameter (frequency/duty cycle, pulse width, edges count) returned by the
         get_currentValue function and callbacks. Attention
-        
+
         @return a value among YPwmInput.PWMREPORTMODE_PWM_DUTYCYCLE, YPwmInput.PWMREPORTMODE_PWM_FREQUENCY,
         YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION and YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT corresponding
         to the parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
         function and callbacks
-        
+
         On failure, throws an exception or returns YPwmInput.PWMREPORTMODE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -216,13 +219,13 @@ class YPwmInput(YSensor):
         get_currentValue function and callbacks.
         The edge count value is limited to the 6 lowest digits. For values greater than one million, use
         get_pulseCounter().
-        
+
         @param newval : a value among YPwmInput.PWMREPORTMODE_PWM_DUTYCYCLE,
         YPwmInput.PWMREPORTMODE_PWM_FREQUENCY, YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION and
         YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
@@ -240,7 +243,7 @@ class YPwmInput(YSensor):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the PWM input is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YPwmInput.isOnline() to test if the PWM input is
@@ -248,9 +251,9 @@ class YPwmInput(YSensor):
         a PWM input by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the PWM input
-        
+
         @return a YPwmInput object allowing you to drive the PWM input.
         """
         # obj
@@ -263,9 +266,9 @@ class YPwmInput(YSensor):
     def resetCounter(self):
         """
         Returns the pulse counter value as well as its timer.
-        
+
         @return YAPI.SUCCESS if the call succeeds.
-        
+
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_pulseCounter(0)
@@ -273,7 +276,7 @@ class YPwmInput(YSensor):
     def nextPwmInput(self):
         """
         Continues the enumeration of PWM inputs started using yFirstPwmInput().
-        
+
         @return a pointer to a YPwmInput object, corresponding to
                 a PWM input currently online, or a None pointer
                 if there are no more PWM inputs to enumerate.
@@ -295,7 +298,7 @@ class YPwmInput(YSensor):
         Starts the enumeration of PWM inputs currently accessible.
         Use the method YPwmInput.nextPwmInput() to iterate on
         next PWM inputs.
-        
+
         @return a pointer to a YPwmInput object, corresponding to
                 the first PWM input currently online, or a None pointer
                 if there are none.

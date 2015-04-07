@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_magnetometer.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_magnetometer.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindMagnetometer(), the high-level API for Magnetometer functions
 #*
@@ -46,9 +46,16 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YMagnetometer(YSensor):
     """
-    The Yoctopuce application programming interface allows you to read an instant
-    measure of the sensor, as well as the minimal and maximal values observed.
-    
+    The YSensor class is the parent class for all Yoctopuce sensors. It can be
+    used to read the current value and unit of any sensor, read the min/max
+    value, configure autonomous recording frequency and access recorded data.
+    It also provide a function to register a callback invoked each time the
+    observed value changes, or at a predefined interval. Using this class rather
+    than a specific subclass makes it possible to create generic applications
+    that work with any Yoctopuce sensor, even those that do not yet exist.
+    Note: The YAnButton class is the only analog input which does not inherit
+    from YSensor.
+
     """
 #--- (end of YMagnetometer class start)
     #--- (YMagnetometer return codes)
@@ -87,10 +94,10 @@ class YMagnetometer(YSensor):
     def get_xValue(self):
         """
         Returns the X component of the magnetic field, as a floating point number.
-        
+
         @return a floating point number corresponding to the X component of the magnetic field, as a
         floating point number
-        
+
         On failure, throws an exception or returns YMagnetometer.XVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -101,10 +108,10 @@ class YMagnetometer(YSensor):
     def get_yValue(self):
         """
         Returns the Y component of the magnetic field, as a floating point number.
-        
+
         @return a floating point number corresponding to the Y component of the magnetic field, as a
         floating point number
-        
+
         On failure, throws an exception or returns YMagnetometer.YVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -115,10 +122,10 @@ class YMagnetometer(YSensor):
     def get_zValue(self):
         """
         Returns the Z component of the magnetic field, as a floating point number.
-        
+
         @return a floating point number corresponding to the Z component of the magnetic field, as a
         floating point number
-        
+
         On failure, throws an exception or returns YMagnetometer.ZVALUE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -138,7 +145,7 @@ class YMagnetometer(YSensor):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the magnetometer is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YMagnetometer.isOnline() to test if the magnetometer is
@@ -146,9 +153,9 @@ class YMagnetometer(YSensor):
         a magnetometer by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the magnetometer
-        
+
         @return a YMagnetometer object allowing you to drive the magnetometer.
         """
         # obj
@@ -161,7 +168,7 @@ class YMagnetometer(YSensor):
     def nextMagnetometer(self):
         """
         Continues the enumeration of magnetometers started using yFirstMagnetometer().
-        
+
         @return a pointer to a YMagnetometer object, corresponding to
                 a magnetometer currently online, or a None pointer
                 if there are no more magnetometers to enumerate.
@@ -183,7 +190,7 @@ class YMagnetometer(YSensor):
         Starts the enumeration of magnetometers currently accessible.
         Use the method YMagnetometer.nextMagnetometer() to iterate on
         next magnetometers.
-        
+
         @return a pointer to a YMagnetometer object, corresponding to
                 the first magnetometer currently online, or a None pointer
                 if there are none.

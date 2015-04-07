@@ -1,8 +1,8 @@
 #*********************************************************************
 #*
-#* $Id: yocto_humidity.py 19610 2015-03-05 10:39:47Z seb $
+#* $Id: yocto_longitude.py 19746 2015-03-17 10:34:00Z seb $
 #*
-#* Implements yFindHumidity(), the high-level API for Humidity functions
+#* Implements yFindLongitude(), the high-level API for Longitude functions
 #*
 #* - - - - - - - - - License information: - - - - - - - - - 
 #*
@@ -42,38 +42,39 @@ __docformat__ = 'restructuredtext en'
 from yocto_api import *
 
 
-#--- (YHumidity class start)
+#--- (YLongitude class start)
 #noinspection PyProtectedMember
-class YHumidity(YSensor):
+class YLongitude(YSensor):
     """
-    The Yoctopuce class YHumidity allows you to read and configure Yoctopuce humidity
-    sensors. It inherits from YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    The Yoctopuce class YLongitude allows you to read the longitude from Yoctopuce
+    geolocalization sensors. It inherits from the YSensor class the core functions to
+    read measurements, register callback functions, access the autonomous
+    datalogger.
 
     """
-#--- (end of YHumidity class start)
-    #--- (YHumidity return codes)
-    #--- (end of YHumidity return codes)
-    #--- (YHumidity dlldef)
-    #--- (end of YHumidity dlldef)
-    #--- (YHumidity definitions)
-    #--- (end of YHumidity definitions)
+#--- (end of YLongitude class start)
+    #--- (YLongitude return codes)
+    #--- (end of YLongitude return codes)
+    #--- (YLongitude dlldef)
+    #--- (end of YLongitude dlldef)
+    #--- (YLongitude definitions)
+    #--- (end of YLongitude definitions)
 
     def __init__(self, func):
-        super(YHumidity, self).__init__(func)
-        self._className = 'Humidity'
-        #--- (YHumidity attributes)
+        super(YLongitude, self).__init__(func)
+        self._className = 'Longitude'
+        #--- (YLongitude attributes)
         self._callback = None
-        #--- (end of YHumidity attributes)
+        #--- (end of YLongitude attributes)
 
-    #--- (YHumidity implementation)
+    #--- (YLongitude implementation)
     def _parseAttr(self, member):
-        super(YHumidity, self)._parseAttr(member)
+        super(YLongitude, self)._parseAttr(member)
 
     @staticmethod
-    def FindHumidity(func):
+    def FindLongitude(func):
         """
-        Retrieves a humidity sensor for a given identifier.
+        Retrieves a longitude sensor for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -83,53 +84,53 @@ class YHumidity(YSensor):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the humidity sensor is online at the time
+        This function does not require that the longitude sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YHumidity.isOnline() to test if the humidity sensor is
+        Use the method YLongitude.isOnline() to test if the longitude sensor is
         indeed online at a given time. In case of ambiguity when looking for
-        a humidity sensor by logical name, no error is notified: the first instance
+        a longitude sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
-        @param func : a string that uniquely characterizes the humidity sensor
+        @param func : a string that uniquely characterizes the longitude sensor
 
-        @return a YHumidity object allowing you to drive the humidity sensor.
+        @return a YLongitude object allowing you to drive the longitude sensor.
         """
         # obj
-        obj = YFunction._FindFromCache("Humidity", func)
+        obj = YFunction._FindFromCache("Longitude", func)
         if obj is None:
-            obj = YHumidity(func)
-            YFunction._AddToCache("Humidity", func, obj)
+            obj = YLongitude(func)
+            YFunction._AddToCache("Longitude", func, obj)
         return obj
 
-    def nextHumidity(self):
+    def nextLongitude(self):
         """
-        Continues the enumeration of humidity sensors started using yFirstHumidity().
+        Continues the enumeration of longitude sensors started using yFirstLongitude().
 
-        @return a pointer to a YHumidity object, corresponding to
-                a humidity sensor currently online, or a None pointer
-                if there are no more humidity sensors to enumerate.
+        @return a pointer to a YLongitude object, corresponding to
+                a longitude sensor currently online, or a None pointer
+                if there are no more longitude sensors to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
             return None
         if hwidRef.value == "":
             return None
-        return YHumidity.FindHumidity(hwidRef.value)
+        return YLongitude.FindLongitude(hwidRef.value)
 
-#--- (end of YHumidity implementation)
+#--- (end of YLongitude implementation)
 
-#--- (Humidity functions)
+#--- (Longitude functions)
 
     @staticmethod
-    def FirstHumidity():
+    def FirstLongitude():
         """
-        Starts the enumeration of humidity sensors currently accessible.
-        Use the method YHumidity.nextHumidity() to iterate on
-        next humidity sensors.
+        Starts the enumeration of longitude sensors currently accessible.
+        Use the method YLongitude.nextLongitude() to iterate on
+        next longitude sensors.
 
-        @return a pointer to a YHumidity object, corresponding to
-                the first humidity sensor currently online, or a None pointer
+        @return a pointer to a YLongitude object, corresponding to
+                the first longitude sensor currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
@@ -142,7 +143,7 @@ class YHumidity(YSensor):
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
         p = (ctypes.c_int * 1)()
-        err = YAPI.apiGetFunctionsByClass("Humidity", 0, p, size, neededsizeRef, errmsgRef)
+        err = YAPI.apiGetFunctionsByClass("Longitude", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
@@ -151,6 +152,6 @@ class YHumidity(YSensor):
                 YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
-        return YHumidity.FindHumidity(serialRef.value + "." + funcIdRef.value)
+        return YLongitude.FindLongitude(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of Humidity functions)
+#--- (end of Longitude functions)

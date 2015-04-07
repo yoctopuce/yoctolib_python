@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_pressure.py 17368 2014-08-29 16:46:36Z seb $
+#* $Id: yocto_pressure.py 19610 2015-03-05 10:39:47Z seb $
 #*
 #* Implements yFindPressure(), the high-level API for Pressure functions
 #*
@@ -46,9 +46,10 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YPressure(YSensor):
     """
-    The Yoctopuce application programming interface allows you to read an instant
-    measure of the sensor, as well as the minimal and maximal values observed.
-    
+    The Yoctopuce class YPressure allows you to read and configure Yoctopuce pressure
+    sensors. It inherits from YSensor class the core functions to read measurements,
+    register callback functions, access to the autonomous datalogger.
+
     """
 #--- (end of YPressure class start)
     #--- (YPressure return codes)
@@ -81,7 +82,7 @@ class YPressure(YSensor):
         <li>ModuleLogicalName.FunctionIdentifier</li>
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
-        
+
         This function does not require that the pressure sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
         Use the method YPressure.isOnline() to test if the pressure sensor is
@@ -89,9 +90,9 @@ class YPressure(YSensor):
         a pressure sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
-        
+
         @param func : a string that uniquely characterizes the pressure sensor
-        
+
         @return a YPressure object allowing you to drive the pressure sensor.
         """
         # obj
@@ -104,7 +105,7 @@ class YPressure(YSensor):
     def nextPressure(self):
         """
         Continues the enumeration of pressure sensors started using yFirstPressure().
-        
+
         @return a pointer to a YPressure object, corresponding to
                 a pressure sensor currently online, or a None pointer
                 if there are no more pressure sensors to enumerate.
@@ -126,7 +127,7 @@ class YPressure(YSensor):
         Starts the enumeration of pressure sensors currently accessible.
         Use the method YPressure.nextPressure() to iterate on
         next pressure sensors.
-        
+
         @return a pointer to a YPressure object, corresponding to
                 the first pressure sensor currently online, or a None pointer
                 if there are none.
