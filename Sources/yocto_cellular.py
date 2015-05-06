@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 19745 2015-03-17 09:47:45Z seb $
+#* $Id: yocto_cellular.py 20167 2015-04-27 14:24:03Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -115,6 +115,7 @@ class YCellular(YFunction):
     #--- (generated code: YCellular definitions)
     LINKQUALITY_INVALID = YAPI.INVALID_UINT
     CELLOPERATOR_INVALID = YAPI.INVALID_STRING
+    IMSI_INVALID = YAPI.INVALID_STRING
     MESSAGE_INVALID = YAPI.INVALID_STRING
     PIN_INVALID = YAPI.INVALID_STRING
     LOCKEDOPERATOR_INVALID = YAPI.INVALID_STRING
@@ -134,6 +135,7 @@ class YCellular(YFunction):
         self._callback = None
         self._linkQuality = YCellular.LINKQUALITY_INVALID
         self._cellOperator = YCellular.CELLOPERATOR_INVALID
+        self._imsi = YCellular.IMSI_INVALID
         self._message = YCellular.MESSAGE_INVALID
         self._pin = YCellular.PIN_INVALID
         self._lockedOperator = YCellular.LOCKEDOPERATOR_INVALID
@@ -150,6 +152,9 @@ class YCellular(YFunction):
             return 1
         if member.name == "cellOperator":
             self._cellOperator = member.svalue
+            return 1
+        if member.name == "imsi":
+            self._imsi = member.svalue
             return 1
         if member.name == "message":
             self._message = member.svalue
@@ -199,6 +204,23 @@ class YCellular(YFunction):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.CELLOPERATOR_INVALID
         return self._cellOperator
+
+    def get_imsi(self):
+        """
+        Returns an opaque string if a PIN code has been configured in the device to access
+        the SIM card, or an empty string if none has been configured or if the code provided
+        was rejected by the SIM card.
+
+        @return a string corresponding to an opaque string if a PIN code has been configured in the device to access
+                the SIM card, or an empty string if none has been configured or if the code provided
+                was rejected by the SIM card
+
+        On failure, throws an exception or returns YCellular.IMSI_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YCellular.IMSI_INVALID
+        return self._imsi
 
     def get_message(self):
         """

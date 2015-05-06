@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_api.py 19900 2015-03-31 13:11:09Z seb $
+#* $Id: yocto_api.py 20183 2015-04-29 14:41:00Z seb $
 #*
 #* High-level programming interface, common to all modules
 #*
@@ -536,7 +536,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "19938"
+    YOCTO_API_BUILD_NO = "20255"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -957,6 +957,9 @@ class YAPI:
         YAPI._yapiUpdateFirmware = YAPI._yApiCLib.yapiUpdateFirmware
         YAPI._yapiUpdateFirmware.restypes = ctypes.c_int
         YAPI._yapiUpdateFirmware.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
+        YAPI._yapiTestHub = YAPI._yApiCLib.yapiTestHub
+        YAPI._yapiTestHub.restypes = ctypes.c_int
+        YAPI._yapiTestHub.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
@@ -1927,6 +1930,34 @@ class YAPI:
 
         #noinspection PyUnresolvedReferences
         YAPI._yapiUnregisterHub(ctypes.create_string_buffer(url.encode("ASCII")))
+
+    @staticmethod
+    def TestHub(url, mstimeout, errmsgRef=None):
+        """
+        Test if the hub is reachable. This method do not register the hub, it only test if the
+        hub is usable. The url parameter follow the same convention as the RegisterHub
+        method. This method is useful to verify the authentication parameters for a hub. It
+        is possible to force this method to return after mstimeout milliseconds.
+
+        @param url : a string containing either "usb","callback" or the
+                root URL of the hub to monitor
+        @param mstimeout : the number of millisecond available to test the connection.
+        @param errmsg : a string passed by reference to receive any error message.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure returns a negative error code.
+        """
+        errmsg_buffer = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        if not YAPI._ydllLoaded:
+            YAPI.yloadYapiCDLL()
+
+        #noinspection PyUnresolvedReferences
+        res = YAPI._yapiTestHub(ctypes.create_string_buffer(url.encode("ASCII")), mstimeout, errmsg_buffer)
+        if YAPI.YISERR(res):
+            if errmsgRef is not None:
+                errmsgRef.value = YByte2String(errmsg_buffer.value)
+        return res
 
     @staticmethod
     def UpdateDeviceList(errmsg=None):
@@ -4707,6 +4738,7 @@ class YModule(YFunction):
         if fullsize.value <= 1024:
             jsonflat = YByte2String(smallbuff.value)
         else:
+            fullsize.value = fullsize.value * 2
             buffsize = fullsize.value
             bigbuff = ctypes.create_string_buffer(buffsize)
             res = YAPI._yapiGetAllJsonKeys(ctypes.create_string_buffer(YString2Byte(jsoncomplexstr)), bigbuff, buffsize, ctypes.byref(fullsize), errmsg)

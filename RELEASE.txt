@@ -1,3 +1,2 @@
-- Fix race condition on heavy TCP load.
-- Fix potential memory leak on YAPI::FreeAPI
-- Fix bug that corrupt calibration during firmware update
+- Fix network discovery on host with multiples network interfaces
+- Fix potential deadlock on FreeAPI exit
