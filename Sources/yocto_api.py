@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_api.py 20183 2015-04-29 14:41:00Z seb $
+#* $Id: yocto_api.py 20380 2015-05-19 16:28:16Z seb $
 #*
 #* High-level programming interface, common to all modules
 #*
@@ -530,13 +530,14 @@ class YAPI:
     Y_DETECT_NONE = 0
     Y_DETECT_USB = 1
     Y_DETECT_NET = 2
+    Y_RESEND_MISSING_PKT = 4
 
     Y_DETECT_ALL = Y_DETECT_USB | Y_DETECT_NET
 
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "20255"
+    YOCTO_API_BUILD_NO = "20384"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1

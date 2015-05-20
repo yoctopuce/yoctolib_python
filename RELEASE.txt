@@ -1,2 +1,3 @@
-- Fix network discovery on host with multiples network interfaces
-- Fix potential deadlock on FreeAPI exit
+- Add workaround for lossy USB link
+- Improve error recovery when Ethernet connection is unreliable
+- Fix very rare memory corruption with timed notifications

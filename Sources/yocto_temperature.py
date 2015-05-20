@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 19619 2015-03-05 18:11:23Z mvuilleu $
+#* $Id: yocto_temperature.py 20383 2015-05-19 23:44:31Z mvuilleu $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -199,6 +199,40 @@ class YTemperature(YSensor):
             obj = YTemperature(func)
             YFunction._AddToCache("Temperature", func, obj)
         return obj
+
+    def set_ntcParameters(self, res25, beta):
+        """
+        Configure NTC thermistor parameters in order to properly compute the temperature from
+        the measured resistance. For increased precision, you can enter a complete mapping
+        table using set_thermistorResponseTable. This function can only be used with a
+        temperature sensor based on thermistors.
+
+        @param res25 : thermistor resistance at 25 degrees Celsius
+        @param beta : Beta value
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # t0
+        # t1
+        # res100
+        tempValues = []
+        resValues = []
+        t0 = 25.0+275.15
+        t1 = 100.0+275.15
+        res100 = res25 * exp(beta*(1.0/t1 - 1.0/t0))
+        del tempValues[:]
+        del resValues[:]
+        tempValues.append(25.0)
+        resValues.append(res25)
+        tempValues.append(100.0)
+        resValues.append(res100)
+        
+        
+        
+        
+        return self.set_thermistorResponseTable(tempValues, resValues)
 
     def set_thermistorResponseTable(self, tempValues, resValues):
         """
