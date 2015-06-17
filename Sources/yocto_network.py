@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 19610 2015-03-05 10:39:47Z seb $
+#* $Id: yocto_network.py 20599 2015-06-08 12:16:39Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -63,8 +63,11 @@ class YNetwork(YFunction):
     IPCONFIG_INVALID = YAPI.INVALID_STRING
     PRIMARYDNS_INVALID = YAPI.INVALID_STRING
     SECONDARYDNS_INVALID = YAPI.INVALID_STRING
+    NTPSERVER_INVALID = YAPI.INVALID_STRING
     USERPASSWORD_INVALID = YAPI.INVALID_STRING
     ADMINPASSWORD_INVALID = YAPI.INVALID_STRING
+    HTTPPORT_INVALID = YAPI.INVALID_UINT
+    DEFAULTPAGE_INVALID = YAPI.INVALID_STRING
     WWWWATCHDOGDELAY_INVALID = YAPI.INVALID_UINT
     CALLBACKURL_INVALID = YAPI.INVALID_STRING
     CALLBACKCREDENTIALS_INVALID = YAPI.INVALID_STRING
@@ -89,6 +92,8 @@ class YNetwork(YFunction):
     CALLBACKENCODING_JSON_ARRAY = 2
     CALLBACKENCODING_CSV = 3
     CALLBACKENCODING_YOCTO_API = 4
+    CALLBACKENCODING_JSON_NUM = 5
+    CALLBACKENCODING_EMONCMS = 6
     CALLBACKENCODING_INVALID = -1
     #--- (end of YNetwork definitions)
 
@@ -105,8 +110,11 @@ class YNetwork(YFunction):
         self._ipConfig = YNetwork.IPCONFIG_INVALID
         self._primaryDNS = YNetwork.PRIMARYDNS_INVALID
         self._secondaryDNS = YNetwork.SECONDARYDNS_INVALID
+        self._ntpServer = YNetwork.NTPSERVER_INVALID
         self._userPassword = YNetwork.USERPASSWORD_INVALID
         self._adminPassword = YNetwork.ADMINPASSWORD_INVALID
+        self._httpPort = YNetwork.HTTPPORT_INVALID
+        self._defaultPage = YNetwork.DEFAULTPAGE_INVALID
         self._discoverable = YNetwork.DISCOVERABLE_INVALID
         self._wwwWatchdogDelay = YNetwork.WWWWATCHDOGDELAY_INVALID
         self._callbackUrl = YNetwork.CALLBACKURL_INVALID
@@ -144,11 +152,20 @@ class YNetwork(YFunction):
         if member.name == "secondaryDNS":
             self._secondaryDNS = member.svalue
             return 1
+        if member.name == "ntpServer":
+            self._ntpServer = member.svalue
+            return 1
         if member.name == "userPassword":
             self._userPassword = member.svalue
             return 1
         if member.name == "adminPassword":
             self._adminPassword = member.svalue
+            return 1
+        if member.name == "httpPort":
+            self._httpPort = member.ivalue
+            return 1
+        if member.name == "defaultPage":
+            self._defaultPage = member.svalue
             return 1
         if member.name == "discoverable":
             self._discoverable = member.ivalue
@@ -327,6 +344,33 @@ class YNetwork(YFunction):
         rest_val = newval
         return self._setAttr("secondaryDNS", rest_val)
 
+    def get_ntpServer(self):
+        """
+        Returns the IP address of the NTP server to be used by the device.
+
+        @return a string corresponding to the IP address of the NTP server to be used by the device
+
+        On failure, throws an exception or returns YNetwork.NTPSERVER_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YNetwork.NTPSERVER_INVALID
+        return self._ntpServer
+
+    def set_ntpServer(self, newval):
+        """
+        Changes the IP address of the NTP server to be used by the module.
+        Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+
+        @param newval : a string corresponding to the IP address of the NTP server to be used by the module
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("ntpServer", rest_val)
+
     def get_userPassword(self):
         """
         Returns a hash string if a password has been set for "user" user,
@@ -390,6 +434,62 @@ class YNetwork(YFunction):
         """
         rest_val = newval
         return self._setAttr("adminPassword", rest_val)
+
+    def get_httpPort(self):
+        """
+        Returns the HTML page to serve for the URL "/"" of the hub.
+
+        @return an integer corresponding to the HTML page to serve for the URL "/"" of the hub
+
+        On failure, throws an exception or returns YNetwork.HTTPPORT_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YNetwork.HTTPPORT_INVALID
+        return self._httpPort
+
+    def set_httpPort(self, newval):
+        """
+        Changes the default HTML page returned by the hub. If not value are set the hub return
+        "index.html" which is the web interface of the hub. It is possible de change this page
+        for file that has been uploaded on the hub.
+
+        @param newval : an integer corresponding to the default HTML page returned by the hub
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("httpPort", rest_val)
+
+    def get_defaultPage(self):
+        """
+        Returns the HTML page to serve for the URL "/"" of the hub.
+
+        @return a string corresponding to the HTML page to serve for the URL "/"" of the hub
+
+        On failure, throws an exception or returns YNetwork.DEFAULTPAGE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YNetwork.DEFAULTPAGE_INVALID
+        return self._defaultPage
+
+    def set_defaultPage(self, newval):
+        """
+        Changes the default HTML page returned by the hub. If not value are set the hub return
+        "index.html" which is the web interface of the hub. It is possible de change this page
+        for file that has been uploaded on the hub.
+
+        @param newval : a string corresponding to the default HTML page returned by the hub
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("defaultPage", rest_val)
 
     def get_discoverable(self):
         """
@@ -520,8 +620,9 @@ class YNetwork(YFunction):
         Returns the encoding standard to use for representing notification values.
 
         @return a value among YNetwork.CALLBACKENCODING_FORM, YNetwork.CALLBACKENCODING_JSON,
-        YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV and
-        YNetwork.CALLBACKENCODING_YOCTO_API corresponding to the encoding standard to use for representing
+        YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV,
+        YNetwork.CALLBACKENCODING_YOCTO_API, YNetwork.CALLBACKENCODING_JSON_NUM and
+        YNetwork.CALLBACKENCODING_EMONCMS corresponding to the encoding standard to use for representing
         notification values
 
         On failure, throws an exception or returns YNetwork.CALLBACKENCODING_INVALID.
@@ -536,8 +637,9 @@ class YNetwork(YFunction):
         Changes the encoding standard to use for representing notification values.
 
         @param newval : a value among YNetwork.CALLBACKENCODING_FORM, YNetwork.CALLBACKENCODING_JSON,
-        YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV and
-        YNetwork.CALLBACKENCODING_YOCTO_API corresponding to the encoding standard to use for representing
+        YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV,
+        YNetwork.CALLBACKENCODING_YOCTO_API, YNetwork.CALLBACKENCODING_JSON_NUM and
+        YNetwork.CALLBACKENCODING_EMONCMS corresponding to the encoding standard to use for representing
         notification values
 
         @return YAPI.SUCCESS if the call succeeds.

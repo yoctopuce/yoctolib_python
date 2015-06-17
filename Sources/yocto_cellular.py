@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 20167 2015-04-27 14:24:03Z seb $
+#* $Id: yocto_cellular.py 20508 2015-06-01 16:32:48Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -447,7 +447,6 @@ class YCellular(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # gsmMsg
-        
         gsmMsg = self.get_message()
         if not (gsmMsg == "Enter SIM PUK"):
             self._throw(YAPI.INVALID_ARGUMENT, "PUK not expected at this time")
@@ -501,7 +500,6 @@ class YCellular(YFunction):
             cmd = "" + (cmd)[0: 0 + chrPos] + "" + str(chr(37)) + "3D" + (cmd)[chrPos+1: chrPos+1 + cmdLen-chrPos-1]
             cmdLen = cmdLen + 2
             chrPos = cmd.find("=")
-        
         # // may throw an exception
         content = self._download("at.txt?cmd=" + cmd)
         return YByte2String(content)
@@ -537,13 +535,13 @@ class YCellular(YFunction):
             mccs = (mccs)[1: 1 + 2]
         if (mccs)[0: 0 + 1] == "0":
             mccs = (mccs)[1: 1 + 1]
-        mcc = int(mccs)
+        mcc = YAPI._atoi(mccs)
         mncs = (moni)[11: 11 + 3]
         if (mncs)[2: 2 + 1] == ",":
             mncs = (mncs)[0: 0 + 2]
         if (mncs)[0: 0 + 1] == "0":
             mncs = (mncs)[1: 1 + len(mncs)-1]
-        mnc = int(mncs)
+        mnc = YAPI._atoi(mncs)
         recs = (moni).split('#')
         # // process each line in turn
         del res[:]
@@ -556,12 +554,12 @@ class YCellular(YFunction):
                     dbms = (y)[37: 37 + 4]
                     if (dbms)[0: 0 + 1] == " ":
                         dbms = (dbms)[1: 1 + 3]
-                    dbm = int(dbms)
+                    dbm = YAPI._atoi(dbms)
                     if llen > 66:
                         tads = (y)[54: 54 + 2]
                         if (tads)[0: 0 + 1] == " ":
                             tads = (tads)[1: 1 + 3]
-                        tad = int(tads)
+                        tad = YAPI._atoi(tads)
                         oper = (y)[66: 66 + llen-66]
                     else:
                         tad = -1

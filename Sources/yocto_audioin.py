@@ -1,8 +1,8 @@
 #*********************************************************************
 #*
-#* $Id: yocto_audioout.py 20565 2015-06-04 09:59:10Z seb $
+#* $Id: pic24config.php 20612 2015-06-09 01:27:02Z mvuilleu $
 #*
-#* Implements yFindAudioOut(), the high-level API for AudioOut functions
+#* Implements yFindAudioIn(), the high-level API for AudioIn functions
 #*
 #* - - - - - - - - - License information: - - - - - - - - - 
 #*
@@ -42,39 +42,39 @@ __docformat__ = 'restructuredtext en'
 from yocto_api import *
 
 
-#--- (YAudioOut class start)
+#--- (YAudioIn class start)
 #noinspection PyProtectedMember
-class YAudioOut(YFunction):
+class YAudioIn(YFunction):
     """
-    The Yoctopuce application programming interface allows you to configure the volume of the outout.
+    The Yoctopuce application programming interface allows you to configure the volume of the input channel.
 
     """
-#--- (end of YAudioOut class start)
-    #--- (YAudioOut return codes)
-    #--- (end of YAudioOut return codes)
-    #--- (YAudioOut dlldef)
-    #--- (end of YAudioOut dlldef)
-    #--- (YAudioOut definitions)
+#--- (end of YAudioIn class start)
+    #--- (YAudioIn return codes)
+    #--- (end of YAudioIn return codes)
+    #--- (YAudioIn dlldef)
+    #--- (end of YAudioIn dlldef)
+    #--- (YAudioIn definitions)
     VOLUME_INVALID = YAPI.INVALID_UINT
     SIGNAL_INVALID = YAPI.INVALID_INT
     NOSIGNALFOR_INVALID = YAPI.INVALID_INT
     MUTE_FALSE = 0
     MUTE_TRUE = 1
     MUTE_INVALID = -1
-    #--- (end of YAudioOut definitions)
+    #--- (end of YAudioIn definitions)
 
     def __init__(self, func):
-        super(YAudioOut, self).__init__(func)
-        self._className = 'AudioOut'
-        #--- (YAudioOut attributes)
+        super(YAudioIn, self).__init__(func)
+        self._className = 'AudioIn'
+        #--- (YAudioIn attributes)
         self._callback = None
-        self._volume = YAudioOut.VOLUME_INVALID
-        self._mute = YAudioOut.MUTE_INVALID
-        self._signal = YAudioOut.SIGNAL_INVALID
-        self._noSignalFor = YAudioOut.NOSIGNALFOR_INVALID
-        #--- (end of YAudioOut attributes)
+        self._volume = YAudioIn.VOLUME_INVALID
+        self._mute = YAudioIn.MUTE_INVALID
+        self._signal = YAudioIn.SIGNAL_INVALID
+        self._noSignalFor = YAudioIn.NOSIGNALFOR_INVALID
+        #--- (end of YAudioIn attributes)
 
-    #--- (YAudioOut implementation)
+    #--- (YAudioIn implementation)
     def _parseAttr(self, member):
         if member.name == "volume":
             self._volume = member.ivalue
@@ -88,26 +88,26 @@ class YAudioOut(YFunction):
         if member.name == "noSignalFor":
             self._noSignalFor = member.ivalue
             return 1
-        super(YAudioOut, self)._parseAttr(member)
+        super(YAudioIn, self)._parseAttr(member)
 
     def get_volume(self):
         """
-        Returns audio output volume, in per cents.
+        Returns audio input gain, in per cents.
 
-        @return an integer corresponding to audio output volume, in per cents
+        @return an integer corresponding to audio input gain, in per cents
 
-        On failure, throws an exception or returns YAudioOut.VOLUME_INVALID.
+        On failure, throws an exception or returns YAudioIn.VOLUME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YAudioOut.VOLUME_INVALID
+                return YAudioIn.VOLUME_INVALID
         return self._volume
 
     def set_volume(self, newval):
         """
-        Changes audio output volume, in per cents.
+        Changes audio input gain, in per cents.
 
-        @param newval : an integer corresponding to audio output volume, in per cents
+        @param newval : an integer corresponding to audio input gain, in per cents
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -120,13 +120,13 @@ class YAudioOut(YFunction):
         """
         Returns the state of the mute function.
 
-        @return either YAudioOut.MUTE_FALSE or YAudioOut.MUTE_TRUE, according to the state of the mute function
+        @return either YAudioIn.MUTE_FALSE or YAudioIn.MUTE_TRUE, according to the state of the mute function
 
-        On failure, throws an exception or returns YAudioOut.MUTE_INVALID.
+        On failure, throws an exception or returns YAudioIn.MUTE_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YAudioOut.MUTE_INVALID
+                return YAudioIn.MUTE_INVALID
         return self._mute
 
     def set_mute(self, newval):
@@ -134,7 +134,7 @@ class YAudioOut(YFunction):
         Changes the state of the mute function. Remember to call the matching module
         saveToFlash() method to save the setting permanently.
 
-        @param newval : either YAudioOut.MUTE_FALSE or YAudioOut.MUTE_TRUE, according to the state of the mute function
+        @param newval : either YAudioIn.MUTE_FALSE or YAudioIn.MUTE_TRUE, according to the state of the mute function
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -145,15 +145,15 @@ class YAudioOut(YFunction):
 
     def get_signal(self):
         """
-        Returns the detected output current level.
+        Returns the detected input signal level.
 
-        @return an integer corresponding to the detected output current level
+        @return an integer corresponding to the detected input signal level
 
-        On failure, throws an exception or returns YAudioOut.SIGNAL_INVALID.
+        On failure, throws an exception or returns YAudioIn.SIGNAL_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YAudioOut.SIGNAL_INVALID
+                return YAudioIn.SIGNAL_INVALID
         return self._signal
 
     def get_noSignalFor(self):
@@ -162,17 +162,17 @@ class YAudioOut(YFunction):
 
         @return an integer corresponding to the number of seconds elapsed without detecting a signal
 
-        On failure, throws an exception or returns YAudioOut.NOSIGNALFOR_INVALID.
+        On failure, throws an exception or returns YAudioIn.NOSIGNALFOR_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YAudioOut.NOSIGNALFOR_INVALID
+                return YAudioIn.NOSIGNALFOR_INVALID
         return self._noSignalFor
 
     @staticmethod
-    def FindAudioOut(func):
+    def FindAudioIn(func):
         """
-        Retrieves an audio output for a given identifier.
+        Retrieves an audio input for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -182,53 +182,53 @@ class YAudioOut(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the audio output is online at the time
+        This function does not require that the audio input is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YAudioOut.isOnline() to test if the audio output is
+        Use the method YAudioIn.isOnline() to test if the audio input is
         indeed online at a given time. In case of ambiguity when looking for
-        an audio output by logical name, no error is notified: the first instance
+        an audio input by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
-        @param func : a string that uniquely characterizes the audio output
+        @param func : a string that uniquely characterizes the audio input
 
-        @return a YAudioOut object allowing you to drive the audio output.
+        @return a YAudioIn object allowing you to drive the audio input.
         """
         # obj
-        obj = YFunction._FindFromCache("AudioOut", func)
+        obj = YFunction._FindFromCache("AudioIn", func)
         if obj is None:
-            obj = YAudioOut(func)
-            YFunction._AddToCache("AudioOut", func, obj)
+            obj = YAudioIn(func)
+            YFunction._AddToCache("AudioIn", func, obj)
         return obj
 
-    def nextAudioOut(self):
+    def nextAudioIn(self):
         """
-        Continues the enumeration of audio outputs started using yFirstAudioOut().
+        Continues the enumeration of audio inputs started using yFirstAudioIn().
 
-        @return a pointer to a YAudioOut object, corresponding to
-                an audio output currently online, or a None pointer
-                if there are no more audio outputs to enumerate.
+        @return a pointer to a YAudioIn object, corresponding to
+                an audio input currently online, or a None pointer
+                if there are no more audio inputs to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
             return None
         if hwidRef.value == "":
             return None
-        return YAudioOut.FindAudioOut(hwidRef.value)
+        return YAudioIn.FindAudioIn(hwidRef.value)
 
-#--- (end of YAudioOut implementation)
+#--- (end of YAudioIn implementation)
 
-#--- (AudioOut functions)
+#--- (AudioIn functions)
 
     @staticmethod
-    def FirstAudioOut():
+    def FirstAudioIn():
         """
-        Starts the enumeration of audio outputs currently accessible.
-        Use the method YAudioOut.nextAudioOut() to iterate on
-        next audio outputs.
+        Starts the enumeration of audio inputs currently accessible.
+        Use the method YAudioIn.nextAudioIn() to iterate on
+        next audio inputs.
 
-        @return a pointer to a YAudioOut object, corresponding to
-                the first audio output currently online, or a None pointer
+        @return a pointer to a YAudioIn object, corresponding to
+                the first audio input currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
@@ -241,7 +241,7 @@ class YAudioOut(YFunction):
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
         p = (ctypes.c_int * 1)()
-        err = YAPI.apiGetFunctionsByClass("AudioOut", 0, p, size, neededsizeRef, errmsgRef)
+        err = YAPI.apiGetFunctionsByClass("AudioIn", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
@@ -250,6 +250,6 @@ class YAudioOut(YFunction):
                 YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
-        return YAudioOut.FindAudioOut(serialRef.value + "." + funcIdRef.value)
+        return YAudioIn.FindAudioIn(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of AudioOut functions)
+#--- (end of AudioIn functions)

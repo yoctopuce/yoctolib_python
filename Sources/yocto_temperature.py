@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 20383 2015-05-19 23:44:31Z mvuilleu $
+#* $Id: yocto_temperature.py 20410 2015-05-22 08:30:27Z seb $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -230,8 +230,6 @@ class YTemperature(YSensor):
         resValues.append(res100)
         
         
-        
-        
         return self.set_thermistorResponseTable(tempValues, resValues)
 
     def set_thermistorResponseTable(self, tempValues, resValues):
@@ -264,12 +262,10 @@ class YTemperature(YSensor):
             self._throw(YAPI.INVALID_ARGUMENT, "thermistor response table must have at least two points")
         if not (siz == len(resValues)):
             self._throw(YAPI.INVALID_ARGUMENT, "table sizes mismatch")
-        
         # // may throw an exception
         res = self.set_command("Z")
         if not (res==YAPI.SUCCESS):
             self._throw(YAPI.IO_ERROR, "unable to reset thermistor parameters")
-        
         # // add records in growing resistance value
         found = 1
         prev = 0.0
@@ -320,10 +316,8 @@ class YTemperature(YSensor):
         # prev
         # curr
         # currRes
-        
         del tempValues[:]
         del resValues[:]
-        
         # // may throw an exception
         id = self.get_functionId()
         id = (id)[11: 11 + len(id)-1]
@@ -358,7 +352,6 @@ class YTemperature(YSensor):
                 tempValues.append(curr)
                 resValues.append(currRes)
                 prev = curr
-        
         
         
         return YAPI.SUCCESS

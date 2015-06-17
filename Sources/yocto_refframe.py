@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 19610 2015-03-05 10:39:47Z seb $
+#* $Id: yocto_refframe.py 20508 2015-06-01 16:32:48Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -391,9 +391,9 @@ class YRefFrame(YFunction):
         self._calibStageHint = "Set down the device on a steady horizontal surface"
         self._calibPrevTick = ((currTick + 500) & (0x7FFFFFFF))
         jsonData = self._download("api/accelerometer.json")
-        xVal = int(self._json_get_key(jsonData, "xValue")) / 65536.0
-        yVal = int(self._json_get_key(jsonData, "yValue")) / 65536.0
-        zVal = int(self._json_get_key(jsonData, "zValue")) / 65536.0
+        xVal = YAPI._atoi(self._json_get_key(jsonData, "xValue")) / 65536.0
+        yVal = YAPI._atoi(self._json_get_key(jsonData, "yValue")) / 65536.0
+        zVal = YAPI._atoi(self._json_get_key(jsonData, "zValue")) / 65536.0
         xSq = xVal * xVal
         if xSq >= 0.04 and xSq < 0.64:
             return YAPI.SUCCESS

@@ -1,3 +1,5 @@
-- Add workaround for lossy USB link
-- Improve error recovery when Ethernet connection is unreliable
-- Fix very rare memory corruption with timed notifications
+- Add isSensorReady function on YSensor class
+- Add defaultPage attribute on YNetwork class
+- Add ntpServer attribute on YNetwork class
+- Add httpPort attribute on YNetwork class
+- Add JSON-Num and EMONCMS callback encoding in YNetwork class

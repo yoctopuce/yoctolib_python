@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 19817 2015-03-23 16:49:57Z seb $
+#* $Id: yocto_serialport.py 20508 2015-06-01 16:32:48Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -846,7 +846,7 @@ class YSerialPort(YFunction):
             return ""
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = int(msgarr[msglen])
+        self._rxptr = YAPI._atoi(msgarr[msglen])
         if msglen == 0:
             return ""
         res = self._json_get_string(YString2Byte(msgarr[0]))
@@ -889,7 +889,7 @@ class YSerialPort(YFunction):
             return res
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = int(msgarr[msglen])
+        self._rxptr = YAPI._atoi(msgarr[msglen])
         idx = 0
         
         while idx < msglen:
@@ -934,7 +934,7 @@ class YSerialPort(YFunction):
         bufflen = len(buff) - 1
         while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
             bufflen = bufflen - 1
-        res = int((YByte2String(buff))[0: 0 + bufflen])
+        res = YAPI._atoi((YByte2String(buff))[0: 0 + bufflen])
         return res
 
     def queryLine(self, query, maxWait):
@@ -964,7 +964,7 @@ class YSerialPort(YFunction):
             return ""
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = int(msgarr[msglen])
+        self._rxptr = YAPI._atoi(msgarr[msglen])
         if msglen == 0:
             return ""
         res = self._json_get_string(YString2Byte(msgarr[0]))

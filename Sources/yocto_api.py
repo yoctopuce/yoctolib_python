@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_api.py 20380 2015-05-19 16:28:16Z seb $
+#* $Id: yocto_api.py 20495 2015-06-01 14:05:27Z seb $
 #*
 #* High-level programming interface, common to all modules
 #*
@@ -537,7 +537,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "20384"
+    YOCTO_API_BUILD_NO = "20652"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1370,6 +1370,18 @@ class YAPI:
                     val *= 10
             idat.append(sign * val)
         return idat
+
+    @staticmethod
+    def _atoi(val):
+        val = val.strip()
+        p = 0
+        if p < len(val) and (val[p] == '-' or val[p] == '+'):
+            p += 1
+        while p < len(val) and val[p].isdigit():
+            p += 1
+        if p == 0:
+            return 0
+        return int(val[: p])
 
     #noinspection PyUnresolvedReferences
     @staticmethod
@@ -4682,7 +4694,7 @@ class YModule(YFunction):
         # release
         # tmp_res
         if onlynew:
-            release = int(self.get_firmwareRelease())
+            release = YAPI._atoi(self.get_firmwareRelease())
         else:
             release = 0
         # //may throw an exception
@@ -4772,7 +4784,7 @@ class YModule(YFunction):
         if unit_name == "C":
             if sensorType == "":
                 return 16
-            if int(sensorType) < 8:
+            if YAPI._atoi(sensorType) < 8:
                 return 16
             else:
                 return 100
@@ -4822,7 +4834,7 @@ class YModule(YFunction):
                     funOffset = words[0]
             else:
                 if funVer == 1:
-                    if currentFuncValue == "" or (int(currentFuncValue) > 10):
+                    if currentFuncValue == "" or (YAPI._atoi(currentFuncValue) > 10):
                         funScale = 0
         del calibData[:]
         calibType = 0
@@ -4849,7 +4861,7 @@ class YModule(YFunction):
                 if paramVer == 1:
                     words_str = (param).split(',')
                     for y in words_str:
-                        words.append(int(y))
+                        words.append(YAPI._atoi(y))
                     if param == "" or (words[0] > 10):
                         paramScale = 0
                     if (len(words) > 0) and (words[0] > 0):
@@ -5444,6 +5456,7 @@ class YSensor(YFunction):
     REPORTFREQUENCY_INVALID = YAPI.INVALID_STRING
     CALIBRATIONPARAM_INVALID = YAPI.INVALID_STRING
     RESOLUTION_INVALID = YAPI.INVALID_DOUBLE
+    SENSORSTATE_INVALID = YAPI.INVALID_INT
     #--- (end of generated code: YSensor definitions)
 
     def __init__(self, func):
@@ -5460,6 +5473,7 @@ class YSensor(YFunction):
         self._reportFrequency = YSensor.REPORTFREQUENCY_INVALID
         self._calibrationParam = YSensor.CALIBRATIONPARAM_INVALID
         self._resolution = YSensor.RESOLUTION_INVALID
+        self._sensorState = YSensor.SENSORSTATE_INVALID
         self._timedReportCallbackSensor = None
         self._prevTimedReport = 0
         self._iresol = 0
@@ -5503,6 +5517,9 @@ class YSensor(YFunction):
             return 1
         if member.name == "resolution":
             self._resolution = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
+            return 1
+        if member.name == "sensorState":
+            self._sensorState = member.ivalue
             return 1
         super(YSensor, self)._parseAttr(member)
 
@@ -5713,6 +5730,22 @@ class YSensor(YFunction):
                 return YSensor.RESOLUTION_INVALID
         return self._resolution
 
+    def get_sensorState(self):
+        """
+        Returns the sensor health state code, which is zero when there is an up-to-date measure
+        available or a positive code if the sensor is not able to provide a measure right now.
+
+        @return an integer corresponding to the sensor health state code, which is zero when there is an
+        up-to-date measure
+                available or a positive code if the sensor is not able to provide a measure right now
+
+        On failure, throws an exception or returns YSensor.SENSORSTATE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YSensor.SENSORSTATE_INVALID
+        return self._sensorState
+
     @staticmethod
     def FindSensor(func):
         """
@@ -5866,6 +5899,21 @@ class YSensor(YFunction):
                     self._calref.append(YAPI._decimalToDouble(iRef))
                 position = position + 2
         return 0
+
+    def isSensorReady(self):
+        """
+        Checks if the sensor is currently able to provide an up-to-date measure.
+        Returns false if the device is unreachable, or if the sensor does not have
+        a current measure to transmit. No exception is raised if there is an error
+        while trying to contact the device hosting $THEFUNCTION$.
+
+        @return true if the sensor can provide an up-to-date measure, and false otherwise
+        """
+        if not (self.isOnline()):
+            return False
+        if not (self._sensorState == 0):
+            return False
+        return True
 
     def startDataLogger(self):
         """

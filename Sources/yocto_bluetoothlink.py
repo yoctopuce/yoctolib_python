@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_bluetoothlink.py 20325 2015-05-12 15:34:50Z seb $
+#* $Id: yocto_bluetoothlink.py 20644 2015-06-12 16:04:33Z seb $
 #*
 #* Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
 #*
@@ -59,8 +59,21 @@ class YBluetoothLink(YFunction):
     OWNADDRESS_INVALID = YAPI.INVALID_STRING
     PAIRINGPIN_INVALID = YAPI.INVALID_STRING
     REMOTEADDRESS_INVALID = YAPI.INVALID_STRING
-    MESSAGE_INVALID = YAPI.INVALID_STRING
+    REMOTENAME_INVALID = YAPI.INVALID_STRING
+    PREAMPLIFIER_INVALID = YAPI.INVALID_UINT
+    VOLUME_INVALID = YAPI.INVALID_UINT
+    LINKQUALITY_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
+    MUTE_FALSE = 0
+    MUTE_TRUE = 1
+    MUTE_INVALID = -1
+    LINKSTATE_DOWN = 0
+    LINKSTATE_FREE = 1
+    LINKSTATE_SEARCH = 2
+    LINKSTATE_EXISTS = 3
+    LINKSTATE_LINKED = 4
+    LINKSTATE_PLAY = 5
+    LINKSTATE_INVALID = -1
     #--- (end of YBluetoothLink definitions)
 
     def __init__(self, func):
@@ -71,7 +84,12 @@ class YBluetoothLink(YFunction):
         self._ownAddress = YBluetoothLink.OWNADDRESS_INVALID
         self._pairingPin = YBluetoothLink.PAIRINGPIN_INVALID
         self._remoteAddress = YBluetoothLink.REMOTEADDRESS_INVALID
-        self._message = YBluetoothLink.MESSAGE_INVALID
+        self._remoteName = YBluetoothLink.REMOTENAME_INVALID
+        self._mute = YBluetoothLink.MUTE_INVALID
+        self._preAmplifier = YBluetoothLink.PREAMPLIFIER_INVALID
+        self._volume = YBluetoothLink.VOLUME_INVALID
+        self._linkState = YBluetoothLink.LINKSTATE_INVALID
+        self._linkQuality = YBluetoothLink.LINKQUALITY_INVALID
         self._command = YBluetoothLink.COMMAND_INVALID
         #--- (end of YBluetoothLink attributes)
 
@@ -86,8 +104,23 @@ class YBluetoothLink(YFunction):
         if member.name == "remoteAddress":
             self._remoteAddress = member.svalue
             return 1
-        if member.name == "message":
-            self._message = member.svalue
+        if member.name == "remoteName":
+            self._remoteName = member.svalue
+            return 1
+        if member.name == "mute":
+            self._mute = member.ivalue
+            return 1
+        if member.name == "preAmplifier":
+            self._preAmplifier = member.ivalue
+            return 1
+        if member.name == "volume":
+            self._volume = member.ivalue
+            return 1
+        if member.name == "linkState":
+            self._linkState = member.ivalue
+            return 1
+        if member.name == "linkQuality":
+            self._linkQuality = member.ivalue
             return 1
         if member.name == "command":
             self._command = member.svalue
@@ -166,18 +199,128 @@ class YBluetoothLink(YFunction):
         rest_val = newval
         return self._setAttr("remoteAddress", rest_val)
 
-    def get_message(self):
+    def get_remoteName(self):
         """
-        Returns the latest status message from the bluetooth interface.
+        Returns the bluetooth name the remote device, if found on the bluetooth network.
 
-        @return a string corresponding to the latest status message from the bluetooth interface
+        @return a string corresponding to the bluetooth name the remote device, if found on the bluetooth network
 
-        On failure, throws an exception or returns YBluetoothLink.MESSAGE_INVALID.
+        On failure, throws an exception or returns YBluetoothLink.REMOTENAME_INVALID.
         """
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YBluetoothLink.MESSAGE_INVALID
-        return self._message
+                return YBluetoothLink.REMOTENAME_INVALID
+        return self._remoteName
+
+    def get_mute(self):
+        """
+        Returns the state of the mute function.
+
+        @return either YBluetoothLink.MUTE_FALSE or YBluetoothLink.MUTE_TRUE, according to the state of the
+        mute function
+
+        On failure, throws an exception or returns YBluetoothLink.MUTE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YBluetoothLink.MUTE_INVALID
+        return self._mute
+
+    def set_mute(self, newval):
+        """
+        Changes the state of the mute function. Remember to call the matching module
+        saveToFlash() method to save the setting permanently.
+
+        @param newval : either YBluetoothLink.MUTE_FALSE or YBluetoothLink.MUTE_TRUE, according to the
+        state of the mute function
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("mute", rest_val)
+
+    def get_preAmplifier(self):
+        """
+        Returns the audio pre-amplifier volume, in per cents.
+
+        @return an integer corresponding to the audio pre-amplifier volume, in per cents
+
+        On failure, throws an exception or returns YBluetoothLink.PREAMPLIFIER_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YBluetoothLink.PREAMPLIFIER_INVALID
+        return self._preAmplifier
+
+    def set_preAmplifier(self, newval):
+        """
+        Changes the audio pre-amplifier volume, in per cents.
+
+        @param newval : an integer corresponding to the audio pre-amplifier volume, in per cents
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("preAmplifier", rest_val)
+
+    def get_volume(self):
+        """
+        Returns the connected headset volume, in per cents.
+
+        @return an integer corresponding to the connected headset volume, in per cents
+
+        On failure, throws an exception or returns YBluetoothLink.VOLUME_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YBluetoothLink.VOLUME_INVALID
+        return self._volume
+
+    def set_volume(self, newval):
+        """
+        Changes the connected headset volume, in per cents.
+
+        @param newval : an integer corresponding to the connected headset volume, in per cents
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("volume", rest_val)
+
+    def get_linkState(self):
+        """
+        Returns the bluetooth link state.
+
+        @return a value among YBluetoothLink.LINKSTATE_DOWN, YBluetoothLink.LINKSTATE_FREE,
+        YBluetoothLink.LINKSTATE_SEARCH, YBluetoothLink.LINKSTATE_EXISTS, YBluetoothLink.LINKSTATE_LINKED
+        and YBluetoothLink.LINKSTATE_PLAY corresponding to the bluetooth link state
+
+        On failure, throws an exception or returns YBluetoothLink.LINKSTATE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YBluetoothLink.LINKSTATE_INVALID
+        return self._linkState
+
+    def get_linkQuality(self):
+        """
+        Returns the bluetooth receiver signal strength, in pourcents, or 0 if no connection is established.
+
+        @return an integer corresponding to the bluetooth receiver signal strength, in pourcents, or 0 if
+        no connection is established
+
+        On failure, throws an exception or returns YBluetoothLink.LINKQUALITY_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YBluetoothLink.LINKQUALITY_INVALID
+        return self._linkQuality
 
     def get_command(self):
         if self._cacheExpiration <= YAPI.GetTickCount():
