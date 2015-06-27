@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_datalogger.py 19610 2015-03-05 10:39:47Z seb $
+#* $Id: yocto_datalogger.py 20704 2015-06-20 19:43:34Z mvuilleu $
 #*
 #* Implements yFindDataLogger(), the high-level API for DataLogger
 #*
@@ -60,6 +60,7 @@ class YDataLogger(YFunction):
     TIMEUTC_INVALID = YAPI.INVALID_LONG
     RECORDING_OFF = 0
     RECORDING_ON = 1
+    RECORDING_PENDING = 2
     RECORDING_INVALID = -1
     AUTOSTART_OFF = 0
     AUTOSTART_ON = 1
@@ -153,8 +154,8 @@ class YDataLogger(YFunction):
         """
         Returns the current activation state of the data logger.
 
-        @return either YDataLogger.RECORDING_OFF or YDataLogger.RECORDING_ON, according to the current
-        activation state of the data logger
+        @return a value among YDataLogger.RECORDING_OFF, YDataLogger.RECORDING_ON and
+        YDataLogger.RECORDING_PENDING corresponding to the current activation state of the data logger
 
         On failure, throws an exception or returns YDataLogger.RECORDING_INVALID.
         """
@@ -167,14 +168,15 @@ class YDataLogger(YFunction):
         """
         Changes the activation state of the data logger to start/stop recording data.
 
-        @param newval : either YDataLogger.RECORDING_OFF or YDataLogger.RECORDING_ON, according to the
-        activation state of the data logger to start/stop recording data
+        @param newval : a value among YDataLogger.RECORDING_OFF, YDataLogger.RECORDING_ON and
+        YDataLogger.RECORDING_PENDING corresponding to the activation state of the data logger to
+        start/stop recording data
 
         @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = "1" if newval > 0 else "0"
+        rest_val = str(newval)
         return self._setAttr("recording", rest_val)
 
     def get_autoStart(self):
