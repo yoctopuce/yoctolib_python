@@ -39,7 +39,7 @@ def dumpSensor(sensor):
 def main():
     errmsg = YRefParam()
     # Setup the API to use local USB devices
-    if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
+    if YAPI.RegisterHub("172.17.17.76", errmsg) != YAPI.SUCCESS:
         sys.exit("init error" + errmsg.value)
 
     if len(sys.argv) == 1 or sys.argv[1] == 'any':

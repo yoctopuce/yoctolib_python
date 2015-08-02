@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_api.py 20495 2015-06-01 14:05:27Z seb $
+#* $Id: yocto_api.py 20916 2015-07-23 08:54:20Z seb $
 #*
 #* High-level programming interface, common to all modules
 #*
@@ -50,6 +50,7 @@ import sys
 import os
 import time
 import array
+import binascii
 from ctypes import *
 
 #
@@ -537,7 +538,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "20773"
+    YOCTO_API_BUILD_NO = "20971"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1383,6 +1384,14 @@ class YAPI:
             return 0
         return int(val[: p])
 
+    @staticmethod
+    def _bytesToHexStr(bindata):
+        return binascii.hexlify(bindata).upper()
+
+    @staticmethod
+    def _hexStrToBin(hex_str):
+        return binascii.unhexlify(hex_str)
+
     #noinspection PyUnresolvedReferences
     @staticmethod
     def HandleEvents(errmsgRef=None):
@@ -2133,6 +2142,7 @@ class YAPI:
         YFunction._CalibHandlers.clear()
 
 
+
 #--- (generated code: YFirmwareUpdate class start)
 #noinspection PyProtectedMember
 class YFirmwareUpdate(object):
@@ -2497,6 +2507,9 @@ class YDataStream(object):
         # idx
         udat = []
         dat = []
+        if len(sdata) == 0:
+            self._nRows = 0
+            return YAPI.SUCCESS
         # // may throw an exception
         udat = YAPI._decodeWords(self._parent._json_get_string(sdata))
         del self._values[:]
@@ -2951,6 +2964,10 @@ class YDataSet(object):
         summaryMaxVal = float('-inf')
         summaryTotalTime = 0
         summaryTotalAvg = 0
+        streamStartTime = 0x7fffffff
+        streamEndTime = 0
+        startTime = 0x7fffffff
+        endTime = 0
         node = j.GetRootNode()
 
         if node.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT:
@@ -2973,7 +2990,9 @@ class YDataSet(object):
                 streams_node = j.GetChildNode(node, "streams")
                 for streams_json in streams_node.items:
                     stream = self._parent._findDataStream(self, streams_json.svalue)
-                    if self._startTime > 0 and stream.get_startTimeUTC() + stream.get_duration() <= self._startTime:
+                    streamStartTime = stream.get_startTimeUTC() - stream.get_dataSamplesIntervalMs() / 1000
+                    streamEndTime = stream.get_startTimeUTC() + stream.get_duration()
+                    if self._startTime > 0 and streamEndTime <= self._startTime:
                         # this stream is too early, drop it
                         pass
                     elif 0 < self._endTime < stream.get_startTimeUTC():
@@ -2981,8 +3000,12 @@ class YDataSet(object):
                         pass
                     else:
                         self._streams.append(stream)
+                        if startTime > streamStartTime:
+                            startTime = streamStartTime
+                        if endTime < streamEndTime:
+                            endtime = streamEndTime
                         if(stream.isClosed() and stream.get_startTimeUTC() >= self._startTime and
-                           (self._endTime == 0 or stream.get_startTimeUTC() + stream.get_duration() <= self._endTime)):
+                           (self._endTime == 0 or streamEndTime <= self._endTime)):
                             if summaryMinVal > stream.get_minValue():
                                 summaryMinVal = stream.get_minValue()
                             if summaryMaxVal < stream.get_maxValue():
@@ -2991,20 +3014,17 @@ class YDataSet(object):
                             summaryTotalTime += stream.get_duration()
 
                             rec = YMeasure(stream.get_startTimeUTC(),
-                                           stream.get_startTimeUTC() + stream.get_duration(),
+                                           streamEndTime,
                                            stream.get_minValue(),
                                            stream.get_averageValue(),
                                            stream.get_maxValue())
                             self._preview.append(rec)
                 if (len(self._streams) > 0) and (summaryTotalTime > 0):
                     # update time boundaries with actual data
-                    stream = self._streams[len(self._streams) - 1]
-                    endtime = stream.get_startTimeUTC() + stream.get_duration()
-                    startTime = self._streams[0].get_startTimeUTC() - stream.get_dataSamplesIntervalMs() / 1000
                     if self._startTime < startTime:
                         self._startTime = startTime
-                    if self._endTime == 0 or self._endTime > endtime:
-                        self._endTime = endtime
+                    if self._endTime == 0 or self._endTime > endTime:
+                        self._endTime = endTime
                     self._summary = YMeasure(self._startTime, self._endTime,
                                              summaryMinVal, summaryTotalAvg / summaryTotalTime, summaryMaxVal)
         self._progress = 0
@@ -3206,6 +3226,63 @@ class YDataSet(object):
         On failure, throws an exception or returns an empty array.
         """
         return self._preview
+
+    def get_measuresAt(self, measure):
+        """
+        Returns the detailed set of measures for the time interval corresponding
+        to a given condensed measures previously returned by get_preview().
+        The result is provided as a list of YMeasure objects.
+
+        @param measure : condensed measure from the list previously returned by
+                get_preview().
+
+        @return a table of records, where each record depicts the
+                measured values during a time interval
+
+        On failure, throws an exception or returns an empty array.
+        """
+        # startUtc
+        # stream
+        dataRows = []
+        measures = []
+        # tim
+        # itv
+        # nCols
+        # minCol
+        # avgCol
+        # maxCol
+        # // may throw an exception
+        startUtc = round(measure.get_startTimeUTC())
+        stream = None
+        for y in self._streams:
+            if y.get_startTimeUTC() == startUtc:
+                stream = y
+        if stream is None:
+            return measures
+        dataRows = stream.get_dataRows()
+        if len(dataRows) == 0:
+            return measures
+        tim = stream.get_startTimeUTC()
+        itv = stream.get_dataSamplesInterval()
+        if tim < itv:
+            tim = itv
+        nCols = len(dataRows[0])
+        minCol = 0
+        if nCols > 2:
+            avgCol = 1
+        else:
+            avgCol = 0
+        if nCols > 2:
+            maxCol = 2
+        else:
+            maxCol = 0
+        
+        for y in dataRows:
+            if (tim >= self._startTime) and ((self._endTime == 0) or (tim <= self._endTime)):
+                measures.append(YMeasure(tim - itv, tim, y[minCol], y[avgCol], y[maxCol]))
+            tim = tim + itv
+        
+        return measures
 
     def get_measures(self):
         """
@@ -4732,6 +4809,37 @@ class YModule(YFunction):
         # // may throw an exception
         return self._download("api.json")
 
+    def hasFunction(self, funcId):
+        # count
+        # i
+        # fid
+        # // may throw an exception
+        count  = self.functionCount()
+        i = 0
+        while i < count:
+            fid  = self.functionId(i)
+            if fid == funcId:
+                return True
+            i = i + 1
+        return False
+
+    def get_functionIds(self, funType):
+        # count
+        # i
+        # ftype
+        res = []
+        # // may throw an exception
+        count = self.functionCount()
+        i = 0
+        
+        while i < count:
+            ftype  = self.functionType(i)
+            if ftype == funType:
+                res.append(self.functionId(i))
+            i = i + 1
+        
+        return res
+
     def _flattenJsonStruct(self, jsoncomplex):
         errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         smallbuff = ctypes.create_string_buffer(1024)
@@ -5323,6 +5431,37 @@ class YModule(YFunction):
             return YAPI.INVALID_STRING
 
         return funcIdRef.value
+
+    def functionType(self, functionIndex):
+        """
+        Retrieves the type of the <i>n</i>th function on the module.
+
+        @param functionIndex : the index of the function for which the information is desired, starting at
+        0 for the first function.
+
+        @return a the type of the function
+
+        On failure, throws an exception or returns an empty string.
+        """
+        serialRef = YRefParam()
+        funcIdRef = YRefParam()
+        funcNameRef = YRefParam()
+        funcValRef = YRefParam()
+        errmsgRef = YRefParam()
+
+        res = self._getFunction(functionIndex, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)
+        if YAPI.YISERR(res):
+            self._throw(res, errmsgRef.value)
+            return YAPI.INVALID_STRING
+
+        funid = funcIdRef.value
+        i = 0
+        for c in funid:
+            if '0' <= c <= '9':
+                break
+            i += 1
+        res = funid[1:i]
+        return funid[0].upper() + res
 
     def functionName(self, functionIndex):
         """

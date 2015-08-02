@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_audioin.py 20746 2015-06-25 11:15:45Z seb $
+#* $Id: yocto_audioin.py 20797 2015-07-06 16:49:40Z mvuilleu $
 #*
 #* Implements yFindAudioIn(), the high-level API for AudioIn functions
 #*
@@ -56,6 +56,7 @@ class YAudioIn(YFunction):
     #--- (end of YAudioIn dlldef)
     #--- (YAudioIn definitions)
     VOLUME_INVALID = YAPI.INVALID_UINT
+    VOLUMERANGE_INVALID = YAPI.INVALID_STRING
     SIGNAL_INVALID = YAPI.INVALID_INT
     NOSIGNALFOR_INVALID = YAPI.INVALID_INT
     MUTE_FALSE = 0
@@ -70,6 +71,7 @@ class YAudioIn(YFunction):
         self._callback = None
         self._volume = YAudioIn.VOLUME_INVALID
         self._mute = YAudioIn.MUTE_INVALID
+        self._volumeRange = YAudioIn.VOLUMERANGE_INVALID
         self._signal = YAudioIn.SIGNAL_INVALID
         self._noSignalFor = YAudioIn.NOSIGNALFOR_INVALID
         #--- (end of YAudioIn attributes)
@@ -81,6 +83,9 @@ class YAudioIn(YFunction):
             return 1
         if member.name == "mute":
             self._mute = member.ivalue
+            return 1
+        if member.name == "volumeRange":
+            self._volumeRange = member.svalue
             return 1
         if member.name == "signal":
             self._signal = member.ivalue
@@ -142,6 +147,22 @@ class YAudioIn(YFunction):
         """
         rest_val = "1" if newval > 0 else "0"
         return self._setAttr("mute", rest_val)
+
+    def get_volumeRange(self):
+        """
+        Returns the supported volume range. The low value of the
+        range corresponds to the minimal audible value. To
+        completely mute the sound, use set_mute()
+        instead of the set_volume().
+
+        @return a string corresponding to the supported volume range
+
+        On failure, throws an exception or returns YAudioIn.VOLUMERANGE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YAudioIn.VOLUMERANGE_INVALID
+        return self._volumeRange
 
     def get_signal(self):
         """

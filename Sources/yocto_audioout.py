@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_audioout.py 20565 2015-06-04 09:59:10Z seb $
+#* $Id: yocto_audioout.py 20797 2015-07-06 16:49:40Z mvuilleu $
 #*
 #* Implements yFindAudioOut(), the high-level API for AudioOut functions
 #*
@@ -56,6 +56,7 @@ class YAudioOut(YFunction):
     #--- (end of YAudioOut dlldef)
     #--- (YAudioOut definitions)
     VOLUME_INVALID = YAPI.INVALID_UINT
+    VOLUMERANGE_INVALID = YAPI.INVALID_STRING
     SIGNAL_INVALID = YAPI.INVALID_INT
     NOSIGNALFOR_INVALID = YAPI.INVALID_INT
     MUTE_FALSE = 0
@@ -70,6 +71,7 @@ class YAudioOut(YFunction):
         self._callback = None
         self._volume = YAudioOut.VOLUME_INVALID
         self._mute = YAudioOut.MUTE_INVALID
+        self._volumeRange = YAudioOut.VOLUMERANGE_INVALID
         self._signal = YAudioOut.SIGNAL_INVALID
         self._noSignalFor = YAudioOut.NOSIGNALFOR_INVALID
         #--- (end of YAudioOut attributes)
@@ -81,6 +83,9 @@ class YAudioOut(YFunction):
             return 1
         if member.name == "mute":
             self._mute = member.ivalue
+            return 1
+        if member.name == "volumeRange":
+            self._volumeRange = member.svalue
             return 1
         if member.name == "signal":
             self._signal = member.ivalue
@@ -142,6 +147,22 @@ class YAudioOut(YFunction):
         """
         rest_val = "1" if newval > 0 else "0"
         return self._setAttr("mute", rest_val)
+
+    def get_volumeRange(self):
+        """
+        Returns the supported volume range. The low value of the
+        range corresponds to the minimal audible value. To
+        completely mute the sound, use set_mute()
+        instead of the set_volume().
+
+        @return a string corresponding to the supported volume range
+
+        On failure, throws an exception or returns YAudioOut.VOLUMERANGE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YAudioOut.VOLUMERANGE_INVALID
+        return self._volumeRange
 
     def get_signal(self):
         """
