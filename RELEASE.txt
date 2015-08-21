@@ -1,1 +1,8 @@
+(Libs)- update help files
 (Misc)- yoctoapi js:add get_measuresAt_async method
+(Misc)- libs:Add _clearDataStreamCache() method
+(Misc)- js api:Fix missing value change callbacks for some values on Yocto-Serial and Yocto-GPS
+(Misc)- genericsensors:Improve handling of initial value when using low noise filter
+(python)- Fix parsing issue with string values containing a "\
+(python)- Fix YAPI_Exception declaration
+(yapi) - Fix potential crash if YAPI.RegisterHUB("usb") is called after YAPI.UnregisterHub("usb")

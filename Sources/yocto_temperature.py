@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 20410 2015-05-22 08:30:27Z seb $
+#* $Id: yocto_temperature.py 21211 2015-08-19 16:03:29Z seb $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -101,7 +101,7 @@ class YTemperature(YSensor):
         Changes the measuring unit for the measured temperature. That unit is a string.
         If that strings end with the letter F all temperatures values will returned in
         Fahrenheit degrees. If that String ends with the letter K all values will be
-        returned in Kelvin degrees. If that String ends with the letter C all values will be
+        returned in Kelvin degrees. If that string ends with the letter C all values will be
         returned in Celsius degrees.  If the string ends with any other character the
         change will be ignored. Remember to call the
         saveToFlash() method of the module if the modification must be kept.

@@ -1,6 +1,6 @@
-#*********************************************************************
-#*
-#* $Id: yocto_api.py 20916 2015-07-23 08:54:20Z seb $
+# *********************************************************************
+# *
+#* $Id: yocto_api.py 21211 2015-08-19 16:03:29Z seb $
 #*
 #* High-level programming interface, common to all modules
 #*
@@ -89,7 +89,6 @@ def YGetBytePython3x(binBuffer, l):
     return binBuffer[l]
 
 
-
 def YAddBytePython3x(binBuffer, b):
     return binBuffer + bytes([b])
 
@@ -132,6 +131,12 @@ class YRefParam:
 
     def __str__(self):
         return str(self.value)
+
+
+class YAPI_Exception(Exception):
+    def __init__(self, errType, errMsg):
+        super(YAPI_Exception, self).__init__(errMsg)
+        self.errorType = errType
 
 
 #noinspection PyClassHasNoInit,PyProtectedMember
@@ -374,7 +379,7 @@ class YAPI:
                 elif state == self.Tjstate.JWAITFORSTRINGVALUE:
                     if sti == "\\" and idx.i + 1 < len(st):
                         idx.i += 1
-                        svalue + st[idx.i]
+                        svalue = svalue + st[idx.i]
 
                     elif sti == "\"":
                         state = self.Tjstate.JSCOMPLETED
@@ -538,7 +543,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "20983"
+    YOCTO_API_BUILD_NO = "21242"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -962,6 +967,12 @@ class YAPI:
         YAPI._yapiTestHub = YAPI._yApiCLib.yapiTestHub
         YAPI._yapiTestHub.restypes = ctypes.c_int
         YAPI._yapiTestHub.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
+        YAPI._yapiJsonGetPath = YAPI._yApiCLib.yapiJsonGetPath
+        YAPI._yapiJsonGetPath.restypes = ctypes.c_int
+        YAPI._yapiJsonGetPath.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, POINTER(POINTER(ctypes.c_ubyte)), ctypes.c_char_p]
+        YAPI._yapiJsonDecodeString = YAPI._yApiCLib.yapiJsonDecodeString
+        YAPI._yapiJsonDecodeString.restypes = ctypes.c_int
+        YAPI._yapiJsonDecodeString.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
@@ -1092,7 +1103,7 @@ class YAPI:
 
     #--- (end of generated code: YFunction return codes)
 
-    class YAPI_Exception(Exception):
+    class YAPI_Exception(YAPI_Exception):
         pass
 
     YDevice_devCache = []
@@ -2142,7 +2153,6 @@ class YAPI:
         YFunction._CalibHandlers.clear()
 
 
-
 #--- (generated code: YFirmwareUpdate class start)
 #noinspection PyProtectedMember
 class YFirmwareUpdate(object):
@@ -3004,8 +3014,8 @@ class YDataSet(object):
                             startTime = streamStartTime
                         if endTime < streamEndTime:
                             endtime = streamEndTime
-                        if(stream.isClosed() and stream.get_startTimeUTC() >= self._startTime and
-                           (self._endTime == 0 or streamEndTime <= self._endTime)):
+                        if (stream.isClosed() and stream.get_startTimeUTC() >= self._startTime and
+                                (self._endTime == 0 or streamEndTime <= self._endTime)):
                             if summaryMinVal > stream.get_minValue():
                                 summaryMinVal = stream.get_minValue()
                             if summaryMaxVal < stream.get_maxValue():
@@ -3357,7 +3367,6 @@ class YDevice:
                 YAPI.YDevice_devCache[idx]._cacheStamp = datetime.datetime(year=1970, month=1, day=1)
                 YAPI.YDevice_devCache[idx]._subpathinit = False
 
-
     def _HTTPRequestPrepare(self, request):
         errbuf = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         root = ctypes.create_string_buffer(YAPI.YOCTO_SERIAL_LEN)
@@ -3701,7 +3710,8 @@ class YFunction(object):
                     (c > 'z' and c != '~') or c == '"' or c == '%' or c == '&' or c == '+' or \
                             c == '<' or c == '=' or c == '>' or c == '\\' or c == '^' or c == '`':
                 c_ord = ord(c)
-                if ((c_ord == 0xc2 or c_ord == 0xc3) and (ofs + 1 < nb_bytes) and (ord(changeval[ofs + 1]) & 0xc0) == 0x80):
+                if ((c_ord == 0xc2 or c_ord == 0xc3) and (ofs + 1 < nb_bytes) and (
+                    ord(changeval[ofs + 1]) & 0xc0) == 0x80):
                     # UTF8-encoded ISO-8859-1 character: translate to plain ISO-8859-1
                     c_ord = (c_ord & 1) * 0x40
                     ofs += 1
@@ -3883,6 +3893,26 @@ class YFunction(object):
         node = j.GetRootNode()
         return node.items[0].svalue
 
+    def _get_json_path(self, json, path):
+        errbuf = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        path_data = ctypes.create_string_buffer(path)
+        json_data = ctypes.create_string_buffer(json)
+        reply_c = POINTER(ctypes.c_ubyte)()
+        res = YAPI._yapiJsonGetPath(path_data, json_data, len(json), ctypes.byref(reply_c), errbuf)
+        if res > 0:
+            bb = YString2Byte("")
+            #(xrange not supported in 2.5.x)
+            for i in range(res):
+                bb = YAddByte(bb, reply_c[i])
+            return YByte2String(bb)
+        return ""
+
+    def _decode_json_string(self, json):
+        json_data = ctypes.create_string_buffer(json)
+        buffer = ctypes.create_string_buffer(len(json))
+        res = YAPI._yapiJsonDecodeString(json_data, buffer)
+        return YByte2String(buffer.value)
+
     # Method used to cache DataStream objects (new DataLogger)
     def _findDataStream(self, dataset, definition):
         key = dataset.get_functionId() + ":" + definition
@@ -3891,6 +3921,10 @@ class YFunction(object):
         newDataStream = YDataStream(self, dataset, YAPI._decodeWords(definition))
         self._dataStreams[key] = newDataStream
         return newDataStream
+
+    # Method used to clear cache of DataStream object (undocumented)
+    def _clearDataStreamCache(self):
+        self._dataStreams.clear()
 
     #--- (generated code: YFunction implementation)
     def _parseAttr(self, member):
@@ -4809,7 +4843,83 @@ class YModule(YFunction):
         # // may throw an exception
         return self._download("api.json")
 
+    def get_allSettings_dev(self):
+        # settings
+        # json
+        # res
+        # sep
+        # name
+        # file_data
+        # file_data_bin
+        # all_file_data
+        filelist = []
+        # // may throw an exception
+        settings = self._download("api.json")
+        all_file_data = ", \"files\":["
+        if self.hasFunction("files"):
+            #
+            json = self._download("files.json?a=dir&f=")
+            filelist = self._json_get_array(json)
+            sep = ""
+            for y in  filelist:
+                name = self._json_get_key(YString2Byte(y), "name")
+                file_data_bin = self._download(self._escapeAttr(name))
+                file_data = YAPI._bytesToHexStr(file_data_bin)
+                file_data = "" + sep + "{\"name\":\"" + name + "\", \"data\":\"" + file_data + "\"}\n"
+                sep = ","
+                all_file_data = all_file_data + file_data
+        all_file_data = all_file_data + "]}"
+        res = YString2Byte("{ \"api\":") + settings + YString2Byte(all_file_data)
+        return res
+
+    def set_allSettings_dev(self, settings):
+        """
+        Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
+        of a module from a backup.Remember to call the saveToFlash() method of the module if the
+        modifications must be kept.
+
+        @param settings : a binary buffer with all the settings.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # down
+        # json
+        # json_api
+        # json_files
+        json = YByte2String(settings)
+        json_api = self._get_json_path(json, "api")
+        self.set_allSettings(YString2Byte(json_api))
+        if self.hasFunction("files"):
+            files = []
+            # res
+            # name
+            # data
+            down = self._download("files.json?a=format")
+            res = self._get_json_path(YByte2String(down), "res")
+            res = self._decode_json_string(res)
+            if not (res == "ok"):
+                self._throw(YAPI.IO_ERROR, "format failed")
+            json_files = self._get_json_path(json, "files")
+            files = self._json_get_array(YString2Byte(json_files))
+            for y in  files:
+                name = self._get_json_path(y, "name")
+                name = self._decode_json_string(name)
+                data = self._get_json_path(y, "data")
+                data = self._decode_json_string(data)
+                self._upload(name, YAPI._hexStrToBin(data))
+        return YAPI.SUCCESS
+
     def hasFunction(self, funcId):
+        """
+        Test if the device has a specific function. This method took an function identifier
+        and return a boolean.
+
+        @param funcId : the requested function identifier
+
+        @return : true if the device has the function identifier
+        """
         # count
         # i
         # fid
@@ -4824,6 +4934,13 @@ class YModule(YFunction):
         return False
 
     def get_functionIds(self, funType):
+        """
+        Retrieve all hardware identifier that match the type passed in argument.
+
+        @param funType : The type of function (Relay, LightSensor, Voltage,...)
+
+        @return : A array of string.
+        """
         # count
         # i
         # ftype

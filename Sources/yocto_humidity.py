@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_humidity.py 19610 2015-03-05 10:39:47Z seb $
+#* $Id: yocto_humidity.py 21211 2015-08-19 16:03:29Z seb $
 #*
 #* Implements yFindHumidity(), the high-level API for Humidity functions
 #*
@@ -57,6 +57,8 @@ class YHumidity(YSensor):
     #--- (YHumidity dlldef)
     #--- (end of YHumidity dlldef)
     #--- (YHumidity definitions)
+    RELHUM_INVALID = YAPI.INVALID_DOUBLE
+    ABSHUM_INVALID = YAPI.INVALID_DOUBLE
     #--- (end of YHumidity definitions)
 
     def __init__(self, func):
@@ -64,11 +66,64 @@ class YHumidity(YSensor):
         self._className = 'Humidity'
         #--- (YHumidity attributes)
         self._callback = None
+        self._relHum = YHumidity.RELHUM_INVALID
+        self._absHum = YHumidity.ABSHUM_INVALID
         #--- (end of YHumidity attributes)
 
     #--- (YHumidity implementation)
     def _parseAttr(self, member):
+        if member.name == "relHum":
+            self._relHum = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
+            return 1
+        if member.name == "absHum":
+            self._absHum = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
+            return 1
         super(YHumidity, self)._parseAttr(member)
+
+    def set_unit(self, newval):
+        """
+        Changes the primary unit for measuring humidity. That unit is a string.
+        If that strings starts with the letter 'g', the primary measured value is the absolute
+        humidity, in g/m3. Otherwise, the primary measured value will be the relative humidity
+        (RH), in per cents.
+
+        Remember to call the saveToFlash() method of the module if the modification
+        must be kept.
+
+        @param newval : a string corresponding to the primary unit for measuring humidity
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("unit", rest_val)
+
+    def get_relHum(self):
+        """
+        Returns the current relative humidity, in per cents.
+
+        @return a floating point number corresponding to the current relative humidity, in per cents
+
+        On failure, throws an exception or returns YHumidity.RELHUM_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YHumidity.RELHUM_INVALID
+        return self._relHum
+
+    def get_absHum(self):
+        """
+        Returns the current absolute humidity, in grams per cubic meter of air.
+
+        @return a floating point number corresponding to the current absolute humidity, in grams per cubic meter of air
+
+        On failure, throws an exception or returns YHumidity.ABSHUM_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YHumidity.ABSHUM_INVALID
+        return self._absHum
 
     @staticmethod
     def FindHumidity(func):
