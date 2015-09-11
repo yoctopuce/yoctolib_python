@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 20508 2015-06-01 16:32:48Z seb $
+#* $Id: yocto_cellular.py 21485 2015-09-11 14:10:22Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -115,6 +115,7 @@ class YCellular(YFunction):
     #--- (generated code: YCellular definitions)
     LINKQUALITY_INVALID = YAPI.INVALID_UINT
     CELLOPERATOR_INVALID = YAPI.INVALID_STRING
+    CELLIDENTIFIER_INVALID = YAPI.INVALID_STRING
     IMSI_INVALID = YAPI.INVALID_STRING
     MESSAGE_INVALID = YAPI.INVALID_STRING
     PIN_INVALID = YAPI.INVALID_STRING
@@ -135,6 +136,7 @@ class YCellular(YFunction):
         self._callback = None
         self._linkQuality = YCellular.LINKQUALITY_INVALID
         self._cellOperator = YCellular.CELLOPERATOR_INVALID
+        self._cellIdentifier = YCellular.CELLIDENTIFIER_INVALID
         self._imsi = YCellular.IMSI_INVALID
         self._message = YCellular.MESSAGE_INVALID
         self._pin = YCellular.PIN_INVALID
@@ -152,6 +154,9 @@ class YCellular(YFunction):
             return 1
         if member.name == "cellOperator":
             self._cellOperator = member.svalue
+            return 1
+        if member.name == "cellIdentifier":
+            self._cellIdentifier = member.svalue
             return 1
         if member.name == "imsi":
             self._imsi = member.svalue
@@ -204,6 +209,20 @@ class YCellular(YFunction):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.CELLOPERATOR_INVALID
         return self._cellOperator
+
+    def get_cellIdentifier(self):
+        """
+        Returns the unique identifier of the cellular antenna in use: MCC, MNC, LAC and Cell ID.
+
+        @return a string corresponding to the unique identifier of the cellular antenna in use: MCC, MNC,
+        LAC and Cell ID
+
+        On failure, throws an exception or returns YCellular.CELLIDENTIFIER_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YCellular.CELLIDENTIFIER_INVALID
+        return self._cellIdentifier
 
     def get_imsi(self):
         """

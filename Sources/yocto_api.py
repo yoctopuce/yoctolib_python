@@ -1,7 +1,7 @@
 # *********************************************************************
 # *
-#* $Id: yocto_api.py 21211 2015-08-19 16:03:29Z seb $
-#*
+# * $Id: yocto_api.py 21406 2015-09-03 13:29:41Z seb $
+# *
 #* High-level programming interface, common to all modules
 #*
 #* - - - - - - - - - License information: - - - - - - - - -
@@ -543,7 +543,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "21312"
+    YOCTO_API_BUILD_NO = "21486"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -712,8 +712,10 @@ class YAPI:
         try:
             YAPI._yApiCLib = ctypes.CDLL(YAPI._yApiCLibFile)
             libloaded = True
-        except Exception:
-            pass
+        except Exception as ex:
+            raise ImportError(
+                "Unable to import YAPI shared library (" + YAPI._yApiCLibFile +
+                "): " + str(ex))
 
         # try to load fallback library
         if not libloaded and YAPI._yApiCLibFileFallback != '':
@@ -721,10 +723,9 @@ class YAPI:
             try:
                 YAPI._yApiCLib = ctypes.CDLL(YAPI._yApiCLibFileFallback)
                 libloaded = True
-            except Exception:
-                ImportError(
-                    "Cannot load " + YAPI._yApiCLibFileFallback + " nor " + YAPI._yApiCLibFile +
-                    "  make sure it is available and accessible.")
+            except Exception as ex:
+                raise ImportError(
+                    "Cannot load " + YAPI._yApiCLibFileFallback + " nor " + YAPI._yApiCLibFile + " : " + str(ex))
 
         if not libloaded:
             raise ImportError(
@@ -2217,7 +2218,7 @@ class YFirmwareUpdate(object):
                         self._progress = 95
                 if self._progress < 100:
                     #
-                    m.set_allSettings(self._settings)
+                    m.set_allSettingsAndFiles(self._settings)
                     m.saveToFlash()
                     self._settings = bytearray(0)
                     self._progress = 100
@@ -3477,6 +3478,10 @@ class YDevice:
             e = sys.exc_info()[1]
             if not errmsgRef is None:
                 errmsgRef.value = "unexpected JSON structure: " + e.msg
+            return YAPI.IO_ERROR
+
+        if j.httpcode != 200:
+            errmsg = "Unexpected HTTP return code:%s" % j.httpcode
             return YAPI.IO_ERROR
 
         # store result in cache
@@ -4833,17 +4838,14 @@ class YModule(YFunction):
 
     def get_allSettings(self):
         """
-        Returns all the settings of the module. Useful to backup all the logical names and calibrations parameters
-        of a connected module.
+        Returns all the settings and uploaded files of the module. Useful to backup all the logical names,
+        calibrations parameters,
+        and uploaded files of a connected module.
 
         @return a binary buffer with all the settings.
 
         On failure, throws an exception or returns  YAPI.INVALID_STRING.
         """
-        # // may throw an exception
-        return self._download("api.json")
-
-    def get_allSettings_dev(self):
         # settings
         # json
         # res
@@ -4872,10 +4874,11 @@ class YModule(YFunction):
         res = YString2Byte("{ \"api\":") + settings + YString2Byte(all_file_data)
         return res
 
-    def set_allSettings_dev(self, settings):
+    def set_allSettingsAndFiles(self, settings):
         """
-        Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
-        of a module from a backup.Remember to call the saveToFlash() method of the module if the
+        Restores all the settings and uploaded files of the module. Useful to restore all the logical names
+        and calibrations parameters, uploaded
+        files etc.. of a module from a backup.Remember to call the saveToFlash() method of the module if the
         modifications must be kept.
 
         @param settings : a binary buffer with all the settings.
@@ -4890,6 +4893,8 @@ class YModule(YFunction):
         # json_files
         json = YByte2String(settings)
         json_api = self._get_json_path(json, "api")
+        if json_api == "":
+            return self.set_allSettings(settings)
         self.set_allSettings(YString2Byte(json_api))
         if self.hasFunction("files"):
             files = []
@@ -5202,6 +5207,10 @@ class YModule(YFunction):
         # each_str
         # do_update
         # found
+        tmp = YByte2String(settings)
+        tmp = self._get_json_path(tmp, "api")
+        if not (tmp == ""):
+            settings = YString2Byte(tmp)
         oldval = ""
         newval = ""
         old_json_flat = self._flattenJsonStruct(settings)

@@ -1,3 +1,6 @@
+- Add new methods set_allSettingsAndFiles() that restore settings and files
 - Add compiler sanity check on library initialization
+- Fix parsing issue with string values containing a "\
 - Fix YAPI_Exception declaration
+- Fix occasional Exception during isOnline()
 - Fix potential crash if YAPI.RegisterHUB("usb") is called after YAPI.UnregisterHub("usb")
