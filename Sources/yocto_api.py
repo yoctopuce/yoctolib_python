@@ -1,6 +1,6 @@
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 21406 2015-09-03 13:29:41Z seb $
+# * $Id: yocto_api.py 21680 2015-10-02 13:42:44Z seb $
 # *
 #* High-level programming interface, common to all modules
 #*
@@ -543,7 +543,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "21486"
+    YOCTO_API_BUILD_NO = "21701"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2318,7 +2318,8 @@ class YFirmwareUpdate(object):
         @return an integer in the range 0 to 100 (percentage of completion)
                 or a negative error code in case of failure.
         """
-        self._processMore(0)
+        if self._progress >= 0:
+            self._processMore(0)
         return self._progress
 
     def get_progressMessage(self):
@@ -2341,9 +2342,17 @@ class YFirmwareUpdate(object):
 
         On failure returns a negative error code.
         """
-        self._progress = 0
-        self._progress_c = 0
-        self._processMore(1)
+        # err
+        # leng
+        err = YByte2String(self._settings)
+        leng = len(err)
+        if  ( leng >= 6) and ("error:" == (err)[0: 0 + 6]):
+            self._progress = -1
+            self._progress_msg = (err)[6: 6 + leng - 6]
+        else:
+            self._progress = 0
+            self._progress_c = 0
+            self._processMore(1)
         return self._progress
 
 #--- (end of generated code: YFirmwareUpdate implementation)
@@ -3491,6 +3500,10 @@ class YDevice:
 
         return YAPI.SUCCESS
 
+    def clearCache(self):
+        self._cacheJson = None
+        self._cacheStamp = datetime.datetime(year=1970, month=1, day=1)
+
     #noinspection PyTypeChecker,PyTypeChecker,PyTypeChecker
     def getFunctions(self, functionsRef, errmsgRef=None):
 
@@ -4314,6 +4327,29 @@ class YFunction(object):
         self._parse(node)
         return YAPI.SUCCESS
 
+    def clearCache(self):
+        """
+        Invalidate the cache. Invalidate the cache of the function attributes. Force the
+        next call to get_xxx() or loadxxx() to use value that come from the device..
+
+        @noreturn
+        """
+        devRef = YRefParam()
+        errmsgRef = YRefParam()
+        apiresRef = YRefParam()
+        funcIdRef = YRefParam()
+        devdescRef = YRefParam()
+        serialRef = YRefParam()
+        funcNameRef = YRefParam()
+        funcValRef = YRefParam()
+
+        # Resolve our reference to our device, load REST API
+        res = self._getDevice(devRef, errmsgRef)
+        if YAPI.YISERR(res):
+            return
+        devRef.value.clearCache()
+        self._cacheExpiration = YAPI.GetTickCount()
+
     def get_module(self):
         """
         Gets the YModule object for the device on which the function is located.
@@ -4827,13 +4863,16 @@ class YModule(YFunction):
 
         @param path : the path of the byn file to use.
 
-        @return : A YFirmwareUpdate object.
+        @return : A YFirmwareUpdate object or None on error.
         """
         # serial
         # settings
         # // may throw an exception
         serial = self.get_serialNumber()
         settings = self.get_allSettings()
+        if len(settings) == 0:
+            self._throw(YAPI.IO_ERROR, "Unable to get device settings")
+            settings = YString2Byte("error:Unable to get device settings")
         return YFirmwareUpdate(serial, path, settings)
 
     def get_allSettings(self):
@@ -4844,35 +4883,98 @@ class YModule(YFunction):
 
         @return a binary buffer with all the settings.
 
-        On failure, throws an exception or returns  YAPI.INVALID_STRING.
+        On failure, throws an exception or returns an binary object of size 0.
         """
         # settings
         # json
         # res
         # sep
         # name
+        # item
+        # t_type
+        # id
+        # url
         # file_data
         # file_data_bin
-        # all_file_data
+        # temp_data_bin
+        # ext_settings
         filelist = []
+        templist = []
         # // may throw an exception
         settings = self._download("api.json")
-        all_file_data = ", \"files\":["
+        if len(settings) == 0:
+            return settings
+        ext_settings = ", \"extras\":["
+        templist = self.get_functionIds("Temperature")
+        sep = ""
+        for y in  templist:
+            if YAPI._atoi(self.get_firmwareRelease()) > 9000:
+                url = "api/" + y + "/sensorType"
+                t_type = YByte2String(self._download(url))
+                if t_type == "RES_NTC":
+                    id = (y)[11: 11 + len(y) - 11]
+                    temp_data_bin = self._download("extra.json?page=" + id)
+                    if len(temp_data_bin) == 0:
+                        return temp_data_bin
+                    item = "" + sep + "{\"fid\":\"" + y + "\", \"json\":" + YByte2String(temp_data_bin) + "}\n"
+                    ext_settings = ext_settings + item
+                    sep = ","
+        ext_settings =  ext_settings + "],\n\"files\":["
         if self.hasFunction("files"):
             #
             json = self._download("files.json?a=dir&f=")
+            if len(json) == 0:
+                return json
             filelist = self._json_get_array(json)
             sep = ""
             for y in  filelist:
                 name = self._json_get_key(YString2Byte(y), "name")
+                if len(name) == 0:
+                    return YString2Byte(name)
                 file_data_bin = self._download(self._escapeAttr(name))
                 file_data = YAPI._bytesToHexStr(file_data_bin)
-                file_data = "" + sep + "{\"name\":\"" + name + "\", \"data\":\"" + file_data + "\"}\n"
+                item = "" + sep + "{\"name\":\"" + name + "\", \"data\":\"" + file_data + "\"}\n"
+                ext_settings = ext_settings + item
                 sep = ","
-                all_file_data = all_file_data + file_data
-        all_file_data = all_file_data + "]}"
-        res = YString2Byte("{ \"api\":") + settings + YString2Byte(all_file_data)
+        ext_settings = ext_settings + "]}"
+        res = YString2Byte("{ \"api\":") + settings + YString2Byte(ext_settings)
         return res
+
+    def loadThermistorExtra(self, funcId, jsonExtra):
+        values = []
+        # url
+        # curr
+        # currTemp
+        # ofs
+        # size
+        url = "api/" + funcId + ".json?command=Z"
+        # // may throw an exception
+        self._download(url)
+        # // add records in growing resistance value
+        values = self._json_get_array(YString2Byte(jsonExtra))
+        ofs = 0
+        size = len(values)
+        while ofs + 1 < size:
+            curr = values[ofs]
+            currTemp = values[ofs + 1]
+            url = "api/" + funcId + "/.json?command=m" + curr + ":" + currTemp
+            self._download(url)
+            ofs = ofs + 2
+        return YAPI.SUCCESS
+
+    def set_extraSettings(self, jsonExtra):
+        extras = []
+        # functionId
+        # data
+        extras = self._json_get_array(YString2Byte(jsonExtra))
+        for y in  extras:
+            functionId = self._get_json_path(y, "fid")
+            functionId = self._decode_json_string(functionId)
+            data = self._get_json_path(y, "json")
+            if self.hasFunction(functionId):
+                #
+                self.loadThermistorExtra(functionId, data)
+        return YAPI.SUCCESS
 
     def set_allSettingsAndFiles(self, settings):
         """
@@ -4891,16 +4993,21 @@ class YModule(YFunction):
         # json
         # json_api
         # json_files
+        # json_extra
         json = YByte2String(settings)
         json_api = self._get_json_path(json, "api")
         if json_api == "":
             return self.set_allSettings(settings)
+        json_extra = self._get_json_path(json, "extras")
+        if not (json_extra == ""):
+            self.set_extraSettings(json_extra)
         self.set_allSettings(YString2Byte(json_api))
         if self.hasFunction("files"):
             files = []
             # res
             # name
             # data
+            #
             down = self._download("files.json?a=format")
             res = self._get_json_path(YByte2String(down), "res")
             res = self._decode_json_string(res)

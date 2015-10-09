@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 21485 2015-09-11 14:10:22Z seb $
+#* $Id: yocto_cellular.py 21511 2015-09-14 16:25:19Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -501,7 +501,14 @@ class YCellular(YFunction):
         """
         # chrPos
         # cmdLen
-        # content
+        # waitMore
+        # res
+        # buff
+        # bufflen
+        # buffstr
+        # buffstrlen
+        # idx
+        # suffixlen
         # // quote dangerous characters used in AT commands
         cmdLen = len(cmd)
         chrPos = cmd.find("#")
@@ -519,9 +526,63 @@ class YCellular(YFunction):
             cmd = "" + (cmd)[0: 0 + chrPos] + "" + str(chr(37)) + "3D" + (cmd)[chrPos+1: chrPos+1 + cmdLen-chrPos-1]
             cmdLen = cmdLen + 2
             chrPos = cmd.find("=")
+        cmd = "at.txt?cmd=" + cmd
+        res = ""
+        # // max 2 minutes (each iteration may take up to 5 seconds if waiting)
+        waitMore = 24
+        while waitMore > 0:
+            #
+            buff = self._download(cmd)
+            bufflen = len(buff)
+            buffstr = YByte2String(buff)
+            buffstrlen = len(buffstr)
+            idx = bufflen - 1
+            while (idx > 0) and (YGetByte(buff, idx) != 64) and (YGetByte(buff, idx) != 10) and (YGetByte(buff, idx) != 13):
+                idx = idx - 1
+            if YGetByte(buff, idx) == 64:
+                #
+                suffixlen = bufflen - idx
+                cmd = "at.txt?cmd=" + (buffstr)[buffstrlen - suffixlen: buffstrlen - suffixlen + suffixlen]
+                buffstr = (buffstr)[0: 0 + buffstrlen - suffixlen]
+                waitMore = waitMore - 1
+            else:
+                #
+                waitMore = 0
+            res = "" + res + "" + buffstr
+        return res
+
+    def get_availableOperators(self):
+        """
+        Returns the list detected cell operators in the neighborhood.
+        This function will typically take between 30 seconds to 1 minute to
+        return. Note that any SIM card can usually only connect to specific
+        operators. All networks returned by this function might therefore
+        not be available for connection.
+
+        @return a list of string (cell operator names).
+        """
+        # cops
+        # idx
+        # slen
+        res = []
         # // may throw an exception
-        content = self._download("at.txt?cmd=" + cmd)
-        return YByte2String(content)
+        cops = self._AT("+COPS=?")
+        slen = len(cops)
+        del res[:]
+        idx = cops.find("(")
+        while idx >= 0:
+            slen = slen - (idx+1)
+            cops = (cops)[idx+1: idx+1 + slen]
+            idx = cops.find("\"")
+            if idx > 0:
+                slen = slen - (idx+1)
+                cops = (cops)[idx+1: idx+1 + slen]
+                idx = cops.find("\"")
+                if idx > 0:
+                    res.append((cops)[0: 0 + idx])
+            idx = cops.find("(")
+        
+        return res
 
     def quickCellSurvey(self):
         """
