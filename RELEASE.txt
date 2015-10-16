@@ -1,5 +1,1 @@
-- Detect invalid settings before updating firmware
-- Add clearCache() method to YFunctions object
-- Fix loadThermistorResponseTable() method
-- Save thermistor response table during firmware update
-- Improve error message when another process is already locking the USB port.
+- Add YQuadratureDecoder class
