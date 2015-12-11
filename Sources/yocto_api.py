@@ -1,6 +1,6 @@
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 21680 2015-10-02 13:42:44Z seb $
+# * $Id: yocto_api.py 22191 2015-12-02 06:49:31Z mvuilleu $
 # *
 #* High-level programming interface, common to all modules
 #*
@@ -543,7 +543,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "21816"
+    YOCTO_API_BUILD_NO = "22324"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -877,13 +877,13 @@ class YAPI:
         YAPI._yapiGetFunctionsByDevice.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_int,
                                                    ctypes.c_void_p, ctypes.c_char_p]
 
-        #  internal extern static int _yapiGetFunctionInfo(YFUN_DESCR fundesc, ref YDEV_DESCR devdesc,
-        # StringBuilder serial, StringBuilder funcId, StringBuilder funcName, StringBuilder funcVal,
+        #  internal extern static int _yapiGetFunctionInfoEx(YFUN_DESCR fundesc, ref YDEV_DESCR devdesc,
+        # StringBuilder serial, StringBuilder funcId, StringBuilder baseType, StringBuilder funcName, StringBuilder funcVal,
         # StringBuilder errmsgRef);
-        YAPI._yapiGetFunctionInfo = YAPI._yApiCLib.yapiGetFunctionInfo
-        YAPI._yapiGetFunctionInfo.restypes = ctypes.c_int
-        YAPI._yapiGetFunctionInfo.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p,
-                                              ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+        YAPI._yapiGetFunctionInfoEx = YAPI._yApiCLib.yapiGetFunctionInfoEx
+        YAPI._yapiGetFunctionInfoEx.restypes = ctypes.c_int
+        YAPI._yapiGetFunctionInfoEx.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p,
+                                              ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
 
         #  private extern static int _yapiGetErrorString(int errorcode, StringBuilder buffer,
         # int maxsize, StringBuilder errmsgRef);
@@ -2063,11 +2063,33 @@ class YAPI:
         errBuffer = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         p = ctypes.c_int()
         #noinspection PyUnresolvedReferences
-        res = YAPI._yapiGetFunctionInfo(fundesc, ctypes.byref(p), serialBuffer, funcIdBuffer, funcNameBuffer,
-                                        funcValBuffer, errBuffer)
+        res = YAPI._yapiGetFunctionInfoEx(fundesc, ctypes.byref(p), serialBuffer, funcIdBuffer, None,
+                                        funcNameBuffer, funcValBuffer, errBuffer)
         devdescRef.value = p.value
         serialRef.value = YByte2String(serialBuffer.value)
         funcIdRef.value = YByte2String(funcIdBuffer.value)
+        funcNameRef.value = YByte2String(funcNameBuffer.value)
+        funcValRef.value = YByte2String(funcValBuffer.value)
+        if errmsgRef is not None:
+            errmsgRef.value = YByte2String(errBuffer.value)
+        return res
+
+    @staticmethod
+    def yapiGetFunctionInfoEx(fundesc, devdescRef, serialRef, funcIdRef, baseTypeRef, funcNameRef, funcValRef, errmsgRef=None):
+        serialBuffer = ctypes.create_string_buffer(YAPI.YOCTO_SERIAL_LEN)
+        funcIdBuffer = ctypes.create_string_buffer(YAPI.YOCTO_FUNCTION_LEN)
+        baseTypeBuffer = ctypes.create_string_buffer(YAPI.YOCTO_FUNCTION_LEN)
+        funcNameBuffer = ctypes.create_string_buffer(YAPI.YOCTO_LOGICAL_LEN)
+        funcValBuffer = ctypes.create_string_buffer(YAPI.YOCTO_PUBVAL_LEN)
+        errBuffer = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        p = ctypes.c_int()
+        #noinspection PyUnresolvedReferences
+        res = YAPI._yapiGetFunctionInfoEx(fundesc, ctypes.byref(p), serialBuffer, funcIdBuffer, baseTypeBuffer,
+                                        funcNameBuffer, funcValBuffer, errBuffer)
+        devdescRef.value = p.value
+        serialRef.value = YByte2String(serialBuffer.value)
+        funcIdRef.value = YByte2String(funcIdBuffer.value)
+        baseTypeRef.value = YByte2String(baseTypeBuffer.value)
         funcNameRef.value = YByte2String(funcNameBuffer.value)
         funcValRef.value = YByte2String(funcValBuffer.value)
         if errmsgRef is not None:
@@ -2079,7 +2101,7 @@ class YAPI:
         errBuffer = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         devdesc = ctypes.c_int()
         #noinspection PyUnresolvedReferences
-        res = YAPI._yapiGetFunctionInfo(fundesc, ctypes.byref(devdesc), None, None, None, None, errBuffer)
+        res = YAPI._yapiGetFunctionInfoEx(fundesc, ctypes.byref(devdesc), None, None, None, None, None, errBuffer)
         if errmsgRef is not None:
             errmsgRef.value = YByte2String(errBuffer.value)
         if res < 0:
@@ -2459,7 +2481,7 @@ class YDataStream(object):
             while i < self._decimals:
                 self._decexp = self._decexp * 10.0
                 i = i + 1
-        iCalib = dataset.get_calibration()
+        iCalib = dataset._get_calibration()
         self._caltyp = iCalib[0]
         if self._caltyp != 0:
             self._calhdl = YAPI._getCalibrationHandler(self._caltyp)
@@ -2523,7 +2545,7 @@ class YDataStream(object):
                 self._avgVal = self._decodeAvg(encoded[10] + (((encoded[11]) << (16))), self._nRows)
         return 0
 
-    def parse(self, sdata):
+    def _parseStream(self, sdata):
         # idx
         udat = []
         dat = []
@@ -2565,14 +2587,14 @@ class YDataStream(object):
         self._nRows = len(self._values)
         return YAPI.SUCCESS
 
-    def get_url(self):
+    def _get_url(self):
         # url
         url = "logger.json?id=" + self._functionId + "&run=" + str(int(self._runNo)) + "&utc=" + str(int(self._utcStamp))
         return url
 
     def loadStream(self):
         # // may throw an exception
-        return self.parse(self._parent._download(self.get_url()))
+        return self._parseStream(self._parent._download(self._get_url()))
 
     def _decodeVal(self, w):
         # val
@@ -2938,7 +2960,7 @@ class YDataSet(object):
     #--- (generated code: YDataSet definitions)
     #--- (end of generated code: YDataSet definitions)
 
-    def __init__(self, parent, functionId, unit=None, starttime=None, endTime=None):
+    def __init__(self, parent, functionId=None, unit=None, starttime=None, endTime=None):
         #--- (generated code: YDataSet attributes)
         self._parent = None
         self._hardwareId = ''
@@ -2955,7 +2977,7 @@ class YDataSet(object):
         #--- (end of generated code: YDataSet attributes)
         self._summary = YMeasure(0, 0, 0, 0, 0)
         if unit is None:
-            self._initFromJson(parent, functionId)
+            self._initFromJson(parent)
         else:
             self._initFromParams(parent, functionId, unit, starttime, endTime)
 
@@ -2967,11 +2989,10 @@ class YDataSet(object):
         self._endTime = endTime
         self._progress = -1
 
-    def _initFromJson(self, parent, json):
+    def _initFromJson(self, parent):
         self._parent = parent
         self._startTime = 0
         self._endTime = 0
-        self._parse(json)
 
     def _parse(self, json):
         try:
@@ -3051,7 +3072,7 @@ class YDataSet(object):
         return self.get_progress()
 
     #--- (generated code: YDataSet implementation)
-    def get_calibration(self):
+    def _get_calibration(self):
         return self._calib
 
     def processMore(self, progress, data):
@@ -3074,7 +3095,7 @@ class YDataSet(object):
                 return YAPI.VERSION_MISMATCH
             return self._parse(strdata)
         stream = self._streams[self._progress]
-        stream.parse(data)
+        stream._parseStream(data)
         dataRows = stream.get_dataRows()
         self._progress = self._progress + 1
         if len(dataRows) == 0:
@@ -3206,7 +3227,7 @@ class YDataSet(object):
                 return 100
             else:
                 stream = self._streams[self._progress]
-                url = stream.get_url()
+                url = stream._get_url()
         return self.processMore(self._progress, self._parent._download(url))
 
     def get_summary(self):
@@ -3750,7 +3771,7 @@ class YFunction(object):
             return res
         devdesc = ctypes.c_int()
         #noinspection PyUnresolvedReferences
-        res = YAPI._yapiGetFunctionInfo(fundescRef.value, ctypes.byref(devdesc), None, funcid, None, None, errbuff)
+        res = YAPI._yapiGetFunctionInfoEx(fundescRef.value, ctypes.byref(devdesc), None, funcid, None, None, None, errbuff)
         if YAPI.YISERR(res):
             if not errmsgRef is None:
                 errmsgRef.value = YByte2String(errbuff.value)
@@ -3999,6 +4020,10 @@ class YFunction(object):
                 return YFunction.ADVERTISEDVALUE_INVALID
         return self._advertisedValue
 
+    def set_advertisedValue(self, newval):
+        rest_val = newval
+        return self._setAttr("advertisedValue", rest_val)
+
     @staticmethod
     def FindFunction(func):
         """
@@ -4061,6 +4086,33 @@ class YFunction(object):
             self._valueCallbackFunction(self, value)
         return 0
 
+    def muteValueCallbacks(self):
+        """
+        Disable the propagation of every new advertised value to the parent hub.
+        You can use this function to save bandwidth and CPU on computers with limited
+        resources, or to prevent unwanted invocations of the HTTP callback.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_advertisedValue("SILENT")
+
+    def unmuteValueCallbacks(self):
+        """
+        Re-enable the propagation of every new advertised value to the parent hub.
+        This function reverts the effect of a previous call to muteValueCallbacks().
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_advertisedValue("")
+
     def _parserHelper(self):
         # // By default, nothing to do
         return 0
@@ -4100,7 +4152,7 @@ class YFunction(object):
             return self.HARDWAREID_INVALID
         devdesc = ctypes.c_int()
         #noinspection PyUnresolvedReferences
-        res = YAPI._yapiGetFunctionInfo(fundescRef.value, ctypes.byref(devdesc), snum, funcid, None, None, errbuff)
+        res = YAPI._yapiGetFunctionInfoEx(fundescRef.value, ctypes.byref(devdesc), snum, funcid, None, None, None, errbuff)
         if YAPI.YISERR(res):
             self._throw(res, errmsgRef.value)
             return self.HARDWAREID_INVALID
@@ -4126,7 +4178,7 @@ class YFunction(object):
             return self.FUNCTIONID_INVALID
         devdesc = ctypes.c_int()
         #noinspection PyUnresolvedReferences
-        res = YAPI._yapiGetFunctionInfo(fundescRef.value, ctypes.byref(devdesc), None, funcid, None, None, errbuff)
+        res = YAPI._yapiGetFunctionInfoEx(fundescRef.value, ctypes.byref(devdesc), None, funcid, None, None, None, errbuff)
         if YAPI.YISERR(res):
             self._throw(res, errmsgRef.value)
             return self.FUNCTIONID_INVALID
@@ -4155,13 +4207,13 @@ class YFunction(object):
         # Resolve the function name
         res = self._getDescriptor(fundescRef, errmsgRef)
         if not YAPI.YISERR(res) and not YAPI.YISERR(
-                YAPI._yapiGetFunctionInfo(fundescRef.value, ctypes.byref(devdesc), snum, funcid, fname, None, errbuff)):
+                YAPI._yapiGetFunctionInfoEx(fundescRef.value, ctypes.byref(devdesc), snum, funcid, None, fname, None, errbuff)):
             if YByte2String(fname.value) != "":
                 funcid = fname
             dname = ctypes.create_string_buffer(YAPI.YOCTO_FUNCTION_LEN)
             moddescr = YAPI.yapiGetFunction("Module", YByte2String(snum.value), errmsgRef)
             if not YAPI.YISERR(moddescr) and not YAPI.YISERR(
-                    YAPI._yapiGetFunctionInfo(moddescr, ctypes.byref(devdesc), None, None, dname, None, errbuff)):
+                    YAPI._yapiGetFunctionInfoEx(moddescr, ctypes.byref(devdesc), None, None, None, dname, None, errbuff)):
                 if YByte2String(dname.value) != "":
                     return "%s.%s" % (YByte2String(dname.value), YByte2String(funcid.value))
             return "%s.%s" % (YByte2String(snum.value), YByte2String(funcid.value))
@@ -4195,7 +4247,7 @@ class YFunction(object):
         res = self._getDescriptor(fundescRef, errmsgRef)
         #noinspection PyUnresolvedReferences
         if not YAPI.YISERR(res) and not YAPI.YISERR(
-                YAPI._yapiGetFunctionInfo(fundescRef.value, ctypes.byref(devdesc), snum, funcid, None, None, errbuff)):
+                YAPI._yapiGetFunctionInfoEx(fundescRef.value, ctypes.byref(devdesc), snum, funcid, None, None, None, errbuff)):
             return self._className + "(" + self._func + ")=" + YByte2String(snum.value) + "." + YByte2String(
                 funcid.value)
         return self._className + "(" + self._func + ")=unresolved"
@@ -4329,8 +4381,8 @@ class YFunction(object):
 
     def clearCache(self):
         """
-        Invalidate the cache. Invalidate the cache of the function attributes. Force the
-        next call to get_xxx() or loadxxx() to use value that come from the device..
+        Invalidates the cache. Invalidates the cache of the function attributes. Forces the
+        next call to get_xxx() or loadxxx() to use values that come from the device.
 
         @noreturn
         """
@@ -5062,9 +5114,13 @@ class YModule(YFunction):
         i = 0
         
         while i < count:
-            ftype  = self.functionType(i)
+            ftype = self.functionType(i)
             if ftype == funType:
                 res.append(self.functionId(i))
+            else:
+                ftype = self.functionBaseType(i)
+                if ftype == funType:
+                    res.append(self.functionId(i))
             i = i + 1
         
         return res
@@ -5574,12 +5630,12 @@ class YModule(YFunction):
         res = self._getDescriptor(fundescRef, errmsgRef)
         #noinspection PyUnresolvedReferences
         if not YAPI.YISERR(res) and not YAPI.YISERR(
-                YAPI._yapiGetFunctionInfo(fundescRef.value, ctypes.byref(devdesc), snum, funcid, fname, None, errbuff)):
+                YAPI._yapiGetFunctionInfoEx(fundescRef.value, ctypes.byref(devdesc), snum, funcid, None, fname, None, errbuff)):
             dname = ctypes.create_string_buffer(YAPI.YOCTO_FUNCTION_LEN)
             moddescr = YAPI.yapiGetFunction("Module", YByte2String(snum.value), errmsgRef)
             #noinspection PyUnresolvedReference,PyUnresolvedReferences
             if not YAPI.YISERR(moddescr) and not YAPI.YISERR(
-                    YAPI._yapiGetFunctionInfo(moddescr, ctypes.byref(devdesc), None, None, dname, None, errbuff)):
+                    YAPI._yapiGetFunctionInfoEx(moddescr, ctypes.byref(devdesc), None, None, None, dname, None, errbuff)):
                 if YByte2String(dname.value) != "":
                     return "%s" % (YByte2String(dname.value))
             return "%s" % (YByte2String(snum.value))
@@ -5592,7 +5648,7 @@ class YModule(YFunction):
         self._productId = int(infosRef.deviceid)
 
     # Return the properties of the nth function of our device
-    def _getFunction(self, idx, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef):
+    def _getFunction(self, idx, serialRef, funcIdRef, baseType, funcNameRef, funcValRef, errmsgRef):
         functionsRef = YRefParam()
         devRef = YRefParam()
         devdescrRef = YRefParam()
@@ -5611,7 +5667,8 @@ class YModule(YFunction):
         # get latest function info from yellow pages
         fundescr = int(functionsRef.value[idx])
 
-        res = YAPI.yapiGetFunctionInfo(fundescr, devdescrRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)
+        res = YAPI.yapiGetFunctionInfoEx(fundescr, devdescrRef, serialRef, funcIdRef, baseType,
+                                       funcNameRef, funcValRef, errmsgRef)
         if YAPI.YISERR(res):
             return res
 
@@ -5654,11 +5711,12 @@ class YModule(YFunction):
         """
         serialRef = YRefParam()
         funcIdRef = YRefParam()
+        baseTypeRef = YRefParam()
         funcNameRef = YRefParam()
         funcValRef = YRefParam()
         errmsgRef = YRefParam()
 
-        res = self._getFunction(functionIndex, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)
+        res = self._getFunction(functionIndex, serialRef, funcIdRef, baseTypeRef, funcNameRef, funcValRef, errmsgRef)
         if YAPI.YISERR(res):
             self._throw(res, errmsgRef.value)
             return YAPI.INVALID_STRING
@@ -5678,11 +5736,12 @@ class YModule(YFunction):
         """
         serialRef = YRefParam()
         funcIdRef = YRefParam()
+        baseTypeRef = YRefParam()
         funcNameRef = YRefParam()
         funcValRef = YRefParam()
         errmsgRef = YRefParam()
 
-        res = self._getFunction(functionIndex, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)
+        res = self._getFunction(functionIndex, serialRef, funcIdRef, baseTypeRef, funcNameRef, funcValRef, errmsgRef)
         if YAPI.YISERR(res):
             self._throw(res, errmsgRef.value)
             return YAPI.INVALID_STRING
@@ -5695,6 +5754,28 @@ class YModule(YFunction):
             i += 1
         res = funid[1:i]
         return funid[0].upper() + res
+
+    def functionBaseType(self, functionIndex):
+        """
+        Retrieves the base type of the <i>n</i>th function on the module.
+
+        @param functionIndex : the index of the function for which the information is desired, starting at
+        0 for the first function.
+
+        @return a the base type of the function
+
+        On failure, throws an exception or returns an empty string.
+        """
+        serialRef = YRefParam()
+        funcIdRef = YRefParam()
+        baseTypeRef = YRefParam()
+        funcNameRef = YRefParam()
+        funcValRef = YRefParam()
+        errmsgRef = YRefParam()
+
+        res = self._getFunction(functionIndex, serialRef, funcIdRef, baseTypeRef, funcNameRef, funcValRef, errmsgRef)
+
+        return baseTypeRef.value
 
     def functionName(self, functionIndex):
         """
@@ -5709,11 +5790,12 @@ class YModule(YFunction):
         """
         serialRef = YRefParam()
         funcIdRef = YRefParam()
+        baseTypeRef = YRefParam()
         funcNameRef = YRefParam()
         funcValRef = YRefParam()
         errmsgRef = YRefParam()
 
-        res = self._getFunction(functionIndex, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)
+        res = self._getFunction(functionIndex, serialRef, funcIdRef, baseTypeRef, funcNameRef, funcValRef, errmsgRef)
         if YAPI.YISERR(res):
             self._throw(res, errmsgRef.value)
             return YAPI.INVALID_STRING
@@ -5734,11 +5816,12 @@ class YModule(YFunction):
         """
         serialRef = YRefParam()
         funcIdRef = YRefParam()
+        baseTypeRef = YRefParam()
         funcNameRef = YRefParam()
         funcValRef = YRefParam()
         errmsgRef = YRefParam()
 
-        res = self._getFunction(functionIndex, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)
+        res = self._getFunction(functionIndex, serialRef, funcIdRef, baseTypeRef, funcNameRef, funcValRef, errmsgRef)
         if YAPI.YISERR(res):
             self._throw(res, errmsgRef.value)
             return YAPI.INVALID_STRING

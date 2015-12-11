@@ -1,1 +1,5 @@
-- Add YQuadratureDecoder class
+- Add YCurrentLoopOutput class
+- Add doc example for Yocto-4-20mA-Tx
+- Fix get_functionsIds() method that was not working with "Sensor" as argument
+- Fix small memory leak on hosts that drop many USB packet
+- Fix error message "Another process ... is already using yAPI"

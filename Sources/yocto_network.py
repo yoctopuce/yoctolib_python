@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 20815 2015-07-09 17:23:30Z mvuilleu $
+#* $Id: yocto_network.py 22194 2015-12-02 10:50:41Z mvuilleu $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -95,6 +95,7 @@ class YNetwork(YFunction):
     CALLBACKENCODING_JSON_NUM = 5
     CALLBACKENCODING_EMONCMS = 6
     CALLBACKENCODING_AZURE = 7
+    CALLBACKENCODING_INFLUXDB = 8
     CALLBACKENCODING_INVALID = -1
     #--- (end of YNetwork definitions)
 
@@ -623,8 +624,9 @@ class YNetwork(YFunction):
         @return a value among YNetwork.CALLBACKENCODING_FORM, YNetwork.CALLBACKENCODING_JSON,
         YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV,
         YNetwork.CALLBACKENCODING_YOCTO_API, YNetwork.CALLBACKENCODING_JSON_NUM,
-        YNetwork.CALLBACKENCODING_EMONCMS and YNetwork.CALLBACKENCODING_AZURE corresponding to the encoding
-        standard to use for representing notification values
+        YNetwork.CALLBACKENCODING_EMONCMS, YNetwork.CALLBACKENCODING_AZURE and
+        YNetwork.CALLBACKENCODING_INFLUXDB corresponding to the encoding standard to use for representing
+        notification values
 
         On failure, throws an exception or returns YNetwork.CALLBACKENCODING_INVALID.
         """
@@ -640,8 +642,9 @@ class YNetwork(YFunction):
         @param newval : a value among YNetwork.CALLBACKENCODING_FORM, YNetwork.CALLBACKENCODING_JSON,
         YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV,
         YNetwork.CALLBACKENCODING_YOCTO_API, YNetwork.CALLBACKENCODING_JSON_NUM,
-        YNetwork.CALLBACKENCODING_EMONCMS and YNetwork.CALLBACKENCODING_AZURE corresponding to the encoding
-        standard to use for representing notification values
+        YNetwork.CALLBACKENCODING_EMONCMS, YNetwork.CALLBACKENCODING_AZURE and
+        YNetwork.CALLBACKENCODING_INFLUXDB corresponding to the encoding standard to use for representing
+        notification values
 
         @return YAPI.SUCCESS if the call succeeds.
 

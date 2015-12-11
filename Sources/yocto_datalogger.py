@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_datalogger.py 20704 2015-06-20 19:43:34Z mvuilleu $
+#* $Id: yocto_datalogger.py 22197 2015-12-02 12:58:24Z mvuilleu $
 #*
 #* Implements yFindDataLogger(), the high-level API for DataLogger
 #*
@@ -308,12 +308,15 @@ class YDataLogger(YFunction):
 
     def parse_dataSets(self, json):
         dslist = []
+        # dataset
         res = []
         # // may throw an exception
         dslist = self._json_get_array(json)
         del res[:]
         for y in dslist:
-            res.append(YDataSet(self, y))
+            dataset = YDataSet(self)
+            dataset._parse(y)
+            res.append(dataset)
         return res
 
     def nextDataLogger(self):
