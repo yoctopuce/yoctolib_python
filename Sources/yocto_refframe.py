@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 20508 2015-06-01 16:32:48Z seb $
+#* $Id: yocto_refframe.py 22360 2015-12-15 13:31:40Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -283,7 +283,6 @@ class YRefFrame(YFunction):
         # b
         # xa
         # xb
-        
         # // bubble sort is good since we will re-sort again after offset adjustment
         changed = 1
         while changed > 0:
@@ -381,7 +380,6 @@ class YRefFrame(YFunction):
             return YAPI.INVALID_ARGUMENT
         if self._calibProgress == 100:
             return YAPI.SUCCESS
-        
         # // make sure we leave at least 160ms between samples
         currTick =  (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
         if ((currTick - self._calibPrevTick) & (0x7FFFFFFF)) < 160:
@@ -413,7 +411,6 @@ class YRefFrame(YFunction):
         if norm < 0.8 or norm > 1.2:
             return YAPI.SUCCESS
         self._calibPrevTick = currTick
-        
         # // Determine the device orientation index
         orient = 0
         if zSq > 0.5:
@@ -431,7 +428,6 @@ class YRefFrame(YFunction):
                 orient = 4
             else:
                 orient = 5
-        
         # // Discard measures that are not in the proper orientation
         if self._calibStageProgress == 0:
             #
@@ -450,7 +446,6 @@ class YRefFrame(YFunction):
             if orient != self._calibOrient[self._calibStage-1]:
                 self._calibStageHint = "Not yet done, please move back to the previous face"
                 return YAPI.SUCCESS
-        
         # // Save measure
         self._calibStageHint = "calibrating.."
         self._calibDataAccX.append(xVal)
@@ -462,13 +457,11 @@ class YRefFrame(YFunction):
         if self._calibInternalPos < self._calibCount:
             self._calibStageProgress = 1 + int((99 * self._calibInternalPos) / (self._calibCount))
             return YAPI.SUCCESS
-        
         # // Stage done, compute preliminary result
         intpos = (self._calibStage - 1) * self._calibCount
         self._calibSort(intpos, intpos + self._calibCount)
         intpos = intpos + int((self._calibCount) / (2))
         self._calibLogMsg = "Stage " + str(int(self._calibStage)) + ": median is " + str(int(round(1000*self._calibDataAccX[intpos]))) + "," + str(int(round(1000*self._calibDataAccY[intpos]))) + "," + str(int(round(1000*self._calibDataAccZ[intpos])))
-        
         # // move to next stage
         self._calibStage = self._calibStage + 1
         if self._calibStage < 7:
@@ -495,7 +488,6 @@ class YRefFrame(YFunction):
         self._calibAccXOfs = xVal / 2.0
         self._calibAccYOfs = yVal / 2.0
         self._calibAccZOfs = zVal / 2.0
-        
         # // Recompute all norms, taking into account the computed shift, and re-sort
         intpos = 0
         while intpos < len(self._calibDataAcc):
@@ -510,7 +502,6 @@ class YRefFrame(YFunction):
             intpos = idx * self._calibCount
             self._calibSort(intpos, intpos + self._calibCount)
             idx = idx + 1
-        
         # // Compute the scaling factor for each axis
         xVal = 0
         yVal = 0
@@ -529,7 +520,6 @@ class YRefFrame(YFunction):
         self._calibAccXScale = xVal / 2.0
         self._calibAccYScale = yVal / 2.0
         self._calibAccZScale = zVal / 2.0
-        
         # // Report completion
         self._calibProgress = 100
         self._calibStageHint = "Calibration data ready for saving"
@@ -604,7 +594,6 @@ class YRefFrame(YFunction):
         # newcalib
         if self._calibProgress != 100:
             return YAPI.INVALID_ARGUMENT
-        
         # // Compute integer values (correction unit is 732ug/count)
         shiftX = -round(self._calibAccXOfs / 0.000732)
         if shiftX < 0:
@@ -640,7 +629,6 @@ class YRefFrame(YFunction):
             scaleZ = scaleZ + 1024
         scaleLo = ((((scaleY) & (15))) << (12)) + ((scaleX) << (2)) + scaleExp
         scaleHi = ((scaleZ) << (6)) + ((scaleY) >> (4))
-        
         # // Save calibration parameters
         newcalib = "5," + str(int(shiftX)) + "," + str(int(shiftY)) + "," + str(int(shiftZ)) + "," + str(int(scaleLo)) + "," + str(int(scaleHi))
         self._calibStage = 0

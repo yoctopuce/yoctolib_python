@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 19610 2015-03-05 10:39:47Z seb $
+#* $Id: yocto_files.py 22704 2016-01-13 11:09:55Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -223,6 +223,26 @@ class YFiles(YFunction):
         for y in filelist:
             res.append(YFileRecord(y))
         return res
+
+    def fileExist(self, filename):
+        """
+        Test if a file exist on the filesystem of the module.
+
+        @param filename : the file name to test.
+
+        @return a true if the file existe, false ortherwise.
+
+        On failure, throws an exception.
+        """
+        # json
+        filelist = []
+        if len(filename) == 0:
+            return False
+        json = self.sendCommand("dir&f=" + filename)
+        filelist = self._json_get_array(json)
+        if len(filelist) > 0 :
+            return True
+        return False
 
     def download(self, pathname):
         """

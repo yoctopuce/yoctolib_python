@@ -1,5 +1,4 @@
-- Add YCurrentLoopOutput class
-- Add doc example for Yocto-4-20mA-Tx
-- Fix get_functionsIds() method that was not working with "Sensor" as argument
-- Fix small memory leak on hosts that drop many USB packet
-- Fix error message "Another process ... is already using yAPI"
+- Add get_subDevices(), get_parentHub() and get_url() methods to YModule class
+- Add Prog-DevicesTree example
+- Add yapiGetDevicePathEx function to the yapi shared library
+- Fix VirtualHub that where not correctly discovered by SSDP

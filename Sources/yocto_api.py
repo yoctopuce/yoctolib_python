@@ -1,6 +1,6 @@
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 22191 2015-12-02 06:49:31Z mvuilleu $
+# * $Id: yocto_api.py 22798 2016-01-15 17:38:09Z seb $
 # *
 #* High-level programming interface, common to all modules
 #*
@@ -543,7 +543,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "22324"
+    YOCTO_API_BUILD_NO = "22835"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -974,6 +974,12 @@ class YAPI:
         YAPI._yapiJsonDecodeString = YAPI._yApiCLib.yapiJsonDecodeString
         YAPI._yapiJsonDecodeString.restypes = ctypes.c_int
         YAPI._yapiJsonDecodeString.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+        YAPI._yapiGetSubdevices = YAPI._yApiCLib.yapiGetSubdevices
+        YAPI._yapiGetSubdevices.restypes = ctypes.c_int
+        YAPI._yapiGetSubdevices.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
+        YAPI._yapiGetDevicePathEx = YAPI._yApiCLib.yapiGetDevicePathEx
+        YAPI._yapiGetDevicePathEx.restypes = ctypes.c_int
+        YAPI._yapiGetDevicePathEx.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
@@ -2294,11 +2300,11 @@ class YFirmwareUpdate(object):
         In this case this method return the path of the most recent appropriate byn file. This method will
         ignore firmware that are older than mintrelase.
 
-        @param serial  : the serial number of the module to update
-        @param path    : the path of a byn file or a directory that contain byn files
-        @param minrelease : an positif integer
+        @param serial : the serial number of the module to update
+        @param path : the path of a byn file or a directory that contains byn files
+        @param minrelease : a positive integer
 
-        @return : the path of the byn file to use or a empty string if no byn files match the requirement
+        @return : the path of the byn file to use or an empty string if no byn files match the requirement
 
         On failure, returns a string that start with "error:".
         """
@@ -4640,7 +4646,7 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.PRODUCTRELEASE_INVALID.
         """
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.PRODUCTRELEASE_INVALID
         return self._productRelease
@@ -4887,7 +4893,7 @@ class YModule(YFunction):
         older or equal to
         the installed firmware.
 
-        @param path    : the path of a byn file or a directory that contains byn files
+        @param path : the path of a byn file or a directory that contains byn files
         @param onlynew : returns only files that are strictly newer
 
         @return : the path of the byn file to use or a empty string if no byn files matches the requirement
@@ -5601,6 +5607,89 @@ class YModule(YFunction):
         content = self._download("logs.txt")
         return YByte2String(content)
 
+    def get_subDevices(self):
+        """
+        Returns a list of all the modules that are plugged into the current module. This
+        method is only useful on a YoctoHub/VirtualHub. This method return the serial number of all
+        module connected to a YoctoHub. Calling this method on a standard device is not an
+        error, and an empty array will be returned.
+
+        @return an array of strings containing the sub modules.
+        """
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        smallbuff = ctypes.create_string_buffer(1024)
+        # bigbuff
+        # buffsize
+        fullsize = ctypes.c_int()
+        # yapi_res
+        # subdevice_list
+        subdevices = []
+        # serial
+        # // may throw an exception
+        serial = self.get_serialNumber()
+        fullsize.value = 0
+        yapi_res = YAPI._yapiGetSubdevices(ctypes.create_string_buffer(YString2Byte(serial)), smallbuff, 1024, ctypes.byref(fullsize), errmsg)
+        if yapi_res < 0:
+            return subdevices
+        if fullsize.value <= 1024:
+            subdevice_list = YByte2String(smallbuff.value)
+        else:
+            buffsize = fullsize.value
+            bigbuff = ctypes.create_string_buffer(buffsize)
+            yapi_res = YAPI._yapiGetSubdevices(ctypes.create_string_buffer(YString2Byte(serial)), bigbuff, buffsize, ctypes.byref(fullsize), errmsg)
+            if yapi_res < 0:
+                bigbuff = None
+                return subdevices
+            else:
+                subdevice_list = YByte2String(bigbuff.value)
+            bigbuff = None
+        if not (subdevice_list == ""):
+            subdevices = (subdevice_list).split(',')
+        return subdevices
+
+    def get_parentHub(self):
+        """
+        Returns the serial number of the YoctoHub on which this module is connected.
+        If the module is connected by USB or if the module is the root YoctoHub an
+        empty string is returned.
+
+        @return a string with the serial number of the YoctoHub or an empty string
+        """
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        hubserial = ctypes.create_string_buffer(YAPI.YOCTO_SERIAL_LEN)
+        pathsize = ctypes.c_int()
+        # yapi_res
+        # serial
+        # // may throw an exception
+        serial = self.get_serialNumber()
+        # // retrieve device object
+        pathsize.value = 0
+        yapi_res = YAPI._yapiGetDevicePathEx(ctypes.create_string_buffer(YString2Byte(serial)), hubserial, None, 0, ctypes.byref(pathsize), errmsg)
+        if yapi_res < 0:
+            return ""
+        return YByte2String(hubserial.value)
+
+    def get_url(self):
+        """
+        Returns the URL used to access the module. If the module is connected by USB the
+        string 'usb' is returned.
+
+        @return a string with the URL of the module.
+        """
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        path = ctypes.create_string_buffer(1024)
+        pathsize = ctypes.c_int()
+        # yapi_res
+        # serial
+        # // may throw an exception
+        serial = self.get_serialNumber()
+        # // retrieve device object
+        pathsize.value = 0
+        yapi_res = YAPI._yapiGetDevicePathEx(ctypes.create_string_buffer(YString2Byte(serial)), None, path, 1024, ctypes.byref(pathsize), errmsg)
+        if yapi_res < 0:
+            return ""
+        return YByte2String(path.value)
+
     def nextModule(self):
         """
         Continues the module enumeration started using yFirstModule().
@@ -5646,6 +5735,7 @@ class YModule(YFunction):
         self._serialNumber = YByte2String(infosRef.serial)
         self._productName = YByte2String(infosRef.productname)
         self._productId = int(infosRef.deviceid)
+        self._cacheExpiration = YAPI.GetTickCount()
 
     # Return the properties of the nth function of our device
     def _getFunction(self, idx, serialRef, funcIdRef, baseType, funcNameRef, funcValRef, errmsgRef):
@@ -6444,10 +6534,12 @@ class YSensor(YFunction):
                 the new advertised value.
         @noreturn
         """
+        # sensor
+        sensor = self
         if callback is not None:
-            YFunction._UpdateTimedReportCallbackList(self, True)
+            YFunction._UpdateTimedReportCallbackList(sensor, True)
         else:
-            YFunction._UpdateTimedReportCallbackList(self, False)
+            YFunction._UpdateTimedReportCallbackList(sensor, False)
         self._timedReportCallbackSensor = callback
         return 0
 

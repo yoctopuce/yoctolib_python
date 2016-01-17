@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 19704 2015-03-13 06:10:37Z mvuilleu $
+#* $Id: yocto_gyro.py 22360 2015-12-15 13:31:40Z seb $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -302,7 +302,6 @@ class YGyro(YSensor):
     def _loadQuaternion(self):
         # now_stamp
         # age_ms
-        
         now_stamp = (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
         age_ms = (((now_stamp - self._qt_stamp)) & (0x7FFFFFFF))
         if (age_ms >= 10) or (self._qt_stamp == 0):
