@@ -1,4 +1,1 @@
-- Add get_subDevices(), get_parentHub() and get_url() methods to YModule class
-- Add Prog-DevicesTree example
-- Add yapiGetDevicePathEx function to the yapi shared library
-- Fix VirtualHub that where not correctly discovered by SSDP
+- Fix potential deadlock
