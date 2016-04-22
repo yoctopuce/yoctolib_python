@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 21511 2015-09-14 16:25:19Z seb $
+#* $Id: yocto_cellular.py 23960 2016-04-15 21:30:18Z mvuilleu $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -122,7 +122,18 @@ class YCellular(YFunction):
     LOCKEDOPERATOR_INVALID = YAPI.INVALID_STRING
     APN_INVALID = YAPI.INVALID_STRING
     APNSECRET_INVALID = YAPI.INVALID_STRING
+    PINGINTERVAL_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
+    CELLTYPE_GPRS = 0
+    CELLTYPE_EGPRS = 1
+    CELLTYPE_WCDMA = 2
+    CELLTYPE_HSDPA = 3
+    CELLTYPE_NONE = 4
+    CELLTYPE_CDMA = 5
+    CELLTYPE_INVALID = -1
+    AIRPLANEMODE_OFF = 0
+    AIRPLANEMODE_ON = 1
+    AIRPLANEMODE_INVALID = -1
     ENABLEDATA_HOMENETWORK = 0
     ENABLEDATA_ROAMING = 1
     ENABLEDATA_NEVER = 2
@@ -137,13 +148,16 @@ class YCellular(YFunction):
         self._linkQuality = YCellular.LINKQUALITY_INVALID
         self._cellOperator = YCellular.CELLOPERATOR_INVALID
         self._cellIdentifier = YCellular.CELLIDENTIFIER_INVALID
+        self._cellType = YCellular.CELLTYPE_INVALID
         self._imsi = YCellular.IMSI_INVALID
         self._message = YCellular.MESSAGE_INVALID
         self._pin = YCellular.PIN_INVALID
         self._lockedOperator = YCellular.LOCKEDOPERATOR_INVALID
+        self._airplaneMode = YCellular.AIRPLANEMODE_INVALID
         self._enableData = YCellular.ENABLEDATA_INVALID
         self._apn = YCellular.APN_INVALID
         self._apnSecret = YCellular.APNSECRET_INVALID
+        self._pingInterval = YCellular.PINGINTERVAL_INVALID
         self._command = YCellular.COMMAND_INVALID
         #--- (end of generated code: YCellular attributes)
 
@@ -158,6 +172,9 @@ class YCellular(YFunction):
         if member.name == "cellIdentifier":
             self._cellIdentifier = member.svalue
             return 1
+        if member.name == "cellType":
+            self._cellType = member.ivalue
+            return 1
         if member.name == "imsi":
             self._imsi = member.svalue
             return 1
@@ -170,6 +187,9 @@ class YCellular(YFunction):
         if member.name == "lockedOperator":
             self._lockedOperator = member.svalue
             return 1
+        if member.name == "airplaneMode":
+            self._airplaneMode = member.ivalue
+            return 1
         if member.name == "enableData":
             self._enableData = member.ivalue
             return 1
@@ -178,6 +198,9 @@ class YCellular(YFunction):
             return 1
         if member.name == "apnSecret":
             self._apnSecret = member.svalue
+            return 1
+        if member.name == "pingInterval":
+            self._pingInterval = member.ivalue
             return 1
         if member.name == "command":
             self._command = member.svalue
@@ -223,6 +246,20 @@ class YCellular(YFunction):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.CELLIDENTIFIER_INVALID
         return self._cellIdentifier
+
+    def get_cellType(self):
+        """
+        Active cellular connection type.
+
+        @return a value among YCellular.CELLTYPE_GPRS, YCellular.CELLTYPE_EGPRS, YCellular.CELLTYPE_WCDMA,
+        YCellular.CELLTYPE_HSDPA, YCellular.CELLTYPE_NONE and YCellular.CELLTYPE_CDMA
+
+        On failure, throws an exception or returns YCellular.CELLTYPE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YCellular.CELLTYPE_INVALID
+        return self._cellType
 
     def get_imsi(self):
         """
@@ -326,6 +363,34 @@ class YCellular(YFunction):
         rest_val = newval
         return self._setAttr("lockedOperator", rest_val)
 
+    def get_airplaneMode(self):
+        """
+        Returns true if the airplane mode is active (radio turned off).
+
+        @return either YCellular.AIRPLANEMODE_OFF or YCellular.AIRPLANEMODE_ON, according to true if the
+        airplane mode is active (radio turned off)
+
+        On failure, throws an exception or returns YCellular.AIRPLANEMODE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YCellular.AIRPLANEMODE_INVALID
+        return self._airplaneMode
+
+    def set_airplaneMode(self, newval):
+        """
+        Changes the activation state of airplane mode (radio turned off).
+
+        @param newval : either YCellular.AIRPLANEMODE_OFF or YCellular.AIRPLANEMODE_ON, according to the
+        activation state of airplane mode (radio turned off)
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("airplaneMode", rest_val)
+
     def get_enableData(self):
         """
         Returns the condition for enabling IP data services (GPRS).
@@ -407,6 +472,32 @@ class YCellular(YFunction):
     def set_apnSecret(self, newval):
         rest_val = newval
         return self._setAttr("apnSecret", rest_val)
+
+    def get_pingInterval(self):
+        """
+        Returns the automated connectivity check interval, in seconds.
+
+        @return an integer corresponding to the automated connectivity check interval, in seconds
+
+        On failure, throws an exception or returns YCellular.PINGINTERVAL_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YCellular.PINGINTERVAL_INVALID
+        return self._pingInterval
+
+    def set_pingInterval(self, newval):
+        """
+        Changes the automated connectivity check interval, in seconds.
+
+        @param newval : an integer corresponding to the automated connectivity check interval, in seconds
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("pingInterval", rest_val)
 
     def get_command(self):
         if self._cacheExpiration <= YAPI.GetTickCount():

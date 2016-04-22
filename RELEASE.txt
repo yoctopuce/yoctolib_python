@@ -1,1 +1,13 @@
-- Fix potential deadlock
+- Add WebSocket Support
+- Add YModule.updateFirmwareEx method
+- Add YSpiPort class
+- Add Doc-GettingStarted example for Yocto-SPI
+- Add Doc-GettingStarted example for Yocto-Thermistor-C
+- Add Doc-GettingStarted example for Yocto-MaxiThermistor
+- Improve USB communication reliability on Windows
+- Fix Doc-GettingStarted example for Yocto-PowerRelay
+- Fix upload to USB device
+- Fix YModule.registerLogCallback() that was not working if it was used from a callback
+- Fix occasional deadlock during error recovery on Windows
+- Fix settings that where not restored correctly on YoctoHub-Wireless
+- Minor fixes

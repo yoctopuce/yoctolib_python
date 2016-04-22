@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupmonitor.py 19610 2015-03-05 10:39:47Z seb $
+#* $Id: yocto_wakeupmonitor.py 23243 2016-02-23 14:13:12Z seb $
 #*
 #* Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
 #*
@@ -28,8 +28,8 @@
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
 #*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
-#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
-#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
 #*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
 #*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
 #*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -163,7 +163,7 @@ class YWakeUpMonitor(YFunction):
 
     def get_nextWakeUp(self):
         """
-        Returns the next scheduled wake up date/time (UNIX format)
+        Returns the next scheduled wake up date/time (UNIX format).
 
         @return an integer corresponding to the next scheduled wake up date/time (UNIX format)
 
@@ -205,7 +205,7 @@ class YWakeUpMonitor(YFunction):
 
     def get_wakeUpState(self):
         """
-        Returns  the current state of the monitor
+        Returns  the current state of the monitor.
 
         @return either YWakeUpMonitor.WAKEUPSTATE_SLEEPING or YWakeUpMonitor.WAKEUPSTATE_AWAKE, according
         to  the current state of the monitor

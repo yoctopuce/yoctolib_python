@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_pwmoutput.py 19610 2015-03-05 10:39:47Z seb $
+#* $Id: yocto_pwmoutput.py 23243 2016-02-23 14:13:12Z seb $
 #*
 #* Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #*
@@ -28,8 +28,8 @@
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
 #*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
-#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
-#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
 #*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
 #*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
 #*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -300,7 +300,7 @@ class YPwmOutput(YFunction):
 
     def get_dutyCycleAtPowerOn(self):
         """
-        Returns the PWMs duty cycle at device power on as a floating point number between 0 and 100
+        Returns the PWMs duty cycle at device power on as a floating point number between 0 and 100.
 
         @return a floating point number corresponding to the PWMs duty cycle at device power on as a
         floating point number between 0 and 100

@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 22194 2015-12-02 10:50:41Z mvuilleu $
+#* $Id: yocto_network.py 23930 2016-04-15 09:31:14Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -28,8 +28,8 @@
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
 #*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
-#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
-#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
 #*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
 #*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
 #*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -71,6 +71,7 @@ class YNetwork(YFunction):
     WWWWATCHDOGDELAY_INVALID = YAPI.INVALID_UINT
     CALLBACKURL_INVALID = YAPI.INVALID_STRING
     CALLBACKCREDENTIALS_INVALID = YAPI.INVALID_STRING
+    CALLBACKINITIALDELAY_INVALID = YAPI.INVALID_UINT
     CALLBACKMINDELAY_INVALID = YAPI.INVALID_UINT
     CALLBACKMAXDELAY_INVALID = YAPI.INVALID_UINT
     POECURRENT_INVALID = YAPI.INVALID_UINT
@@ -96,6 +97,7 @@ class YNetwork(YFunction):
     CALLBACKENCODING_EMONCMS = 6
     CALLBACKENCODING_AZURE = 7
     CALLBACKENCODING_INFLUXDB = 8
+    CALLBACKENCODING_MQTT = 9
     CALLBACKENCODING_INVALID = -1
     #--- (end of YNetwork definitions)
 
@@ -123,6 +125,7 @@ class YNetwork(YFunction):
         self._callbackMethod = YNetwork.CALLBACKMETHOD_INVALID
         self._callbackEncoding = YNetwork.CALLBACKENCODING_INVALID
         self._callbackCredentials = YNetwork.CALLBACKCREDENTIALS_INVALID
+        self._callbackInitialDelay = YNetwork.CALLBACKINITIALDELAY_INVALID
         self._callbackMinDelay = YNetwork.CALLBACKMINDELAY_INVALID
         self._callbackMaxDelay = YNetwork.CALLBACKMAXDELAY_INVALID
         self._poeCurrent = YNetwork.POECURRENT_INVALID
@@ -186,6 +189,9 @@ class YNetwork(YFunction):
             return 1
         if member.name == "callbackCredentials":
             self._callbackCredentials = member.svalue
+            return 1
+        if member.name == "callbackInitialDelay":
+            self._callbackInitialDelay = member.ivalue
             return 1
         if member.name == "callbackMinDelay":
             self._callbackMinDelay = member.ivalue
@@ -624,9 +630,9 @@ class YNetwork(YFunction):
         @return a value among YNetwork.CALLBACKENCODING_FORM, YNetwork.CALLBACKENCODING_JSON,
         YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV,
         YNetwork.CALLBACKENCODING_YOCTO_API, YNetwork.CALLBACKENCODING_JSON_NUM,
-        YNetwork.CALLBACKENCODING_EMONCMS, YNetwork.CALLBACKENCODING_AZURE and
-        YNetwork.CALLBACKENCODING_INFLUXDB corresponding to the encoding standard to use for representing
-        notification values
+        YNetwork.CALLBACKENCODING_EMONCMS, YNetwork.CALLBACKENCODING_AZURE,
+        YNetwork.CALLBACKENCODING_INFLUXDB and YNetwork.CALLBACKENCODING_MQTT corresponding to the encoding
+        standard to use for representing notification values
 
         On failure, throws an exception or returns YNetwork.CALLBACKENCODING_INVALID.
         """
@@ -642,9 +648,9 @@ class YNetwork(YFunction):
         @param newval : a value among YNetwork.CALLBACKENCODING_FORM, YNetwork.CALLBACKENCODING_JSON,
         YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV,
         YNetwork.CALLBACKENCODING_YOCTO_API, YNetwork.CALLBACKENCODING_JSON_NUM,
-        YNetwork.CALLBACKENCODING_EMONCMS, YNetwork.CALLBACKENCODING_AZURE and
-        YNetwork.CALLBACKENCODING_INFLUXDB corresponding to the encoding standard to use for representing
-        notification values
+        YNetwork.CALLBACKENCODING_EMONCMS, YNetwork.CALLBACKENCODING_AZURE,
+        YNetwork.CALLBACKENCODING_INFLUXDB and YNetwork.CALLBACKENCODING_MQTT corresponding to the encoding
+        standard to use for representing notification values
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -705,6 +711,33 @@ class YNetwork(YFunction):
         """
         rest_val = username + ":" + password
         return self._setAttr("callbackCredentials", rest_val)
+
+    def get_callbackInitialDelay(self):
+        """
+        Returns the initial waiting time before first callback notifications, in seconds.
+
+        @return an integer corresponding to the initial waiting time before first callback notifications, in seconds
+
+        On failure, throws an exception or returns YNetwork.CALLBACKINITIALDELAY_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YNetwork.CALLBACKINITIALDELAY_INVALID
+        return self._callbackInitialDelay
+
+    def set_callbackInitialDelay(self, newval):
+        """
+        Changes the initial waiting time before first callback notifications, in seconds.
+
+        @param newval : an integer corresponding to the initial waiting time before first callback
+        notifications, in seconds
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("callbackInitialDelay", rest_val)
 
     def get_callbackMinDelay(self):
         """
@@ -843,8 +876,8 @@ class YNetwork(YFunction):
 
     def ping(self, host):
         """
-        Pings str_host to test the network connectivity. Sends four ICMP ECHO_REQUEST requests from the
-        module to the target str_host. This method returns a string with the result of the
+        Pings host to test the network connectivity. Sends four ICMP ECHO_REQUEST requests from the
+        module to the target host. This method returns a string with the result of the
         4 ICMP ECHO_REQUEST requests.
 
         @param host : the hostname or the IP address of the target
@@ -855,6 +888,21 @@ class YNetwork(YFunction):
         # // may throw an exception
         content = self._download("ping.txt?host=" + host)
         return YByte2String(content)
+
+    def triggerCallback(self):
+        """
+        Trigger an HTTP callback quickly. This function can even be called within
+        an HTTP callback, in which case the next callback will be triggered 5 seconds
+        after the end of the current callback, regardless if the minimum time between
+        callbacks configured in the device.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # // Rewrite the callback method to trigger the callback
+        # // may throw an exception
+        return self.set_callbackMethod(self.get_callbackMethod())
 
     def nextNetwork(self):
         """

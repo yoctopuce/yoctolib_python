@@ -41,12 +41,20 @@ if not(sensor.isOnline()):die('device not connected')
 serial=sensor.get_module().get_serialNumber()
 
 
-# retreive both channels
+# retreive all 6 channels
 channel1 = YTemperature.FindTemperature(serial + '.temperature1')
 channel2 = YTemperature.FindTemperature(serial + '.temperature2')
+channel3 = YTemperature.FindTemperature(serial + '.temperature3')
+channel4 = YTemperature.FindTemperature(serial + '.temperature4')
+channel5 = YTemperature.FindTemperature(serial + '.temperature5')
+channel6 = YTemperature.FindTemperature(serial + '.temperature6')
 
 while True:
-    print("channel 1/2:  "+ "%2.1f / " % channel1.get_currentValue() + \
-                            "%2.1f" % channel2.get_currentValue() + \
-                            " deg C (Ctrl-C to stop)")
+    print("| 1: "+ "%2.1f " % channel1.get_currentValue() + \
+          "| 2: "+ "%2.1f " % channel2.get_currentValue() + \
+          "| 3: "+ "%2.1f " % channel3.get_currentValue() + \
+          "| 4: "+ "%2.1f " % channel4.get_currentValue() + \
+          "| 5: "+ "%2.1f " % channel5.get_currentValue() + \
+          "| 6: "+ "%2.1f " % channel6.get_currentValue() + \
+          "| deg C |")
     YAPI.Sleep(1000)

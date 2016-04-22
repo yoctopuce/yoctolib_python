@@ -1,0 +1,727 @@
+#*********************************************************************
+#*
+#* $Id: yocto_colorledcluster.py 24147 2016-04-22 06:44:18Z mvuilleu $
+#*
+#* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
+#*
+#* - - - - - - - - - License information: - - - - - - - - - 
+#*
+#*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+#*
+#*  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+#*  non-exclusive license to use, modify, copy and integrate this
+#*  file into your software for the sole purpose of interfacing
+#*  with Yoctopuce products.
+#*
+#*  You may reproduce and distribute copies of this file in
+#*  source or object form, as long as the sole purpose of this
+#*  code is to interface with Yoctopuce products. You must retain
+#*  this notice in the distributed source file.
+#*
+#*  You should refer to Yoctopuce General Terms and Conditions
+#*  for additional information regarding your rights and
+#*  obligations.
+#*
+#*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
+#*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+#*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
+#*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+#*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+#*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+#*  WARRANTY, OR OTHERWISE.
+#*
+#*********************************************************************/
+
+
+__docformat__ = 'restructuredtext en'
+from yocto_api import *
+
+
+#--- (YColorLedCluster class start)
+#noinspection PyProtectedMember
+class YColorLedCluster(YFunction):
+    """
+    The Yoctopuce application programming interface
+    allows you to drive a color LED cluster  using RGB coordinates as well as HSL coordinates.
+    The module performs all conversions form RGB to HSL automatically. It is then
+    self-evident to turn on a LED with a given hue and to progressively vary its
+    saturation or lightness. If needed, you can find more information on the
+    difference between RGB and HSL in the section following this one.
+
+    """
+#--- (end of YColorLedCluster class start)
+    #--- (YColorLedCluster return codes)
+    #--- (end of YColorLedCluster return codes)
+    #--- (YColorLedCluster dlldef)
+    #--- (end of YColorLedCluster dlldef)
+    #--- (YColorLedCluster definitions)
+    ACTIVELEDCOUNT_INVALID = YAPI.INVALID_UINT
+    MAXLEDCOUNT_INVALID = YAPI.INVALID_UINT
+    BLINKSEQMAXCOUNT_INVALID = YAPI.INVALID_UINT
+    BLINKSEQMAXSIZE_INVALID = YAPI.INVALID_UINT
+    COMMAND_INVALID = YAPI.INVALID_STRING
+    #--- (end of YColorLedCluster definitions)
+
+    def __init__(self, func):
+        super(YColorLedCluster, self).__init__(func)
+        self._className = 'ColorLedCluster'
+        #--- (YColorLedCluster attributes)
+        self._callback = None
+        self._activeLedCount = YColorLedCluster.ACTIVELEDCOUNT_INVALID
+        self._maxLedCount = YColorLedCluster.MAXLEDCOUNT_INVALID
+        self._blinkSeqMaxCount = YColorLedCluster.BLINKSEQMAXCOUNT_INVALID
+        self._blinkSeqMaxSize = YColorLedCluster.BLINKSEQMAXSIZE_INVALID
+        self._command = YColorLedCluster.COMMAND_INVALID
+        #--- (end of YColorLedCluster attributes)
+
+    #--- (YColorLedCluster implementation)
+    def _parseAttr(self, member):
+        if member.name == "activeLedCount":
+            self._activeLedCount = member.ivalue
+            return 1
+        if member.name == "maxLedCount":
+            self._maxLedCount = member.ivalue
+            return 1
+        if member.name == "blinkSeqMaxCount":
+            self._blinkSeqMaxCount = member.ivalue
+            return 1
+        if member.name == "blinkSeqMaxSize":
+            self._blinkSeqMaxSize = member.ivalue
+            return 1
+        if member.name == "command":
+            self._command = member.svalue
+            return 1
+        super(YColorLedCluster, self)._parseAttr(member)
+
+    def get_activeLedCount(self):
+        """
+        Returns the count of LEDs currently handled by the device.
+
+        @return an integer corresponding to the count of LEDs currently handled by the device
+
+        On failure, throws an exception or returns YColorLedCluster.ACTIVELEDCOUNT_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YColorLedCluster.ACTIVELEDCOUNT_INVALID
+        return self._activeLedCount
+
+    def set_activeLedCount(self, newval):
+        """
+        Changes the count of LEDs currently handled by the device.
+
+        @param newval : an integer corresponding to the count of LEDs currently handled by the device
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("activeLedCount", rest_val)
+
+    def get_maxLedCount(self):
+        """
+        Returns the maximum count of LEDs that the device can handle.
+
+        @return an integer corresponding to the maximum count of LEDs that the device can handle
+
+        On failure, throws an exception or returns YColorLedCluster.MAXLEDCOUNT_INVALID.
+        """
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YColorLedCluster.MAXLEDCOUNT_INVALID
+        return self._maxLedCount
+
+    def get_blinkSeqMaxCount(self):
+        """
+        Returns the maximum count of sequences.
+
+        @return an integer corresponding to the maximum count of sequences
+
+        On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXCOUNT_INVALID.
+        """
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YColorLedCluster.BLINKSEQMAXCOUNT_INVALID
+        return self._blinkSeqMaxCount
+
+    def get_blinkSeqMaxSize(self):
+        """
+        Returns the maximum length of sequences.
+
+        @return an integer corresponding to the maximum length of sequences
+
+        On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXSIZE_INVALID.
+        """
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YColorLedCluster.BLINKSEQMAXSIZE_INVALID
+        return self._blinkSeqMaxSize
+
+    def get_command(self):
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YColorLedCluster.COMMAND_INVALID
+        return self._command
+
+    def set_command(self, newval):
+        rest_val = newval
+        return self._setAttr("command", rest_val)
+
+    @staticmethod
+    def FindColorLedCluster(func):
+        """
+        Retrieves a RGB LED cluster for a given identifier.
+        The identifier can be specified using several formats:
+        <ul>
+        <li>FunctionLogicalName</li>
+        <li>ModuleSerialNumber.FunctionIdentifier</li>
+        <li>ModuleSerialNumber.FunctionLogicalName</li>
+        <li>ModuleLogicalName.FunctionIdentifier</li>
+        <li>ModuleLogicalName.FunctionLogicalName</li>
+        </ul>
+
+        This function does not require that the RGB LED cluster is online at the time
+        it is invoked. The returned object is nevertheless valid.
+        Use the method YColorLedCluster.isOnline() to test if the RGB LED cluster is
+        indeed online at a given time. In case of ambiguity when looking for
+        a RGB LED cluster by logical name, no error is notified: the first instance
+        found is returned. The search is performed first by hardware name,
+        then by logical name.
+
+        @param func : a string that uniquely characterizes the RGB LED cluster
+
+        @return a YColorLedCluster object allowing you to drive the RGB LED cluster.
+        """
+        # obj
+        obj = YFunction._FindFromCache("ColorLedCluster", func)
+        if obj is None:
+            obj = YColorLedCluster(func)
+            YFunction._AddToCache("ColorLedCluster", func, obj)
+        return obj
+
+    def sendCommand(self, command):
+        # //may throw an exception
+        return self.set_command(command)
+
+    def set_rgbColor(self, ledIndex, count, rgbValue):
+        """
+        Changes the current color of consecutve LEDs in the cluster , using a RGB color. Encoding is done
+        as follows: 0xRRGGBB.
+
+        @param ledIndex :  index of the first affected LED.
+        @param count    :  affected LED count.
+        @param rgbValue :  new color.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("SR" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % rgbValue))
+
+    def set_hslColor(self, ledIndex, count, hslValue):
+        """
+        Changes the current color of consecutive LEDs in the cluster , using a HSL color. Encoding is done
+        as follows: 0xHHSSLL.
+
+        @param ledIndex :  index of the first affected LED.
+        @param count    :  affected LED count.
+        @param hslValue :  new color.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("SH" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % hslValue))
+
+    def rgb_move(self, ledIndex, count, rgbValue, delay):
+        """
+        Allows you to modify the current color of a group of adjacent LED  to another color, in a seamless and
+        autonomous manner. The transition is performed in the RGB space..
+
+        @param ledIndex :  index of the first affected LED.
+        @param count    :  affected LED count.
+        @param rgbValue :  new color (0xRRGGBB).
+        @param delay    :  transition duration in ms
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("MR" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % rgbValue) + "," + str(int(delay)))
+
+    def hsl_move(self, ledIndex, count, hslValue, delay):
+        """
+        Allows you to modify the current color of a group of adjacent LEDs  to another color, in a seamless and
+        autonomous manner. The transition is performed in the HSL space. In HSL, hue is a circular
+        value (0..360°). There are always two paths to perform the transition: by increasing
+        or by decreasing the hue. The module selects the shortest transition.
+        If the difference is exactly 180°, the module selects the transition which increases
+        the hue.
+
+        @param ledIndex :  index of the fisrt affected LED.
+        @param count    :  affected LED count.
+        @param hslValue :  new color (0xHHSSLL).
+        @param delay    :  transition duration in ms
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("MH" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % hslValue) + "," + str(int(delay)))
+
+    def addRgbMoveToBlinkSeq(self, seqIndex, rgbValue, delay):
+        """
+        Adds a RGB transition to a sequence. A sequence is a transitions list, which can
+        be executed in loop by an group of LEDs.  Sequences are persistent and are saved
+        in the device flash as soon as the module saveToFlash() method is called.
+
+        @param seqIndex :  sequence index.
+        @param rgbValue :  target color (0xRRGGBB)
+        @param delay    :  transition duration in ms
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("AR" + str(int(seqIndex)) + "," + ("%X" % rgbValue) + "," + str(int(delay)))
+
+    def addHslMoveToBlinkSeq(self, seqIndex, hslValue, delay):
+        """
+        Adds a HSL transition to a sequence. A sequence is a transitions list, which can
+        be executed in loop by an group of LEDs.  Sequences are persistant and are saved
+        in the device flash as soon as the module saveToFlash() method is called.
+
+        @param seqIndex : sequence index.
+        @param hslValue : target color (0xHHSSLL)
+        @param delay    : transition duration in ms
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("AH" + str(int(seqIndex)) + "," + ("%X" % hslValue) + "," + str(int(delay)))
+
+    def addMirrorToBlinkSeq(self, seqIndex):
+        """
+        Adds a mirror ending to a sequence. When the sequence will reach the end of the last
+        transition, its running speed will automatically be reverted so that the sequence plays
+        in the reverse direction, like in a mirror. When the first transition of the sequence
+        will be played at the end of the reverse execution, the sequence will start again in
+        the initial direction.
+
+        @param seqIndex : sequence index.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("AC" + str(int(seqIndex)) + ",0,0")
+
+    def linkLedToBlinkSeq(self, ledIndex, count, seqIndex, offset):
+        """
+        Links adjacent LEDs to a specific sequence. these LED will start to execute
+        the sequence as soon as  startBlinkSeq is called. It is possible to add an offset
+        in the execution: that way we  can have several groups of LED executing the same
+        sequence, with a  temporal offset. A LED cannot be linked to more than one LED.
+
+        @param ledIndex :  index of the first affected LED.
+        @param count    :  affected LED count.
+        @param seqIndex :  sequence index.
+        @param offset   :  execution offset in ms.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("LS" + str(int(ledIndex)) + "," + str(int(count)) + "," + str(int(seqIndex)) + "," + str(int(offset)))
+
+    def linkLedToPeriodicBlinkSeq(self, ledIndex, count, seqIndex, periods):
+        """
+        Links adjacent LEDs to a specific sequence. these LED will start to execute
+        the sequence as soon as  startBlinkSeq is called. This function automatically
+        introduce a shift between LEDs so that the specified number of sequence periods
+        appears on the group of LEDs (wave effect).
+
+        @param ledIndex :  index of the first affected LED.
+        @param count    :  affected LED count.
+        @param seqIndex :  sequence index.
+        @param periods  :  number of periods to show on LEDs.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("LP" + str(int(ledIndex)) + "," + str(int(count)) + "," + str(int(seqIndex)) + "," + str(int(periods)))
+
+    def unlinkLedFromBlinkSeq(self, ledIndex, count):
+        """
+        UnLink adjacent LED  from a  sequence.
+
+        @param ledIndex  :  index of the first affected LED.
+        @param count     :  affected LED count.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("US" + str(int(ledIndex)) + "," + str(int(count)))
+
+    def startBlinkSeq(self, seqIndex):
+        """
+        Start a sequence execution: every LED linked to that sequence will start to
+        run it in a loop.
+
+        @param seqIndex :  index of the sequence to start.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("SS" + str(int(seqIndex)))
+
+    def stopBlinkSeq(self, seqIndex):
+        """
+        Stop a sequence execution. if started again, the execution
+        will restart from the beginning.
+
+        @param seqIndex :  index of the sequence to stop.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("XS" + str(int(seqIndex)))
+
+    def resetBlinkSeq(self, seqIndex):
+        """
+        Stop a sequence execution and reset its contents. Leds linked to this
+        sequences will no more be automatically updated.
+
+        @param seqIndex :  index of the sequence to reset
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("ZS" + str(int(seqIndex)))
+
+    def changeBlinkSeqSpeed(self, seqIndex, speed):
+        """
+        Change the execution speed of a sequence. The natural execution speed is 1000 per
+        thousand. If you configure a slower speed, you can play the sequence in slow-motion.
+        If you set a negative speed, you can play the sequence in reverse direction.
+
+        @param seqIndex :  index of the sequence to start.
+        @param speed :     sequence running speed (-1000...1000).
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("CS" + str(int(seqIndex)))
+
+    def saveLedsState(self):
+        """
+        Save the current state of all LEDs as the initial startup state.
+        The initial startup state includes the choice of sequence linked to each LED.
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("SL")
+
+    def set_rgbBuffer(self, buff):
+        """
+        Sends a binary buffer to the LED RGB buffer, as is.
+        First three bytes are RGB components for first LED, the
+        next three bytes for the second LED, etc.
+
+        @param buff : the binary buffer to send
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        # // may throw an exception
+        return self._upload("rgb:0", buff)
+
+    def set_rgbArray(self, rgbList):
+        """
+        Sends 24bit RGB colors (provided as a list of integers) to the LED RGB buffer, as is.
+        The first number represents the RGB value of the first LED, the second number represents
+        the RGB value of the second LED, etc.
+
+        @param rgbList : a list of 24bit RGB codes, in the form 0xRRGGBB
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        # listlen
+        # buff
+        # idx
+        # rgb
+        # res
+        listlen = len(rgbList)
+        buff = bytearray(3*listlen)
+        idx = 0
+        while idx < listlen:
+            rgb = rgbList[idx]
+            buff[3*idx] = ((((rgb) >> (16))) & (255))
+            buff[3*idx+1] = ((((rgb) >> (8))) & (255))
+            buff[3*idx+2] = ((rgb) & (255))
+            idx = idx + 1
+        # // may throw an exception
+        res = self._upload("rgb:0", buff)
+        return res
+
+    def rgbArray_move(self, rgbList, delay):
+        """
+        Setup a smooth RGB color transition to the specified pixel-by-pixel list of RGB
+        color codes. The first color code represents the target RGB value of the first LED,
+        the second color code represents the target value of the second LED, etc.
+
+        @param rgbList : a list of target 24bit RGB codes, in the form 0xRRGGBB
+        @param delay   : transition duration in ms
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        # listlen
+        # buff
+        # idx
+        # rgb
+        # res
+        listlen = len(rgbList)
+        buff = bytearray(3*listlen)
+        idx = 0
+        while idx < listlen:
+            rgb = rgbList[idx]
+            buff[3*idx] = ((((rgb) >> (16))) & (255))
+            buff[3*idx+1] = ((((rgb) >> (8))) & (255))
+            buff[3*idx+2] = ((rgb) & (255))
+            idx = idx + 1
+        # // may throw an exception
+        res = self._upload("rgb:" + str(int(delay)), buff)
+        return res
+
+    def set_hslBuffer(self, buff):
+        """
+        Sends a binary buffer to the LED HSL buffer, as is.
+        First three bytes are HSL components for first LED, the
+        next three bytes for the second LED, etc.
+
+        @param buff : the binary buffer to send
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        # // may throw an exception
+        return self._upload("hsl:0", buff)
+
+    def set_hslArray(self, hslList):
+        """
+        Sends 24bit HSL colors (provided as a list of integers) to the LED HSL buffer, as is.
+        The first number represents the HSL value of the first LED, the second number represents
+        the HSL value of the second LED, etc.
+
+        @param hslList : a list of 24bit HSL codes, in the form 0xHHSSLL
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        # listlen
+        # buff
+        # idx
+        # hsl
+        # res
+        listlen = len(hslList)
+        buff = bytearray(3*listlen)
+        idx = 0
+        while idx < listlen:
+            hsl = hslList[idx]
+            buff[3*idx] = ((((hsl) >> (16))) & (255))
+            buff[3*idx+1] = ((((hsl) >> (8))) & (255))
+            buff[3*idx+2] = ((hsl) & (255))
+            idx = idx + 1
+        # // may throw an exception
+        res = self._upload("hsl:0", buff)
+        return res
+
+    def hslArray_move(self, hslList, delay):
+        """
+        Setup a smooth HSL color transition to the specified pixel-by-pixel list of HSL
+        color codes. The first color code represents the target HSL value of the first LED,
+        the second color code represents the target value of the second LED, etc.
+
+        @param hslList : a list of target 24bit HSL codes, in the form 0xHHSSLL
+        @param delay   : transition duration in ms
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        # listlen
+        # buff
+        # idx
+        # hsl
+        # res
+        listlen = len(hslList)
+        buff = bytearray(3*listlen)
+        idx = 0
+        while idx < listlen:
+            hsl = hslList[idx]
+            buff[3*idx] = ((((hsl) >> (16))) & (255))
+            buff[3*idx+1] = ((((hsl) >> (8))) & (255))
+            buff[3*idx+2] = ((hsl) & (255))
+            idx = idx + 1
+        # // may throw an exception
+        res = self._upload("hsl:" + str(int(delay)), buff)
+        return res
+
+    def get_rgbColorBuffer(self, ledIndex, count):
+        """
+        Returns a binary buffer with content from the LED RGB buffer, as is.
+        First three bytes are RGB components for the first LED in the interval,
+        the next three bytes for the second LED in the interval, etc.
+
+        @param ledIndex : index of the first LED which should be returned
+        @param count    : number of LEDs which should be returned
+
+        @return a binary buffer with RGB components of selected LEDs.
+                On failure, throws an exception or returns an empty binary buffer.
+        """
+        # // may throw an exception
+        return self._download("rgb.bin?typ=0&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
+
+    def get_rgbColorArray(self, ledIndex, count):
+        """
+        Returns a list on 24bit RGB color values with the current colors displayed on
+        the RGB leds. The first number represents the RGB value of the first LED,
+        the second number represents the RGB value of the second LED, etc.
+
+        @param ledIndex : index of the first LED which should be returned
+        @param count    : number of LEDs which should be returned
+
+        @return a list of 24bit color codes with RGB components of selected LEDs, as 0xRRGGBB.
+                On failure, throws an exception or returns an empty array.
+        """
+        # buff
+        res = []
+        # idx
+        # r
+        # g
+        # b
+        # // may throw an exception
+        buff = self._download("rgb.bin?typ=0&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
+        del res[:]
+        
+        idx = 0
+        while idx < count:
+            r = YGetByte(buff, 3*idx)
+            g = YGetByte(buff, 3*idx+1)
+            b = YGetByte(buff, 3*idx+2)
+            res.append(r*65536+g*256+b)
+            idx = idx + 1
+        
+        return res
+
+    def get_linkedSeqArray(self, ledIndex, count):
+        """
+        Returns a list on sequence index for each RGB LED. The first number represents the
+        sequence index for the the first LED, the second number represents the sequence
+        index for the second LED, etc.
+
+        @param ledIndex : index of the first LED which should be returned
+        @param count    : number of LEDs which should be returned
+
+        @return a list of integers with sequence index
+                On failure, throws an exception or returns an empty array.
+        """
+        # buff
+        res = []
+        # idx
+        # seq
+        # // may throw an exception
+        buff = self._download("rgb.bin?typ=1&pos=" + str(int(ledIndex)) + "&len=" + str(int(count)))
+        del res[:]
+        
+        idx = 0
+        while idx < count:
+            seq = YGetByte(buff, idx)
+            res.append(seq)
+            idx = idx + 1
+        
+        return res
+
+    def get_blinkSeqSignatures(self, seqIndex, count):
+        """
+        Returns a list on 32 bit signatures for specified blinking sequences.
+        Since blinking sequences cannot be read from the device, this can be used
+        to detect if a specific blinking sequence is already programmed.
+
+        @param seqIndex : index of the first blinking sequence which should be returned
+        @param count    : number of blinking sequences which should be returned
+
+        @return a list of 32 bit integer signatures
+                On failure, throws an exception or returns an empty array.
+        """
+        # buff
+        res = []
+        # idx
+        # hh
+        # hl
+        # lh
+        # ll
+        # // may throw an exception
+        buff = self._download("rgb.bin?typ=2&pos=" + str(int(4*seqIndex)) + "&len=" + str(int(4*count)))
+        del res[:]
+        
+        idx = 0
+        while idx < count:
+            hh = YGetByte(buff, 4*idx)
+            hl = YGetByte(buff, 4*idx+1)
+            lh = YGetByte(buff, 4*idx+2)
+            ll = YGetByte(buff, 4*idx+3)
+            res.append(((hh) << (24))+((hl) << (16))+((lh) << (8))+ll)
+            idx = idx + 1
+        
+        return res
+
+    def get_blinkSeqState(self, seqIndex, count):
+        """
+        Returns a list of integers with the started state for specified blinking sequences.
+
+        @param seqIndex : index of the first blinking sequence which should be returned
+        @param count    : number of blinking sequences which should be returned
+
+        @return a list of integers, 0 for sequences turned off and 1 for sequences running
+                On failure, throws an exception or returns an empty array.
+        """
+        # buff
+        res = []
+        # idx
+        # started
+        # // may throw an exception
+        buff = self._download("rgb.bin?typ=3&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
+        del res[:]
+        
+        idx = 0
+        while idx < count:
+            started = YGetByte(buff, idx)
+            res.append(started)
+            idx = idx + 1
+        
+        return res
+
+    def nextColorLedCluster(self):
+        """
+        Continues the enumeration of RGB LED clusters started using yFirstColorLedCluster().
+
+        @return a pointer to a YColorLedCluster object, corresponding to
+                a RGB LED cluster currently online, or a None pointer
+                if there are no more RGB LED clusters to enumerate.
+        """
+        hwidRef = YRefParam()
+        if YAPI.YISERR(self._nextFunction(hwidRef)):
+            return None
+        if hwidRef.value == "":
+            return None
+        return YColorLedCluster.FindColorLedCluster(hwidRef.value)
+
+#--- (end of YColorLedCluster implementation)
+
+#--- (ColorLedCluster functions)
+
+    @staticmethod
+    def FirstColorLedCluster():
+        """
+        Starts the enumeration of RGB LED clusters currently accessible.
+        Use the method YColorLedCluster.nextColorLedCluster() to iterate on
+        next RGB LED clusters.
+
+        @return a pointer to a YColorLedCluster object, corresponding to
+                the first RGB LED cluster currently online, or a None pointer
+                if there are none.
+        """
+        devRef = YRefParam()
+        neededsizeRef = YRefParam()
+        serialRef = YRefParam()
+        funcIdRef = YRefParam()
+        funcNameRef = YRefParam()
+        funcValRef = YRefParam()
+        errmsgRef = YRefParam()
+        size = YAPI.C_INTSIZE
+        #noinspection PyTypeChecker,PyCallingNonCallable
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("ColorLedCluster", 0, p, size, neededsizeRef, errmsgRef)
+
+        if YAPI.YISERR(err) or not neededsizeRef.value:
+            return None
+
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
+            return None
+
+        return YColorLedCluster.FindColorLedCluster(serialRef.value + "." + funcIdRef.value)
+
+#--- (end of ColorLedCluster functions)

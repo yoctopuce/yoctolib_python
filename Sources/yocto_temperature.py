@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 21576 2015-09-21 13:17:28Z seb $
+#* $Id: yocto_temperature.py 23527 2016-03-18 21:49:19Z mvuilleu $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -28,8 +28,8 @@
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
 #*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
-#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
-#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
 #*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
 #*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
 #*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -59,6 +59,8 @@ class YTemperature(YSensor):
     #--- (YTemperature dlldef)
     #--- (end of YTemperature dlldef)
     #--- (YTemperature definitions)
+    SIGNALVALUE_INVALID = YAPI.INVALID_DOUBLE
+    SIGNALUNIT_INVALID = YAPI.INVALID_STRING
     COMMAND_INVALID = YAPI.INVALID_STRING
     SENSORTYPE_DIGITAL = 0
     SENSORTYPE_TYPE_K = 1
@@ -83,6 +85,8 @@ class YTemperature(YSensor):
         #--- (YTemperature attributes)
         self._callback = None
         self._sensorType = YTemperature.SENSORTYPE_INVALID
+        self._signalValue = YTemperature.SIGNALVALUE_INVALID
+        self._signalUnit = YTemperature.SIGNALUNIT_INVALID
         self._command = YTemperature.COMMAND_INVALID
         #--- (end of YTemperature attributes)
 
@@ -90,6 +94,12 @@ class YTemperature(YSensor):
     def _parseAttr(self, member):
         if member.name == "sensorType":
             self._sensorType = member.ivalue
+            return 1
+        if member.name == "signalValue":
+            self._signalValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
+            return 1
+        if member.name == "signalUnit":
+            self._signalUnit = member.svalue
             return 1
         if member.name == "command":
             self._command = member.svalue
@@ -157,6 +167,33 @@ class YTemperature(YSensor):
         """
         rest_val = str(newval)
         return self._setAttr("sensorType", rest_val)
+
+    def get_signalValue(self):
+        """
+        Returns the current value of the electrical signal measured by the sensor.
+
+        @return a floating point number corresponding to the current value of the electrical signal
+        measured by the sensor
+
+        On failure, throws an exception or returns YTemperature.SIGNALVALUE_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YTemperature.SIGNALVALUE_INVALID
+        return round(self._signalValue * 1000) / 1000
+
+    def get_signalUnit(self):
+        """
+        Returns the measuring unit of the electrical signal used by the sensor.
+
+        @return a string corresponding to the measuring unit of the electrical signal used by the sensor
+
+        On failure, throws an exception or returns YTemperature.SIGNALUNIT_INVALID.
+        """
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YTemperature.SIGNALUNIT_INVALID
+        return self._signalUnit
 
     def get_command(self):
         if self._cacheExpiration <= YAPI.GetTickCount():

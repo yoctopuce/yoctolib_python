@@ -1,6 +1,6 @@
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 22798 2016-01-15 17:38:09Z seb $
+# * $Id: yocto_api.py 23882 2016-04-12 08:38:50Z seb $
 # *
 #* High-level programming interface, common to all modules
 #*
@@ -543,7 +543,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "22936"
+    YOCTO_API_BUILD_NO = "24182"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -962,9 +962,15 @@ class YAPI:
         YAPI._yapiGetBootloaders = YAPI._yApiCLib.yapiGetBootloaders
         YAPI._yapiGetBootloaders.restypes = ctypes.c_int
         YAPI._yapiGetBootloaders.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
-        YAPI._yapiUpdateFirmware = YAPI._yApiCLib.yapiUpdateFirmware
-        YAPI._yapiUpdateFirmware.restypes = ctypes.c_int
-        YAPI._yapiUpdateFirmware.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
+        YAPI._yapiUpdateFirmwareEx = YAPI._yApiCLib.yapiUpdateFirmwareEx
+        YAPI._yapiUpdateFirmwareEx.restypes = ctypes.c_int
+        YAPI._yapiUpdateFirmwareEx.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
+        YAPI._yapiHTTPRequestSyncStartOutOfBand = YAPI._yApiCLib.yapiHTTPRequestSyncStartOutOfBand
+        YAPI._yapiHTTPRequestSyncStartOutOfBand.restypes = ctypes.c_int
+        YAPI._yapiHTTPRequestSyncStartOutOfBand.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, POINTER(POINTER(ctypes.c_ubyte)), ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_char_p]
+        YAPI._yapiHTTPRequestAsyncOutOfBand = YAPI._yApiCLib.yapiHTTPRequestAsyncOutOfBand
+        YAPI._yapiHTTPRequestAsyncOutOfBand.restypes = ctypes.c_int
+        YAPI._yapiHTTPRequestAsyncOutOfBand.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiTestHub = YAPI._yApiCLib.yapiTestHub
         YAPI._yapiTestHub.restypes = ctypes.c_int
         YAPI._yapiTestHub.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
@@ -977,6 +983,9 @@ class YAPI:
         YAPI._yapiGetSubdevices = YAPI._yApiCLib.yapiGetSubdevices
         YAPI._yapiGetSubdevices.restypes = ctypes.c_int
         YAPI._yapiGetSubdevices.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
+        YAPI._yapiFreeMem = YAPI._yApiCLib.yapiFreeMem
+        YAPI._yapiFreeMem.restypes = ctypes.c_int
+        YAPI._yapiFreeMem.argtypes = [ctypes.c_void_p]
         YAPI._yapiGetDevicePathEx = YAPI._yApiCLib.yapiGetDevicePathEx
         YAPI._yapiGetDevicePathEx.restypes = ctypes.c_int
         YAPI._yapiGetDevicePathEx.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
@@ -2204,6 +2213,7 @@ class YFirmwareUpdate(object):
         self._progress_c = 0
         self._progress = 0
         self._restore_step = 0
+        self._force = 0
         #--- (end of generated code: YFirmwareUpdate attributes)
         self._serial = serial
         self._settings = settings
@@ -2218,11 +2228,16 @@ class YFirmwareUpdate(object):
         # firmwarepath
         # settings
         # prod_prefix
+        # force
         if self._progress_c < 100:
             serial = self._serial
             firmwarepath = self._firmwarepath
             settings = YByte2String(self._settings)
-            res = YAPI._yapiUpdateFirmware(ctypes.create_string_buffer(YString2Byte(serial)), ctypes.create_string_buffer(YString2Byte(firmwarepath)), ctypes.create_string_buffer(YString2Byte(settings)), newupdate, errmsg)
+            if self._force:
+                force = 1
+            else:
+                force = 0
+            res = YAPI._yapiUpdateFirmwareEx(ctypes.create_string_buffer(YString2Byte(serial)), ctypes.create_string_buffer(YString2Byte(firmwarepath)), ctypes.create_string_buffer(YString2Byte(settings)), force, newupdate, errmsg)
             if res < 0:
                 self._progress = res
                 self._progress_msg = YByte2String(errmsg.value)
@@ -2259,11 +2274,11 @@ class YFirmwareUpdate(object):
     @staticmethod
     def GetAllBootLoaders():
         """
-        Retruns a list of all the modules in "update" mode. Only USB connected
-        devices are listed. For modules connected to a YoctoHub, you must
-        connect yourself to the YoctoHub web interface.
+        Returns a list of all the modules in "firmware update" mode. Only devices
+        connected over USB are listed. For devices connected to a YoctoHub, you
+        must connect yourself to the YoctoHub web interface.
 
-        @return an array of strings containing the serial list of module in "update" mode.
+        @return an array of strings containing the serial numbers of devices in "firmware update" mode.
         """
         errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         smallbuff = ctypes.create_string_buffer(1024)
@@ -2296,17 +2311,17 @@ class YFirmwareUpdate(object):
     @staticmethod
     def CheckFirmware(serial, path, minrelease):
         """
-        Test if the byn file is valid for this module. It's possible to pass an directory instead of a file.
-        In this case this method return the path of the most recent appropriate byn file. This method will
-        ignore firmware that are older than mintrelase.
+        Test if the byn file is valid for this module. It is possible to pass a directory instead of a file.
+        In that case, this method returns the path of the most recent appropriate byn file. This method will
+        ignore any firmware older than minrelease.
 
         @param serial : the serial number of the module to update
         @param path : the path of a byn file or a directory that contains byn files
         @param minrelease : a positive integer
 
-        @return : the path of the byn file to use or an empty string if no byn files match the requirement
+        @return : the path of the byn file to use, or an empty string if no byn files matches the requirement
 
-        On failure, returns a string that start with "error:".
+        On failure, returns a string that starts with "error:".
         """
         errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         smallbuff = ctypes.create_string_buffer(1024)
@@ -3949,6 +3964,7 @@ class YFunction(object):
             #(xrange not supported in 2.5.x)
             for i in range(res):
                 bb = YAddByte(bb, reply_c[i])
+            YAPI._yapiFreeMem(reply_c)
             return YByte2String(bb)
         return ""
 
@@ -4889,14 +4905,13 @@ class YModule(YFunction):
         needs to be updated.
         It is possible to pass a directory as argument instead of a file. In this case, this method returns
         the path of the most recent
-        appropriate byn file. If the parameter onlynew is true, the function discards firmware that are
-        older or equal to
-        the installed firmware.
+        appropriate .byn file. If the parameter onlynew is true, the function discards firmwares that are older or
+        equal to the installed firmware.
 
         @param path : the path of a byn file or a directory that contains byn files
         @param onlynew : returns only files that are strictly newer
 
-        @return : the path of the byn file to use or a empty string if no byn files matches the requirement
+        @return the path of the byn file to use or a empty string if no byn files matches the requirement
 
         On failure, throws an exception or returns a string that start with "error:".
         """
@@ -4914,14 +4929,15 @@ class YModule(YFunction):
             self._throw(YAPI.INVALID_ARGUMENT, tmp_res)
         return tmp_res
 
-    def updateFirmware(self, path):
+    def updateFirmwareEx(self, path, force):
         """
         Prepares a firmware update of the module. This method returns a YFirmwareUpdate object which
         handles the firmware update process.
 
-        @param path : the path of the byn file to use.
+        @param path : the path of the .byn file to use.
+        @param force : true to force the firmware update even if some prerequisites appear not to be met
 
-        @return : A YFirmwareUpdate object or None on error.
+        @return a YFirmwareUpdate object or None on error.
         """
         # serial
         # settings
@@ -4931,13 +4947,24 @@ class YModule(YFunction):
         if len(settings) == 0:
             self._throw(YAPI.IO_ERROR, "Unable to get device settings")
             settings = YString2Byte("error:Unable to get device settings")
-        return YFirmwareUpdate(serial, path, settings)
+        return YFirmwareUpdate(serial, path, settings, force)
+
+    def updateFirmware(self, path):
+        """
+        Prepares a firmware update of the module. This method returns a YFirmwareUpdate object which
+        handles the firmware update process.
+
+        @param path : the path of the .byn file to use.
+
+        @return a YFirmwareUpdate object or None on error.
+        """
+        # // may throw an exception
+        return self.updateFirmwareEx(path, False)
 
     def get_allSettings(self):
         """
-        Returns all the settings and uploaded files of the module. Useful to backup all the logical names,
-        calibrations parameters,
-        and uploaded files of a connected module.
+        Returns all the settings and uploaded files of the module. Useful to backup all the
+        logical names, calibrations parameters, and uploaded files of a device.
 
         @return a binary buffer with all the settings.
 
@@ -4977,7 +5004,7 @@ class YModule(YFunction):
                     item = "" + sep + "{\"fid\":\"" + y + "\", \"json\":" + YByte2String(temp_data_bin) + "}\n"
                     ext_settings = ext_settings + item
                     sep = ","
-        ext_settings =  ext_settings + "],\n\"files\":["
+        ext_settings = ext_settings + "],\n\"files\":["
         if self.hasFunction("files"):
             #
             json = self._download("files.json?a=dir&f=")
@@ -4987,15 +5014,13 @@ class YModule(YFunction):
             sep = ""
             for y in  filelist:
                 name = self._json_get_key(YString2Byte(y), "name")
-                if len(name) == 0:
-                    return YString2Byte(name)
-                file_data_bin = self._download(self._escapeAttr(name))
-                file_data = YAPI._bytesToHexStr(file_data_bin)
-                item = "" + sep + "{\"name\":\"" + name + "\", \"data\":\"" + file_data + "\"}\n"
-                ext_settings = ext_settings + item
-                sep = ","
-        ext_settings = ext_settings + "]}"
-        res = YString2Byte("{ \"api\":") + settings + YString2Byte(ext_settings)
+                if (len(name) > 0) and not (name == "startupConf.json"):
+                    file_data_bin = self._download(self._escapeAttr(name))
+                    file_data = YAPI._bytesToHexStr(file_data_bin)
+                    item = "" + sep + "{\"name\":\"" + name + "\", \"data\":\"" + file_data + "\"}\n"
+                    ext_settings = ext_settings + item
+                    sep = ","
+        res = YString2Byte("{ \"api\":" + YByte2String(settings) + ext_settings + "]}")
         return res
 
     def loadThermistorExtra(self, funcId, jsonExtra):
@@ -5036,9 +5061,10 @@ class YModule(YFunction):
 
     def set_allSettingsAndFiles(self, settings):
         """
-        Restores all the settings and uploaded files of the module. Useful to restore all the logical names
-        and calibrations parameters, uploaded
-        files etc.. of a module from a backup.Remember to call the saveToFlash() method of the module if the
+        Restores all the settings and uploaded files to the module.
+        This method is useful to restore all the logical names and calibrations parameters,
+        uploaded files etc. of a device from a backup.
+        Remember to call the saveToFlash() method of the module if the
         modifications must be kept.
 
         @param settings : a binary buffer with all the settings.
@@ -5083,12 +5109,12 @@ class YModule(YFunction):
 
     def hasFunction(self, funcId):
         """
-        Test if the device has a specific function. This method took an function identifier
-        and return a boolean.
+        Tests if the device includes a specific function. This method takes a function identifier
+        and returns a boolean.
 
         @param funcId : the requested function identifier
 
-        @return : true if the device has the function identifier
+        @return true if the device has the function identifier
         """
         # count
         # i
@@ -5109,7 +5135,7 @@ class YModule(YFunction):
 
         @param funType : The type of function (Relay, LightSensor, Voltage,...)
 
-        @return : A array of string.
+        @return an array of strings.
         """
         # count
         # i
@@ -5334,7 +5360,7 @@ class YModule(YFunction):
 
     def set_allSettings(self, settings):
         """
-        Restores all the settings of the module. Useful to restore all the logical names and calibrations parameters
+        Restores all the settings of the device. Useful to restore all the logical names and calibrations parameters
         of a module from a backup.Remember to call the saveToFlash() method of the module if the
         modifications must be kept.
 
@@ -5607,12 +5633,25 @@ class YModule(YFunction):
         content = self._download("logs.txt")
         return YByte2String(content)
 
+    def log(self, text):
+        """
+        Adds a text message to the device logs. This function is useful in
+        particular to trace the execution of HTTP callbacks. If a newline
+        is desired after the message, it must be included in the string.
+
+        @param text : the string to append to the logs.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self._upload("logs.txt", YString2Byte(text))
+
     def get_subDevices(self):
         """
-        Returns a list of all the modules that are plugged into the current module. This
-        method is only useful on a YoctoHub/VirtualHub. This method return the serial number of all
-        module connected to a YoctoHub. Calling this method on a standard device is not an
-        error, and an empty array will be returned.
+        Returns a list of all the modules that are plugged into the current module.
+        This method only makes sense when called for a YoctoHub/VirtualHub.
+        Otherwise, an empty array will be returned.
 
         @return an array of strings containing the sub modules.
         """
@@ -5650,7 +5689,7 @@ class YModule(YFunction):
     def get_parentHub(self):
         """
         Returns the serial number of the YoctoHub on which this module is connected.
-        If the module is connected by USB or if the module is the root YoctoHub an
+        If the module is connected by USB, or if the module is the root YoctoHub, an
         empty string is returned.
 
         @return a string with the serial number of the YoctoHub or an empty string
@@ -5671,7 +5710,7 @@ class YModule(YFunction):
 
     def get_url(self):
         """
-        Returns the URL used to access the module. If the module is connected by USB the
+        Returns the URL used to access the module. If the module is connected by USB, the
         string 'usb' is returned.
 
         @return a string with the URL of the module.
@@ -5929,9 +5968,9 @@ class YModule(YFunction):
         """
         self._logCallback = callback
         if self._logCallback is None:
-            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serial.encode("ASCII")), 0)
+            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serialNumber.encode("ASCII")), 0)
         else:
-            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serial.encode("ASCII")), 1)
+            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serialNumber.encode("ASCII")), 1)
 
     def get_logCallback(self):
         return self._logCallback

@@ -3,7 +3,6 @@
 import os, sys
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..","..","Sources"))
-import os,sys
 sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
 from yocto_serialport import *

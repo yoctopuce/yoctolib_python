@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_led.py 19610 2015-03-05 10:39:47Z seb $
+#* $Id: yocto_led.py 23578 2016-03-22 23:00:41Z mvuilleu $
 #*
 #* Implements yFindLed(), the high-level API for Led functions
 #*
@@ -28,8 +28,8 @@
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
 #*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
-#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
-#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
 #*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
 #*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
 #*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -47,7 +47,7 @@ from yocto_api import *
 class YLed(YFunction):
     """
     Yoctopuce application programming interface
-    allows you not only to drive the intensity of the led, but also to
+    allows you not only to drive the intensity of the LED, but also to
     have it blink at various preset frequencies.
 
     """
@@ -95,9 +95,9 @@ class YLed(YFunction):
 
     def get_power(self):
         """
-        Returns the current led state.
+        Returns the current LED state.
 
-        @return either YLed.POWER_OFF or YLed.POWER_ON, according to the current led state
+        @return either YLed.POWER_OFF or YLed.POWER_ON, according to the current LED state
 
         On failure, throws an exception or returns YLed.POWER_INVALID.
         """
@@ -108,9 +108,9 @@ class YLed(YFunction):
 
     def set_power(self, newval):
         """
-        Changes the state of the led.
+        Changes the state of the LED.
 
-        @param newval : either YLed.POWER_OFF or YLed.POWER_ON, according to the state of the led
+        @param newval : either YLed.POWER_OFF or YLed.POWER_ON, according to the state of the LED
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -121,9 +121,9 @@ class YLed(YFunction):
 
     def get_luminosity(self):
         """
-        Returns the current led intensity (in per cent).
+        Returns the current LED intensity (in per cent).
 
-        @return an integer corresponding to the current led intensity (in per cent)
+        @return an integer corresponding to the current LED intensity (in per cent)
 
         On failure, throws an exception or returns YLed.LUMINOSITY_INVALID.
         """
@@ -134,9 +134,9 @@ class YLed(YFunction):
 
     def set_luminosity(self, newval):
         """
-        Changes the current led intensity (in per cent).
+        Changes the current LED intensity (in per cent).
 
-        @param newval : an integer corresponding to the current led intensity (in per cent)
+        @param newval : an integer corresponding to the current LED intensity (in per cent)
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -147,10 +147,10 @@ class YLed(YFunction):
 
     def get_blinking(self):
         """
-        Returns the current led signaling mode.
+        Returns the current LED signaling mode.
 
         @return a value among YLed.BLINKING_STILL, YLed.BLINKING_RELAX, YLed.BLINKING_AWARE,
-        YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current led signaling mode
+        YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current LED signaling mode
 
         On failure, throws an exception or returns YLed.BLINKING_INVALID.
         """
@@ -161,10 +161,10 @@ class YLed(YFunction):
 
     def set_blinking(self, newval):
         """
-        Changes the current led signaling mode.
+        Changes the current LED signaling mode.
 
         @param newval : a value among YLed.BLINKING_STILL, YLed.BLINKING_RELAX, YLed.BLINKING_AWARE,
-        YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current led signaling mode
+        YLed.BLINKING_RUN, YLed.BLINKING_CALL and YLed.BLINKING_PANIC corresponding to the current LED signaling mode
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -176,7 +176,7 @@ class YLed(YFunction):
     @staticmethod
     def FindLed(func):
         """
-        Retrieves a led for a given identifier.
+        Retrieves a LED for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -186,17 +186,17 @@ class YLed(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the led is online at the time
+        This function does not require that the LED is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YLed.isOnline() to test if the led is
+        Use the method YLed.isOnline() to test if the LED is
         indeed online at a given time. In case of ambiguity when looking for
-        a led by logical name, no error is notified: the first instance
+        a LED by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
-        @param func : a string that uniquely characterizes the led
+        @param func : a string that uniquely characterizes the LED
 
-        @return a YLed object allowing you to drive the led.
+        @return a YLed object allowing you to drive the LED.
         """
         # obj
         obj = YFunction._FindFromCache("Led", func)
@@ -207,11 +207,11 @@ class YLed(YFunction):
 
     def nextLed(self):
         """
-        Continues the enumeration of leds started using yFirstLed().
+        Continues the enumeration of LEDs started using yFirstLed().
 
         @return a pointer to a YLed object, corresponding to
-                a led currently online, or a None pointer
-                if there are no more leds to enumerate.
+                a LED currently online, or a None pointer
+                if there are no more LEDs to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -227,12 +227,12 @@ class YLed(YFunction):
     @staticmethod
     def FirstLed():
         """
-        Starts the enumeration of leds currently accessible.
+        Starts the enumeration of LEDs currently accessible.
         Use the method YLed.nextLed() to iterate on
-        next leds.
+        next LEDs.
 
         @return a pointer to a YLed object, corresponding to
-                the first led currently online, or a None pointer
+                the first LED currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
