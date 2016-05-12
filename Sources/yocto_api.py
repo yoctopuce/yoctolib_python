@@ -1,6 +1,6 @@
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 23882 2016-04-12 08:38:50Z seb $
+# * $Id: yocto_api.py 24457 2016-05-11 15:42:26Z seb $
 # *
 #* High-level programming interface, common to all modules
 #*
@@ -543,7 +543,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "24182"
+    YOCTO_API_BUILD_NO = "24457"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -675,7 +675,11 @@ class YAPI:
                     YAPI._yApiCLibFile = libpath + "/cdll/libyapi-armhf.so"
                     YAPI._yApiCLibFileFallback = libpath + "/cdll/libyapi-armel.so"
                 elif machine.find("mips") >= 0:
-                    YAPI._yApiCLibFile = libpath + "/cdll/libyapi-mips.so"
+                    byteorder_str = sys.byteorder
+                    if byteorder_str.lower() == 'little':
+                        YAPI._yApiCLibFile = libpath + "/cdll/libyapi-mipsel.so"
+                    else:
+                        YAPI._yApiCLibFile = libpath + "/cdll/libyapi-mips.so"
                     YAPI._yApiCLibFileFallback = ""
                 elif machine == 'x86_32' or (machine[0] == 'i' and machine[-2:] == '86'):
                     YAPI._yApiCLibFile = libpath + "/cdll/libyapi-i386.so"

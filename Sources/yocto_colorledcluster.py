@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 24147 2016-04-22 06:44:18Z mvuilleu $
+#* $Id: yocto_colorledcluster.py 24363 2016-05-03 16:00:56Z mvuilleu $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -139,9 +139,9 @@ class YColorLedCluster(YFunction):
 
     def get_blinkSeqMaxCount(self):
         """
-        Returns the maximum count of sequences.
+        Returns the maximum count of sequences that the device can handle
 
-        @return an integer corresponding to the maximum count of sequences
+        @return an integer corresponding to the maximum count of sequences that the device can handle
 
         On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXCOUNT_INVALID.
         """
@@ -220,6 +220,18 @@ class YColorLedCluster(YFunction):
                 On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("SR" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % rgbValue))
+
+    def set_rgbColorAtPowerOn(self, ledIndex, count, rgbValue):
+        """
+        Changes the  color at device startup of consecutve LEDs in the cluster , using a RGB color.
+        Encoding is done as follows: 0xRRGGBB.
+
+        @param ledIndex :  index of the first affected LED.
+        @param count    :  affected LED count.
+        @param rgbValue :  new color.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("SC" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % rgbValue))
 
     def set_hslColor(self, ledIndex, count, hslValue):
         """
@@ -307,7 +319,7 @@ class YColorLedCluster(YFunction):
         Links adjacent LEDs to a specific sequence. these LED will start to execute
         the sequence as soon as  startBlinkSeq is called. It is possible to add an offset
         in the execution: that way we  can have several groups of LED executing the same
-        sequence, with a  temporal offset. A LED cannot be linked to more than one LED.
+        sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
 
         @param ledIndex :  index of the first affected LED.
         @param count    :  affected LED count.
@@ -316,6 +328,21 @@ class YColorLedCluster(YFunction):
                 On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("LS" + str(int(ledIndex)) + "," + str(int(count)) + "," + str(int(seqIndex)) + "," + str(int(offset)))
+
+    def linkLedToBlinkSeqAtPowerOn(self, ledIndex, count, seqIndex, offset):
+        """
+        Links adjacent LEDs to a specific sequence a device poweron. Don't forget to configure
+        the sequence auto start flag as well and call saveLedsState. It is possible to add an offset
+        in the execution: that way we  can have several groups of LED executing the same
+        sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
+
+        @param ledIndex :  index of the first affected LED.
+        @param count    :  affected LED count.
+        @param seqIndex :  sequence index.
+        @param offset   :  execution offset in ms.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("LO" + str(int(ledIndex)) + "," + str(int(count)) + "," + str(int(seqIndex)) + "," + str(int(offset)))
 
     def linkLedToPeriodicBlinkSeq(self, ledIndex, count, seqIndex, periods):
         """
@@ -372,7 +399,19 @@ class YColorLedCluster(YFunction):
         """
         return self.sendCommand("ZS" + str(int(seqIndex)))
 
-    def changeBlinkSeqSpeed(self, seqIndex, speed):
+    def set_blinkSeqAutoStart(self, seqIndex, autostart):
+        """
+        Configure a sequence to make it start automatically at device
+        startup. Don't forget to call  saveLedsState() to make sure the
+        modification is saved in the device flash memory.
+
+        @param seqIndex :  index of the sequence to reset
+        @param autostart :  boolean telling if the sequence must start automatically or not.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("AS" + str(int(seqIndex)) + "," + ("1" if autostart else "0"))
+
+    def set_blinkSeqSpeed(self, seqIndex, speed):
         """
         Change the execution speed of a sequence. The natural execution speed is 1000 per
         thousand. If you configure a slower speed, you can play the sequence in slow-motion.
@@ -382,12 +421,12 @@ class YColorLedCluster(YFunction):
         @param speed :     sequence running speed (-1000...1000).
                 On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("CS" + str(int(seqIndex)))
+        return self.sendCommand("CS" + str(int(seqIndex)) + "," + str(int(speed)))
 
     def saveLedsState(self):
         """
-        Save the current state of all LEDs as the initial startup state.
-        The initial startup state includes the choice of sequence linked to each LED.
+        Save the cluster power-on configuration, this includes
+        LEDs start-up color, sequences steps and sequences auto-start flag.
         On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("SL")
@@ -585,6 +624,38 @@ class YColorLedCluster(YFunction):
         
         return res
 
+    def get_rgbColorArrayAtPowerOn(self, ledIndex, count):
+        """
+        Returns a list on 24bit RGB color values with the RGB LEDs startup colors.
+        The first number represents the startup RGB value of the first LED,
+        the second number represents the RGB value of the second LED, etc.
+
+        @param ledIndex : index of the first LED  which should be returned
+        @param count    : number of LEDs which should be returned
+
+        @return a list of 24bit color codes with RGB components of selected LEDs, as 0xRRGGBB.
+                On failure, throws an exception or returns an empty array.
+        """
+        # buff
+        res = []
+        # idx
+        # r
+        # g
+        # b
+        # // may throw an exception
+        buff = self._download("rgb.bin?typ=4&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
+        del res[:]
+        
+        idx = 0
+        while idx < count:
+            r = YGetByte(buff, 3*idx)
+            g = YGetByte(buff, 3*idx+1)
+            b = YGetByte(buff, 3*idx+2)
+            res.append(r*65536+g*256+b)
+            idx = idx + 1
+        
+        return res
+
     def get_linkedSeqArray(self, ledIndex, count):
         """
         Returns a list on sequence index for each RGB LED. The first number represents the
@@ -643,6 +714,60 @@ class YColorLedCluster(YFunction):
             lh = YGetByte(buff, 4*idx+2)
             ll = YGetByte(buff, 4*idx+3)
             res.append(((hh) << (24))+((hl) << (16))+((lh) << (8))+ll)
+            idx = idx + 1
+        
+        return res
+
+    def get_blinkSeqStateSpeed(self, seqIndex, count):
+        """
+        Returns a list of integers with the current speed for specified blinking sequences.
+
+        @param seqIndex : index of the first sequence speed which should be returned
+        @param count    : number of sequence speeds which should be returned
+
+        @return a list of integers, 0 for sequences turned off and 1 for sequences running
+                On failure, throws an exception or returns an empty array.
+        """
+        # buff
+        res = []
+        # idx
+        # lh
+        # ll
+        # // may throw an exception
+        buff = self._download("rgb.bin?typ=6&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
+        del res[:]
+        
+        idx = 0
+        while idx < count:
+            lh = YGetByte(buff, 2*idx)
+            ll = YGetByte(buff, 2*idx+1)
+            res.append(((lh) << (8))+ll)
+            idx = idx + 1
+        
+        return res
+
+    def get_blinkSeqStateAtPowerOn(self, seqIndex, count):
+        """
+        Returns a list of integers with the "auto-start at power on" flag state for specified blinking sequences.
+
+        @param seqIndex : index of the first blinking sequence which should be returned
+        @param count    : number of blinking sequences which should be returned
+
+        @return a list of integers, 0 for sequences turned off and 1 for sequences running
+                On failure, throws an exception or returns an empty array.
+        """
+        # buff
+        res = []
+        # idx
+        # started
+        # // may throw an exception
+        buff = self._download("rgb.bin?typ=5&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
+        del res[:]
+        
+        idx = 0
+        while idx < count:
+            started = YGetByte(buff, idx)
+            res.append(started)
             idx = idx + 1
         
         return res
