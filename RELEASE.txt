@@ -1,4 +1,8 @@
+- Report invalid admin password directly in YAPI.RegisterHub()
+- Improve network performance of WebSocket protocol
+- Add missing methods in YColorledCluster
 - Add support form Linux mipsel
-- Improve network performance with remote YoctoHub
+- Fix YCellular.sendPUK() method
 - Fix authentication that was not working on MIPS
+- Fix occasional lag in request
 - Fix socket leak with HTTP connection

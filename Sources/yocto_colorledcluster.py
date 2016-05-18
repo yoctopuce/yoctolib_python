@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 24363 2016-05-03 16:00:56Z mvuilleu $
+#* $Id: yocto_colorledcluster.py 24475 2016-05-12 14:03:35Z mvuilleu $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -100,9 +100,9 @@ class YColorLedCluster(YFunction):
 
     def get_activeLedCount(self):
         """
-        Returns the count of LEDs currently handled by the device.
+        Returns the number of LEDs currently handled by the device.
 
-        @return an integer corresponding to the count of LEDs currently handled by the device
+        @return an integer corresponding to the number of LEDs currently handled by the device
 
         On failure, throws an exception or returns YColorLedCluster.ACTIVELEDCOUNT_INVALID.
         """
@@ -113,9 +113,9 @@ class YColorLedCluster(YFunction):
 
     def set_activeLedCount(self, newval):
         """
-        Changes the count of LEDs currently handled by the device.
+        Changes the number of LEDs currently handled by the device.
 
-        @param newval : an integer corresponding to the count of LEDs currently handled by the device
+        @param newval : an integer corresponding to the number of LEDs currently handled by the device
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -126,9 +126,9 @@ class YColorLedCluster(YFunction):
 
     def get_maxLedCount(self):
         """
-        Returns the maximum count of LEDs that the device can handle.
+        Returns the maximum number of LEDs that the device can handle.
 
-        @return an integer corresponding to the maximum count of LEDs that the device can handle
+        @return an integer corresponding to the maximum number of LEDs that the device can handle
 
         On failure, throws an exception or returns YColorLedCluster.MAXLEDCOUNT_INVALID.
         """
@@ -139,9 +139,9 @@ class YColorLedCluster(YFunction):
 
     def get_blinkSeqMaxCount(self):
         """
-        Returns the maximum count of sequences that the device can handle
+        Returns the maximum number of sequences that the device can handle
 
-        @return an integer corresponding to the maximum count of sequences that the device can handle
+        @return an integer corresponding to the maximum number of sequences that the device can handle
 
         On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXCOUNT_INVALID.
         """
@@ -235,7 +235,7 @@ class YColorLedCluster(YFunction):
 
     def set_hslColor(self, ledIndex, count, hslValue):
         """
-        Changes the current color of consecutive LEDs in the cluster , using a HSL color. Encoding is done
+        Changes the current color of consecutive LEDs in the cluster, using a HSL color. Encoding is done
         as follows: 0xHHSSLL.
 
         @param ledIndex :  index of the first affected LED.
@@ -247,8 +247,8 @@ class YColorLedCluster(YFunction):
 
     def rgb_move(self, ledIndex, count, rgbValue, delay):
         """
-        Allows you to modify the current color of a group of adjacent LED  to another color, in a seamless and
-        autonomous manner. The transition is performed in the RGB space..
+        Allows you to modify the current color of a group of adjacent LEDs to another color, in a seamless and
+        autonomous manner. The transition is performed in the RGB space.
 
         @param ledIndex :  index of the first affected LED.
         @param count    :  affected LED count.
@@ -277,9 +277,9 @@ class YColorLedCluster(YFunction):
 
     def addRgbMoveToBlinkSeq(self, seqIndex, rgbValue, delay):
         """
-        Adds a RGB transition to a sequence. A sequence is a transitions list, which can
-        be executed in loop by an group of LEDs.  Sequences are persistent and are saved
-        in the device flash as soon as the module saveToFlash() method is called.
+        Adds an RGB transition to a sequence. A sequence is a transition list, which can
+        be executed in loop by a group of LEDs.  Sequences are persistent and are saved
+        in the device flash memory as soon as the module saveToFlash() method is called.
 
         @param seqIndex :  sequence index.
         @param rgbValue :  target color (0xRRGGBB)
@@ -290,9 +290,9 @@ class YColorLedCluster(YFunction):
 
     def addHslMoveToBlinkSeq(self, seqIndex, hslValue, delay):
         """
-        Adds a HSL transition to a sequence. A sequence is a transitions list, which can
+        Adds an HSL transition to a sequence. A sequence is a transition list, which can
         be executed in loop by an group of LEDs.  Sequences are persistant and are saved
-        in the device flash as soon as the module saveToFlash() method is called.
+        in the device flash memory as soon as the module saveToFlash() method is called.
 
         @param seqIndex : sequence index.
         @param hslValue : target color (0xHHSSLL)
@@ -304,9 +304,9 @@ class YColorLedCluster(YFunction):
     def addMirrorToBlinkSeq(self, seqIndex):
         """
         Adds a mirror ending to a sequence. When the sequence will reach the end of the last
-        transition, its running speed will automatically be reverted so that the sequence plays
-        in the reverse direction, like in a mirror. When the first transition of the sequence
-        will be played at the end of the reverse execution, the sequence will start again in
+        transition, its running speed will automatically be reversed so that the sequence plays
+        in the reverse direction, like in a mirror. After the first transition of the sequence
+        is played at the end of the reverse execution, the sequence starts again in
         the initial direction.
 
         @param seqIndex : sequence index.
@@ -316,7 +316,7 @@ class YColorLedCluster(YFunction):
 
     def linkLedToBlinkSeq(self, ledIndex, count, seqIndex, offset):
         """
-        Links adjacent LEDs to a specific sequence. these LED will start to execute
+        Links adjacent LEDs to a specific sequence. These LEDs start to execute
         the sequence as soon as  startBlinkSeq is called. It is possible to add an offset
         in the execution: that way we  can have several groups of LED executing the same
         sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
@@ -331,9 +331,9 @@ class YColorLedCluster(YFunction):
 
     def linkLedToBlinkSeqAtPowerOn(self, ledIndex, count, seqIndex, offset):
         """
-        Links adjacent LEDs to a specific sequence a device poweron. Don't forget to configure
+        Links adjacent LEDs to a specific sequence at device poweron. Don't forget to configure
         the sequence auto start flag as well and call saveLedsState. It is possible to add an offset
-        in the execution: that way we  can have several groups of LED executing the same
+        in the execution: that way we  can have several groups of LEDs executing the same
         sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
 
         @param ledIndex :  index of the first affected LED.
@@ -346,9 +346,9 @@ class YColorLedCluster(YFunction):
 
     def linkLedToPeriodicBlinkSeq(self, ledIndex, count, seqIndex, periods):
         """
-        Links adjacent LEDs to a specific sequence. these LED will start to execute
+        Links adjacent LEDs to a specific sequence. These LED start to execute
         the sequence as soon as  startBlinkSeq is called. This function automatically
-        introduce a shift between LEDs so that the specified number of sequence periods
+        introduces a shift between LEDs so that the specified number of sequence periods
         appears on the group of LEDs (wave effect).
 
         @param ledIndex :  index of the first affected LED.
@@ -361,7 +361,7 @@ class YColorLedCluster(YFunction):
 
     def unlinkLedFromBlinkSeq(self, ledIndex, count):
         """
-        UnLink adjacent LED  from a  sequence.
+        Unlinks adjacent LEDs from a  sequence.
 
         @param ledIndex  :  index of the first affected LED.
         @param count     :  affected LED count.
@@ -371,7 +371,7 @@ class YColorLedCluster(YFunction):
 
     def startBlinkSeq(self, seqIndex):
         """
-        Start a sequence execution: every LED linked to that sequence will start to
+        Starts a sequence execution: every LED linked to that sequence starts to
         run it in a loop.
 
         @param seqIndex :  index of the sequence to start.
@@ -381,8 +381,8 @@ class YColorLedCluster(YFunction):
 
     def stopBlinkSeq(self, seqIndex):
         """
-        Stop a sequence execution. if started again, the execution
-        will restart from the beginning.
+        Stops a sequence execution. If started again, the execution
+        restarts from the beginning.
 
         @param seqIndex :  index of the sequence to stop.
                 On failure, throws an exception or returns a negative error code.
@@ -391,8 +391,8 @@ class YColorLedCluster(YFunction):
 
     def resetBlinkSeq(self, seqIndex):
         """
-        Stop a sequence execution and reset its contents. Leds linked to this
-        sequences will no more be automatically updated.
+        Stops a sequence execution and resets its contents. Leds linked to this
+        sequence are not automatically updated anymore.
 
         @param seqIndex :  index of the sequence to reset
                 On failure, throws an exception or returns a negative error code.
@@ -401,7 +401,7 @@ class YColorLedCluster(YFunction):
 
     def set_blinkSeqAutoStart(self, seqIndex, autostart):
         """
-        Configure a sequence to make it start automatically at device
+        Configures a sequence to make it start automatically at device
         startup. Don't forget to call  saveLedsState() to make sure the
         modification is saved in the device flash memory.
 
@@ -413,7 +413,7 @@ class YColorLedCluster(YFunction):
 
     def set_blinkSeqSpeed(self, seqIndex, speed):
         """
-        Change the execution speed of a sequence. The natural execution speed is 1000 per
+        Changes the execution speed of a sequence. The natural execution speed is 1000 per
         thousand. If you configure a slower speed, you can play the sequence in slow-motion.
         If you set a negative speed, you can play the sequence in reverse direction.
 
@@ -425,8 +425,8 @@ class YColorLedCluster(YFunction):
 
     def saveLedsState(self):
         """
-        Save the cluster power-on configuration, this includes
-        LEDs start-up color, sequences steps and sequences auto-start flag.
+        Saves the cluster power-on configuration, this includes
+        LED start-up colors, sequence steps and sequence auto-start flags.
         On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("SL")
@@ -476,7 +476,7 @@ class YColorLedCluster(YFunction):
 
     def rgbArray_move(self, rgbList, delay):
         """
-        Setup a smooth RGB color transition to the specified pixel-by-pixel list of RGB
+        Sets up a smooth RGB color transition to the specified pixel-by-pixel list of RGB
         color codes. The first color code represents the target RGB value of the first LED,
         the second color code represents the target value of the second LED, etc.
 
@@ -549,7 +549,7 @@ class YColorLedCluster(YFunction):
 
     def hslArray_move(self, hslList, delay):
         """
-        Setup a smooth HSL color transition to the specified pixel-by-pixel list of HSL
+        Sets up a smooth HSL color transition to the specified pixel-by-pixel list of HSL
         color codes. The first color code represents the target HSL value of the first LED,
         the second color code represents the target value of the second LED, etc.
 

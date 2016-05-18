@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_led.py 23578 2016-03-22 23:00:41Z mvuilleu $
+#* $Id: yocto_led.py 24475 2016-05-12 14:03:35Z mvuilleu $
 #*
 #* Implements yFindLed(), the high-level API for Led functions
 #*
@@ -46,7 +46,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YLed(YFunction):
     """
-    Yoctopuce application programming interface
+    The Yoctopuce application programming interface
     allows you not only to drive the intensity of the LED, but also to
     have it blink at various preset frequencies.
 
