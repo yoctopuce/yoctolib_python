@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 24465 2016-05-12 07:30:46Z mvuilleu $
+#* $Id: yocto_cellular.py 24622 2016-05-27 12:51:52Z mvuilleu $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -123,6 +123,8 @@ class YCellular(YFunction):
     APN_INVALID = YAPI.INVALID_STRING
     APNSECRET_INVALID = YAPI.INVALID_STRING
     PINGINTERVAL_INVALID = YAPI.INVALID_UINT
+    DATASENT_INVALID = YAPI.INVALID_UINT
+    DATARECEIVED_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
     CELLTYPE_GPRS = 0
     CELLTYPE_EGPRS = 1
@@ -158,6 +160,8 @@ class YCellular(YFunction):
         self._apn = YCellular.APN_INVALID
         self._apnSecret = YCellular.APNSECRET_INVALID
         self._pingInterval = YCellular.PINGINTERVAL_INVALID
+        self._dataSent = YCellular.DATASENT_INVALID
+        self._dataReceived = YCellular.DATARECEIVED_INVALID
         self._command = YCellular.COMMAND_INVALID
         #--- (end of generated code: YCellular attributes)
 
@@ -201,6 +205,12 @@ class YCellular(YFunction):
             return 1
         if member.name == "pingInterval":
             self._pingInterval = member.ivalue
+            return 1
+        if member.name == "dataSent":
+            self._dataSent = member.ivalue
+            return 1
+        if member.name == "dataReceived":
+            self._dataReceived = member.ivalue
             return 1
         if member.name == "command":
             self._command = member.svalue
@@ -499,6 +509,58 @@ class YCellular(YFunction):
         rest_val = str(newval)
         return self._setAttr("pingInterval", rest_val)
 
+    def get_dataSent(self):
+        """
+        Returns the number of bytes sent so far.
+
+        @return an integer corresponding to the number of bytes sent so far
+
+        On failure, throws an exception or returns YCellular.DATASENT_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YCellular.DATASENT_INVALID
+        return self._dataSent
+
+    def set_dataSent(self, newval):
+        """
+        Changes the value of the outgoing data counter.
+
+        @param newval : an integer corresponding to the value of the outgoing data counter
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("dataSent", rest_val)
+
+    def get_dataReceived(self):
+        """
+        Returns the number of bytes received so far.
+
+        @return an integer corresponding to the number of bytes received so far
+
+        On failure, throws an exception or returns YCellular.DATARECEIVED_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YCellular.DATARECEIVED_INVALID
+        return self._dataReceived
+
+    def set_dataReceived(self, newval):
+        """
+        Changes the value of the incoming data counter.
+
+        @param newval : an integer corresponding to the value of the incoming data counter
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("dataReceived", rest_val)
+
     def get_command(self):
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
@@ -558,7 +620,7 @@ class YCellular(YFunction):
         """
         # gsmMsg
         gsmMsg = self.get_message()
-        if not ((gsmMsg)[0: 0 + 13] == "Enter SIM PUK"):
+        if not (not ((gsmMsg)[0: 0 + 13] == "Enter SIM PUK")):
             self._throw(YAPI.INVALID_ARGUMENT, "PUK not expected at this time")
         if newPin == "":
             return self.set_command("AT+CPIN=" + puk + ",0000;+CLCK=SC,0,0000")
@@ -577,6 +639,22 @@ class YCellular(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_apnSecret("" + username + "," + password)
+
+    def clearDataCounters(self):
+        """
+        Clear the transmitted data counters.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # retcode
+        # // may throw an exception
+        retcode = self.set_dataReceived(0)
+        if retcode != YAPI.SUCCESS:
+            return retcode
+        retcode = self.set_dataSent(0)
+        return retcode
 
     def _AT(self, cmd):
         """

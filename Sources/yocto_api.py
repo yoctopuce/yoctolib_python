@@ -1,6 +1,6 @@
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 24457 2016-05-11 15:42:26Z seb $
+# * $Id: yocto_api.py 24641 2016-05-30 15:35:04Z mvuilleu $
 # *
 #* High-level programming interface, common to all modules
 #*
@@ -543,7 +543,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "24497"
+    YOCTO_API_BUILD_NO = "24655"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1421,7 +1421,7 @@ class YAPI:
 
     @staticmethod
     def _hexStrToBin(hex_str):
-        return binascii.unhexlify(hex_str)
+        return binascii.unhexlify(YString2Byte(hex_str))
 
     #noinspection PyUnresolvedReferences
     @staticmethod
@@ -3973,6 +3973,8 @@ class YFunction(object):
         return ""
 
     def _decode_json_string(self, json):
+        if isinstance(json, str):
+            json = YString2Byte(json)
         json_data = ctypes.create_string_buffer(json)
         buffer = ctypes.create_string_buffer(len(json))
         res = YAPI._yapiJsonDecodeString(json_data, buffer)
