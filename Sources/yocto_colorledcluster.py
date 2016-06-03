@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 24586 2016-05-26 12:42:56Z seb $
+#* $Id: yocto_colorledcluster.py 24717 2016-06-03 16:09:53Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -141,7 +141,7 @@ class YColorLedCluster(YFunction):
 
     def get_blinkSeqMaxCount(self):
         """
-        Returns the maximum number of sequences that the device can handle
+        Returns the maximum number of sequences that the device can handle.
 
         @return an integer corresponding to the maximum number of sequences that the device can handle
 
@@ -213,25 +213,33 @@ class YColorLedCluster(YFunction):
 
     def set_rgbColor(self, ledIndex, count, rgbValue):
         """
-        Changes the current color of consecutve LEDs in the cluster , using a RGB color. Encoding is done
-        as follows: 0xRRGGBB.
+        Changes the current color of consecutve LEDs in the cluster, using a RGB color. Encoding is done as
+        follows: 0xRRGGBB.
 
         @param ledIndex :  index of the first affected LED.
         @param count    :  affected LED count.
         @param rgbValue :  new color.
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("SR" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % rgbValue))
 
     def set_rgbColorAtPowerOn(self, ledIndex, count, rgbValue):
         """
-        Changes the  color at device startup of consecutve LEDs in the cluster , using a RGB color.
-        Encoding is done as follows: 0xRRGGBB.
+        Changes the  color at device startup of consecutve LEDs in the cluster, using a RGB color. Encoding
+        is done as follows: 0xRRGGBB.
+        Don't forget to call saveLedsConfigAtPowerOn() to make sure the modification is saved in the device
+        flash memory.
 
         @param ledIndex :  index of the first affected LED.
         @param count    :  affected LED count.
         @param rgbValue :  new color.
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("SC" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % rgbValue))
 
@@ -243,7 +251,10 @@ class YColorLedCluster(YFunction):
         @param ledIndex :  index of the first affected LED.
         @param count    :  affected LED count.
         @param hslValue :  new color.
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("SH" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % hslValue))
 
@@ -256,7 +267,10 @@ class YColorLedCluster(YFunction):
         @param count    :  affected LED count.
         @param rgbValue :  new color (0xRRGGBB).
         @param delay    :  transition duration in ms
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("MR" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % rgbValue) + "," + str(int(delay)))
 
@@ -273,7 +287,10 @@ class YColorLedCluster(YFunction):
         @param count    :  affected LED count.
         @param hslValue :  new color (0xHHSSLL).
         @param delay    :  transition duration in ms
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("MH" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % hslValue) + "," + str(int(delay)))
 
@@ -281,12 +298,15 @@ class YColorLedCluster(YFunction):
         """
         Adds an RGB transition to a sequence. A sequence is a transition list, which can
         be executed in loop by a group of LEDs.  Sequences are persistent and are saved
-        in the device flash memory as soon as the module saveToFlash() method is called.
+        in the device flash memory as soon as the saveBlinkSeq() method is called.
 
         @param seqIndex :  sequence index.
         @param rgbValue :  target color (0xRRGGBB)
         @param delay    :  transition duration in ms
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("AR" + str(int(seqIndex)) + "," + ("%X" % rgbValue) + "," + str(int(delay)))
 
@@ -294,12 +314,15 @@ class YColorLedCluster(YFunction):
         """
         Adds an HSL transition to a sequence. A sequence is a transition list, which can
         be executed in loop by an group of LEDs.  Sequences are persistant and are saved
-        in the device flash memory as soon as the module saveToFlash() method is called.
+        in the device flash memory as soon as the saveBlinkSeq() method is called.
 
         @param seqIndex : sequence index.
         @param hslValue : target color (0xHHSSLL)
         @param delay    : transition duration in ms
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("AH" + str(int(seqIndex)) + "," + ("%X" % hslValue) + "," + str(int(delay)))
 
@@ -312,7 +335,10 @@ class YColorLedCluster(YFunction):
         the initial direction.
 
         @param seqIndex : sequence index.
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("AC" + str(int(seqIndex)) + ",0,0")
 
@@ -327,14 +353,17 @@ class YColorLedCluster(YFunction):
         @param count    :  affected LED count.
         @param seqIndex :  sequence index.
         @param offset   :  execution offset in ms.
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("LS" + str(int(ledIndex)) + "," + str(int(count)) + "," + str(int(seqIndex)) + "," + str(int(offset)))
 
     def linkLedToBlinkSeqAtPowerOn(self, ledIndex, count, seqIndex, offset):
         """
         Links adjacent LEDs to a specific sequence at device poweron. Don't forget to configure
-        the sequence auto start flag as well and call saveLedsState. It is possible to add an offset
+        the sequence auto start flag as well and call saveLedsConfigAtPowerOn(). It is possible to add an offset
         in the execution: that way we  can have several groups of LEDs executing the same
         sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
 
@@ -342,7 +371,10 @@ class YColorLedCluster(YFunction):
         @param count    :  affected LED count.
         @param seqIndex :  sequence index.
         @param offset   :  execution offset in ms.
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("LO" + str(int(ledIndex)) + "," + str(int(count)) + "," + str(int(seqIndex)) + "," + str(int(offset)))
 
@@ -357,7 +389,10 @@ class YColorLedCluster(YFunction):
         @param count    :  affected LED count.
         @param seqIndex :  sequence index.
         @param periods  :  number of periods to show on LEDs.
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("LP" + str(int(ledIndex)) + "," + str(int(count)) + "," + str(int(seqIndex)) + "," + str(int(periods)))
 
@@ -367,7 +402,10 @@ class YColorLedCluster(YFunction):
 
         @param ledIndex  :  index of the first affected LED.
         @param count     :  affected LED count.
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("US" + str(int(ledIndex)) + "," + str(int(count)))
 
@@ -377,7 +415,10 @@ class YColorLedCluster(YFunction):
         run it in a loop.
 
         @param seqIndex :  index of the sequence to start.
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("SS" + str(int(seqIndex)))
 
@@ -387,7 +428,10 @@ class YColorLedCluster(YFunction):
         restarts from the beginning.
 
         @param seqIndex :  index of the sequence to stop.
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("XS" + str(int(seqIndex)))
 
@@ -397,21 +441,27 @@ class YColorLedCluster(YFunction):
         sequence are not automatically updated anymore.
 
         @param seqIndex :  index of the sequence to reset
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("ZS" + str(int(seqIndex)))
 
-    def set_blinkSeqAutoStart(self, seqIndex, autostart):
+    def set_blinkSeqStateAtPowerOn(self, seqIndex, autostart):
         """
         Configures a sequence to make it start automatically at device
-        startup. Don't forget to call  saveLedsState() to make sure the
+        startup. Don't forget to call saveBlinkSeq() to make sure the
         modification is saved in the device flash memory.
 
-        @param seqIndex :  index of the sequence to reset
-        @param autostart :  boolean telling if the sequence must start automatically or not.
-                On failure, throws an exception or returns a negative error code.
+        @param seqIndex :  index of the sequence to reset.
+        @param autostart : 0 to keep the sequence turned off and 1 to start it automatically.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("AS" + str(int(seqIndex)) + "," + ("1" if autostart else "0"))
+        return self.sendCommand("AS" + str(int(seqIndex)) + "," + str(int(autostart)))
 
     def set_blinkSeqSpeed(self, seqIndex, speed):
         """
@@ -421,42 +471,67 @@ class YColorLedCluster(YFunction):
 
         @param seqIndex :  index of the sequence to start.
         @param speed :     sequence running speed (-1000...1000).
-                On failure, throws an exception or returns a negative error code.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("CS" + str(int(seqIndex)) + "," + str(int(speed)))
 
-    def saveLedsState(self):
+    def saveLedsConfigAtPowerOn(self):
         """
-        Saves the cluster power-on configuration, this includes
-        LED start-up colors, sequence steps and sequence auto-start flags.
+        Saves the LEDs power-on configuration. This includes the start-up color or
+        sequence binding for all LEDs. Warning: if some LEDs are linked to a sequence, the
+        method saveBlinkSeq() must also be called to save the sequence definition.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
         On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("SL")
+        return self.sendCommand("WL")
 
-    def set_rgbBuffer(self, buff):
+    def saveBlinkSeq(self, seqIndex):
+        """
+        Saves the definition of a sequence. Warning: only sequence steps and flags are saved.
+        to save the LEDs startup bindings, the method saveLedsConfigAtPowerOn()
+        must be called.
+
+        @param seqIndex :  index of the sequence to start.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("WS" + str(int(seqIndex)))
+
+    def set_rgbColorBuffer(self, ledIndex, buff):
         """
         Sends a binary buffer to the LED RGB buffer, as is.
-        First three bytes are RGB components for first LED, the
-        next three bytes for the second LED, etc.
+        First three bytes are RGB components for LED specified as parameter, the
+        next three bytes for the next LED, etc.
 
+        @param ledIndex : index of the first LED which should be updated
         @param buff : the binary buffer to send
 
         @return YAPI.SUCCESS if the call succeeds.
-                On failure, throws an exception or returns a negative error code.
+
+        On failure, throws an exception or returns a negative error code.
         """
         # // may throw an exception
-        return self._upload("rgb:0", buff)
+        return self._upload("rgb:0:" + str(int(ledIndex)), buff)
 
-    def set_rgbArray(self, rgbList):
+    def set_rgbColorArray(self, ledIndex, rgbList):
         """
         Sends 24bit RGB colors (provided as a list of integers) to the LED RGB buffer, as is.
-        The first number represents the RGB value of the first LED, the second number represents
-        the RGB value of the second LED, etc.
+        The first number represents the RGB value of the LED specified as parameter, the second
+        number represents the RGB value of the next LED, etc.
 
+        @param ledIndex : index of the first LED which should be updated
         @param rgbList : a list of 24bit RGB codes, in the form 0xRRGGBB
 
         @return YAPI.SUCCESS if the call succeeds.
-                On failure, throws an exception or returns a negative error code.
+
+        On failure, throws an exception or returns a negative error code.
         """
         # listlen
         # buff
@@ -473,20 +548,21 @@ class YColorLedCluster(YFunction):
             buff[3*idx+2] = ((rgb) & (255))
             idx = idx + 1
         # // may throw an exception
-        res = self._upload("rgb:0", buff)
+        res = self._upload("rgb:0:" + str(int(ledIndex)), buff)
         return res
 
     def rgbArray_move(self, rgbList, delay):
         """
         Sets up a smooth RGB color transition to the specified pixel-by-pixel list of RGB
         color codes. The first color code represents the target RGB value of the first LED,
-        the second color code represents the target value of the second LED, etc.
+        the next color code represents the target value of the next LED, etc.
 
         @param rgbList : a list of target 24bit RGB codes, in the form 0xRRGGBB
         @param delay   : transition duration in ms
 
         @return YAPI.SUCCESS if the call succeeds.
-                On failure, throws an exception or returns a negative error code.
+
+        On failure, throws an exception or returns a negative error code.
         """
         # listlen
         # buff
@@ -506,30 +582,34 @@ class YColorLedCluster(YFunction):
         res = self._upload("rgb:" + str(int(delay)), buff)
         return res
 
-    def set_hslBuffer(self, buff):
+    def set_hslColorBuffer(self, ledIndex, buff):
         """
         Sends a binary buffer to the LED HSL buffer, as is.
-        First three bytes are HSL components for first LED, the
+        First three bytes are HSL components for the LED specified as parameter, the
         next three bytes for the second LED, etc.
 
+        @param ledIndex : index of the first LED which should be updated
         @param buff : the binary buffer to send
 
         @return YAPI.SUCCESS if the call succeeds.
-                On failure, throws an exception or returns a negative error code.
+
+        On failure, throws an exception or returns a negative error code.
         """
         # // may throw an exception
-        return self._upload("hsl:0", buff)
+        return self._upload("hsl:0:" + str(int(ledIndex)), buff)
 
-    def set_hslArray(self, hslList):
+    def set_hslColorArray(self, ledIndex, hslList):
         """
         Sends 24bit HSL colors (provided as a list of integers) to the LED HSL buffer, as is.
-        The first number represents the HSL value of the first LED, the second number represents
+        The first number represents the HSL value of the LED specified as parameter, the second number represents
         the HSL value of the second LED, etc.
 
+        @param ledIndex : index of the first LED which should be updated
         @param hslList : a list of 24bit HSL codes, in the form 0xHHSSLL
 
         @return YAPI.SUCCESS if the call succeeds.
-                On failure, throws an exception or returns a negative error code.
+
+        On failure, throws an exception or returns a negative error code.
         """
         # listlen
         # buff
@@ -546,7 +626,7 @@ class YColorLedCluster(YFunction):
             buff[3*idx+2] = ((hsl) & (255))
             idx = idx + 1
         # // may throw an exception
-        res = self._upload("hsl:0", buff)
+        res = self._upload("hsl:0:" + str(int(ledIndex)), buff)
         return res
 
     def hslArray_move(self, hslList, delay):
@@ -559,7 +639,8 @@ class YColorLedCluster(YFunction):
         @param delay   : transition duration in ms
 
         @return YAPI.SUCCESS if the call succeeds.
-                On failure, throws an exception or returns a negative error code.
+
+        On failure, throws an exception or returns a negative error code.
         """
         # listlen
         # buff
@@ -589,7 +670,8 @@ class YColorLedCluster(YFunction):
         @param count    : number of LEDs which should be returned
 
         @return a binary buffer with RGB components of selected LEDs.
-                On failure, throws an exception or returns an empty binary buffer.
+
+        On failure, throws an exception or returns an empty binary buffer.
         """
         # // may throw an exception
         return self._download("rgb.bin?typ=0&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
@@ -604,7 +686,8 @@ class YColorLedCluster(YFunction):
         @param count    : number of LEDs which should be returned
 
         @return a list of 24bit color codes with RGB components of selected LEDs, as 0xRRGGBB.
-                On failure, throws an exception or returns an empty array.
+
+        On failure, throws an exception or returns an empty array.
         """
         # buff
         res = []
@@ -636,7 +719,8 @@ class YColorLedCluster(YFunction):
         @param count    : number of LEDs which should be returned
 
         @return a list of 24bit color codes with RGB components of selected LEDs, as 0xRRGGBB.
-                On failure, throws an exception or returns an empty array.
+
+        On failure, throws an exception or returns an empty array.
         """
         # buff
         res = []
@@ -668,7 +752,8 @@ class YColorLedCluster(YFunction):
         @param count    : number of LEDs which should be returned
 
         @return a list of integers with sequence index
-                On failure, throws an exception or returns an empty array.
+
+        On failure, throws an exception or returns an empty array.
         """
         # buff
         res = []
@@ -696,7 +781,8 @@ class YColorLedCluster(YFunction):
         @param count    : number of blinking sequences which should be returned
 
         @return a list of 32 bit integer signatures
-                On failure, throws an exception or returns an empty array.
+
+        On failure, throws an exception or returns an empty array.
         """
         # buff
         res = []
@@ -728,7 +814,8 @@ class YColorLedCluster(YFunction):
         @param count    : number of sequence speeds which should be returned
 
         @return a list of integers, 0 for sequences turned off and 1 for sequences running
-                On failure, throws an exception or returns an empty array.
+
+        On failure, throws an exception or returns an empty array.
         """
         # buff
         res = []
@@ -756,7 +843,8 @@ class YColorLedCluster(YFunction):
         @param count    : number of blinking sequences which should be returned
 
         @return a list of integers, 0 for sequences turned off and 1 for sequences running
-                On failure, throws an exception or returns an empty array.
+
+        On failure, throws an exception or returns an empty array.
         """
         # buff
         res = []
@@ -782,7 +870,8 @@ class YColorLedCluster(YFunction):
         @param count    : number of blinking sequences which should be returned
 
         @return a list of integers, 0 for sequences turned off and 1 for sequences running
-                On failure, throws an exception or returns an empty array.
+
+        On failure, throws an exception or returns an empty array.
         """
         # buff
         res = []
