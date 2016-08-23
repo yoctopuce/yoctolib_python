@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_accelerometer.py 23243 2016-02-23 14:13:12Z seb $
+#* $Id: yocto_accelerometer.py 24934 2016-06-30 22:32:01Z mvuilleu $
 #*
 #* Implements yFindAccelerometer(), the high-level API for Accelerometer functions
 #*
@@ -63,6 +63,7 @@ class YAccelerometer(YSensor):
     #--- (YAccelerometer dlldef)
     #--- (end of YAccelerometer dlldef)
     #--- (YAccelerometer definitions)
+    BANDWIDTH_INVALID = YAPI.INVALID_INT
     XVALUE_INVALID = YAPI.INVALID_DOUBLE
     YVALUE_INVALID = YAPI.INVALID_DOUBLE
     ZVALUE_INVALID = YAPI.INVALID_DOUBLE
@@ -76,6 +77,7 @@ class YAccelerometer(YSensor):
         self._className = 'Accelerometer'
         #--- (YAccelerometer attributes)
         self._callback = None
+        self._bandwidth = YAccelerometer.BANDWIDTH_INVALID
         self._xValue = YAccelerometer.XVALUE_INVALID
         self._yValue = YAccelerometer.YVALUE_INVALID
         self._zValue = YAccelerometer.ZVALUE_INVALID
@@ -84,6 +86,9 @@ class YAccelerometer(YSensor):
 
     #--- (YAccelerometer implementation)
     def _parseAttr(self, member):
+        if member.name == "bandwidth":
+            self._bandwidth = member.ivalue
+            return 1
         if member.name == "xValue":
             self._xValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
@@ -97,6 +102,33 @@ class YAccelerometer(YSensor):
             self._gravityCancellation = member.ivalue
             return 1
         super(YAccelerometer, self)._parseAttr(member)
+
+    def get_bandwidth(self):
+        """
+        Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+
+        @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+
+        On failure, throws an exception or returns YAccelerometer.BANDWIDTH_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YAccelerometer.BANDWIDTH_INVALID
+        return self._bandwidth
+
+    def set_bandwidth(self, newval):
+        """
+        Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+        frequency is lower, the device performs averaging.
+
+        @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("bandwidth", rest_val)
 
     def get_xValue(self):
         """

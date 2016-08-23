@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_anbutton.py 23243 2016-02-23 14:13:12Z seb $
+#* $Id: yocto_anbutton.py 24849 2016-06-17 15:21:23Z seb $
 #*
 #* Implements yFindAnButton(), the high-level API for AnButton functions
 #*
@@ -328,7 +328,9 @@ class YAnButton(YFunction):
 
     def get_pulseCounter(self):
         """
-        Returns the pulse counter value.
+        Returns the pulse counter value. The value is a 32 bit integer. In case
+        of overflow (>=2^32), the counter will wrap. To reset the counter, just
+        call the resetCounter() method.
 
         @return an integer corresponding to the pulse counter value
 

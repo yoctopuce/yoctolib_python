@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_tilt.py 23243 2016-02-23 14:13:12Z seb $
+#* $Id: yocto_tilt.py 24934 2016-06-30 22:32:01Z mvuilleu $
 #*
 #* Implements yFindTilt(), the high-level API for Tilt functions
 #*
@@ -63,6 +63,7 @@ class YTilt(YSensor):
     #--- (YTilt dlldef)
     #--- (end of YTilt dlldef)
     #--- (YTilt definitions)
+    BANDWIDTH_INVALID = YAPI.INVALID_INT
     AXIS_X = 0
     AXIS_Y = 1
     AXIS_Z = 2
@@ -74,15 +75,46 @@ class YTilt(YSensor):
         self._className = 'Tilt'
         #--- (YTilt attributes)
         self._callback = None
+        self._bandwidth = YTilt.BANDWIDTH_INVALID
         self._axis = YTilt.AXIS_INVALID
         #--- (end of YTilt attributes)
 
     #--- (YTilt implementation)
     def _parseAttr(self, member):
+        if member.name == "bandwidth":
+            self._bandwidth = member.ivalue
+            return 1
         if member.name == "axis":
             self._axis = member.ivalue
             return 1
         super(YTilt, self)._parseAttr(member)
+
+    def get_bandwidth(self):
+        """
+        Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+
+        @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+
+        On failure, throws an exception or returns YTilt.BANDWIDTH_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YTilt.BANDWIDTH_INVALID
+        return self._bandwidth
+
+    def set_bandwidth(self, newval):
+        """
+        Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+        frequency is lower, the device performs averaging.
+
+        @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("bandwidth", rest_val)
 
     def get_axis(self):
         if self._cacheExpiration <= YAPI.GetTickCount():

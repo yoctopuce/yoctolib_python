@@ -1,3 +1,5 @@
-- Fix documentation of YCorlorLedCluster methods
-- Rename some methods in YColrLedCluster. Some of these changes may break
-the backward compatibility. Update Yocto-Color-V2 to firmware 24699 or higher
+- Improve bandwidth estimation when talking to YoctoHubs
+- Add roaming neutrality support for YoctoHub-GSM
+- Add Yocto-3D-V2 support (new calibration instructions)
+- Add read-ahead buffer for readByte function
+- Fix MODBUS write register command

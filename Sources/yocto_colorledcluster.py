@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 24717 2016-06-03 16:09:53Z seb $
+#* $Id: yocto_colorledcluster.py 24939 2016-07-01 08:45:11Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -488,6 +488,10 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
+        return self.sendCommand("WL")
+
+    def saveLedsState(self):
+        # // may throw an exception
         return self.sendCommand("WL")
 
     def saveBlinkSeq(self, seqIndex):

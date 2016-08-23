@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_magnetometer.py 23243 2016-02-23 14:13:12Z seb $
+#* $Id: yocto_magnetometer.py 24934 2016-06-30 22:32:01Z mvuilleu $
 #*
 #* Implements yFindMagnetometer(), the high-level API for Magnetometer functions
 #*
@@ -63,6 +63,7 @@ class YMagnetometer(YSensor):
     #--- (YMagnetometer dlldef)
     #--- (end of YMagnetometer dlldef)
     #--- (YMagnetometer definitions)
+    BANDWIDTH_INVALID = YAPI.INVALID_INT
     XVALUE_INVALID = YAPI.INVALID_DOUBLE
     YVALUE_INVALID = YAPI.INVALID_DOUBLE
     ZVALUE_INVALID = YAPI.INVALID_DOUBLE
@@ -73,6 +74,7 @@ class YMagnetometer(YSensor):
         self._className = 'Magnetometer'
         #--- (YMagnetometer attributes)
         self._callback = None
+        self._bandwidth = YMagnetometer.BANDWIDTH_INVALID
         self._xValue = YMagnetometer.XVALUE_INVALID
         self._yValue = YMagnetometer.YVALUE_INVALID
         self._zValue = YMagnetometer.ZVALUE_INVALID
@@ -80,6 +82,9 @@ class YMagnetometer(YSensor):
 
     #--- (YMagnetometer implementation)
     def _parseAttr(self, member):
+        if member.name == "bandwidth":
+            self._bandwidth = member.ivalue
+            return 1
         if member.name == "xValue":
             self._xValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
@@ -90,6 +95,33 @@ class YMagnetometer(YSensor):
             self._zValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         super(YMagnetometer, self)._parseAttr(member)
+
+    def get_bandwidth(self):
+        """
+        Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+
+        @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+
+        On failure, throws an exception or returns YMagnetometer.BANDWIDTH_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YMagnetometer.BANDWIDTH_INVALID
+        return self._bandwidth
+
+    def set_bandwidth(self, newval):
+        """
+        Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+        frequency is lower, the device performs averaging.
+
+        @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("bandwidth", rest_val)
 
     def get_xValue(self):
         """

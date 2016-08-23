@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 23243 2016-02-23 14:13:12Z seb $
+#* $Id: yocto_refframe.py 24943 2016-07-01 14:02:25Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -80,6 +80,7 @@ class YRefFrame(YFunction):
         self._mountPos = YRefFrame.MOUNTPOS_INVALID
         self._bearing = YRefFrame.BEARING_INVALID
         self._calibrationParam = YRefFrame.CALIBRATIONPARAM_INVALID
+        self._calibV2 = 0
         self._calibStage = 0
         self._calibStageHint = ''
         self._calibStageProgress = 0
@@ -276,6 +277,61 @@ class YRefFrame(YFunction):
         mixedPos = ((position) << (2)) + orientation
         return self.set_mountPos(mixedPos)
 
+    def get_calibrationState(self):
+        """
+        Returns the 3D sensor calibration state (Yocto-3D-V2 only). This function returns
+        an integer representing the calibration state of the 3 inertial sensors of
+        the BNO055 chip, found in the Yocto-3D-V2. Hundredths show the calibration state
+        of the accelerometer, tenths show the calibration state of the magnetometer while
+        units show the calibration state of the gyroscope. For each sensor, the value 0
+        means no calibration and the value 3 means full calibration.
+
+        @return an integer representing the calibration state of Yocto-3D-V2:
+                333 when fully calibrated, 0 when not calibrated at all.
+
+        On failure, throws an exception or returns a negative error code.
+        For the Yocto-3D (V1), this function always return -3 (unsupported function).
+        """
+        # calibParam
+        iCalib = []
+        # caltyp
+        # res
+        # // may throw an exception
+        calibParam = self.get_calibrationParam()
+        iCalib = YAPI._decodeFloats(calibParam)
+        caltyp = int((iCalib[0]) / (1000))
+        if caltyp != 33:
+            return YAPI.NOT_SUPPORTED
+        res = int((iCalib[1]) / (1000))
+        return res
+
+    def get_measureQuality(self):
+        """
+        Returns estimated quality of the orientation (Yocto-3D-V2 only). This function returns
+        an integer between 0 and 3 representing the degree of confidence of the position
+        estimate. When the value is 3, the estimation is reliable. Below 3, one should
+        expect sudden corrections, in particular for heading (compass function).
+        The most frequent causes for values below 3 are magnetic interferences, and
+        accelerations or rotations beyond the sensor range.
+
+        @return an integer between 0 and 3 (3 when the measure is reliable)
+
+        On failure, throws an exception or returns a negative error code.
+        For the Yocto-3D (V1), this function always return -3 (unsupported function).
+        """
+        # calibParam
+        iCalib = []
+        # caltyp
+        # res
+        # // may throw an exception
+        calibParam = self.get_calibrationParam()
+        iCalib = YAPI._decodeFloats(calibParam)
+        caltyp = int((iCalib[0]) / (1000))
+        if caltyp != 33:
+            return YAPI.NOT_SUPPORTED
+        res = int((iCalib[2]) / (1000))
+        return res
+
     def _calibSort(self, start, stopidx):
         # idx
         # changed
@@ -335,6 +391,7 @@ class YRefFrame(YFunction):
         if self._calibStage != 0:
             self.cancel3DCalibration()
         self._calibSavedParams = self.get_calibrationParam()
+        self._calibV2 = (YAPI._atoi(self._calibSavedParams) == 33)
         self.set_calibrationParam("0")
         self._calibCount = 50
         self._calibStage = 1
@@ -361,6 +418,12 @@ class YRefFrame(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
+        # // may throw an exception
+        if self._calibV2:
+            return self.more3DCalibrationV2()
+        return self.more3DCalibrationV1()
+
+    def more3DCalibrationV1(self):
         # // may throw an exception
         # currTick
         # jsonData
@@ -525,6 +588,56 @@ class YRefFrame(YFunction):
         self._calibStageHint = "Calibration data ready for saving"
         return YAPI.SUCCESS
 
+    def more3DCalibrationV2(self):
+        # currTick
+        # calibParam
+        iCalib = []
+        # cal3
+        # calAcc
+        # calMag
+        # calGyr
+        # // make sure calibration has been started
+        if self._calibStage == 0:
+            return YAPI.INVALID_ARGUMENT
+        if self._calibProgress == 100:
+            return YAPI.SUCCESS
+        # // make sure we don't start before previous calibration is cleared
+        if self._calibStage == 1:
+            currTick = (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
+            currTick = ((currTick - self._calibPrevTick) & (0x7FFFFFFF))
+            if currTick < 1600:
+                self._calibStageHint = "Set down the device on a steady horizontal surface"
+                self._calibStageProgress = int((currTick) / (40))
+                self._calibProgress = 1
+                return YAPI.SUCCESS
+        # // may throw an exception
+        calibParam = self._download("api/refFrame/calibrationParam.txt")
+        iCalib = YAPI._decodeFloats(YByte2String(calibParam))
+        cal3 = int((iCalib[1]) / (1000))
+        calAcc = int((cal3) / (100))
+        calMag = int((cal3) / (10)) - 10*calAcc
+        calGyr = ((cal3) % (10))
+        if calGyr < 3:
+            self._calibStageHint = "Set down the device on a steady horizontal surface"
+            self._calibStageProgress = 40 + calGyr*20
+            self._calibProgress = 4 + calGyr*2
+        else:
+            self._calibStage = 2
+            if calMag < 3:
+                self._calibStageHint = "Slowly draw '8' shapes along the 3 axis"
+                self._calibStageProgress = 1 + calMag*33
+                self._calibProgress = 10 + calMag*5
+            else:
+                self._calibStage = 3
+                if calAcc < 3:
+                    self._calibStageHint = "Slowly turn the device, stopping at each 90 degrees"
+                    self._calibStageProgress = 1 + calAcc*33
+                    self._calibProgress = 25 + calAcc*25
+                else:
+                    self._calibStageProgress = 99
+                    self._calibProgress = 100
+        return YAPI.SUCCESS
+
     def get_3DCalibrationHint(self):
         """
         Returns instructions to proceed to the tridimensional calibration initiated with
@@ -582,6 +695,12 @@ class YRefFrame(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # // may throw an exception
+        if self._calibV2:
+            return self.save3DCalibrationV2()
+        return self.save3DCalibrationV1()
+
+    def save3DCalibrationV1(self):
+        # // may throw an exception
         # shiftX
         # shiftY
         # shiftZ
@@ -633,6 +752,10 @@ class YRefFrame(YFunction):
         newcalib = "5," + str(int(shiftX)) + "," + str(int(shiftY)) + "," + str(int(shiftZ)) + "," + str(int(scaleLo)) + "," + str(int(scaleHi))
         self._calibStage = 0
         return self.set_calibrationParam(newcalib)
+
+    def save3DCalibrationV2(self):
+        # // may throw an exception
+        return self.set_calibrationParam("5,5,5,5,5,5")
 
     def cancel3DCalibration(self):
         """

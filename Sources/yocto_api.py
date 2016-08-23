@@ -1,6 +1,6 @@
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 24641 2016-05-30 15:35:04Z mvuilleu $
+# * $Id: yocto_api.py 25090 2016-07-26 20:27:36Z mvuilleu $
 # *
 #* High-level programming interface, common to all modules
 #*
@@ -65,8 +65,10 @@ def YString2BytePython2x(strBuffer):
 
 
 def YGetBytePython2x(binBuffer, idx):
-    return ord(binBuffer[idx])
-
+    item = binBuffer[idx]
+    if type(item) is int:
+        return item
+    return ord(item)
 
 def YAddBytePython2x(binBuffer, b):
     return binBuffer + chr(b)
@@ -543,7 +545,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "24718"
+    YOCTO_API_BUILD_NO = "25250"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2119,6 +2121,8 @@ class YAPI:
     def yapiGetDeviceByFunction(fundesc, errmsgRef=None):
         errBuffer = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         devdesc = ctypes.c_int()
+        if not YAPI._ydllLoaded:
+            YAPI.yloadYapiCDLL()
         #noinspection PyUnresolvedReferences
         res = YAPI._yapiGetFunctionInfoEx(fundesc, ctypes.byref(devdesc), None, None, None, None, None, errBuffer)
         if errmsgRef is not None:
@@ -2141,6 +2145,8 @@ class YAPI:
     def yapiGetDevice(device_str, errmsgRef=None):
         errmsg_buffer = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         p = ctypes.create_string_buffer(device_str.encode("ASCII"))
+        if not YAPI._ydllLoaded:
+            YAPI.yloadYapiCDLL()
         #noinspection PyUnresolvedReferences
         res = YAPI._yapiGetDevice(p, errmsg_buffer)
         if errmsgRef is not None:
@@ -2150,6 +2156,8 @@ class YAPI:
     @staticmethod
     def yapiGetFunction(class_str, function_str, errmsgRef=None):
         errmsg_buffer = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        if not YAPI._ydllLoaded:
+            YAPI.yloadYapiCDLL()
         #noinspection PyUnresolvedReferences
         res = YAPI._yapiGetFunction(ctypes.create_string_buffer(class_str.encode("ASCII")),
                                     ctypes.create_string_buffer(function_str.encode("ASCII")), errmsg_buffer)
@@ -2161,6 +2169,8 @@ class YAPI:
     def apiGetFunctionsByClass(class_str, precFuncDesc, dbuffer, maxsize, neededsizeRef, errmsgRef=None):
         errmsg_buffer = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         cneededsize = ctypes.c_int()
+        if not YAPI._ydllLoaded:
+            YAPI.yloadYapiCDLL()
         #noinspection PyUnresolvedReferences
         res = YAPI._yapiGetFunctionsByClass(ctypes.create_string_buffer(class_str.encode("ASCII")), precFuncDesc,
                                             dbuffer, maxsize, ctypes.byref(cneededsize), errmsg_buffer)
@@ -2174,6 +2184,8 @@ class YAPI:
     def apiGetFunctionsByDevice(devdesc, precFuncDesc, dbuffer, maxsize, neededsizeRef, errmsgRef=None):
         errmsg_buffer = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         cneededsize = ctypes.c_int()
+        if not YAPI._ydllLoaded:
+            YAPI.yloadYapiCDLL()
         #noinspection PyUnresolvedReferences
         res = YAPI._yapiGetFunctionsByDevice(devdesc, precFuncDesc, dbuffer, maxsize, ctypes.byref(cneededsize),
                                              errmsg_buffer)

@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 23780 2016-04-06 10:27:21Z seb $
+#* $Id: yocto_serialport.py 25248 2016-08-22 15:51:04Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -98,6 +98,8 @@ class YSerialPort(YFunction):
         self._protocol = YSerialPort.PROTOCOL_INVALID
         self._serialMode = YSerialPort.SERIALMODE_INVALID
         self._rxptr = 0
+        self._rxbuff = ''
+        self._rxbuffptr = 0
         #--- (end of YSerialPort attributes)
 
     #--- (YSerialPort implementation)
@@ -443,6 +445,8 @@ class YSerialPort(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         self._rxptr = 0
+        self._rxbuffptr = 0
+        self._rxbuff = bytearray(0)
         # // may throw an exception
         return self.sendCommand("Z")
 
@@ -602,11 +606,46 @@ class YSerialPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
+        # currpos
+        # reqlen
         # buff
         # bufflen
         # mult
         # endpos
         # res
+        
+        # // first check if we have the requested character in the look-ahead buffer
+        bufflen = len(self._rxbuff)
+        if (self._rxptr >= self._rxbuffptr) and (self._rxptr < self._rxbuffptr+bufflen):
+            res = YGetByte(self._rxbuff, self._rxptr-self._rxbuffptr)
+            self._rxptr = self._rxptr + 1
+            return res
+        
+        # // try to preload more than one byte to speed-up byte-per-byte access
+        currpos = self._rxptr
+        reqlen = 1024
+        buff = self.readBin(reqlen)
+        bufflen = len(buff)
+        if self._rxptr == currpos+bufflen:
+            res = YGetByte(buff, 0)
+            self._rxptr = currpos+1
+            self._rxbuffptr = currpos
+            self._rxbuff = buff
+            return res
+        # // mixed bidirectional data, retry with a smaller block
+        self._rxptr = currpos
+        reqlen = 16
+        buff = self.readBin(reqlen)
+        bufflen = len(buff)
+        if self._rxptr == currpos+bufflen:
+            res = YGetByte(buff, 0)
+            self._rxptr = currpos+1
+            self._rxbuffptr = currpos
+            self._rxbuff = buff
+            return res
+        # // still mixed, need to process character by character
+        self._rxptr = currpos
+        
         # // may throw an exception
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=1")
         bufflen = len(buff) - 1
@@ -1364,8 +1403,6 @@ class YSerialPort(YFunction):
         reply = []
         # res
         res = 0
-        if value != 0:
-            value = 0xff
         
         pdu.append(0x06)
         pdu.append(((pduAddr) >> (8)))

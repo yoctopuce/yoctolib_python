@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_compass.py 23243 2016-02-23 14:13:12Z seb $
+#* $Id: yocto_compass.py 24934 2016-06-30 22:32:01Z mvuilleu $
 #*
 #* Implements yFindCompass(), the high-level API for Compass functions
 #*
@@ -63,6 +63,7 @@ class YCompass(YSensor):
     #--- (YCompass dlldef)
     #--- (end of YCompass dlldef)
     #--- (YCompass definitions)
+    BANDWIDTH_INVALID = YAPI.INVALID_INT
     MAGNETICHEADING_INVALID = YAPI.INVALID_DOUBLE
     AXIS_X = 0
     AXIS_Y = 1
@@ -75,12 +76,16 @@ class YCompass(YSensor):
         self._className = 'Compass'
         #--- (YCompass attributes)
         self._callback = None
+        self._bandwidth = YCompass.BANDWIDTH_INVALID
         self._axis = YCompass.AXIS_INVALID
         self._magneticHeading = YCompass.MAGNETICHEADING_INVALID
         #--- (end of YCompass attributes)
 
     #--- (YCompass implementation)
     def _parseAttr(self, member):
+        if member.name == "bandwidth":
+            self._bandwidth = member.ivalue
+            return 1
         if member.name == "axis":
             self._axis = member.ivalue
             return 1
@@ -88,6 +93,33 @@ class YCompass(YSensor):
             self._magneticHeading = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
             return 1
         super(YCompass, self)._parseAttr(member)
+
+    def get_bandwidth(self):
+        """
+        Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+
+        @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+
+        On failure, throws an exception or returns YCompass.BANDWIDTH_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YCompass.BANDWIDTH_INVALID
+        return self._bandwidth
+
+    def set_bandwidth(self, newval):
+        """
+        Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+        frequency is lower, the device performs averaging.
+
+        @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("bandwidth", rest_val)
 
     def get_axis(self):
         if self._cacheExpiration <= YAPI.GetTickCount():

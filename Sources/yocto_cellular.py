@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 24622 2016-05-27 12:51:52Z mvuilleu $
+#* $Id: yocto_cellular.py 24921 2016-06-29 13:15:24Z mvuilleu $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -139,6 +139,7 @@ class YCellular(YFunction):
     ENABLEDATA_HOMENETWORK = 0
     ENABLEDATA_ROAMING = 1
     ENABLEDATA_NEVER = 2
+    ENABLEDATA_NEUTRALITY = 3
     ENABLEDATA_INVALID = -1
     #--- (end of generated code: YCellular definitions)
 
@@ -406,8 +407,9 @@ class YCellular(YFunction):
         Returns the condition for enabling IP data services (GPRS).
         When data services are disabled, SMS are the only mean of communication.
 
-        @return a value among YCellular.ENABLEDATA_HOMENETWORK, YCellular.ENABLEDATA_ROAMING and
-        YCellular.ENABLEDATA_NEVER corresponding to the condition for enabling IP data services (GPRS)
+        @return a value among YCellular.ENABLEDATA_HOMENETWORK, YCellular.ENABLEDATA_ROAMING,
+        YCellular.ENABLEDATA_NEVER and YCellular.ENABLEDATA_NEUTRALITY corresponding to the condition for
+        enabling IP data services (GPRS)
 
         On failure, throws an exception or returns YCellular.ENABLEDATA_INVALID.
         """
@@ -425,8 +427,9 @@ class YCellular(YFunction):
 
         When data services are disabled, SMS are the only mean of communication.
 
-        @param newval : a value among YCellular.ENABLEDATA_HOMENETWORK, YCellular.ENABLEDATA_ROAMING and
-        YCellular.ENABLEDATA_NEVER corresponding to the condition for enabling IP data services (GPRS)
+        @param newval : a value among YCellular.ENABLEDATA_HOMENETWORK, YCellular.ENABLEDATA_ROAMING,
+        YCellular.ENABLEDATA_NEVER and YCellular.ENABLEDATA_NEUTRALITY corresponding to the condition for
+        enabling IP data services (GPRS)
 
         @return YAPI.SUCCESS if the call succeeds.
 
