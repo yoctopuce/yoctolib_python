@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 24943 2016-07-01 14:02:25Z seb $
+#* $Id: yocto_refframe.py 25275 2016-08-24 13:42:24Z mvuilleu $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -62,11 +62,11 @@ class YRefFrame(YFunction):
     class MOUNTPOSITION:
         def __init__(self):
             pass
-        BOTTOM, TOP, FRONT, REAR, RIGHT, LEFT = range(6)
+        BOTTOM, TOP, FRONT, REAR, RIGHT, LEFT, INVALID = range(7)
     class MOUNTORIENTATION:
         def __init__(self):
             pass
-        TWELVE, THREE, SIX, NINE = range(4)
+        TWELVE, THREE, SIX, NINE, INVALID = range(5)
     MOUNTPOS_INVALID = YAPI.INVALID_UINT
     BEARING_INVALID = YAPI.INVALID_DOUBLE
     CALIBRATIONPARAM_INVALID = YAPI.INVALID_STRING
@@ -216,15 +216,17 @@ class YRefFrame(YFunction):
         pitch/roll tilt sensors.
 
         @return a value among the YRefFrame.MOUNTPOSITION enumeration
-                (YRefFrame.MOUNTPOSITION_BOTTOM,   YRefFrame.MOUNTPOSITION_TOP,
-                YRefFrame.MOUNTPOSITION_FRONT,    YRefFrame.MOUNTPOSITION_RIGHT,
-                YRefFrame.MOUNTPOSITION_REAR,     YRefFrame.MOUNTPOSITION_LEFT),
+                (YRefFrame.MOUNTPOSITION.BOTTOM,   YRefFrame.MOUNTPOSITION.TOP,
+                YRefFrame.MOUNTPOSITION.FRONT,    YRefFrame.MOUNTPOSITION.RIGHT,
+                YRefFrame.MOUNTPOSITION.REAR,     YRefFrame.MOUNTPOSITION.LEFT),
                 corresponding to the installation in a box, on one of the six faces.
 
-        On failure, throws an exception or returns a negative error code.
+        On failure, throws an exception or returns YRefFrame.MOUNTPOSITION.INVALID.
         """
         # position
         position = self.get_mountPos()
+        if position < 0:
+            return YRefFrame.MOUNTPOSITION.INVALID
         return ((position) >> (2))
 
     def get_mountOrientation(self):
@@ -234,17 +236,19 @@ class YRefFrame(YFunction):
         pitch/roll tilt sensors.
 
         @return a value among the enumeration YRefFrame.MOUNTORIENTATION
-                (YRefFrame.MOUNTORIENTATION_TWELVE, YRefFrame.MOUNTORIENTATION_THREE,
-                YRefFrame.MOUNTORIENTATION_SIX,     YRefFrame.MOUNTORIENTATION_NINE)
+                (YRefFrame.MOUNTORIENTATION.TWELVE, YRefFrame.MOUNTORIENTATION.THREE,
+                YRefFrame.MOUNTORIENTATION.SIX,     YRefFrame.MOUNTORIENTATION.NINE)
                 corresponding to the orientation of the "X" arrow on the device,
                 as on a clock dial seen from an observer in the center of the box.
                 On the bottom face, the 12H orientation points to the front, while
                 on the top face, the 12H orientation points to the rear.
 
-        On failure, throws an exception or returns a negative error code.
+        On failure, throws an exception or returns YRefFrame.MOUNTORIENTATION.INVALID.
         """
         # position
         position = self.get_mountPos()
+        if position < 0:
+            return YRefFrame.MOUNTORIENTATION.INVALID
         return ((position) & (3))
 
     def set_mountPosition(self, position, orientation):
@@ -256,13 +260,13 @@ class YRefFrame(YFunction):
         the earth surface) so that the measures are made relative to this position.
 
         @param position : a value among the YRefFrame.MOUNTPOSITION enumeration
-                (YRefFrame.MOUNTPOSITION_BOTTOM,   YRefFrame.MOUNTPOSITION_TOP,
-                YRefFrame.MOUNTPOSITION_FRONT,    YRefFrame.MOUNTPOSITION_RIGHT,
-                YRefFrame.MOUNTPOSITION_REAR,     YRefFrame.MOUNTPOSITION_LEFT),
+                (YRefFrame.MOUNTPOSITION.BOTTOM,   YRefFrame.MOUNTPOSITION.TOP,
+                YRefFrame.MOUNTPOSITION.FRONT,    YRefFrame.MOUNTPOSITION.RIGHT,
+                YRefFrame.MOUNTPOSITION.REAR,     YRefFrame.MOUNTPOSITION.LEFT),
                 corresponding to the installation in a box, on one of the six faces.
         @param orientation : a value among the enumeration YRefFrame.MOUNTORIENTATION
-                (YRefFrame.MOUNTORIENTATION_TWELVE, YRefFrame.MOUNTORIENTATION_THREE,
-                YRefFrame.MOUNTORIENTATION_SIX,     YRefFrame.MOUNTORIENTATION_NINE)
+                (YRefFrame.MOUNTORIENTATION.TWELVE, YRefFrame.MOUNTORIENTATION.THREE,
+                YRefFrame.MOUNTORIENTATION.SIX,     YRefFrame.MOUNTORIENTATION.NINE)
                 corresponding to the orientation of the "X" arrow on the device,
                 as on a clock dial seen from an observer in the center of the box.
                 On the bottom face, the 12H orientation points to the front, while

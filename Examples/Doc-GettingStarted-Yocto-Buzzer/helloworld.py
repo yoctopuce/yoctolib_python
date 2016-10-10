@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
+
 # add ../../Sources to the PYTHONPATH
-sys.path.append(os.path.join("..","..","Sources"))
+sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
 from yocto_buzzer import *
 from yocto_led import *
@@ -24,7 +25,7 @@ def die(msg):
     sys.exit(msg + ' (check USB cable)')
 
 
-if len(sys.argv) < 1:
+if len(sys.argv) < 2:
     usage()
 
 target = sys.argv[1].upper()
@@ -49,18 +50,17 @@ led1 = YLed.FindLed(serial + ".led1")
 led2 = YLed.FindLed(serial + ".led2")
 button1 = YAnButton.FindAnButton(serial + ".anButton1")
 button2 = YAnButton.FindAnButton(serial + ".anButton2")
-print("press any of the test buttons");
-while True:
+print("press any of the test buttons")
+while button1.isOnline():
     b1 = button1.get_isPressed()
     b2 = button2.get_isPressed()
     if b1 or b2:
-        if (b1):
+        if b1:
             led = led1
             freq = 1500
         else:
             led = led2
             freq = 750
-
         led.set_power(YLed.POWER_ON)
         led.set_luminosity(100)
         led.set_blinking(YLed.BLINKING_PANIC)
@@ -70,4 +70,4 @@ while True:
             YAPI.Sleep(250, errmsg)
         buz.set_frequency(0)
         led.set_power(YLed.POWER_OFF)
-
+YAPI.FreeAPI()

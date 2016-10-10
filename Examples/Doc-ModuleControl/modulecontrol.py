@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os,sys
+import os, sys
+
 # add ../../Sources to the PYTHONPATH
-sys.path.append(os.path.join("..","..","Sources"))
+sys.path.append(os.path.join("..", "..", "Sources"))
 import os, sys
 from yocto_api import *
 
@@ -39,6 +40,4 @@ if m.isOnline():
     print("logs:\n" + m.get_lastLogs())
 else:
     print(sys.argv[1] + " not connected (check identification and USB cable)")
-
-
-
+YAPI.FreeAPI()

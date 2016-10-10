@@ -1,45 +1,50 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
+
 # add ../../Sources to the PYTHONPATH
-sys.path.append(os.path.join("..","..","Sources"))
+sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
 from yocto_temperature import *
+
 
 def usage():
     scriptname = os.path.basename(sys.argv[0])
     print("Usage:")
-    print(scriptname+' <serial_number>')
-    print(scriptname+' <logical_name>')
-    print(scriptname+' any  ')
+    print(scriptname + ' <serial_number>')
+    print(scriptname + ' <logical_name>')
+    print(scriptname + ' any  ')
     sys.exit()
 
+
 def die(msg):
-    sys.exit(msg+' (check USB cable)')
+    sys.exit(msg + ' (check USB cable)')
 
-errmsg=YRefParam()
 
-if len(sys.argv)<2 :  usage()
+errmsg = YRefParam()
 
-target=sys.argv[1]
+if len(sys.argv) < 2:
+    usage()
+
+target = sys.argv[1]
 
 # Setup the API to use local USB devices
-if YAPI.RegisterHub("usb", errmsg)!= YAPI.SUCCESS:
-    sys.exit("init error"+errmsg.value)
+if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
+    sys.exit("init error" + errmsg.value)
 
-if target=='any':
+if target == 'any':
     # retreive any temperature sensor
     sensor = YTemperature.FirstTemperature()
-    if sensor is None :
+    if sensor is None:
         die('No module connected')
 else:
-    sensor= YTemperature.FindTemperature(target + '.temperature1')
+    sensor = YTemperature.FindTemperature(target + '.temperature1')
 
-if not(sensor.isOnline()):die('device not connected')
+if not (sensor.isOnline()):
+    die('device not connected')
 
 # retreive module serial
-serial=sensor.get_module().get_serialNumber()
-
+serial = sensor.get_module().get_serialNumber()
 
 # retreive all 6 channels
 channel1 = YTemperature.FindTemperature(serial + '.temperature1')
@@ -49,12 +54,13 @@ channel4 = YTemperature.FindTemperature(serial + '.temperature4')
 channel5 = YTemperature.FindTemperature(serial + '.temperature5')
 channel6 = YTemperature.FindTemperature(serial + '.temperature6')
 
-while True:
-    print("| 1: "+ "%2.1f " % channel1.get_currentValue() + \
-          "| 2: "+ "%2.1f " % channel2.get_currentValue() + \
-          "| 3: "+ "%2.1f " % channel3.get_currentValue() + \
-          "| 4: "+ "%2.1f " % channel4.get_currentValue() + \
-          "| 5: "+ "%2.1f " % channel5.get_currentValue() + \
-          "| 6: "+ "%2.1f " % channel6.get_currentValue() + \
+while sensor.isOnline():
+    print("| 1: " + "%2.1f " % channel1.get_currentValue() + \
+          "| 2: " + "%2.1f " % channel2.get_currentValue() + \
+          "| 3: " + "%2.1f " % channel3.get_currentValue() + \
+          "| 4: " + "%2.1f " % channel4.get_currentValue() + \
+          "| 5: " + "%2.1f " % channel5.get_currentValue() + \
+          "| 6: " + "%2.1f " % channel6.get_currentValue() + \
           "| deg C |")
     YAPI.Sleep(1000)
+YAPI.FreeAPI()

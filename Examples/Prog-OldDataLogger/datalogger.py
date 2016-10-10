@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# add ../../Sources to the PYTHONPATH
+import os, sys
 
+# add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
 from yocto_datalogger import *

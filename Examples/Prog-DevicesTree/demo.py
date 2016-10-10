@@ -19,7 +19,7 @@ class YoctoShield(object):
     def addSubdevice(self, serial):
         for i in range(1, 5):
             p = YHubPort.FindHubPort("%s.hubPort%d" % (self._serial, i))
-            if (p.get_logicalName() == serial):
+            if p.get_logicalName() == serial:
                 self._subDevices.append(serial)
                 return True
         return False
@@ -45,12 +45,12 @@ class RootDevice(object):
         return self._serial
 
     def addSubDevice(self, serial):
-        if (serial[:7] == "YHUBSHL"):
+        if serial[:7] == "YHUBSHL":
             self._shields.append(YoctoShield(serial))
         else:
             # Device to plug look if the device is plugged on a shield
             for shield in self._shields:
-                if (shield.addSubdevice(serial)):
+                if shield.addSubdevice(serial):
                     return
             self._subDevices.append(serial)
 
@@ -58,7 +58,7 @@ class RootDevice(object):
         if serial in self._subDevices:
             self._subDevices.remove(serial)
         for yoctoShield in reversed(list(self._shields)):
-            if (yoctoShield.getSerial() == serial):
+            if yoctoShield.getSerial() == serial:
                 self._shields.remove(yoctoShield)
                 break
             else:
@@ -77,14 +77,14 @@ __rootDevices = []
 
 def getYoctoHub(serial):
     for rootDevice in __rootDevices:
-        if (rootDevice.getSerial() == serial):
+        if rootDevice.getSerial() == serial:
             return rootDevice
     return None
 
 
 def addRootDevice(serial, url):
     for rootDevice in __rootDevices:
-        if (rootDevice.getSerial() == serial):
+        if rootDevice.getSerial() == serial:
             return rootDevice
     rootDevice = RootDevice(serial, url)
     __rootDevices.append(rootDevice)
@@ -100,13 +100,13 @@ def showNetwork():
 def deviceArrival(module):
     serial = module.get_serialNumber()
     parentHub = module.get_parentHub()
-    if (parentHub == ""):
+    if parentHub == "":
         # root device
         url = module.get_url()
         addRootDevice(serial, url)
     else:
         hub = getYoctoHub(parentHub)
-        if (hub is not None):
+        if hub is not None:
             hub.addSubDevice(serial)
 
 
@@ -114,7 +114,7 @@ def deviceRemoval(module):
     serial = module.get_serialNumber()
     for rootDevice in reversed(list(__rootDevices)):
         rootDevice.removeSubDevice(serial)
-        if (rootDevice.getSerial() == serial):
+        if rootDevice.getSerial() == serial:
             __rootDevices.remove(rootDevice)
 
 
@@ -135,7 +135,7 @@ YAPI.RegisterDeviceRemovalCallback(deviceRemoval)
 print("Waiting for hubs to signal themselves...")
 # wait for 5 seconds, doing nothing.
 # noinspection InfiniteLoopStatement
-while (True):
+while True:
     YAPI.UpdateDeviceList(errmsg)  # traps plug/unplug events
     YAPI.Sleep(1000, errmsg)  # traps others events
     showNetwork()

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
+
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
@@ -39,7 +40,7 @@ if target == 'ANY':
     if relay is None:
         die('no device connected')
 else:
-    relay = YRelay.FindRelay(target + "relay1")
+    relay = YRelay.FindRelay(target + ".relay1")
 
 if not (relay.isOnline()):
     die('device not connected')
@@ -48,3 +49,4 @@ if state == 'A':
     relay.set_state(YRelay.STATE_A)
 else:
     relay.set_state(YRelay.STATE_B)
+YAPI.FreeAPI()

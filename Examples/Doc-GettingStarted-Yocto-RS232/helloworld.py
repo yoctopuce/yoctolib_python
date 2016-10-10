@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
+
 # add ../../Sources to the PYTHONPATH
-sys.path.append(os.path.join("..","..","Sources"))
+sys.path.append(os.path.join("..", "..", "Sources"))
 sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
 from yocto_serialport import *
@@ -36,6 +37,6 @@ while True:
     serialPort.writeLine(line)
     YAPI.Sleep(500)
     line = serialPort.readLine()
-    if (line != ""):
+    if line != "":
         print("Received: " + line)
 YAPI.FreeAPI()

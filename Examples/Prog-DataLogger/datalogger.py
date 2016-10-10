@@ -4,6 +4,7 @@
 import sys
 import os
 import time
+
 sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
 
@@ -25,7 +26,7 @@ def dumpSensor(sensor):
     progress = 0
     while progress < 100:
         progress = dataset.loadMore()
-        #print("\b\b\b\b%3d%%" % progress)
+        # print("\b\b\b\b%3d%%" % progress)
     details = dataset.get_measures()
     for measure in details:
         print("from %s to %s : min=%.3f%s avg=%.3f%s  max=%.3f%s" % (

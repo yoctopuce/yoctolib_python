@@ -1,10 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
+
 # add ../../Sources to the PYTHONPATH
-sys.path.append(os.path.join("..","..","Sources"))
+sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
 from yocto_pwmoutput import *
+
 
 def usage():
     scriptname = os.path.basename(sys.argv[0])
@@ -18,16 +20,17 @@ def usage():
     print(scriptname + ' any 1000 22.5')
     sys.exit()
 
+
 def die(msg):
     sys.exit(msg + ' (check USB cable)')
 
-if len(sys.argv) < 4 :
+
+if len(sys.argv) < 4:
     usage()
 
 target = sys.argv[1].upper()
 frequency = int(sys.argv[2])
 duty_cycle = float(sys.argv[3])
-
 
 # Setup the API to use local USB devices
 errmsg = YRefParam()
@@ -37,7 +40,7 @@ if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
 if target == 'ANY':
     # retreive any pwmoutput then find its serial #
     pwmoutput = YPwmOutput.FirstPwmOutput()
-    if pwmoutput is None :
+    if pwmoutput is None:
         die('No module connected')
     m = pwmoutput.get_module()
     target = m.get_serialNumber()
@@ -46,7 +49,7 @@ print('using ' + target)
 pwmoutput1 = YPwmOutput.FindPwmOutput(target + '.pwmOutput1')
 pwmoutput2 = YPwmOutput.FindPwmOutput(target + '.pwmOutput2')
 
-if not(pwmoutput1.isOnline()):
+if not (pwmoutput1.isOnline()):
     die('device not connected')
 
 # output 2 : smooth change
@@ -57,3 +60,4 @@ pwmoutput2.dutyCycleMove(duty_cycle, 3000)
 pwmoutput1.set_frequency(frequency)
 pwmoutput1.set_enabled(YPwmOutput.ENABLED_TRUE)
 pwmoutput1.set_dutyCycle(duty_cycle)
+YAPI.FreeAPI()

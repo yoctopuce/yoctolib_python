@@ -45,14 +45,16 @@ if target == 'any':
 else:
     m = YModule.FindModule(target)
 
-if not m.isOnline(): die('device not connected')
+if not m.isOnline():
+    die('device not connected')
 
 humSensor = YHumidity.FindHumidity(target + '.humidity')
 pressSensor = YPressure.FindPressure(target + '.pressure')
 tempSensor = YTemperature.FindTemperature(target + '.temperature')
 
-while True:
+while m.isOnline():
     print('%2.1f' % tempSensor.get_currentValue() + "°C   " +
           "%4.0f" % pressSensor.get_currentValue() + "mb  " +
           "%4.0f" % humSensor.get_currentValue() + "% (Ctrl-c to stop)  ")
     YAPI.Sleep(1000)
+YAPI.FreeAPI()

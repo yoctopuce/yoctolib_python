@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
+
 # add ../../Sources to the PYTHONPATH
-sys.path.append(os.path.join("..","..","Sources"))
 sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
 from yocto_serialport import *
@@ -27,9 +27,9 @@ else:
     serialPort.set_serialMode("9600,8N1")
     serialPort.set_protocol("Line")
     serialPort.reset()
-    
+
     print("****************************")
-    print("* make sure voltage levels *") 
+    print("* make sure voltage levels *")
     print("* are properly configured  *")
     print("****************************")
 
@@ -41,6 +41,6 @@ while True:
     serialPort.writeLine(line)
     YAPI.Sleep(500)
     line = serialPort.readLine()
-    if (line != ""):
+    if line != "":
         print("Received: " + line)
 YAPI.FreeAPI()

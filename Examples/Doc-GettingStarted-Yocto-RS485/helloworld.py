@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
+
 # add ../../Sources to the PYTHONPATH
-sys.path.append(os.path.join("..","..","Sources"))
 sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
 from yocto_serialport import *
@@ -30,14 +30,14 @@ while (slave < 1) or (slave > 255):
 reg = 0
 while (reg < 1) or (reg >= 50000) or (reg % 10000) == 0:
     print("Please select a Coil No (>=1), Input Bit No (>=10001+),")
-    print("Register No (>=30001) or Input Register No (>=40001)")
+    print("Input Register No (>=30001) or Register No (>=40001)")
     reg = int(input("No: "))  # use raw_input in python 2.x
 
-while True:
+while serialPort.isOnline():
     if reg >= 40001:
-        val = serialPort.modbusReadInputRegisters(slave, reg - 40001, 1)[0]
+        val = serialPort.modbusReadRegisters(slave, reg - 40001, 1)[0]
     elif reg >= 30001:
-        val = serialPort.modbusReadRegisters(slave, reg - 30001, 1)[0]
+        val = serialPort.modbusReadInputRegisters(slave, reg - 30001, 1)[0]
     elif reg >= 10001:
         val = serialPort.modbusReadInputBits(slave, reg - 10001, 1)[0]
     else:
@@ -46,10 +46,11 @@ while True:
     print("Current value: " + str(val))
     print("Press ENTER to read again, Q to quit")
     if (reg % 30000) < 10000:
-        print (" or enter a new value")
+        print(" or enter a new value")
 
     cmd = input(": ")  # use raw_input in python 2.x
-    if (cmd == "q") or (cmd == "Q"): sys.exit()
+    if (cmd == "q") or (cmd == "Q"):
+        sys.exit()
 
     if cmd != "" and ((reg % 30000) < 10000):
         val = int(cmd)
@@ -57,4 +58,4 @@ while True:
             serialPort.modbusWriteRegister(slave, reg - 30001, val)
         else:
             serialPort.modbusWriteBit(slave, reg - 1, val)
-
+YAPI.FreeAPI()

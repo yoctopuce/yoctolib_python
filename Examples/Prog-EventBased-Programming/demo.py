@@ -65,4 +65,3 @@ print('Hit Ctrl-C to Stop ')
 while True:
     YAPI.UpdateDeviceList(errmsg)  # traps plug/unplug events
     YAPI.Sleep(500, errmsg)  # traps others events
-

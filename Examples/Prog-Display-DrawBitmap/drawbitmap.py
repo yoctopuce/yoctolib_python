@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os, sys
 import math
+
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..", "..", "Sources"))
 
@@ -69,11 +70,11 @@ distance = 1.0
 while True:
     for i in range(0, len(data)):
         data[i] = 0
-    distance = distance * 0.95
+    distance *= 0.95
     centerX = targetX * (1 - distance)
     centerY = targetY * (1 - distance)
     max_iteration = int(0.5 + max_iteration + math.sqrt(zoom))
-    if (max_iteration > 1500):
+    if max_iteration > 1500:
         max_iteration = 1500
     for j in range(0, h):
         for i in range(0, w):
@@ -93,4 +94,4 @@ while True:
                 data[j * bytesPerLines + (i >> 3)] |= (128 >> (i & 7))
 
     l0.drawBitmap(0, 0, w, data, 0)
-    zoom = zoom / 0.95
+    zoom /= 0.95

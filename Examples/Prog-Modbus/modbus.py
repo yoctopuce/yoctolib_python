@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
+
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
@@ -45,7 +46,7 @@ while True:
     print("Current value: " + str(val))
     print("Press ENTER to read again, Q to quit")
     if (reg % 30000) < 10000:
-        print (" or enter a new value")
+        print(" or enter a new value")
 
     cmd = input(": ")  # use raw_input in python 2.x
     if (cmd == "q") or (cmd == "Q"): sys.exit()
@@ -56,4 +57,3 @@ while True:
             serialPort.modbusWriteRegister(slave, reg - 30001, val)
         else:
             serialPort.modbusWriteBit(slave, reg - 1, val)
-

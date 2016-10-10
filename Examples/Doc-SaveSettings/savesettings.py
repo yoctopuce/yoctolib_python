@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os,sys
-# add ../../Sources to the PYTHONPATH
-sys.path.append(os.path.join("..","..","Sources"))
 import os, sys
+
+# add ../../Sources to the PYTHONPATH
+sys.path.append(os.path.join("..", "..", "Sources"))
 from yocto_api import *
 
 
@@ -28,4 +28,4 @@ if m.isOnline():
     print("Module: serial= " + m.get_serialNumber() + " / name= " + m.get_logicalName())
 else:
     sys.exit("not connected (check identification and USB cable")
-
+YAPI.FreeAPI()
