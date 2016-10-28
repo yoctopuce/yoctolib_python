@@ -1,6 +1,6 @@
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 25090 2016-07-26 20:27:36Z mvuilleu $
+# * $Id: yocto_api.py 25651 2016-10-20 13:36:46Z seb $
 # *
 #* High-level programming interface, common to all modules
 #*
@@ -545,7 +545,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "25534"
+    YOCTO_API_BUILD_NO = "25748"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2644,7 +2644,8 @@ class YDataStream(object):
             else:
                 val = YAPI._decimalToDouble(w)
         if self._caltyp != 0:
-            val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+            if self._calhdl is not None:
+                val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
         return val
 
     def _decodeAvg(self, dw, count):
@@ -2658,7 +2659,8 @@ class YDataStream(object):
             else:
                 val = val / (count * self._decexp)
         if self._caltyp != 0:
-            val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+            if self._calhdl is not None:
+                val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
         return val
 
     def isClosed(self):

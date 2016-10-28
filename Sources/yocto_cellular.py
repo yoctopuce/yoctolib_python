@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 24921 2016-06-29 13:15:24Z mvuilleu $
+#* $Id: yocto_cellular.py 25609 2016-10-19 12:37:17Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -623,7 +623,7 @@ class YCellular(YFunction):
         """
         # gsmMsg
         gsmMsg = self.get_message()
-        if not (not ((gsmMsg)[0: 0 + 13] == "Enter SIM PUK")):
+        if not ((gsmMsg)[0: 0 + 13] == "Enter SIM PUK"):
             self._throw(YAPI.INVALID_ARGUMENT, "PUK not expected at this time")
         if newPin == "":
             return self.set_command("AT+CPIN=" + puk + ",0000;+CLCK=SC,0,0000")
