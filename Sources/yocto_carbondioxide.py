@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_carbondioxide.py 23243 2016-02-23 14:13:12Z seb $
+#* $Id: yocto_carbondioxide.py 25833 2016-11-08 16:55:24Z seb $
 #*
 #* Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
 #*
@@ -154,7 +154,7 @@ class YCarbonDioxide(YSensor):
             YFunction._AddToCache("CarbonDioxide", func, obj)
         return obj
 
-    def triggetBaselineCalibration(self):
+    def triggerBaselineCalibration(self):
         """
         Triggers a baseline calibration at standard CO2 ambiant level (400ppm).
         It is normally not necessary to manually calibrate the sensor, because
@@ -171,7 +171,11 @@ class YCarbonDioxide(YSensor):
         """
         return self.set_command("BC")
 
-    def triggetZeroCalibration(self):
+    def triggetBaselineCalibration(self):
+        # // may throw an exception
+        return self.triggerBaselineCalibration()
+
+    def triggerZeroCalibration(self):
         """
         Triggers a zero calibration of the sensor on carbon dioxide-free air.
         It is normally not necessary to manually calibrate the sensor, because
@@ -189,6 +193,10 @@ class YCarbonDioxide(YSensor):
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_command("ZC")
+
+    def triggetZeroCalibration(self):
+        # // may throw an exception
+        return self.triggerZeroCalibration()
 
     def nextCarbonDioxide(self):
         """
