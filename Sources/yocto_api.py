@@ -1,6 +1,6 @@
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 25651 2016-10-20 13:36:46Z seb $
+# * $Id: yocto_api.py 26132 2016-12-01 17:02:38Z seb $
 # *
 #* High-level programming interface, common to all modules
 #*
@@ -545,7 +545,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "25913"
+    YOCTO_API_BUILD_NO = "26144"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -3158,6 +3158,7 @@ class YDataSet(object):
             if (tim >= self._startTime) and ((self._endTime == 0) or (tim <= self._endTime)):
                 self._measures.append(YMeasure(tim - itv, tim, y[minCol], y[avgCol], y[maxCol]))
             tim = tim + itv
+            tim = round(tim * 1000) / 1000.0
         
         return self.get_progress()
 
