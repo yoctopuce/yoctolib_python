@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: pic24config.php 25964 2016-11-21 15:30:59Z mvuilleu $
+#* $Id: yocto_steppermotor.py 26253 2017-01-03 17:41:07Z seb $
 #*
 #* Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #*
@@ -61,11 +61,12 @@ class YStepperMotor(YFunction):
     PULLINSPEED_INVALID = YAPI.INVALID_DOUBLE
     MAXACCEL_INVALID = YAPI.INVALID_DOUBLE
     MAXSPEED_INVALID = YAPI.INVALID_DOUBLE
-    USTEPMAXSPEED_INVALID = YAPI.INVALID_DOUBLE
     OVERCURRENT_INVALID = YAPI.INVALID_UINT
     TCURRSTOP_INVALID = YAPI.INVALID_UINT
     TCURRRUN_INVALID = YAPI.INVALID_UINT
     ALERTMODE_INVALID = YAPI.INVALID_STRING
+    AUXMODE_INVALID = YAPI.INVALID_STRING
+    AUXSIGNAL_INVALID = YAPI.INVALID_INT
     COMMAND_INVALID = YAPI.INVALID_STRING
     MOTORSTATE_ABSENT = 0
     MOTORSTATE_ALERT = 1
@@ -95,11 +96,12 @@ class YStepperMotor(YFunction):
         self._maxAccel = YStepperMotor.MAXACCEL_INVALID
         self._maxSpeed = YStepperMotor.MAXSPEED_INVALID
         self._stepping = YStepperMotor.STEPPING_INVALID
-        self._ustepMaxSpeed = YStepperMotor.USTEPMAXSPEED_INVALID
         self._overcurrent = YStepperMotor.OVERCURRENT_INVALID
         self._tCurrStop = YStepperMotor.TCURRSTOP_INVALID
         self._tCurrRun = YStepperMotor.TCURRRUN_INVALID
         self._alertMode = YStepperMotor.ALERTMODE_INVALID
+        self._auxMode = YStepperMotor.AUXMODE_INVALID
+        self._auxSignal = YStepperMotor.AUXSIGNAL_INVALID
         self._command = YStepperMotor.COMMAND_INVALID
         #--- (end of YStepperMotor attributes)
 
@@ -129,9 +131,6 @@ class YStepperMotor(YFunction):
         if member.name == "stepping":
             self._stepping = member.ivalue
             return 1
-        if member.name == "ustepMaxSpeed":
-            self._ustepMaxSpeed = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
         if member.name == "overcurrent":
             self._overcurrent = member.ivalue
             return 1
@@ -143,6 +142,12 @@ class YStepperMotor(YFunction):
             return 1
         if member.name == "alertMode":
             self._alertMode = member.svalue
+            return 1
+        if member.name == "auxMode":
+            self._auxMode = member.svalue
+            return 1
+        if member.name == "auxSignal":
+            self._auxSignal = member.ivalue
             return 1
         if member.name == "command":
             self._command = member.svalue
@@ -335,34 +340,6 @@ class YStepperMotor(YFunction):
         rest_val = str(newval)
         return self._setAttr("stepping", rest_val)
 
-    def set_ustepMaxSpeed(self, newval):
-        """
-        Changes the maximal motor speed for micro-stepping, measured in steps per second.
-
-        @param newval : a floating point number corresponding to the maximal motor speed for
-        micro-stepping, measured in steps per second
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = str(int(round(newval * 65536.0, 1)))
-        return self._setAttr("ustepMaxSpeed", rest_val)
-
-    def get_ustepMaxSpeed(self):
-        """
-        Returns the maximal motor speed for micro-stepping, measured in steps per second.
-
-        @return a floating point number corresponding to the maximal motor speed for micro-stepping,
-        measured in steps per second
-
-        On failure, throws an exception or returns YStepperMotor.USTEPMAXSPEED_INVALID.
-        """
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YStepperMotor.USTEPMAXSPEED_INVALID
-        return self._ustepMaxSpeed
-
     def get_overcurrent(self):
         """
         Returns the overcurrent alert and emergency stop threshold, measured in mA.
@@ -453,6 +430,43 @@ class YStepperMotor(YFunction):
         rest_val = newval
         return self._setAttr("alertMode", rest_val)
 
+    def get_auxMode(self):
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YStepperMotor.AUXMODE_INVALID
+        return self._auxMode
+
+    def set_auxMode(self, newval):
+        rest_val = newval
+        return self._setAttr("auxMode", rest_val)
+
+    def get_auxSignal(self):
+        """
+        Returns the current value of the signal generated on the auxiliary output.
+
+        @return an integer corresponding to the current value of the signal generated on the auxiliary output
+
+        On failure, throws an exception or returns YStepperMotor.AUXSIGNAL_INVALID.
+        """
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YStepperMotor.AUXSIGNAL_INVALID
+        return self._auxSignal
+
+    def set_auxSignal(self, newval):
+        """
+        Changes the value of the signal generated on the auxiliary output.
+        Acceptable values depend on the auxiliary output signal type configured.
+
+        @param newval : an integer corresponding to the value of the signal generated on the auxiliary output
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("auxSignal", rest_val)
+
     def get_command(self):
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
@@ -503,7 +517,7 @@ class YStepperMotor(YFunction):
         """
         Reinitialize the controller and clear all alert flags.
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("Z")
@@ -514,10 +528,10 @@ class YStepperMotor(YFunction):
 
         @param speed : desired speed, in steps per second.
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("H")
+        return self.sendCommand("H" + str(int(round(1000*speed))))
 
     def changeSpeed(self, speed):
         """
@@ -527,7 +541,7 @@ class YStepperMotor(YFunction):
         @param speed : desired speed, in steps per second. The minimal non-zero speed
                 is 0.001 pulse per second.
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("R" + str(int(round(1000*speed))))
@@ -540,30 +554,40 @@ class YStepperMotor(YFunction):
 
         @param absPos : absolute position, measured in steps from the origin.
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("M" + str(int(round(16*absPos))))
 
     def moveRel(self, relPos):
         """
-        Starts the motor to reach a given absolute position. The time needed to reach the requested
+        Starts the motor to reach a given relative position. The time needed to reach the requested
         position will depend on the acceleration and max speed parameters configured for
         the motor.
 
         @param relPos : relative position, measured in steps from the current position.
 
-        @return YAPI_SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("m" + str(int(round(16*relPos))))
+
+    def pause(self, waitMs):
+        """
+        Keep the motor in the same state for the specified amount of time, before processing next command.
+
+        @param waitMs : wait time, specified in milliseconds.
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("_" + str(int(waitMs)))
 
     def emergencyStop(self):
         """
         Stops the motor with an emergency alert, without taking any additional precaution.
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("!")
@@ -574,7 +598,7 @@ class YStepperMotor(YFunction):
         The move occures even if the system is still in alert mode (end switch depressed). Caution.
         use this function with great care as it may cause mechanical damages !
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand(".")
@@ -583,7 +607,7 @@ class YStepperMotor(YFunction):
         """
         Stops the motor smoothly as soon as possible, without waiting for ongoing move completion.
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("B")
@@ -592,7 +616,7 @@ class YStepperMotor(YFunction):
         """
         Turn the controller into Hi-Z mode immediately, without waiting for ongoing move completion.
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("z")

@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_voltage.py 23243 2016-02-23 14:13:12Z seb $
+#* $Id: yocto_voltage.py 26183 2016-12-15 00:14:02Z mvuilleu $
 #*
 #* Implements yFindVoltage(), the high-level API for Voltage functions
 #*
@@ -57,6 +57,9 @@ class YVoltage(YSensor):
     #--- (YVoltage dlldef)
     #--- (end of YVoltage dlldef)
     #--- (YVoltage definitions)
+    ENABLED_FALSE = 0
+    ENABLED_TRUE = 1
+    ENABLED_INVALID = -1
     #--- (end of YVoltage definitions)
 
     def __init__(self, func):
@@ -64,11 +67,25 @@ class YVoltage(YSensor):
         self._className = 'Voltage'
         #--- (YVoltage attributes)
         self._callback = None
+        self._enabled = YVoltage.ENABLED_INVALID
         #--- (end of YVoltage attributes)
 
     #--- (YVoltage implementation)
     def _parseAttr(self, member):
+        if member.name == "enabled":
+            self._enabled = member.ivalue
+            return 1
         super(YVoltage, self)._parseAttr(member)
+
+    def get_enabled(self):
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YVoltage.ENABLED_INVALID
+        return self._enabled
+
+    def set_enabled(self, newval):
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("enabled", rest_val)
 
     @staticmethod
     def FindVoltage(func):

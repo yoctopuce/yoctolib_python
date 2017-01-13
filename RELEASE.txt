@@ -1,2 +1,2 @@
-- Fix timestamps of YMeasures that was not rounded to 1/1000s
-- Fix occasional slow USB transmission on Linux (particularly Raspberry PI)
+- Add loadAttribute method
+- Add Yocto-Proximity example

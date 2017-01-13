@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: pic24config.php 25964 2016-11-21 15:30:59Z mvuilleu $
+#* $Id: pic24config.php 26169 2016-12-12 01:36:34Z mvuilleu $
 #*
 #* Implements yFindProximity(), the high-level API for Proximity functions
 #*
@@ -154,12 +154,12 @@ class YProximity(YSensor):
 
     def get_lastTimeApproached(self):
         """
-        Returns the number of elapsed milliseconds between the module power on and the last time
-        the input button was pressed (the input contact transitioned from absent to present).
+        Returns the number of elapsed milliseconds between the module power on and the last observed
+        detection (the input contact transitioned from absent to present).
 
         @return an integer corresponding to the number of elapsed milliseconds between the module power on
-        and the last time
-                the input button was pressed (the input contact transitioned from absent to present)
+        and the last observed
+                detection (the input contact transitioned from absent to present)
 
         On failure, throws an exception or returns YProximity.LASTTIMEAPPROACHED_INVALID.
         """
@@ -170,12 +170,12 @@ class YProximity(YSensor):
 
     def get_lastTimeRemoved(self):
         """
-        Returns the number of elapsed milliseconds between the module power on and the last time
-        the input button was released (the input contact transitioned from present to absent).
+        Returns the number of elapsed milliseconds between the module power on and the last observed
+        detection (the input contact transitioned from present to absent).
 
         @return an integer corresponding to the number of elapsed milliseconds between the module power on
-        and the last time
-                the input button was released (the input contact transitioned from present to absent)
+        and the last observed
+                detection (the input contact transitioned from present to absent)
 
         On failure, throws an exception or returns YProximity.LASTTIMEREMOVED_INVALID.
         """

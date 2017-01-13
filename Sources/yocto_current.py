@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_current.py 23243 2016-02-23 14:13:12Z seb $
+#* $Id: yocto_current.py 26183 2016-12-15 00:14:02Z mvuilleu $
 #*
 #* Implements yFindCurrent(), the high-level API for Current functions
 #*
@@ -57,6 +57,9 @@ class YCurrent(YSensor):
     #--- (YCurrent dlldef)
     #--- (end of YCurrent dlldef)
     #--- (YCurrent definitions)
+    ENABLED_FALSE = 0
+    ENABLED_TRUE = 1
+    ENABLED_INVALID = -1
     #--- (end of YCurrent definitions)
 
     def __init__(self, func):
@@ -64,11 +67,25 @@ class YCurrent(YSensor):
         self._className = 'Current'
         #--- (YCurrent attributes)
         self._callback = None
+        self._enabled = YCurrent.ENABLED_INVALID
         #--- (end of YCurrent attributes)
 
     #--- (YCurrent implementation)
     def _parseAttr(self, member):
+        if member.name == "enabled":
+            self._enabled = member.ivalue
+            return 1
         super(YCurrent, self)._parseAttr(member)
+
+    def get_enabled(self):
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YCurrent.ENABLED_INVALID
+        return self._enabled
+
+    def set_enabled(self, newval):
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("enabled", rest_val)
 
     @staticmethod
     def FindCurrent(func):
