@@ -1,2 +1,1 @@
-- Add loadAttribute method
-- Add Yocto-Proximity example
+- Add UTF-8 encoding tag in all source files

@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_poweroutput.py 23243 2016-02-23 14:13:12Z seb $
+#* $Id: yocto_poweroutput.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindPowerOutput(), the high-level API for PowerOutput functions
 #*

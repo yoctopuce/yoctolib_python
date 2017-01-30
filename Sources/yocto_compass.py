@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_compass.py 24934 2016-06-30 22:32:01Z mvuilleu $
+#* $Id: yocto_compass.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindCompass(), the high-level API for Compass functions
 #*

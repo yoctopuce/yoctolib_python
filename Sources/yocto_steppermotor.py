@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_steppermotor.py 26253 2017-01-03 17:41:07Z seb $
+#* $Id: yocto_steppermotor.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #*

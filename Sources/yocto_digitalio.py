@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_digitalio.py 25871 2016-11-15 14:32:56Z seb $
+#* $Id: yocto_digitalio.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #*

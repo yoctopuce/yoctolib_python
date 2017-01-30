@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 25275 2016-08-24 13:42:24Z mvuilleu $
+#* $Id: yocto_refframe.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
 #* $Id: pic24config.php 26169 2016-12-12 01:36:34Z mvuilleu $
@@ -47,7 +48,7 @@ from yocto_api import *
 class YProximity(YSensor):
     """
     The Yoctopuce class YProximity allows you to use and configure Yoctopuce proximity
-    sensors. It inherits from YSensor class the core functions to read measurements,
+    sensors. It inherits from the YSensor class the core functions to read measurements,
     register callback functions, access to the autonomous datalogger.
     This class adds the ability to easily perform a one-point linear calibration
     to compensate the effect of a glass or filter placed in front of the sensor.
@@ -205,9 +206,9 @@ class YProximity(YSensor):
 
     def get_pulseTimer(self):
         """
-        Returns the timer of the pulses counter (ms).
+        Returns the timer of the pulse counter (ms).
 
-        @return an integer corresponding to the timer of the pulses counter (ms)
+        @return an integer corresponding to the timer of the pulse counter (ms)
 
         On failure, throws an exception or returns YProximity.PULSETIMER_INVALID.
         """
@@ -250,7 +251,7 @@ class YProximity(YSensor):
 
     def resetCounter(self):
         """
-        Returns the pulse counter value as well as its timer.
+        Resets the pulse counter value as well as its timer.
 
         @return YAPI.SUCCESS if the call succeeds.
 

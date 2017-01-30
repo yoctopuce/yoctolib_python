@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_multiaxiscontroller.py 26303 2017-01-10 13:52:43Z mvuilleu $
+#* $Id: yocto_multiaxiscontroller.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
 #*

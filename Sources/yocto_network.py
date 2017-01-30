@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 23930 2016-04-15 09:31:14Z seb $
+#* $Id: yocto_network.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*

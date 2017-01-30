@@ -1,35 +1,36 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 25275 2016-08-24 13:42:24Z mvuilleu $
+#* $Id: yocto_display.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
-#* - - - - - - - - - License information: - - - - - - - - - 
+#* - - - - - - - - - License information: - - - - - - - - -
 #*
 #*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
 #*  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
 #*  non-exclusive license to use, modify, copy and integrate this
-#*  file into your software for the sole purpose of interfacing 
-#*  with Yoctopuce products. 
+#*  file into your software for the sole purpose of interfacing
+#*  with Yoctopuce products.
 #*
-#*  You may reproduce and distribute copies of this file in 
+#*  You may reproduce and distribute copies of this file in
 #*  source or object form, as long as the sole purpose of this
-#*  code is to interface with Yoctopuce products. You must retain 
+#*  code is to interface with Yoctopuce products. You must retain
 #*  this notice in the distributed source file.
 #*
 #*  You should refer to Yoctopuce General Terms and Conditions
-#*  for additional information regarding your rights and 
+#*  for additional information regarding your rights and
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
-#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
-#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
-#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
-#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
 #*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
 #*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
 #*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -280,13 +281,13 @@ class YDisplayLayer(object):
         @param x : the distance from left of layer to the text anchor point, in pixels
         @param y : the distance from top of layer to the text anchor point, in pixels
         @param anchor : the text anchor point, chosen among the YDisplayLayer.ALIGN enumeration:
-                YDisplayLayer.ALIGN.TOP_LEFT,    YDisplayLayer.ALIGN.CENTER_LEFT,   
+                YDisplayLayer.ALIGN.TOP_LEFT,    YDisplayLayer.ALIGN.CENTER_LEFT,
                 YDisplayLayer.ALIGN.BASELINE_LEFT,    YDisplayLayer.ALIGN.BOTTOM_LEFT,
-                YDisplayLayer.ALIGN.TOP_CENTER,  YDisplayLayer.ALIGN.CENTER,        
+                YDisplayLayer.ALIGN.TOP_CENTER,  YDisplayLayer.ALIGN.CENTER,
                 YDisplayLayer.ALIGN.BASELINE_CENTER,  YDisplayLayer.ALIGN.BOTTOM_CENTER,
                 YDisplayLayer.ALIGN.TOP_DECIMAL, YDisplayLayer.ALIGN.CENTER_DECIMAL,
                 YDisplayLayer.ALIGN.BASELINE_DECIMAL, YDisplayLayer.ALIGN.BOTTOM_DECIMAL,
-                YDisplayLayer.ALIGN.TOP_RIGHT,   YDisplayLayer.ALIGN.CENTER_RIGHT,  
+                YDisplayLayer.ALIGN.TOP_RIGHT,   YDisplayLayer.ALIGN.CENTER_RIGHT,
                 YDisplayLayer.ALIGN.BASELINE_RIGHT,   YDisplayLayer.ALIGN.BOTTOM_RIGHT.
         @param text : the text string to draw
 

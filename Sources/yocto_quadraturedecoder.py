@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_quadraturedecoder.py 23243 2016-02-23 14:13:12Z seb $
+#* $Id: yocto_quadraturedecoder.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
 #*

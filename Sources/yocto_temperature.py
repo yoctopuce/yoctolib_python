@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 23527 2016-03-18 21:49:19Z mvuilleu $
+#* $Id: yocto_temperature.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*

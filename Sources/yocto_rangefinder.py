@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_rangefinder.py 26329 2017-01-11 14:04:39Z mvuilleu $
+#* $Id: yocto_rangefinder.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindRangeFinder(), the high-level API for RangeFinder functions
 #*

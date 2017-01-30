@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_led.py 24475 2016-05-12 14:03:35Z mvuilleu $
+#* $Id: yocto_led.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindLed(), the high-level API for Led functions
 #*

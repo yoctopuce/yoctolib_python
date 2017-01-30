@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 26329 2017-01-11 14:04:39Z mvuilleu $
+# * $Id: yocto_api.py 26473 2017-01-25 14:27:17Z seb $
 # *
 #* High-level programming interface, common to all modules
 #*
@@ -36,7 +37,6 @@
 #*  WARRANTY, OR OTHERWISE.
 #*
 #*********************************************************************/
-
 from __future__ import division
 
 __docformat__ = 'restructuredtext en'
@@ -545,7 +545,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "26380"
+    YOCTO_API_BUILD_NO = "26490"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1

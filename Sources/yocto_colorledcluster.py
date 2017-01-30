@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 24939 2016-07-01 08:45:11Z seb $
+#* $Id: yocto_colorledcluster.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*

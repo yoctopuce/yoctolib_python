@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_current.py 26183 2016-12-15 00:14:02Z mvuilleu $
+#* $Id: yocto_current.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindCurrent(), the high-level API for Current functions
 #*

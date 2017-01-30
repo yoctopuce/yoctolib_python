@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_anbutton.py 24849 2016-06-17 15:21:23Z seb $
+#* $Id: yocto_anbutton.py 26473 2017-01-25 14:27:17Z seb $
 #*
 #* Implements yFindAnButton(), the high-level API for AnButton functions
 #*
