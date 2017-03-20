@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 25609 2016-10-19 12:37:17Z seb $
+#* $Id: yocto_cellular.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -226,10 +226,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.LINKQUALITY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.LINKQUALITY_INVALID
-        return self._linkQuality
+        res = self._linkQuality
+        return res
 
     def get_cellOperator(self):
         """
@@ -239,10 +241,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.CELLOPERATOR_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.CELLOPERATOR_INVALID
-        return self._cellOperator
+        res = self._cellOperator
+        return res
 
     def get_cellIdentifier(self):
         """
@@ -253,10 +257,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.CELLIDENTIFIER_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.CELLIDENTIFIER_INVALID
-        return self._cellIdentifier
+        res = self._cellIdentifier
+        return res
 
     def get_cellType(self):
         """
@@ -267,10 +273,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.CELLTYPE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.CELLTYPE_INVALID
-        return self._cellType
+        res = self._cellType
+        return res
 
     def get_imsi(self):
         """
@@ -284,10 +292,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.IMSI_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.IMSI_INVALID
-        return self._imsi
+        res = self._imsi
+        return res
 
     def get_message(self):
         """
@@ -297,10 +307,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.MESSAGE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.MESSAGE_INVALID
-        return self._message
+        res = self._message
+        return res
 
     def get_pin(self):
         """
@@ -314,10 +326,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.PIN_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.PIN_INVALID
-        return self._pin
+        res = self._pin
+        return res
 
     def set_pin(self, newval):
         """
@@ -354,10 +368,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.LOCKEDOPERATOR_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.LOCKEDOPERATOR_INVALID
-        return self._lockedOperator
+        res = self._lockedOperator
+        return res
 
     def set_lockedOperator(self, newval):
         """
@@ -383,10 +399,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.AIRPLANEMODE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.AIRPLANEMODE_INVALID
-        return self._airplaneMode
+        res = self._airplaneMode
+        return res
 
     def set_airplaneMode(self, newval):
         """
@@ -413,10 +431,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.ENABLEDATA_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.ENABLEDATA_INVALID
-        return self._enableData
+        res = self._enableData
+        return res
 
     def set_enableData(self, newval):
         """
@@ -447,10 +467,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.APN_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.APN_INVALID
-        return self._apn
+        res = self._apn
+        return res
 
     def set_apn(self, newval):
         """
@@ -477,10 +499,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.APNSECRET_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.APNSECRET_INVALID
-        return self._apnSecret
+        res = self._apnSecret
+        return res
 
     def set_apnSecret(self, newval):
         rest_val = newval
@@ -494,10 +518,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.PINGINTERVAL_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.PINGINTERVAL_INVALID
-        return self._pingInterval
+        res = self._pingInterval
+        return res
 
     def set_pingInterval(self, newval):
         """
@@ -520,10 +546,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.DATASENT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.DATASENT_INVALID
-        return self._dataSent
+        res = self._dataSent
+        return res
 
     def set_dataSent(self, newval):
         """
@@ -546,10 +574,12 @@ class YCellular(YFunction):
 
         On failure, throws an exception or returns YCellular.DATARECEIVED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.DATARECEIVED_INVALID
-        return self._dataReceived
+        res = self._dataReceived
+        return res
 
     def set_dataReceived(self, newval):
         """
@@ -565,10 +595,12 @@ class YCellular(YFunction):
         return self._setAttr("dataReceived", rest_val)
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCellular.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval

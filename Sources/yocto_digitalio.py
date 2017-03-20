@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_digitalio.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_digitalio.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #*
@@ -118,10 +118,12 @@ class YDigitalIO(YFunction):
 
         On failure, throws an exception or returns YDigitalIO.PORTSTATE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.PORTSTATE_INVALID
-        return self._portState
+        res = self._portState
+        return res
 
     def set_portState(self, newval):
         """
@@ -146,10 +148,12 @@ class YDigitalIO(YFunction):
 
         On failure, throws an exception or returns YDigitalIO.PORTDIRECTION_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.PORTDIRECTION_INVALID
-        return self._portDirection
+        res = self._portDirection
+        return res
 
     def set_portDirection(self, newval):
         """
@@ -176,10 +180,12 @@ class YDigitalIO(YFunction):
 
         On failure, throws an exception or returns YDigitalIO.PORTOPENDRAIN_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.PORTOPENDRAIN_INVALID
-        return self._portOpenDrain
+        res = self._portOpenDrain
+        return res
 
     def set_portOpenDrain(self, newval):
         """
@@ -205,10 +211,12 @@ class YDigitalIO(YFunction):
 
         On failure, throws an exception or returns YDigitalIO.PORTPOLARITY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.PORTPOLARITY_INVALID
-        return self._portPolarity
+        res = self._portPolarity
+        return res
 
     def set_portPolarity(self, newval):
         """
@@ -235,10 +243,12 @@ class YDigitalIO(YFunction):
 
         On failure, throws an exception or returns YDigitalIO.PORTSIZE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.PORTSIZE_INVALID
-        return self._portSize
+        res = self._portSize
+        return res
 
     def get_outputVoltage(self):
         """
@@ -249,10 +259,12 @@ class YDigitalIO(YFunction):
 
         On failure, throws an exception or returns YDigitalIO.OUTPUTVOLTAGE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.OUTPUTVOLTAGE_INVALID
-        return self._outputVoltage
+        res = self._outputVoltage
+        return res
 
     def set_outputVoltage(self, newval):
         """
@@ -270,10 +282,12 @@ class YDigitalIO(YFunction):
         return self._setAttr("outputVoltage", rest_val)
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDigitalIO.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval

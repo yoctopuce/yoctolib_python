@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_quadraturedecoder.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_quadraturedecoder.py 26826 2017-03-17 11:20:57Z mvuilleu $
 #*
 #* Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
 #*
@@ -49,7 +49,7 @@ class YQuadratureDecoder(YSensor):
     """
     The class YQuadratureDecoder allows you to decode a two-wire signal produced by a
     quadrature encoder. It inherits from YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    to register callback functions, to access the autonomous datalogger.
 
     """
 #--- (end of YQuadratureDecoder class start)
@@ -105,10 +105,12 @@ class YQuadratureDecoder(YSensor):
 
         On failure, throws an exception or returns YQuadratureDecoder.SPEED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YQuadratureDecoder.SPEED_INVALID
-        return self._speed
+        res = self._speed
+        return res
 
     def get_decoding(self):
         """
@@ -119,10 +121,12 @@ class YQuadratureDecoder(YSensor):
 
         On failure, throws an exception or returns YQuadratureDecoder.DECODING_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YQuadratureDecoder.DECODING_INVALID
-        return self._decoding
+        res = self._decoding
+        return res
 
     def set_decoding(self, newval):
         """

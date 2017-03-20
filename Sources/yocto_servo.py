@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_servo.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_servo.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindServo(), the high-level API for Servo functions
 #*
@@ -128,10 +128,12 @@ class YServo(YFunction):
 
         On failure, throws an exception or returns YServo.POSITION_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YServo.POSITION_INVALID
-        return self._position
+        res = self._position
+        return res
 
     def set_position(self, newval):
         """
@@ -154,10 +156,12 @@ class YServo(YFunction):
 
         On failure, throws an exception or returns YServo.ENABLED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YServo.ENABLED_INVALID
-        return self._enabled
+        res = self._enabled
+        return res
 
     def set_enabled(self, newval):
         """
@@ -180,10 +184,12 @@ class YServo(YFunction):
 
         On failure, throws an exception or returns YServo.RANGE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YServo.RANGE_INVALID
-        return self._range
+        res = self._range
+        return res
 
     def set_range(self, newval):
         """
@@ -212,10 +218,12 @@ class YServo(YFunction):
 
         On failure, throws an exception or returns YServo.NEUTRAL_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YServo.NEUTRAL_INVALID
-        return self._neutral
+        res = self._neutral
+        return res
 
     def set_neutral(self, newval):
         """
@@ -237,10 +245,12 @@ class YServo(YFunction):
         return self._setAttr("neutral", rest_val)
 
     def get_move(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YServo.MOVE_INVALID
-        return self._move
+        res = self._move
+        return res
 
     def set_move(self, newval):
         rest_val = str(newval.target) + ":" + str(newval.ms)
@@ -268,10 +278,12 @@ class YServo(YFunction):
 
         On failure, throws an exception or returns YServo.POSITIONATPOWERON_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YServo.POSITIONATPOWERON_INVALID
-        return self._positionAtPowerOn
+        res = self._positionAtPowerOn
+        return res
 
     def set_positionAtPowerOn(self, newval):
         """
@@ -296,10 +308,12 @@ class YServo(YFunction):
 
         On failure, throws an exception or returns YServo.ENABLEDATPOWERON_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YServo.ENABLEDATPOWERON_INVALID
-        return self._enabledAtPowerOn
+        res = self._enabledAtPowerOn
+        return res
 
     def set_enabledAtPowerOn(self, newval):
         """

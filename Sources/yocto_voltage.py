@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_voltage.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_voltage.py 26826 2017-03-17 11:20:57Z mvuilleu $
 #*
 #* Implements yFindVoltage(), the high-level API for Voltage functions
 #*
@@ -49,7 +49,7 @@ class YVoltage(YSensor):
     """
     The Yoctopuce class YVoltage allows you to read and configure Yoctopuce voltage
     sensors. It inherits from YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    to register callback functions, to access the autonomous datalogger.
 
     """
 #--- (end of YVoltage class start)
@@ -79,10 +79,12 @@ class YVoltage(YSensor):
         super(YVoltage, self)._parseAttr(member)
 
     def get_enabled(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YVoltage.ENABLED_INVALID
-        return self._enabled
+        res = self._enabled
+        return res
 
     def set_enabled(self, newval):
         rest_val = "1" if newval > 0 else "0"

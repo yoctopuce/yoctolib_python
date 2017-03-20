@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_wireless.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_wireless.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindWireless(), the high-level API for Wireless functions
 #*
@@ -156,10 +156,12 @@ class YWireless(YFunction):
 
         On failure, throws an exception or returns YWireless.LINKQUALITY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.LINKQUALITY_INVALID
-        return self._linkQuality
+        res = self._linkQuality
+        return res
 
     def get_ssid(self):
         """
@@ -169,10 +171,12 @@ class YWireless(YFunction):
 
         On failure, throws an exception or returns YWireless.SSID_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.SSID_INVALID
-        return self._ssid
+        res = self._ssid
+        return res
 
     def get_channel(self):
         """
@@ -183,10 +187,12 @@ class YWireless(YFunction):
 
         On failure, throws an exception or returns YWireless.CHANNEL_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.CHANNEL_INVALID
-        return self._channel
+        res = self._channel
+        return res
 
     def get_security(self):
         """
@@ -198,10 +204,12 @@ class YWireless(YFunction):
 
         On failure, throws an exception or returns YWireless.SECURITY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.SECURITY_INVALID
-        return self._security
+        res = self._security
+        return res
 
     def get_message(self):
         """
@@ -211,16 +219,20 @@ class YWireless(YFunction):
 
         On failure, throws an exception or returns YWireless.MESSAGE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.MESSAGE_INVALID
-        return self._message
+        res = self._message
+        return res
 
     def get_wlanConfig(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWireless.WLANCONFIG_INVALID
-        return self._wlanConfig
+        res = self._wlanConfig
+        return res
 
     def set_wlanConfig(self, newval):
         rest_val = newval

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_temperature.py 26826 2017-03-17 11:20:57Z mvuilleu $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -48,8 +48,8 @@ from yocto_api import *
 class YTemperature(YSensor):
     """
     The Yoctopuce class YTemperature allows you to read and configure Yoctopuce temperature
-    sensors. It inherits from YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    sensors. It inherits from YSensor class the core functions to read measurements, to
+    register callback functions, to access the autonomous datalogger.
     This class adds the ability to configure some specific parameters for some
     sensors (connection type, temperature mapping table).
 
@@ -142,10 +142,12 @@ class YTemperature(YSensor):
 
         On failure, throws an exception or returns YTemperature.SENSORTYPE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YTemperature.SENSORTYPE_INVALID
-        return self._sensorType
+        res = self._sensorType
+        return res
 
     def set_sensorType(self, newval):
         """
@@ -178,10 +180,12 @@ class YTemperature(YSensor):
 
         On failure, throws an exception or returns YTemperature.SIGNALVALUE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YTemperature.SIGNALVALUE_INVALID
-        return round(self._signalValue * 1000) / 1000
+        res = round(self._signalValue * 1000) / 1000
+        return res
 
     def get_signalUnit(self):
         """
@@ -191,16 +195,20 @@ class YTemperature(YSensor):
 
         On failure, throws an exception or returns YTemperature.SIGNALUNIT_INVALID.
         """
+        # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YTemperature.SIGNALUNIT_INVALID
-        return self._signalUnit
+        res = self._signalUnit
+        return res
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YTemperature.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval
@@ -240,7 +248,7 @@ class YTemperature(YSensor):
 
     def set_ntcParameters(self, res25, beta):
         """
-        Configure NTC thermistor parameters in order to properly compute the temperature from
+        Configures NTC thermistor parameters in order to properly compute the temperature from
         the measured resistance. For increased precision, you can enter a complete mapping
         table using set_thermistorResponseTable. This function can only be used with a
         temperature sensor based on thermistors.

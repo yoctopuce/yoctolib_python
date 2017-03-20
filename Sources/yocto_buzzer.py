@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_buzzer.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_buzzer.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindBuzzer(), the high-level API for Buzzer functions
 #*
@@ -122,10 +122,12 @@ class YBuzzer(YFunction):
 
         On failure, throws an exception or returns YBuzzer.FREQUENCY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YBuzzer.FREQUENCY_INVALID
-        return self._frequency
+        res = self._frequency
+        return res
 
     def get_volume(self):
         """
@@ -135,10 +137,12 @@ class YBuzzer(YFunction):
 
         On failure, throws an exception or returns YBuzzer.VOLUME_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YBuzzer.VOLUME_INVALID
-        return self._volume
+        res = self._volume
+        return res
 
     def set_volume(self, newval):
         """
@@ -161,10 +165,12 @@ class YBuzzer(YFunction):
 
         On failure, throws an exception or returns YBuzzer.PLAYSEQSIZE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YBuzzer.PLAYSEQSIZE_INVALID
-        return self._playSeqSize
+        res = self._playSeqSize
+        return res
 
     def get_playSeqMaxSize(self):
         """
@@ -174,10 +180,12 @@ class YBuzzer(YFunction):
 
         On failure, throws an exception or returns YBuzzer.PLAYSEQMAXSIZE_INVALID.
         """
+        # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YBuzzer.PLAYSEQMAXSIZE_INVALID
-        return self._playSeqMaxSize
+        res = self._playSeqMaxSize
+        return res
 
     def get_playSeqSignature(self):
         """
@@ -190,16 +198,20 @@ class YBuzzer(YFunction):
 
         On failure, throws an exception or returns YBuzzer.PLAYSEQSIGNATURE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YBuzzer.PLAYSEQSIGNATURE_INVALID
-        return self._playSeqSignature
+        res = self._playSeqSignature
+        return res
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YBuzzer.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_accelerometer.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_accelerometer.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindAccelerometer(), the high-level API for Accelerometer functions
 #*
@@ -112,10 +112,12 @@ class YAccelerometer(YSensor):
 
         On failure, throws an exception or returns YAccelerometer.BANDWIDTH_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAccelerometer.BANDWIDTH_INVALID
-        return self._bandwidth
+        res = self._bandwidth
+        return res
 
     def set_bandwidth(self, newval):
         """
@@ -139,10 +141,12 @@ class YAccelerometer(YSensor):
 
         On failure, throws an exception or returns YAccelerometer.XVALUE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAccelerometer.XVALUE_INVALID
-        return self._xValue
+        res = self._xValue
+        return res
 
     def get_yValue(self):
         """
@@ -152,10 +156,12 @@ class YAccelerometer(YSensor):
 
         On failure, throws an exception or returns YAccelerometer.YVALUE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAccelerometer.YVALUE_INVALID
-        return self._yValue
+        res = self._yValue
+        return res
 
     def get_zValue(self):
         """
@@ -165,16 +171,20 @@ class YAccelerometer(YSensor):
 
         On failure, throws an exception or returns YAccelerometer.ZVALUE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAccelerometer.ZVALUE_INVALID
-        return self._zValue
+        res = self._zValue
+        return res
 
     def get_gravityCancellation(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAccelerometer.GRAVITYCANCELLATION_INVALID
-        return self._gravityCancellation
+        res = self._gravityCancellation
+        return res
 
     def set_gravityCancellation(self, newval):
         rest_val = "1" if newval > 0 else "0"

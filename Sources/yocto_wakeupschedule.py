@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupschedule.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_wakeupschedule.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #*
@@ -114,10 +114,12 @@ class YWakeUpSchedule(YFunction):
 
         On failure, throws an exception or returns YWakeUpSchedule.MINUTESA_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.MINUTESA_INVALID
-        return self._minutesA
+        res = self._minutesA
+        return res
 
     def set_minutesA(self, newval):
         """
@@ -140,10 +142,12 @@ class YWakeUpSchedule(YFunction):
 
         On failure, throws an exception or returns YWakeUpSchedule.MINUTESB_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.MINUTESB_INVALID
-        return self._minutesB
+        res = self._minutesB
+        return res
 
     def set_minutesB(self, newval):
         """
@@ -166,10 +170,12 @@ class YWakeUpSchedule(YFunction):
 
         On failure, throws an exception or returns YWakeUpSchedule.HOURS_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.HOURS_INVALID
-        return self._hours
+        res = self._hours
+        return res
 
     def set_hours(self, newval):
         """
@@ -192,10 +198,12 @@ class YWakeUpSchedule(YFunction):
 
         On failure, throws an exception or returns YWakeUpSchedule.WEEKDAYS_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.WEEKDAYS_INVALID
-        return self._weekDays
+        res = self._weekDays
+        return res
 
     def set_weekDays(self, newval):
         """
@@ -218,10 +226,12 @@ class YWakeUpSchedule(YFunction):
 
         On failure, throws an exception or returns YWakeUpSchedule.MONTHDAYS_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.MONTHDAYS_INVALID
-        return self._monthDays
+        res = self._monthDays
+        return res
 
     def set_monthDays(self, newval):
         """
@@ -244,10 +254,12 @@ class YWakeUpSchedule(YFunction):
 
         On failure, throws an exception or returns YWakeUpSchedule.MONTHS_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.MONTHS_INVALID
-        return self._months
+        res = self._months
+        return res
 
     def set_months(self, newval):
         """
@@ -270,10 +282,12 @@ class YWakeUpSchedule(YFunction):
 
         On failure, throws an exception or returns YWakeUpSchedule.NEXTOCCURENCE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpSchedule.NEXTOCCURENCE_INVALID
-        return self._nextOccurence
+        res = self._nextOccurence
+        return res
 
     @staticmethod
     def FindWakeUpSchedule(func):

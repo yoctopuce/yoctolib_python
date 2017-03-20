@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupmonitor.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_wakeupmonitor.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
 #*
@@ -117,10 +117,12 @@ class YWakeUpMonitor(YFunction):
 
         On failure, throws an exception or returns YWakeUpMonitor.POWERDURATION_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.POWERDURATION_INVALID
-        return self._powerDuration
+        res = self._powerDuration
+        return res
 
     def set_powerDuration(self, newval):
         """
@@ -144,10 +146,12 @@ class YWakeUpMonitor(YFunction):
 
         On failure, throws an exception or returns YWakeUpMonitor.SLEEPCOUNTDOWN_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.SLEEPCOUNTDOWN_INVALID
-        return self._sleepCountdown
+        res = self._sleepCountdown
+        return res
 
     def set_sleepCountdown(self, newval):
         """
@@ -170,10 +174,12 @@ class YWakeUpMonitor(YFunction):
 
         On failure, throws an exception or returns YWakeUpMonitor.NEXTWAKEUP_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.NEXTWAKEUP_INVALID
-        return self._nextWakeUp
+        res = self._nextWakeUp
+        return res
 
     def set_nextWakeUp(self, newval):
         """
@@ -199,10 +205,12 @@ class YWakeUpMonitor(YFunction):
 
         On failure, throws an exception or returns YWakeUpMonitor.WAKEUPREASON_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.WAKEUPREASON_INVALID
-        return self._wakeUpReason
+        res = self._wakeUpReason
+        return res
 
     def get_wakeUpState(self):
         """
@@ -213,20 +221,24 @@ class YWakeUpMonitor(YFunction):
 
         On failure, throws an exception or returns YWakeUpMonitor.WAKEUPSTATE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.WAKEUPSTATE_INVALID
-        return self._wakeUpState
+        res = self._wakeUpState
+        return res
 
     def set_wakeUpState(self, newval):
         rest_val = str(newval)
         return self._setAttr("wakeUpState", rest_val)
 
     def get_rtcTime(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWakeUpMonitor.RTCTIME_INVALID
-        return self._rtcTime
+        res = self._rtcTime
+        return res
 
     @staticmethod
     def FindWakeUpMonitor(func):

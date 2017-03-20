@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_files.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -128,10 +128,12 @@ class YFiles(YFunction):
 
         On failure, throws an exception or returns YFiles.FILESCOUNT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YFiles.FILESCOUNT_INVALID
-        return self._filesCount
+        res = self._filesCount
+        return res
 
     def get_freeSpace(self):
         """
@@ -141,10 +143,12 @@ class YFiles(YFunction):
 
         On failure, throws an exception or returns YFiles.FREESPACE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YFiles.FREESPACE_INVALID
-        return self._freeSpace
+        res = self._freeSpace
+        return res
 
     @staticmethod
     def FindFiles(func):

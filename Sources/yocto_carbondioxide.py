@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_carbondioxide.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_carbondioxide.py 26826 2017-03-17 11:20:57Z mvuilleu $
 #*
 #* Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
 #*
@@ -49,7 +49,7 @@ class YCarbonDioxide(YSensor):
     """
     The Yoctopuce class YCarbonDioxide allows you to read and configure Yoctopuce CO2
     sensors. It inherits from YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    to register callback functions,  to access the autonomous datalogger.
     This class adds the ability to perform manual calibration if reuired.
 
     """
@@ -91,10 +91,12 @@ class YCarbonDioxide(YSensor):
 
         On failure, throws an exception or returns YCarbonDioxide.ABCPERIOD_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCarbonDioxide.ABCPERIOD_INVALID
-        return self._abcPeriod
+        res = self._abcPeriod
+        return res
 
     def set_abcPeriod(self, newval):
         """
@@ -114,10 +116,12 @@ class YCarbonDioxide(YSensor):
         return self._setAttr("abcPeriod", rest_val)
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCarbonDioxide.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval

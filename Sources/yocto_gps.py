@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gps.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_gps.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindGps(), the high-level API for Gps functions
 #*
@@ -152,10 +152,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.ISFIXED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.ISFIXED_INVALID
-        return self._isFixed
+        res = self._isFixed
+        return res
 
     def get_satCount(self):
         """
@@ -165,10 +167,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.SATCOUNT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.SATCOUNT_INVALID
-        return self._satCount
+        res = self._satCount
+        return res
 
     def get_coordSystem(self):
         """
@@ -179,10 +183,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.COORDSYSTEM_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.COORDSYSTEM_INVALID
-        return self._coordSystem
+        res = self._coordSystem
+        return res
 
     def set_coordSystem(self, newval):
         """
@@ -206,10 +212,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.LATITUDE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.LATITUDE_INVALID
-        return self._latitude
+        res = self._latitude
+        return res
 
     def get_longitude(self):
         """
@@ -219,10 +227,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.LONGITUDE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.LONGITUDE_INVALID
-        return self._longitude
+        res = self._longitude
+        return res
 
     def get_dilution(self):
         """
@@ -234,10 +244,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.DILUTION_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.DILUTION_INVALID
-        return self._dilution
+        res = self._dilution
+        return res
 
     def get_altitude(self):
         """
@@ -248,10 +260,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.ALTITUDE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.ALTITUDE_INVALID
-        return self._altitude
+        res = self._altitude
+        return res
 
     def get_groundSpeed(self):
         """
@@ -261,10 +275,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.GROUNDSPEED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.GROUNDSPEED_INVALID
-        return self._groundSpeed
+        res = self._groundSpeed
+        return res
 
     def get_direction(self):
         """
@@ -276,10 +292,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.DIRECTION_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.DIRECTION_INVALID
-        return self._direction
+        res = self._direction
+        return res
 
     def get_unixTime(self):
         """
@@ -291,10 +309,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.UNIXTIME_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.UNIXTIME_INVALID
-        return self._unixTime
+        res = self._unixTime
+        return res
 
     def get_dateTime(self):
         """
@@ -304,10 +324,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.DATETIME_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.DATETIME_INVALID
-        return self._dateTime
+        res = self._dateTime
+        return res
 
     def get_utcOffset(self):
         """
@@ -317,10 +339,12 @@ class YGps(YFunction):
 
         On failure, throws an exception or returns YGps.UTCOFFSET_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.UTCOFFSET_INVALID
-        return self._utcOffset
+        res = self._utcOffset
+        return res
 
     def set_utcOffset(self, newval):
         """
@@ -338,10 +362,12 @@ class YGps(YFunction):
         return self._setAttr("utcOffset", rest_val)
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGps.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_realtimeclock.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_realtimeclock.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #*
@@ -103,10 +103,12 @@ class YRealTimeClock(YFunction):
 
         On failure, throws an exception or returns YRealTimeClock.UNIXTIME_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRealTimeClock.UNIXTIME_INVALID
-        return self._unixTime
+        res = self._unixTime
+        return res
 
     def set_unixTime(self, newval):
         """
@@ -129,10 +131,12 @@ class YRealTimeClock(YFunction):
 
         On failure, throws an exception or returns YRealTimeClock.DATETIME_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRealTimeClock.DATETIME_INVALID
-        return self._dateTime
+        res = self._dateTime
+        return res
 
     def get_utcOffset(self):
         """
@@ -142,10 +146,12 @@ class YRealTimeClock(YFunction):
 
         On failure, throws an exception or returns YRealTimeClock.UTCOFFSET_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRealTimeClock.UTCOFFSET_INVALID
-        return self._utcOffset
+        res = self._utcOffset
+        return res
 
     def set_utcOffset(self, newval):
         """
@@ -170,10 +176,12 @@ class YRealTimeClock(YFunction):
 
         On failure, throws an exception or returns YRealTimeClock.TIMESET_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRealTimeClock.TIMESET_INVALID
-        return self._timeSet
+        res = self._timeSet
+        return res
 
     @staticmethod
     def FindRealTimeClock(func):

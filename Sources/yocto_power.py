@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_power.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_power.py 26826 2017-03-17 11:20:57Z mvuilleu $
 #*
 #* Implements yFindPower(), the high-level API for Power functions
 #*
@@ -49,7 +49,7 @@ class YPower(YSensor):
     """
     The Yoctopuce class YPower allows you to read and configure Yoctopuce power
     sensors. It inherits from YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    to register callback functions, to access the autonomous datalogger.
     This class adds the ability to access the energy counter and the power factor.
 
     """
@@ -97,10 +97,12 @@ class YPower(YSensor):
 
         On failure, throws an exception or returns YPower.COSPHI_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPower.COSPHI_INVALID
-        return self._cosPhi
+        res = self._cosPhi
+        return res
 
     def set_meter(self, newval):
         rest_val = str(int(round(newval * 65536.0, 1)))
@@ -116,10 +118,12 @@ class YPower(YSensor):
 
         On failure, throws an exception or returns YPower.METER_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPower.METER_INVALID
-        return self._meter
+        res = self._meter
+        return res
 
     def get_meterTimer(self):
         """
@@ -129,10 +133,12 @@ class YPower(YSensor):
 
         On failure, throws an exception or returns YPower.METERTIMER_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPower.METERTIMER_INVALID
-        return self._meterTimer
+        res = self._meterTimer
+        return res
 
     @staticmethod
     def FindPower(func):

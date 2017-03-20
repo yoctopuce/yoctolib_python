@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwminput.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_pwminput.py 26826 2017-03-17 11:20:57Z mvuilleu $
 #*
 #* Implements yFindPwmInput(), the high-level API for PwmInput functions
 #*
@@ -49,7 +49,7 @@ class YPwmInput(YSensor):
     """
     The Yoctopuce class YPwmInput allows you to read and configure Yoctopuce PWM
     sensors. It inherits from YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    to register callback functions, to access the autonomous datalogger.
     This class adds the ability to configure the signal parameter used to transmit
     information: the duty cycle, the frequency or the pulse width.
 
@@ -120,10 +120,12 @@ class YPwmInput(YSensor):
 
         On failure, throws an exception or returns YPwmInput.DUTYCYCLE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmInput.DUTYCYCLE_INVALID
-        return self._dutyCycle
+        res = self._dutyCycle
+        return res
 
     def get_pulseDuration(self):
         """
@@ -134,10 +136,12 @@ class YPwmInput(YSensor):
 
         On failure, throws an exception or returns YPwmInput.PULSEDURATION_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmInput.PULSEDURATION_INVALID
-        return self._pulseDuration
+        res = self._pulseDuration
+        return res
 
     def get_frequency(self):
         """
@@ -147,10 +151,12 @@ class YPwmInput(YSensor):
 
         On failure, throws an exception or returns YPwmInput.FREQUENCY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmInput.FREQUENCY_INVALID
-        return self._frequency
+        res = self._frequency
+        return res
 
     def get_period(self):
         """
@@ -160,10 +166,12 @@ class YPwmInput(YSensor):
 
         On failure, throws an exception or returns YPwmInput.PERIOD_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmInput.PERIOD_INVALID
-        return self._period
+        res = self._period
+        return res
 
     def get_pulseCounter(self):
         """
@@ -175,10 +183,12 @@ class YPwmInput(YSensor):
 
         On failure, throws an exception or returns YPwmInput.PULSECOUNTER_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmInput.PULSECOUNTER_INVALID
-        return self._pulseCounter
+        res = self._pulseCounter
+        return res
 
     def set_pulseCounter(self, newval):
         rest_val = str(newval)
@@ -192,10 +202,12 @@ class YPwmInput(YSensor):
 
         On failure, throws an exception or returns YPwmInput.PULSETIMER_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmInput.PULSETIMER_INVALID
-        return self._pulseTimer
+        res = self._pulseTimer
+        return res
 
     def get_pwmReportMode(self):
         """
@@ -209,10 +221,12 @@ class YPwmInput(YSensor):
 
         On failure, throws an exception or returns YPwmInput.PWMREPORTMODE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmInput.PWMREPORTMODE_INVALID
-        return self._pwmReportMode
+        res = self._pwmReportMode
+        return res
 
     def set_pwmReportMode(self, newval):
         """

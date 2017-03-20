@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwmoutput.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_pwmoutput.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #*
@@ -121,10 +121,12 @@ class YPwmOutput(YFunction):
 
         On failure, throws an exception or returns YPwmOutput.ENABLED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmOutput.ENABLED_INVALID
-        return self._enabled
+        res = self._enabled
+        return res
 
     def set_enabled(self, newval):
         """
@@ -161,10 +163,12 @@ class YPwmOutput(YFunction):
 
         On failure, throws an exception or returns YPwmOutput.FREQUENCY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmOutput.FREQUENCY_INVALID
-        return self._frequency
+        res = self._frequency
+        return res
 
     def set_period(self, newval):
         """
@@ -187,10 +191,12 @@ class YPwmOutput(YFunction):
 
         On failure, throws an exception or returns YPwmOutput.PERIOD_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmOutput.PERIOD_INVALID
-        return self._period
+        res = self._period
+        return res
 
     def set_dutyCycle(self, newval):
         """
@@ -213,10 +219,12 @@ class YPwmOutput(YFunction):
 
         On failure, throws an exception or returns YPwmOutput.DUTYCYCLE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmOutput.DUTYCYCLE_INVALID
-        return self._dutyCycle
+        res = self._dutyCycle
+        return res
 
     def set_pulseDuration(self, newval):
         """
@@ -241,16 +249,20 @@ class YPwmOutput(YFunction):
 
         On failure, throws an exception or returns YPwmOutput.PULSEDURATION_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmOutput.PULSEDURATION_INVALID
-        return self._pulseDuration
+        res = self._pulseDuration
+        return res
 
     def get_pwmTransition(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmOutput.PWMTRANSITION_INVALID
-        return self._pwmTransition
+        res = self._pwmTransition
+        return res
 
     def set_pwmTransition(self, newval):
         rest_val = newval
@@ -265,10 +277,12 @@ class YPwmOutput(YFunction):
 
         On failure, throws an exception or returns YPwmOutput.ENABLEDATPOWERON_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmOutput.ENABLEDATPOWERON_INVALID
-        return self._enabledAtPowerOn
+        res = self._enabledAtPowerOn
+        return res
 
     def set_enabledAtPowerOn(self, newval):
         """
@@ -308,10 +322,12 @@ class YPwmOutput(YFunction):
 
         On failure, throws an exception or returns YPwmOutput.DUTYCYCLEATPOWERON_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmOutput.DUTYCYCLEATPOWERON_INVALID
-        return self._dutyCycleAtPowerOn
+        res = self._dutyCycleAtPowerOn
+        return res
 
     @staticmethod
     def FindPwmOutput(func):

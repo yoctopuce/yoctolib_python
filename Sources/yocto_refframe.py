@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_refframe.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -118,10 +118,12 @@ class YRefFrame(YFunction):
         super(YRefFrame, self)._parseAttr(member)
 
     def get_mountPos(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRefFrame.MOUNTPOS_INVALID
-        return self._mountPos
+        res = self._mountPos
+        return res
 
     def set_mountPos(self, newval):
         rest_val = str(newval)
@@ -163,16 +165,20 @@ class YRefFrame(YFunction):
 
         On failure, throws an exception or returns YRefFrame.BEARING_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRefFrame.BEARING_INVALID
-        return self._bearing
+        res = self._bearing
+        return res
 
     def get_calibrationParam(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRefFrame.CALIBRATIONPARAM_INVALID
-        return self._calibrationParam
+        res = self._calibrationParam
+        return res
 
     def set_calibrationParam(self, newval):
         rest_val = newval

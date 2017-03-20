@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_display.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -281,13 +281,13 @@ class YDisplayLayer(object):
         @param x : the distance from left of layer to the text anchor point, in pixels
         @param y : the distance from top of layer to the text anchor point, in pixels
         @param anchor : the text anchor point, chosen among the YDisplayLayer.ALIGN enumeration:
-                YDisplayLayer.ALIGN.TOP_LEFT,    YDisplayLayer.ALIGN.CENTER_LEFT,
+                YDisplayLayer.ALIGN.TOP_LEFT,    YDisplayLayer.ALIGN.CENTER_LEFT,   
                 YDisplayLayer.ALIGN.BASELINE_LEFT,    YDisplayLayer.ALIGN.BOTTOM_LEFT,
-                YDisplayLayer.ALIGN.TOP_CENTER,  YDisplayLayer.ALIGN.CENTER,
+                YDisplayLayer.ALIGN.TOP_CENTER,  YDisplayLayer.ALIGN.CENTER,        
                 YDisplayLayer.ALIGN.BASELINE_CENTER,  YDisplayLayer.ALIGN.BOTTOM_CENTER,
                 YDisplayLayer.ALIGN.TOP_DECIMAL, YDisplayLayer.ALIGN.CENTER_DECIMAL,
                 YDisplayLayer.ALIGN.BASELINE_DECIMAL, YDisplayLayer.ALIGN.BOTTOM_DECIMAL,
-                YDisplayLayer.ALIGN.TOP_RIGHT,   YDisplayLayer.ALIGN.CENTER_RIGHT,
+                YDisplayLayer.ALIGN.TOP_RIGHT,   YDisplayLayer.ALIGN.CENTER_RIGHT,  
                 YDisplayLayer.ALIGN.BASELINE_RIGHT,   YDisplayLayer.ALIGN.BOTTOM_RIGHT.
         @param text : the text string to draw
 
@@ -640,10 +640,12 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns YDisplay.ENABLED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.ENABLED_INVALID
-        return self._enabled
+        res = self._enabled
+        return res
 
     def set_enabled(self, newval):
         """
@@ -667,10 +669,12 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns YDisplay.STARTUPSEQ_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.STARTUPSEQ_INVALID
-        return self._startupSeq
+        res = self._startupSeq
+        return res
 
     def set_startupSeq(self, newval):
         """
@@ -695,10 +699,12 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns YDisplay.BRIGHTNESS_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.BRIGHTNESS_INVALID
-        return self._brightness
+        res = self._brightness
+        return res
 
     def set_brightness(self, newval):
         """
@@ -725,10 +731,12 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns YDisplay.ORIENTATION_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.ORIENTATION_INVALID
-        return self._orientation
+        res = self._orientation
+        return res
 
     def set_orientation(self, newval):
         """
@@ -753,10 +761,12 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns YDisplay.DISPLAYWIDTH_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.DISPLAYWIDTH_INVALID
-        return self._displayWidth
+        res = self._displayWidth
+        return res
 
     def get_displayHeight(self):
         """
@@ -766,10 +776,12 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns YDisplay.DISPLAYHEIGHT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.DISPLAYHEIGHT_INVALID
-        return self._displayHeight
+        res = self._displayHeight
+        return res
 
     def get_displayType(self):
         """
@@ -780,10 +792,12 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
         """
+        # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.DISPLAYTYPE_INVALID
-        return self._displayType
+        res = self._displayType
+        return res
 
     def get_layerWidth(self):
         """
@@ -793,10 +807,12 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns YDisplay.LAYERWIDTH_INVALID.
         """
+        # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.LAYERWIDTH_INVALID
-        return self._layerWidth
+        res = self._layerWidth
+        return res
 
     def get_layerHeight(self):
         """
@@ -806,10 +822,12 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns YDisplay.LAYERHEIGHT_INVALID.
         """
+        # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.LAYERHEIGHT_INVALID
-        return self._layerHeight
+        res = self._layerHeight
+        return res
 
     def get_layerCount(self):
         """
@@ -819,16 +837,20 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns YDisplay.LAYERCOUNT_INVALID.
         """
+        # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.LAYERCOUNT_INVALID
-        return self._layerCount
+        res = self._layerCount
+        return res
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval

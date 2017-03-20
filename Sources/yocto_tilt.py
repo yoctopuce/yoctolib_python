@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_tilt.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_tilt.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindTilt(), the high-level API for Tilt functions
 #*
@@ -98,10 +98,12 @@ class YTilt(YSensor):
 
         On failure, throws an exception or returns YTilt.BANDWIDTH_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YTilt.BANDWIDTH_INVALID
-        return self._bandwidth
+        res = self._bandwidth
+        return res
 
     def set_bandwidth(self, newval):
         """
@@ -118,10 +120,12 @@ class YTilt(YSensor):
         return self._setAttr("bandwidth", rest_val)
 
     def get_axis(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YTilt.AXIS_INVALID
-        return self._axis
+        res = self._axis
+        return res
 
     @staticmethod
     def FindTilt(func):

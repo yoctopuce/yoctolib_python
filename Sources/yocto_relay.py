@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_relay.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_relay.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindRelay(), the high-level API for Relay functions
 #*
@@ -140,10 +140,12 @@ class YRelay(YFunction):
 
         On failure, throws an exception or returns YRelay.STATE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.STATE_INVALID
-        return self._state
+        res = self._state
+        return res
 
     def set_state(self, newval):
         """
@@ -170,10 +172,12 @@ class YRelay(YFunction):
 
         On failure, throws an exception or returns YRelay.STATEATPOWERON_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.STATEATPOWERON_INVALID
-        return self._stateAtPowerOn
+        res = self._stateAtPowerOn
+        return res
 
     def set_stateAtPowerOn(self, newval):
         """
@@ -200,10 +204,12 @@ class YRelay(YFunction):
 
         On failure, throws an exception or returns YRelay.MAXTIMEONSTATEA_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.MAXTIMEONSTATEA_INVALID
-        return self._maxTimeOnStateA
+        res = self._maxTimeOnStateA
+        return res
 
     def set_maxTimeOnStateA(self, newval):
         """
@@ -228,10 +234,12 @@ class YRelay(YFunction):
 
         On failure, throws an exception or returns YRelay.MAXTIMEONSTATEB_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.MAXTIMEONSTATEB_INVALID
-        return self._maxTimeOnStateB
+        res = self._maxTimeOnStateB
+        return res
 
     def set_maxTimeOnStateB(self, newval):
         """
@@ -256,10 +264,12 @@ class YRelay(YFunction):
 
         On failure, throws an exception or returns YRelay.OUTPUT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.OUTPUT_INVALID
-        return self._output
+        res = self._output
+        return res
 
     def set_output(self, newval):
         """
@@ -286,10 +296,12 @@ class YRelay(YFunction):
 
         On failure, throws an exception or returns YRelay.PULSETIMER_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.PULSETIMER_INVALID
-        return self._pulseTimer
+        res = self._pulseTimer
+        return res
 
     def set_pulseTimer(self, newval):
         rest_val = str(newval)
@@ -310,10 +322,12 @@ class YRelay(YFunction):
         return self._setAttr("pulseTimer", rest_val)
 
     def get_delayedPulseTimer(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.DELAYEDPULSETIMER_INVALID
-        return self._delayedPulseTimer
+        res = self._delayedPulseTimer
+        return res
 
     def set_delayedPulseTimer(self, newval):
         rest_val = str(newval.target) + ":" + str(newval.ms)
@@ -343,10 +357,12 @@ class YRelay(YFunction):
 
         On failure, throws an exception or returns YRelay.COUNTDOWN_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRelay.COUNTDOWN_INVALID
-        return self._countdown
+        res = self._countdown
+        return res
 
     @staticmethod
     def FindRelay(func):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_oscontrol.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_oscontrol.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindOsControl(), the high-level API for OsControl functions
 #*
@@ -86,10 +86,12 @@ class YOsControl(YFunction):
 
         On failure, throws an exception or returns YOsControl.SHUTDOWNCOUNTDOWN_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YOsControl.SHUTDOWNCOUNTDOWN_INVALID
-        return self._shutdownCountdown
+        res = self._shutdownCountdown
+        return res
 
     def set_shutdownCountdown(self, newval):
         rest_val = str(newval)

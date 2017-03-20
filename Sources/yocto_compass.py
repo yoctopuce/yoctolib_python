@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_compass.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_compass.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindCompass(), the high-level API for Compass functions
 #*
@@ -103,10 +103,12 @@ class YCompass(YSensor):
 
         On failure, throws an exception or returns YCompass.BANDWIDTH_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCompass.BANDWIDTH_INVALID
-        return self._bandwidth
+        res = self._bandwidth
+        return res
 
     def set_bandwidth(self, newval):
         """
@@ -123,10 +125,12 @@ class YCompass(YSensor):
         return self._setAttr("bandwidth", rest_val)
 
     def get_axis(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCompass.AXIS_INVALID
-        return self._axis
+        res = self._axis
+        return res
 
     def get_magneticHeading(self):
         """
@@ -136,10 +140,12 @@ class YCompass(YSensor):
 
         On failure, throws an exception or returns YCompass.MAGNETICHEADING_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCompass.MAGNETICHEADING_INVALID
-        return self._magneticHeading
+        res = self._magneticHeading
+        return res
 
     @staticmethod
     def FindCompass(func):

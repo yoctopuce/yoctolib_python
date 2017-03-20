@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwmpowersource.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_pwmpowersource.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
 #*
@@ -89,10 +89,12 @@ class YPwmPowerSource(YFunction):
 
         On failure, throws an exception or returns YPwmPowerSource.POWERMODE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPwmPowerSource.POWERMODE_INVALID
-        return self._powerMode
+        res = self._powerMode
+        return res
 
     def set_powerMode(self, newval):
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: pic24config.php 26169 2016-12-12 01:36:34Z mvuilleu $
+#* $Id: pic24config.php 26780 2017-03-16 14:02:09Z mvuilleu $
 #*
 #* Implements yFindProximity(), the high-level API for Proximity functions
 #*
@@ -49,7 +49,7 @@ class YProximity(YSensor):
     """
     The Yoctopuce class YProximity allows you to use and configure Yoctopuce proximity
     sensors. It inherits from the YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    to register callback functions, to access the autonomous datalogger.
     This class adds the ability to easily perform a one-point linear calibration
     to compensate the effect of a glass or filter placed in front of the sensor.
 
@@ -60,6 +60,7 @@ class YProximity(YSensor):
     #--- (YProximity dlldef)
     #--- (end of YProximity dlldef)
     #--- (YProximity definitions)
+    SIGNALVALUE_INVALID = YAPI.INVALID_DOUBLE
     DETECTIONTHRESHOLD_INVALID = YAPI.INVALID_UINT
     LASTTIMEAPPROACHED_INVALID = YAPI.INVALID_LONG
     LASTTIMEREMOVED_INVALID = YAPI.INVALID_LONG
@@ -68,6 +69,10 @@ class YProximity(YSensor):
     ISPRESENT_FALSE = 0
     ISPRESENT_TRUE = 1
     ISPRESENT_INVALID = -1
+    PROXIMITYREPORTMODE_NUMERIC = 0
+    PROXIMITYREPORTMODE_PRESENCE = 1
+    PROXIMITYREPORTMODE_PULSECOUNT = 2
+    PROXIMITYREPORTMODE_INVALID = -1
     #--- (end of YProximity definitions)
 
     def __init__(self, func):
@@ -75,16 +80,21 @@ class YProximity(YSensor):
         self._className = 'Proximity'
         #--- (YProximity attributes)
         self._callback = None
+        self._signalValue = YProximity.SIGNALVALUE_INVALID
         self._detectionThreshold = YProximity.DETECTIONTHRESHOLD_INVALID
         self._isPresent = YProximity.ISPRESENT_INVALID
         self._lastTimeApproached = YProximity.LASTTIMEAPPROACHED_INVALID
         self._lastTimeRemoved = YProximity.LASTTIMEREMOVED_INVALID
         self._pulseCounter = YProximity.PULSECOUNTER_INVALID
         self._pulseTimer = YProximity.PULSETIMER_INVALID
+        self._proximityReportMode = YProximity.PROXIMITYREPORTMODE_INVALID
         #--- (end of YProximity attributes)
 
     #--- (YProximity implementation)
     def _parseAttr(self, member):
+        if member.name == "signalValue":
+            self._signalValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
+            return 1
         if member.name == "detectionThreshold":
             self._detectionThreshold = member.ivalue
             return 1
@@ -103,7 +113,25 @@ class YProximity(YSensor):
         if member.name == "pulseTimer":
             self._pulseTimer = member.ivalue
             return 1
+        if member.name == "proximityReportMode":
+            self._proximityReportMode = member.ivalue
+            return 1
         super(YProximity, self)._parseAttr(member)
+
+    def get_signalValue(self):
+        """
+        Returns the current value of signal measured by the proximity sensor.
+
+        @return a floating point number corresponding to the current value of signal measured by the proximity sensor
+
+        On failure, throws an exception or returns YProximity.SIGNALVALUE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YProximity.SIGNALVALUE_INVALID
+        res = round(self._signalValue * 1000) / 1000
+        return res
 
     def get_detectionThreshold(self):
         """
@@ -116,10 +144,12 @@ class YProximity(YSensor):
 
         On failure, throws an exception or returns YProximity.DETECTIONTHRESHOLD_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YProximity.DETECTIONTHRESHOLD_INVALID
-        return self._detectionThreshold
+        res = self._detectionThreshold
+        return res
 
     def set_detectionThreshold(self, newval):
         """
@@ -148,10 +178,12 @@ class YProximity(YSensor):
 
         On failure, throws an exception or returns YProximity.ISPRESENT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YProximity.ISPRESENT_INVALID
-        return self._isPresent
+        res = self._isPresent
+        return res
 
     def get_lastTimeApproached(self):
         """
@@ -164,10 +196,12 @@ class YProximity(YSensor):
 
         On failure, throws an exception or returns YProximity.LASTTIMEAPPROACHED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YProximity.LASTTIMEAPPROACHED_INVALID
-        return self._lastTimeApproached
+        res = self._lastTimeApproached
+        return res
 
     def get_lastTimeRemoved(self):
         """
@@ -180,10 +214,12 @@ class YProximity(YSensor):
 
         On failure, throws an exception or returns YProximity.LASTTIMEREMOVED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YProximity.LASTTIMEREMOVED_INVALID
-        return self._lastTimeRemoved
+        res = self._lastTimeRemoved
+        return res
 
     def get_pulseCounter(self):
         """
@@ -195,10 +231,12 @@ class YProximity(YSensor):
 
         On failure, throws an exception or returns YProximity.PULSECOUNTER_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YProximity.PULSECOUNTER_INVALID
-        return self._pulseCounter
+        res = self._pulseCounter
+        return res
 
     def set_pulseCounter(self, newval):
         rest_val = str(newval)
@@ -212,10 +250,47 @@ class YProximity(YSensor):
 
         On failure, throws an exception or returns YProximity.PULSETIMER_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YProximity.PULSETIMER_INVALID
-        return self._pulseTimer
+        res = self._pulseTimer
+        return res
+
+    def get_proximityReportMode(self):
+        """
+        Returns the parameter (sensor value, presence or pulse count) returned by the get_currentValue
+        function and callbacks.
+
+        @return a value among YProximity.PROXIMITYREPORTMODE_NUMERIC,
+        YProximity.PROXIMITYREPORTMODE_PRESENCE and YProximity.PROXIMITYREPORTMODE_PULSECOUNT corresponding
+        to the parameter (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks
+
+        On failure, throws an exception or returns YProximity.PROXIMITYREPORTMODE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YProximity.PROXIMITYREPORTMODE_INVALID
+        res = self._proximityReportMode
+        return res
+
+    def set_proximityReportMode(self, newval):
+        """
+        Modifies the  parameter  type (sensor value, presence or pulse count) returned by the
+        get_currentValue function and callbacks.
+        The edge count value is limited to the 6 lowest digits. For values greater than one million, use
+        get_pulseCounter().
+
+        @param newval : a value among YProximity.PROXIMITYREPORTMODE_NUMERIC,
+        YProximity.PROXIMITYREPORTMODE_PRESENCE and YProximity.PROXIMITYREPORTMODE_PULSECOUNT
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("proximityReportMode", rest_val)
 
     @staticmethod
     def FindProximity(func):

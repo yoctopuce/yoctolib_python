@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_audioout.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_audioout.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindAudioOut(), the high-level API for AudioOut functions
 #*
@@ -104,10 +104,12 @@ class YAudioOut(YFunction):
 
         On failure, throws an exception or returns YAudioOut.VOLUME_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAudioOut.VOLUME_INVALID
-        return self._volume
+        res = self._volume
+        return res
 
     def set_volume(self, newval):
         """
@@ -130,10 +132,12 @@ class YAudioOut(YFunction):
 
         On failure, throws an exception or returns YAudioOut.MUTE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAudioOut.MUTE_INVALID
-        return self._mute
+        res = self._mute
+        return res
 
     def set_mute(self, newval):
         """
@@ -160,10 +164,12 @@ class YAudioOut(YFunction):
 
         On failure, throws an exception or returns YAudioOut.VOLUMERANGE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAudioOut.VOLUMERANGE_INVALID
-        return self._volumeRange
+        res = self._volumeRange
+        return res
 
     def get_signal(self):
         """
@@ -173,10 +179,12 @@ class YAudioOut(YFunction):
 
         On failure, throws an exception or returns YAudioOut.SIGNAL_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAudioOut.SIGNAL_INVALID
-        return self._signal
+        res = self._signal
+        return res
 
     def get_noSignalFor(self):
         """
@@ -186,10 +194,12 @@ class YAudioOut(YFunction):
 
         On failure, throws an exception or returns YAudioOut.NOSIGNALFOR_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAudioOut.NOSIGNALFOR_INVALID
-        return self._noSignalFor
+        res = self._noSignalFor
+        return res
 
     @staticmethod
     def FindAudioOut(func):

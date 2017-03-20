@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_steppermotor.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_steppermotor.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #*
@@ -165,10 +165,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.MOTORSTATE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.MOTORSTATE_INVALID
-        return self._motorState
+        res = self._motorState
+        return res
 
     def get_diags(self):
         """
@@ -178,10 +180,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.DIAGS_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.DIAGS_INVALID
-        return self._diags
+        res = self._diags
+        return res
 
     def set_stepPos(self, newval):
         """
@@ -210,10 +214,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.STEPPOS_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.STEPPOS_INVALID
-        return self._stepPos
+        res = self._stepPos
+        return res
 
     def get_speed(self):
         """
@@ -224,10 +230,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.SPEED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.SPEED_INVALID
-        return self._speed
+        res = self._speed
+        return res
 
     def set_pullinSpeed(self, newval):
         """
@@ -252,10 +260,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.PULLINSPEED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.PULLINSPEED_INVALID
-        return self._pullinSpeed
+        res = self._pullinSpeed
+        return res
 
     def set_maxAccel(self, newval):
         """
@@ -279,10 +289,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.MAXACCEL_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.MAXACCEL_INVALID
-        return self._maxAccel
+        res = self._maxAccel
+        return res
 
     def set_maxSpeed(self, newval):
         """
@@ -305,10 +317,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.MAXSPEED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.MAXSPEED_INVALID
-        return self._maxSpeed
+        res = self._maxSpeed
+        return res
 
     def get_stepping(self):
         """
@@ -320,10 +334,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.STEPPING_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.STEPPING_INVALID
-        return self._stepping
+        res = self._stepping
+        return res
 
     def set_stepping(self, newval):
         """
@@ -349,10 +365,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.OVERCURRENT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.OVERCURRENT_INVALID
-        return self._overcurrent
+        res = self._overcurrent
+        return res
 
     def set_overcurrent(self, newval):
         """
@@ -375,10 +393,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.TCURRSTOP_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.TCURRSTOP_INVALID
-        return self._tCurrStop
+        res = self._tCurrStop
+        return res
 
     def set_tCurrStop(self, newval):
         """
@@ -402,10 +422,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.TCURRRUN_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.TCURRRUN_INVALID
-        return self._tCurrRun
+        res = self._tCurrRun
+        return res
 
     def set_tCurrRun(self, newval):
         """
@@ -422,20 +444,24 @@ class YStepperMotor(YFunction):
         return self._setAttr("tCurrRun", rest_val)
 
     def get_alertMode(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.ALERTMODE_INVALID
-        return self._alertMode
+        res = self._alertMode
+        return res
 
     def set_alertMode(self, newval):
         rest_val = newval
         return self._setAttr("alertMode", rest_val)
 
     def get_auxMode(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.AUXMODE_INVALID
-        return self._auxMode
+        res = self._auxMode
+        return res
 
     def set_auxMode(self, newval):
         rest_val = newval
@@ -449,10 +475,12 @@ class YStepperMotor(YFunction):
 
         On failure, throws an exception or returns YStepperMotor.AUXSIGNAL_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.AUXSIGNAL_INVALID
-        return self._auxSignal
+        res = self._auxSignal
+        return res
 
     def set_auxSignal(self, newval):
         """
@@ -469,10 +497,12 @@ class YStepperMotor(YFunction):
         return self._setAttr("auxSignal", rest_val)
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YStepperMotor.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval

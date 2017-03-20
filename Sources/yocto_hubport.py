@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_hubport.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_hubport.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindHubPort(), the high-level API for HubPort functions
 #*
@@ -103,10 +103,12 @@ class YHubPort(YFunction):
 
         On failure, throws an exception or returns YHubPort.ENABLED_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YHubPort.ENABLED_INVALID
-        return self._enabled
+        res = self._enabled
+        return res
 
     def set_enabled(self, newval):
         """
@@ -132,10 +134,12 @@ class YHubPort(YFunction):
 
         On failure, throws an exception or returns YHubPort.PORTSTATE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YHubPort.PORTSTATE_INVALID
-        return self._portState
+        res = self._portState
+        return res
 
     def get_baudRate(self):
         """
@@ -147,10 +151,12 @@ class YHubPort(YFunction):
 
         On failure, throws an exception or returns YHubPort.BAUDRATE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YHubPort.BAUDRATE_INVALID
-        return self._baudRate
+        res = self._baudRate
+        return res
 
     @staticmethod
     def FindHubPort(func):

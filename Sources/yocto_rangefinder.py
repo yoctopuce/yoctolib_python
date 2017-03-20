@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_rangefinder.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_rangefinder.py 26826 2017-03-17 11:20:57Z mvuilleu $
 #*
 #* Implements yFindRangeFinder(), the high-level API for RangeFinder functions
 #*
@@ -47,9 +47,9 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YRangeFinder(YSensor):
     """
-    The Yoctopuce class YRangeFinder allows you to use and configure Yoctopuce range finders
-    sensors. It inherits from YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    The Yoctopuce class YRangeFinder allows you to use and configure Yoctopuce range finder
+    sensors. It inherits from the YSensor class the core functions to read measurements,
+    register callback functions, access the autonomous datalogger.
     This class adds the ability to easily perform a one-point linear calibration
     to compensate the effect of a glass or filter placed in front of the sensor.
 
@@ -60,6 +60,8 @@ class YRangeFinder(YSensor):
     #--- (YRangeFinder dlldef)
     #--- (end of YRangeFinder dlldef)
     #--- (YRangeFinder definitions)
+    HARDWARECALIBRATION_INVALID = YAPI.INVALID_STRING
+    CURRENTTEMPERATURE_INVALID = YAPI.INVALID_DOUBLE
     COMMAND_INVALID = YAPI.INVALID_STRING
     RANGEFINDERMODE_DEFAULT = 0
     RANGEFINDERMODE_LONG_RANGE = 1
@@ -74,6 +76,8 @@ class YRangeFinder(YSensor):
         #--- (YRangeFinder attributes)
         self._callback = None
         self._rangeFinderMode = YRangeFinder.RANGEFINDERMODE_INVALID
+        self._hardwareCalibration = YRangeFinder.HARDWARECALIBRATION_INVALID
+        self._currentTemperature = YRangeFinder.CURRENTTEMPERATURE_INVALID
         self._command = YRangeFinder.COMMAND_INVALID
         #--- (end of YRangeFinder attributes)
 
@@ -82,6 +86,12 @@ class YRangeFinder(YSensor):
         if member.name == "rangeFinderMode":
             self._rangeFinderMode = member.ivalue
             return 1
+        if member.name == "hardwareCalibration":
+            self._hardwareCalibration = member.svalue
+            return 1
+        if member.name == "currentTemperature":
+            self._currentTemperature = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
+            return 1
         if member.name == "command":
             self._command = member.svalue
             return 1
@@ -89,13 +99,13 @@ class YRangeFinder(YSensor):
 
     def set_unit(self, newval):
         """
-        Changes the measuring unit for the measured temperature. That unit is a string.
-        String value can be " or mm. Any other value will be ignored.
+        Changes the measuring unit for the measured range. That unit is a string.
+        String value can be " or mm. Any other value is ignored.
         Remember to call the saveToFlash() method of the module if the modification must be kept.
         WARNING: if a specific calibration is defined for the rangeFinder function, a
         unit system change will probably break it.
 
-        @param newval : a string corresponding to the measuring unit for the measured temperature
+        @param newval : a string corresponding to the measuring unit for the measured range
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -106,29 +116,31 @@ class YRangeFinder(YSensor):
 
     def get_rangeFinderMode(self):
         """
-        Returns the rangefinder running mode. The rangefinder running mode
-        allows to put priority on precision, speed or maximum range.
+        Returns the range finder running mode. The rangefinder running mode
+        allows you to put priority on precision, speed or maximum range.
 
         @return a value among YRangeFinder.RANGEFINDERMODE_DEFAULT, YRangeFinder.RANGEFINDERMODE_LONG_RANGE,
         YRangeFinder.RANGEFINDERMODE_HIGH_ACCURACY and YRangeFinder.RANGEFINDERMODE_HIGH_SPEED
-        corresponding to the rangefinder running mode
+        corresponding to the range finder running mode
 
         On failure, throws an exception or returns YRangeFinder.RANGEFINDERMODE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRangeFinder.RANGEFINDERMODE_INVALID
-        return self._rangeFinderMode
+        res = self._rangeFinderMode
+        return res
 
     def set_rangeFinderMode(self, newval):
         """
-        Changes the rangefinder running mode, allowing to put priority on
+        Changes the rangefinder running mode, allowing you to put priority on
         precision, speed or maximum range.
 
         @param newval : a value among YRangeFinder.RANGEFINDERMODE_DEFAULT,
         YRangeFinder.RANGEFINDERMODE_LONG_RANGE, YRangeFinder.RANGEFINDERMODE_HIGH_ACCURACY and
-        YRangeFinder.RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder running mode, allowing to
-        put priority on
+        YRangeFinder.RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder running mode, allowing you
+        to put priority on
                 precision, speed or maximum range
 
         @return YAPI.SUCCESS if the call succeeds.
@@ -138,11 +150,40 @@ class YRangeFinder(YSensor):
         rest_val = str(newval)
         return self._setAttr("rangeFinderMode", rest_val)
 
+    def get_hardwareCalibration(self):
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YRangeFinder.HARDWARECALIBRATION_INVALID
+        res = self._hardwareCalibration
+        return res
+
+    def set_hardwareCalibration(self, newval):
+        rest_val = newval
+        return self._setAttr("hardwareCalibration", rest_val)
+
+    def get_currentTemperature(self):
+        """
+        Returns the current sensor temperature, as a floating point number.
+
+        @return a floating point number corresponding to the current sensor temperature, as a floating point number
+
+        On failure, throws an exception or returns YRangeFinder.CURRENTTEMPERATURE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YRangeFinder.CURRENTTEMPERATURE_INVALID
+        res = self._currentTemperature
+        return res
+
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YRangeFinder.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval
@@ -180,17 +221,98 @@ class YRangeFinder(YSensor):
             YFunction._AddToCache("RangeFinder", func, obj)
         return obj
 
-    def triggerTempCalibration(self):
+    def get_hardwareCalibrationTemperature(self):
+        """
+        Returns the temperature at the time when the latest calibration was performed.
+        This function can be used to determine if a new calibration for ambient temperature
+        is required.
+
+        @return a temperature, as a floating point number.
+                On failure, throws an exception or return YAPI.INVALID_DOUBLE.
+        """
+        # hwcal
+        
+        hwcal = self.get_hardwareCalibration()
+        if not ((hwcal)[0: 0 + 1] == "@"):
+            return YAPI.INVALID_DOUBLE
+        return YAPI._atoi((hwcal)[1: 1 + len(hwcal)])
+
+    def triggerTemperatureCalibration(self):
         """
         Triggers a sensor calibration according to the current ambient temperature. That
         calibration process needs no physical interaction with the sensor. It is performed
         automatically at device startup, but it is recommended to start it again when the
-        temperature delta since last calibration exceeds 8°C.
+        temperature delta since the latest calibration exceeds 8°C.
 
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
         return self.set_command("T")
+
+    def triggerSpadCalibration(self):
+        """
+        Triggers the photon detector hardware calibration.
+        This function is part of the calibration procedure to compensate for the the effect
+        of a cover glass. Make sure to read the chapter about hardware calibration for details
+        on the calibration procedure for proper results.
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_command("S")
+
+    def triggerOffsetCalibration(self, targetDist):
+        """
+        Triggers the hardware offset calibration of the distance sensor.
+        This function is part of the calibration procedure to compensate for the the effect
+        of a cover glass. Make sure to read the chapter about hardware calibration for details
+        on the calibration procedure for proper results.
+
+        @param targetDist : true distance of the calibration target, in mm or inches, depending
+                on the unit selected in the device
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        # distmm
+        
+        if self.get_unit() == "\"":
+            distmm = round(targetDist * 25.4)
+        else:
+            distmm = round(targetDist)
+        return self.set_command("O" + str(int(distmm)))
+
+    def triggerXTalkCalibration(self, targetDist):
+        """
+        Triggers the hardware cross-talk calibration of the distance sensor.
+        This function is part of the calibration procedure to compensate for the the effect
+        of a cover glass. Make sure to read the chapter about hardware calibration for details
+        on the calibration procedure for proper results.
+
+        @param targetDist : true distance of the calibration target, in mm or inches, depending
+                on the unit selected in the device
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        # distmm
+        
+        if self.get_unit() == "\"":
+            distmm = round(targetDist * 25.4)
+        else:
+            distmm = round(targetDist)
+        return self.set_command("X" + str(int(distmm)))
+
+    def cancelCoverGlassCalibrations(self):
+        """
+        Cancels the effect of previous hardware calibration procedures to compensate
+        for cover glass, and restores factory settings.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_hardwareCalibration("")
 
     def nextRangeFinder(self):
         """

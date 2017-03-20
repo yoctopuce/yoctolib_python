@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_motor.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_motor.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindMotor(), the high-level API for Motor functions
 #*
@@ -147,10 +147,12 @@ class YMotor(YFunction):
 
         On failure, throws an exception or returns YMotor.MOTORSTATUS_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMotor.MOTORSTATUS_INVALID
-        return self._motorStatus
+        res = self._motorStatus
+        return res
 
     def set_motorStatus(self, newval):
         rest_val = str(newval)
@@ -182,10 +184,12 @@ class YMotor(YFunction):
 
         On failure, throws an exception or returns YMotor.DRIVINGFORCE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMotor.DRIVINGFORCE_INVALID
-        return self._drivingForce
+        res = self._drivingForce
+        return res
 
     def set_brakingForce(self, newval):
         """
@@ -212,10 +216,12 @@ class YMotor(YFunction):
 
         On failure, throws an exception or returns YMotor.BRAKINGFORCE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMotor.BRAKINGFORCE_INVALID
-        return self._brakingForce
+        res = self._brakingForce
+        return res
 
     def set_cutOffVoltage(self, newval):
         """
@@ -248,10 +254,12 @@ class YMotor(YFunction):
 
         On failure, throws an exception or returns YMotor.CUTOFFVOLTAGE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMotor.CUTOFFVOLTAGE_INVALID
-        return self._cutOffVoltage
+        res = self._cutOffVoltage
+        return res
 
     def get_overCurrentLimit(self):
         """
@@ -263,10 +271,12 @@ class YMotor(YFunction):
 
         On failure, throws an exception or returns YMotor.OVERCURRENTLIMIT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMotor.OVERCURRENTLIMIT_INVALID
-        return self._overCurrentLimit
+        res = self._overCurrentLimit
+        return res
 
     def set_overCurrentLimit(self, newval):
         """
@@ -310,10 +320,12 @@ class YMotor(YFunction):
 
         On failure, throws an exception or returns YMotor.FREQUENCY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMotor.FREQUENCY_INVALID
-        return self._frequency
+        res = self._frequency
+        return res
 
     def get_starterTime(self):
         """
@@ -326,10 +338,12 @@ class YMotor(YFunction):
 
         On failure, throws an exception or returns YMotor.STARTERTIME_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMotor.STARTERTIME_INVALID
-        return self._starterTime
+        res = self._starterTime
+        return res
 
     def set_starterTime(self, newval):
         """
@@ -360,10 +374,12 @@ class YMotor(YFunction):
 
         On failure, throws an exception or returns YMotor.FAILSAFETIMEOUT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMotor.FAILSAFETIMEOUT_INVALID
-        return self._failSafeTimeout
+        res = self._failSafeTimeout
+        return res
 
     def set_failSafeTimeout(self, newval):
         """
@@ -384,10 +400,12 @@ class YMotor(YFunction):
         return self._setAttr("failSafeTimeout", rest_val)
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMotor.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_poweroutput.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_poweroutput.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindPowerOutput(), the high-level API for PowerOutput functions
 #*
@@ -89,10 +89,12 @@ class YPowerOutput(YFunction):
 
         On failure, throws an exception or returns YPowerOutput.VOLTAGE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YPowerOutput.VOLTAGE_INVALID
-        return self._voltage
+        res = self._voltage
+        return res
 
     def set_voltage(self, newval):
         """

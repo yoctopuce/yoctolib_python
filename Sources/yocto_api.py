@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 26473 2017-01-25 14:27:17Z seb $
+# * $Id: yocto_api.py 26826 2017-03-17 11:20:57Z mvuilleu $
 # *
 #* High-level programming interface, common to all modules
 #*
@@ -545,7 +545,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "26490"
+    YOCTO_API_BUILD_NO = "26849"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -4026,10 +4026,12 @@ class YFunction(object):
 
         On failure, throws an exception or returns YFunction.LOGICALNAME_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YFunction.LOGICALNAME_INVALID
-        return self._logicalName
+        res = self._logicalName
+        return res
 
     def set_logicalName(self, newval):
         """
@@ -4058,10 +4060,12 @@ class YFunction(object):
 
         On failure, throws an exception or returns YFunction.ADVERTISEDVALUE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YFunction.ADVERTISEDVALUE_INVALID
-        return self._advertisedValue
+        res = self._advertisedValue
+        return res
 
     def set_advertisedValue(self, newval):
         rest_val = newval
@@ -4131,7 +4135,7 @@ class YFunction(object):
 
     def muteValueCallbacks(self):
         """
-        Disable the propagation of every new advertised value to the parent hub.
+        Disables the propagation of every new advertised value to the parent hub.
         You can use this function to save bandwidth and CPU on computers with limited
         resources, or to prevent unwanted invocations of the HTTP callback.
         Remember to call the saveToFlash() method of the module if the
@@ -4145,7 +4149,7 @@ class YFunction(object):
 
     def unmuteValueCallbacks(self):
         """
-        Re-enable the propagation of every new advertised value to the parent hub.
+        Re-enables the propagation of every new advertised value to the parent hub.
         This function reverts the effect of a previous call to muteValueCallbacks().
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
@@ -4161,9 +4165,9 @@ class YFunction(object):
         Returns the current value of a single function attribute, as a text string, as quickly as
         possible but without using the cached value.
 
-        @param attrName : le nom de l'attribut désiré
+        @param attrName : the name of the requested attribute
 
-        @return une chaîne de caractères représentant la valeur actuelle de l'attribut.
+        @return a string with the value of the the attribute
 
         On failure, throws an exception or returns an empty string.
         """
@@ -4661,10 +4665,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.PRODUCTNAME_INVALID.
         """
+        # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.PRODUCTNAME_INVALID
-        return self._productName
+        res = self._productName
+        return res
 
     def get_serialNumber(self):
         """
@@ -4674,10 +4680,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.SERIALNUMBER_INVALID.
         """
+        # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.SERIALNUMBER_INVALID
-        return self._serialNumber
+        res = self._serialNumber
+        return res
 
     def get_productId(self):
         """
@@ -4687,10 +4695,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.PRODUCTID_INVALID.
         """
+        # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.PRODUCTID_INVALID
-        return self._productId
+        res = self._productId
+        return res
 
     def get_productRelease(self):
         """
@@ -4700,10 +4710,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.PRODUCTRELEASE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.PRODUCTRELEASE_INVALID
-        return self._productRelease
+        res = self._productRelease
+        return res
 
     def get_firmwareRelease(self):
         """
@@ -4713,10 +4725,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.FIRMWARERELEASE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.FIRMWARERELEASE_INVALID
-        return self._firmwareRelease
+        res = self._firmwareRelease
+        return res
 
     def get_persistentSettings(self):
         """
@@ -4727,10 +4741,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.PERSISTENTSETTINGS_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.PERSISTENTSETTINGS_INVALID
-        return self._persistentSettings
+        res = self._persistentSettings
+        return res
 
     def set_persistentSettings(self, newval):
         rest_val = str(newval)
@@ -4744,10 +4760,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.LUMINOSITY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.LUMINOSITY_INVALID
-        return self._luminosity
+        res = self._luminosity
+        return res
 
     def set_luminosity(self, newval):
         """
@@ -4773,10 +4791,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.BEACON_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.BEACON_INVALID
-        return self._beacon
+        res = self._beacon
+        return res
 
     def set_beacon(self, newval):
         """
@@ -4799,10 +4819,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.UPTIME_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.UPTIME_INVALID
-        return self._upTime
+        res = self._upTime
+        return res
 
     def get_usbCurrent(self):
         """
@@ -4812,10 +4834,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.USBCURRENT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.USBCURRENT_INVALID
-        return self._usbCurrent
+        res = self._usbCurrent
+        return res
 
     def get_rebootCountdown(self):
         """
@@ -4827,10 +4851,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.REBOOTCOUNTDOWN_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.REBOOTCOUNTDOWN_INVALID
-        return self._rebootCountdown
+        res = self._rebootCountdown
+        return res
 
     def set_rebootCountdown(self, newval):
         rest_val = str(newval)
@@ -4845,10 +4871,12 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns YModule.USERVAR_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.USERVAR_INVALID
-        return self._userVar
+        res = self._userVar
+        return res
 
     def set_userVar(self, newval):
         """
@@ -6153,10 +6181,12 @@ class YSensor(YFunction):
 
         On failure, throws an exception or returns YSensor.UNIT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSensor.UNIT_INVALID
-        return self._unit
+        res = self._unit
+        return res
 
     def get_currentValue(self):
         """
@@ -6175,7 +6205,8 @@ class YSensor(YFunction):
         if res == YSensor.CURRENTVALUE_INVALID:
             res = self._currentValue
         res = res * self._iresol
-        return round(res) / self._iresol
+        res = round(res) / self._iresol
+        return res
 
     def set_lowestValue(self, newval):
         """
@@ -6204,7 +6235,8 @@ class YSensor(YFunction):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSensor.LOWESTVALUE_INVALID
         res = self._lowestValue * self._iresol
-        return round(res) / self._iresol
+        res = round(res) / self._iresol
+        return res
 
     def set_highestValue(self, newval):
         """
@@ -6233,7 +6265,8 @@ class YSensor(YFunction):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSensor.HIGHESTVALUE_INVALID
         res = self._highestValue * self._iresol
-        return round(res) / self._iresol
+        res = round(res) / self._iresol
+        return res
 
     def get_currentRawValue(self):
         """
@@ -6245,10 +6278,12 @@ class YSensor(YFunction):
 
         On failure, throws an exception or returns YSensor.CURRENTRAWVALUE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSensor.CURRENTRAWVALUE_INVALID
-        return self._currentRawValue
+        res = self._currentRawValue
+        return res
 
     def get_logFrequency(self):
         """
@@ -6260,10 +6295,12 @@ class YSensor(YFunction):
 
         On failure, throws an exception or returns YSensor.LOGFREQUENCY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSensor.LOGFREQUENCY_INVALID
-        return self._logFrequency
+        res = self._logFrequency
+        return res
 
     def set_logFrequency(self, newval):
         """
@@ -6292,10 +6329,12 @@ class YSensor(YFunction):
 
         On failure, throws an exception or returns YSensor.REPORTFREQUENCY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSensor.REPORTFREQUENCY_INVALID
-        return self._reportFrequency
+        res = self._reportFrequency
+        return res
 
     def set_reportFrequency(self, newval):
         """
@@ -6315,10 +6354,12 @@ class YSensor(YFunction):
         return self._setAttr("reportFrequency", rest_val)
 
     def get_calibrationParam(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSensor.CALIBRATIONPARAM_INVALID
-        return self._calibrationParam
+        res = self._calibrationParam
+        return res
 
     def set_calibrationParam(self, newval):
         rest_val = newval
@@ -6347,10 +6388,12 @@ class YSensor(YFunction):
 
         On failure, throws an exception or returns YSensor.RESOLUTION_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSensor.RESOLUTION_INVALID
-        return self._resolution
+        res = self._resolution
+        return res
 
     def get_sensorState(self):
         """
@@ -6363,10 +6406,12 @@ class YSensor(YFunction):
 
         On failure, throws an exception or returns YSensor.SENSORSTATE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSensor.SENSORSTATE_INVALID
-        return self._sensorState
+        res = self._sensorState
+        return res
 
     @staticmethod
     def FindSensor(func):

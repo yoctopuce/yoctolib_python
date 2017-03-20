@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_dualpower.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_dualpower.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindDualPower(), the high-level API for DualPower functions
 #*
@@ -105,10 +105,12 @@ class YDualPower(YFunction):
 
         On failure, throws an exception or returns YDualPower.POWERSTATE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDualPower.POWERSTATE_INVALID
-        return self._powerState
+        res = self._powerState
+        return res
 
     def get_powerControl(self):
         """
@@ -120,10 +122,12 @@ class YDualPower(YFunction):
 
         On failure, throws an exception or returns YDualPower.POWERCONTROL_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDualPower.POWERCONTROL_INVALID
-        return self._powerControl
+        res = self._powerControl
+        return res
 
     def set_powerControl(self, newval):
         """
@@ -148,10 +152,12 @@ class YDualPower(YFunction):
 
         On failure, throws an exception or returns YDualPower.EXTVOLTAGE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDualPower.EXTVOLTAGE_INVALID
-        return self._extVoltage
+        res = self._extVoltage
+        return res
 
     @staticmethod
     def FindDualPower(func):

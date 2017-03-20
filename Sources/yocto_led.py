@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_led.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_led.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindLed(), the high-level API for Led functions
 #*
@@ -102,10 +102,12 @@ class YLed(YFunction):
 
         On failure, throws an exception or returns YLed.POWER_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YLed.POWER_INVALID
-        return self._power
+        res = self._power
+        return res
 
     def set_power(self, newval):
         """
@@ -128,10 +130,12 @@ class YLed(YFunction):
 
         On failure, throws an exception or returns YLed.LUMINOSITY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YLed.LUMINOSITY_INVALID
-        return self._luminosity
+        res = self._luminosity
+        return res
 
     def set_luminosity(self, newval):
         """
@@ -155,10 +159,12 @@ class YLed(YFunction):
 
         On failure, throws an exception or returns YLed.BLINKING_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YLed.BLINKING_INVALID
-        return self._blinking
+        res = self._blinking
+        return res
 
     def set_blinking(self, newval):
         """

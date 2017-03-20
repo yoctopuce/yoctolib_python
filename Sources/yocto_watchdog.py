@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_watchdog.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_watchdog.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindWatchdog(), the high-level API for Watchdog functions
 #*
@@ -163,10 +163,12 @@ class YWatchdog(YFunction):
 
         On failure, throws an exception or returns YWatchdog.STATE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.STATE_INVALID
-        return self._state
+        res = self._state
+        return res
 
     def set_state(self, newval):
         """
@@ -193,10 +195,12 @@ class YWatchdog(YFunction):
 
         On failure, throws an exception or returns YWatchdog.STATEATPOWERON_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.STATEATPOWERON_INVALID
-        return self._stateAtPowerOn
+        res = self._stateAtPowerOn
+        return res
 
     def set_stateAtPowerOn(self, newval):
         """
@@ -223,10 +227,12 @@ class YWatchdog(YFunction):
 
         On failure, throws an exception or returns YWatchdog.MAXTIMEONSTATEA_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.MAXTIMEONSTATEA_INVALID
-        return self._maxTimeOnStateA
+        res = self._maxTimeOnStateA
+        return res
 
     def set_maxTimeOnStateA(self, newval):
         """
@@ -251,10 +257,12 @@ class YWatchdog(YFunction):
 
         On failure, throws an exception or returns YWatchdog.MAXTIMEONSTATEB_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.MAXTIMEONSTATEB_INVALID
-        return self._maxTimeOnStateB
+        res = self._maxTimeOnStateB
+        return res
 
     def set_maxTimeOnStateB(self, newval):
         """
@@ -279,10 +287,12 @@ class YWatchdog(YFunction):
 
         On failure, throws an exception or returns YWatchdog.OUTPUT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.OUTPUT_INVALID
-        return self._output
+        res = self._output
+        return res
 
     def set_output(self, newval):
         """
@@ -309,10 +319,12 @@ class YWatchdog(YFunction):
 
         On failure, throws an exception or returns YWatchdog.PULSETIMER_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.PULSETIMER_INVALID
-        return self._pulseTimer
+        res = self._pulseTimer
+        return res
 
     def set_pulseTimer(self, newval):
         rest_val = str(newval)
@@ -333,10 +345,12 @@ class YWatchdog(YFunction):
         return self._setAttr("pulseTimer", rest_val)
 
     def get_delayedPulseTimer(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.DELAYEDPULSETIMER_INVALID
-        return self._delayedPulseTimer
+        res = self._delayedPulseTimer
+        return res
 
     def set_delayedPulseTimer(self, newval):
         rest_val = str(newval.target) + ":" + str(newval.ms)
@@ -366,10 +380,12 @@ class YWatchdog(YFunction):
 
         On failure, throws an exception or returns YWatchdog.COUNTDOWN_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.COUNTDOWN_INVALID
-        return self._countdown
+        res = self._countdown
+        return res
 
     def get_autoStart(self):
         """
@@ -380,10 +396,12 @@ class YWatchdog(YFunction):
 
         On failure, throws an exception or returns YWatchdog.AUTOSTART_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.AUTOSTART_INVALID
-        return self._autoStart
+        res = self._autoStart
+        return res
 
     def set_autoStart(self, newval):
         """
@@ -408,10 +426,12 @@ class YWatchdog(YFunction):
 
         On failure, throws an exception or returns YWatchdog.RUNNING_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.RUNNING_INVALID
-        return self._running
+        res = self._running
+        return res
 
     def set_running(self, newval):
         """
@@ -449,10 +469,12 @@ class YWatchdog(YFunction):
 
         On failure, throws an exception or returns YWatchdog.TRIGGERDELAY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.TRIGGERDELAY_INVALID
-        return self._triggerDelay
+        res = self._triggerDelay
+        return res
 
     def set_triggerDelay(self, newval):
         """
@@ -476,10 +498,12 @@ class YWatchdog(YFunction):
 
         On failure, throws an exception or returns YWatchdog.TRIGGERDURATION_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YWatchdog.TRIGGERDURATION_INVALID
-        return self._triggerDuration
+        res = self._triggerDuration
+        return res
 
     def set_triggerDuration(self, newval):
         """

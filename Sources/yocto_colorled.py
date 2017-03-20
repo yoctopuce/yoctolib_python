@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorled.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_colorled.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindColorLed(), the high-level API for ColorLed functions
 #*
@@ -145,10 +145,12 @@ class YColorLed(YFunction):
 
         On failure, throws an exception or returns YColorLed.RGBCOLOR_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLed.RGBCOLOR_INVALID
-        return self._rgbColor
+        res = self._rgbColor
+        return res
 
     def set_rgbColor(self, newval):
         """
@@ -171,10 +173,12 @@ class YColorLed(YFunction):
 
         On failure, throws an exception or returns YColorLed.HSLCOLOR_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLed.HSLCOLOR_INVALID
-        return self._hslColor
+        res = self._hslColor
+        return res
 
     def set_hslColor(self, newval):
         """
@@ -190,10 +194,12 @@ class YColorLed(YFunction):
         return self._setAttr("hslColor", rest_val)
 
     def get_rgbMove(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLed.RGBMOVE_INVALID
-        return self._rgbMove
+        res = self._rgbMove
+        return res
 
     def set_rgbMove(self, newval):
         rest_val = str(newval.target) + ":" + str(newval.ms)
@@ -214,10 +220,12 @@ class YColorLed(YFunction):
         return self._setAttr("rgbMove", rest_val)
 
     def get_hslMove(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLed.HSLMOVE_INVALID
-        return self._hslMove
+        res = self._hslMove
+        return res
 
     def set_hslMove(self, newval):
         rest_val = str(newval.target) + ":" + str(newval.ms)
@@ -245,10 +253,12 @@ class YColorLed(YFunction):
 
         On failure, throws an exception or returns YColorLed.RGBCOLORATPOWERON_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLed.RGBCOLORATPOWERON_INVALID
-        return self._rgbColorAtPowerOn
+        res = self._rgbColorAtPowerOn
+        return res
 
     def set_rgbColorAtPowerOn(self, newval):
         """
@@ -272,10 +282,12 @@ class YColorLed(YFunction):
 
         On failure, throws an exception or returns YColorLed.BLINKSEQSIZE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLed.BLINKSEQSIZE_INVALID
-        return self._blinkSeqSize
+        res = self._blinkSeqSize
+        return res
 
     def get_blinkSeqMaxSize(self):
         """
@@ -285,10 +297,12 @@ class YColorLed(YFunction):
 
         On failure, throws an exception or returns YColorLed.BLINKSEQMAXSIZE_INVALID.
         """
+        # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLed.BLINKSEQMAXSIZE_INVALID
-        return self._blinkSeqMaxSize
+        res = self._blinkSeqMaxSize
+        return res
 
     def get_blinkSeqSignature(self):
         """
@@ -301,16 +315,20 @@ class YColorLed(YFunction):
 
         On failure, throws an exception or returns YColorLed.BLINKSEQSIGNATURE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLed.BLINKSEQSIGNATURE_INVALID
-        return self._blinkSeqSignature
+        res = self._blinkSeqSignature
+        return res
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLed.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_spiport.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_spiport.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindSpiPort(), the high-level API for SpiPort functions
 #*
@@ -165,10 +165,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.RXCOUNT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.RXCOUNT_INVALID
-        return self._rxCount
+        res = self._rxCount
+        return res
 
     def get_txCount(self):
         """
@@ -178,10 +180,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.TXCOUNT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.TXCOUNT_INVALID
-        return self._txCount
+        res = self._txCount
+        return res
 
     def get_errCount(self):
         """
@@ -191,10 +195,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.ERRCOUNT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.ERRCOUNT_INVALID
-        return self._errCount
+        res = self._errCount
+        return res
 
     def get_rxMsgCount(self):
         """
@@ -204,10 +210,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.RXMSGCOUNT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.RXMSGCOUNT_INVALID
-        return self._rxMsgCount
+        res = self._rxMsgCount
+        return res
 
     def get_txMsgCount(self):
         """
@@ -217,10 +225,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.TXMSGCOUNT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.TXMSGCOUNT_INVALID
-        return self._txMsgCount
+        res = self._txMsgCount
+        return res
 
     def get_lastMsg(self):
         """
@@ -230,10 +240,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.LASTMSG_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.LASTMSG_INVALID
-        return self._lastMsg
+        res = self._lastMsg
+        return res
 
     def get_currentJob(self):
         """
@@ -243,10 +255,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.CURRENTJOB_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.CURRENTJOB_INVALID
-        return self._currentJob
+        res = self._currentJob
+        return res
 
     def set_currentJob(self, newval):
         """
@@ -271,10 +285,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.STARTUPJOB_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.STARTUPJOB_INVALID
-        return self._startupJob
+        res = self._startupJob
+        return res
 
     def set_startupJob(self, newval):
         """
@@ -292,10 +308,12 @@ class YSpiPort(YFunction):
         return self._setAttr("startupJob", rest_val)
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval
@@ -312,10 +330,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.VOLTAGELEVEL_INVALID
-        return self._voltageLevel
+        res = self._voltageLevel
+        return res
 
     def set_voltageLevel(self, newval):
         """
@@ -349,10 +369,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.PROTOCOL_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.PROTOCOL_INVALID
-        return self._protocol
+        res = self._protocol
+        return res
 
     def set_protocol(self, newval):
         """
@@ -384,10 +406,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.SPIMODE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.SPIMODE_INVALID
-        return self._spiMode
+        res = self._spiMode
+        return res
 
     def set_spiMode(self, newval):
         """
@@ -414,10 +438,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.SSPOLARITY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.SSPOLARITY_INVALID
-        return self._ssPolarity
+        res = self._ssPolarity
+        return res
 
     def set_ssPolarity(self, newval):
         """
@@ -442,10 +468,12 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns YSpiPort.SHITFTSAMPLING_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSpiPort.SHITFTSAMPLING_INVALID
-        return self._shitftSampling
+        res = self._shitftSampling
+        return res
 
     def set_shitftSampling(self, newval):
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_segmenteddisplay.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_segmenteddisplay.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
 #*
@@ -91,10 +91,12 @@ class YSegmentedDisplay(YFunction):
 
         On failure, throws an exception or returns YSegmentedDisplay.DISPLAYEDTEXT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSegmentedDisplay.DISPLAYEDTEXT_INVALID
-        return self._displayedText
+        res = self._displayedText
+        return res
 
     def set_displayedText(self, newval):
         """
@@ -110,10 +112,12 @@ class YSegmentedDisplay(YFunction):
         return self._setAttr("displayedText", rest_val)
 
     def get_displayMode(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YSegmentedDisplay.DISPLAYMODE_INVALID
-        return self._displayMode
+        res = self._displayMode
+        return res
 
     def set_displayMode(self, newval):
         rest_val = str(newval)

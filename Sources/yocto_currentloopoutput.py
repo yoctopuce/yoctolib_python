@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_currentloopoutput.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_currentloopoutput.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
 #*
@@ -116,16 +116,20 @@ class YCurrentLoopOutput(YFunction):
 
         On failure, throws an exception or returns YCurrentLoopOutput.CURRENT_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCurrentLoopOutput.CURRENT_INVALID
-        return self._current
+        res = self._current
+        return res
 
     def get_currentTransition(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCurrentLoopOutput.CURRENTTRANSITION_INVALID
-        return self._currentTransition
+        res = self._currentTransition
+        return res
 
     def set_currentTransition(self, newval):
         rest_val = newval
@@ -153,10 +157,12 @@ class YCurrentLoopOutput(YFunction):
 
         On failure, throws an exception or returns YCurrentLoopOutput.CURRENTATSTARTUP_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCurrentLoopOutput.CURRENTATSTARTUP_INVALID
-        return self._currentAtStartUp
+        res = self._currentAtStartUp
+        return res
 
     def get_loopPower(self):
         """
@@ -169,10 +175,12 @@ class YCurrentLoopOutput(YFunction):
 
         On failure, throws an exception or returns YCurrentLoopOutput.LOOPPOWER_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YCurrentLoopOutput.LOOPPOWER_INVALID
-        return self._loopPower
+        res = self._loopPower
+        return res
 
     @staticmethod
     def FindCurrentLoopOutput(func):

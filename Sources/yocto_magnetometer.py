@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_magnetometer.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_magnetometer.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindMagnetometer(), the high-level API for Magnetometer functions
 #*
@@ -105,10 +105,12 @@ class YMagnetometer(YSensor):
 
         On failure, throws an exception or returns YMagnetometer.BANDWIDTH_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMagnetometer.BANDWIDTH_INVALID
-        return self._bandwidth
+        res = self._bandwidth
+        return res
 
     def set_bandwidth(self, newval):
         """
@@ -133,10 +135,12 @@ class YMagnetometer(YSensor):
 
         On failure, throws an exception or returns YMagnetometer.XVALUE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMagnetometer.XVALUE_INVALID
-        return self._xValue
+        res = self._xValue
+        return res
 
     def get_yValue(self):
         """
@@ -147,10 +151,12 @@ class YMagnetometer(YSensor):
 
         On failure, throws an exception or returns YMagnetometer.YVALUE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMagnetometer.YVALUE_INVALID
-        return self._yValue
+        res = self._yValue
+        return res
 
     def get_zValue(self):
         """
@@ -161,10 +167,12 @@ class YMagnetometer(YSensor):
 
         On failure, throws an exception or returns YMagnetometer.ZVALUE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMagnetometer.ZVALUE_INVALID
-        return self._zValue
+        res = self._zValue
+        return res
 
     @staticmethod
     def FindMagnetometer(func):

@@ -1,1 +1,2 @@
-- Add UTF-8 encoding tag in all source files
+- Add YRangeFinder class
+- Fix race condition that can lead to a crash (very rare)

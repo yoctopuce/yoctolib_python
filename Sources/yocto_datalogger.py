@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_datalogger.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_datalogger.py 26826 2017-03-17 11:20:57Z mvuilleu $
 #*
 #* Implements yFindDataLogger(), the high-level API for DataLogger
 #*
@@ -120,10 +120,12 @@ class YDataLogger(YFunction):
 
         On failure, throws an exception or returns YDataLogger.CURRENTRUNINDEX_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDataLogger.CURRENTRUNINDEX_INVALID
-        return self._currentRunIndex
+        res = self._currentRunIndex
+        return res
 
     def get_timeUTC(self):
         """
@@ -133,10 +135,12 @@ class YDataLogger(YFunction):
 
         On failure, throws an exception or returns YDataLogger.TIMEUTC_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDataLogger.TIMEUTC_INVALID
-        return self._timeUTC
+        res = self._timeUTC
+        return res
 
     def set_timeUTC(self, newval):
         """
@@ -160,10 +164,12 @@ class YDataLogger(YFunction):
 
         On failure, throws an exception or returns YDataLogger.RECORDING_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDataLogger.RECORDING_INVALID
-        return self._recording
+        res = self._recording
+        return res
 
     def set_recording(self, newval):
         """
@@ -189,10 +195,12 @@ class YDataLogger(YFunction):
 
         On failure, throws an exception or returns YDataLogger.AUTOSTART_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDataLogger.AUTOSTART_INVALID
-        return self._autoStart
+        res = self._autoStart
+        return res
 
     def set_autoStart(self, newval):
         """
@@ -212,16 +220,19 @@ class YDataLogger(YFunction):
 
     def get_beaconDriven(self):
         """
-        Return true if the data logger is synchronised with the localization beacon.
+        Returns true if the data logger is synchronised with the localization beacon.
 
-        @return either YDataLogger.BEACONDRIVEN_OFF or YDataLogger.BEACONDRIVEN_ON
+        @return either YDataLogger.BEACONDRIVEN_OFF or YDataLogger.BEACONDRIVEN_ON, according to true if
+        the data logger is synchronised with the localization beacon
 
         On failure, throws an exception or returns YDataLogger.BEACONDRIVEN_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDataLogger.BEACONDRIVEN_INVALID
-        return self._beaconDriven
+        res = self._beaconDriven
+        return res
 
     def set_beaconDriven(self, newval):
         """
@@ -240,10 +251,12 @@ class YDataLogger(YFunction):
         return self._setAttr("beaconDriven", rest_val)
 
     def get_clearHistory(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDataLogger.CLEARHISTORY_INVALID
-        return self._clearHistory
+        res = self._clearHistory
+        return res
 
     def set_clearHistory(self, newval):
         rest_val = "1" if newval > 0 else "0"

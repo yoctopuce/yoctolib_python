@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_altitude.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_altitude.py 26826 2017-03-17 11:20:57Z mvuilleu $
 #*
 #* Implements yFindAltitude(), the high-level API for Altitude functions
 #*
@@ -49,7 +49,7 @@ class YAltitude(YSensor):
     """
     The Yoctopuce class YAltitude allows you to read and configure Yoctopuce altitude
     sensors. It inherits from the YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    to register callback functions, to access the autonomous datalogger.
     This class adds the ability to configure the barometric pressure adjusted to
     sea level (QNH) for barometric sensors.
 
@@ -124,10 +124,12 @@ class YAltitude(YSensor):
 
         On failure, throws an exception or returns YAltitude.QNH_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAltitude.QNH_INVALID
-        return self._qnh
+        res = self._qnh
+        return res
 
     def get_technology(self):
         """
@@ -139,10 +141,12 @@ class YAltitude(YSensor):
 
         On failure, throws an exception or returns YAltitude.TECHNOLOGY_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YAltitude.TECHNOLOGY_INVALID
-        return self._technology
+        res = self._technology
+        return res
 
     @staticmethod
     def FindAltitude(func):

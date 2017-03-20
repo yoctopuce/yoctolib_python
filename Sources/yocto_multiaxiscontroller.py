@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_multiaxiscontroller.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_multiaxiscontroller.py 26675 2017-02-28 13:45:40Z seb $
 #*
 #* Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
 #*
@@ -98,10 +98,12 @@ class YMultiAxisController(YFunction):
 
         On failure, throws an exception or returns YMultiAxisController.NAXIS_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMultiAxisController.NAXIS_INVALID
-        return self._nAxis
+        res = self._nAxis
+        return res
 
     def set_nAxis(self, newval):
         """
@@ -127,16 +129,20 @@ class YMultiAxisController(YFunction):
 
         On failure, throws an exception or returns YMultiAxisController.GLOBALSTATE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMultiAxisController.GLOBALSTATE_INVALID
-        return self._globalState
+        res = self._globalState
+        return res
 
     def get_command(self):
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YMultiAxisController.COMMAND_INVALID
-        return self._command
+        res = self._command
+        return res
 
     def set_command(self, newval):
         rest_val = newval

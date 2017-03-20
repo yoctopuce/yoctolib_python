@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_lightsensor.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_lightsensor.py 26826 2017-03-17 11:20:57Z mvuilleu $
 #*
 #* Implements yFindLightSensor(), the high-level API for LightSensor functions
 #*
@@ -49,7 +49,7 @@ class YLightSensor(YSensor):
     """
     The Yoctopuce class YLightSensor allows you to read and configure Yoctopuce light
     sensors. It inherits from YSensor class the core functions to read measurements,
-    register callback functions, access to the autonomous datalogger.
+    to register callback functions, to access the autonomous datalogger.
     This class adds the ability to easily perform a one-point linear calibration
     to compensate the effect of a glass or filter placed in front of the sensor.
     For some light sensors with several working modes, this class can select the
@@ -116,14 +116,16 @@ class YLightSensor(YSensor):
 
         On failure, throws an exception or returns YLightSensor.MEASURETYPE_INVALID.
         """
+        # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YLightSensor.MEASURETYPE_INVALID
-        return self._measureType
+        res = self._measureType
+        return res
 
     def set_measureType(self, newval):
         """
-        Modify the light sensor type used in the device. The measure can either
+        Modifies the light sensor type used in the device. The measure can either
         approximate the response of the human eye, focus on a specific light
         spectrum, depending on the capabilities of the light-sensitive cell.
         Remember to call the saveToFlash() method of the module if the
