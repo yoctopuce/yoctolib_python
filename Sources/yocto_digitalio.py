@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_digitalio.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_digitalio.py 26949 2017-03-28 15:36:15Z mvuilleu $
 #*
 #* Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #*
@@ -63,6 +63,7 @@ class YDigitalIO(YFunction):
     PORTDIRECTION_INVALID = YAPI.INVALID_UINT
     PORTOPENDRAIN_INVALID = YAPI.INVALID_UINT
     PORTPOLARITY_INVALID = YAPI.INVALID_UINT
+    PORTDIAGS_INVALID = YAPI.INVALID_UINT
     PORTSIZE_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
     OUTPUTVOLTAGE_USB_5V = 0
@@ -80,6 +81,7 @@ class YDigitalIO(YFunction):
         self._portDirection = YDigitalIO.PORTDIRECTION_INVALID
         self._portOpenDrain = YDigitalIO.PORTOPENDRAIN_INVALID
         self._portPolarity = YDigitalIO.PORTPOLARITY_INVALID
+        self._portDiags = YDigitalIO.PORTDIAGS_INVALID
         self._portSize = YDigitalIO.PORTSIZE_INVALID
         self._outputVoltage = YDigitalIO.OUTPUTVOLTAGE_INVALID
         self._command = YDigitalIO.COMMAND_INVALID
@@ -98,6 +100,9 @@ class YDigitalIO(YFunction):
             return 1
         if member.name == "portPolarity":
             self._portPolarity = member.ivalue
+            return 1
+        if member.name == "portDiags":
+            self._portDiags = member.ivalue
             return 1
         if member.name == "portSize":
             self._portSize = member.ivalue
@@ -234,6 +239,23 @@ class YDigitalIO(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("portPolarity", rest_val)
+
+    def get_portDiags(self):
+        """
+        Returns the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only). Bit 0 indicates a shortcut on
+        output 0, etc. Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
+        During normal use, all diagnostic bits should stay clear.
+
+        @return an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
+
+        On failure, throws an exception or returns YDigitalIO.PORTDIAGS_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YDigitalIO.PORTDIAGS_INVALID
+        res = self._portDiags
+        return res
 
     def get_portSize(self):
         """

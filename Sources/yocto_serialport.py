@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_serialport.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -458,7 +458,6 @@ class YSerialPort(YFunction):
         return obj
 
     def sendCommand(self, text):
-        # // may throw an exception
         return self.set_command(text)
 
     def reset(self):
@@ -472,7 +471,7 @@ class YSerialPort(YFunction):
         self._rxptr = 0
         self._rxbuffptr = 0
         self._rxbuff = bytearray(0)
-        # // may throw an exception
+        
         return self.sendCommand("Z")
 
     def writeByte(self, code):
@@ -485,7 +484,6 @@ class YSerialPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         return self.sendCommand("$" + ("%02X" % code))
 
     def writeStr(self, text):
@@ -505,7 +503,7 @@ class YSerialPort(YFunction):
         buff = YString2Byte(text)
         bufflen = len(buff)
         if bufflen < 100:
-            #
+            # // if string is pure text, we can send it as a simple command (faster)
             ch = 0x20
             idx = 0
             while (idx < bufflen) and (ch != 0):
@@ -515,7 +513,6 @@ class YSerialPort(YFunction):
                 else:
                     ch = 0
             if idx >= bufflen:
-                #
                 return self.sendCommand("+" + text)
         # // send string using file upload
         return self._upload("txdata", buff)
@@ -530,7 +527,6 @@ class YSerialPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         return self._upload("txdata", buff)
 
     def writeArray(self, byteList):
@@ -555,7 +551,7 @@ class YSerialPort(YFunction):
             hexb = byteList[idx]
             buff[idx] = hexb
             idx = idx + 1
-        # // may throw an exception
+        
         res = self._upload("txdata", buff)
         return res
 
@@ -576,7 +572,6 @@ class YSerialPort(YFunction):
         # res
         bufflen = len(hexString)
         if bufflen < 100:
-            #
             return self.sendCommand("$" + hexString)
         bufflen = ((bufflen) >> (1))
         buff = bytearray(bufflen)
@@ -585,7 +580,7 @@ class YSerialPort(YFunction):
             hexb = int((hexString)[2 * idx: 2 * idx + 2], 16)
             buff[idx] = hexb
             idx = idx + 1
-        # // may throw an exception
+        
         res = self._upload("txdata", buff)
         return res
 
@@ -606,7 +601,7 @@ class YSerialPort(YFunction):
         buff = YString2Byte("" + text + "\r\n")
         bufflen = len(buff)-2
         if bufflen < 100:
-            #
+            # // if string is pure text, we can send it as a simple command (faster)
             ch = 0x20
             idx = 0
             while (idx < bufflen) and (ch != 0):
@@ -616,7 +611,6 @@ class YSerialPort(YFunction):
                 else:
                     ch = 0
             if idx >= bufflen:
-                #
                 return self.sendCommand("!" + text)
         # // send string using file upload
         return self._upload("txdata", buff)
@@ -671,7 +665,7 @@ class YSerialPort(YFunction):
         # // still mixed, need to process character by character
         self._rxptr = currpos
         
-        # // may throw an exception
+        
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=1")
         bufflen = len(buff) - 1
         endpos = 0
@@ -705,7 +699,7 @@ class YSerialPort(YFunction):
         # res
         if nChars > 65535:
             nChars = 65535
-        # // may throw an exception
+        
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -738,7 +732,7 @@ class YSerialPort(YFunction):
         # res
         if nChars > 65535:
             nChars = 65535
-        # // may throw an exception
+        
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -776,7 +770,7 @@ class YSerialPort(YFunction):
         res = []
         if nChars > 65535:
             nChars = 65535
-        # // may throw an exception
+        
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -815,7 +809,7 @@ class YSerialPort(YFunction):
         # res
         if nBytes > 65535:
             nBytes = 65535
-        # // may throw an exception
+        
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nBytes)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -854,7 +848,7 @@ class YSerialPort(YFunction):
         msgarr = []
         # msglen
         # res
-        # // may throw an exception
+        
         url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&len=1&maxw=1"
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
@@ -897,7 +891,7 @@ class YSerialPort(YFunction):
         # msglen
         res = []
         # idx
-        # // may throw an exception
+        
         url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&pat=" + pattern
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
@@ -946,7 +940,7 @@ class YSerialPort(YFunction):
         # buff
         # bufflen
         # res
-        # // may throw an exception
+        
         buff = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
         bufflen = len(buff) - 1
         while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
@@ -972,7 +966,7 @@ class YSerialPort(YFunction):
         msgarr = []
         # msglen
         # res
-        # // may throw an exception
+        
         url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + query
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
@@ -1014,7 +1008,6 @@ class YSerialPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         return self.set_currentJob(jobfile)
 
     def set_RTS(self, val):
@@ -1028,7 +1021,6 @@ class YSerialPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         return self.sendCommand("R" + str(int(val)))
 
     def get_CTS(self):
@@ -1042,7 +1034,7 @@ class YSerialPort(YFunction):
         """
         # buff
         # res
-        # // may throw an exception
+        
         buff = self._download("cts.txt")
         if not (len(buff) == 1):
             self._throw(YAPI.IO_ERROR, "invalid CTS reply")
@@ -1061,7 +1053,6 @@ class YSerialPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         return self.sendCommand(":" + hexString)
 
     def queryMODBUS(self, slaveNo, pduBytes):
@@ -1097,7 +1088,7 @@ class YSerialPort(YFunction):
         while i < len(pduBytes):
             cmd = "" + cmd + "" + ("%02X" % ((pduBytes[i]) & (0xff)))
             i = i + 1
-        # // may throw an exception
+        
         url = "rxmsg.json?cmd=:" + cmd + "&pat=:" + pat
         msgs = self._download(url)
         reps = self._json_get_array(msgs)
@@ -1150,7 +1141,7 @@ class YSerialPort(YFunction):
         pdu.append(((nBits) >> (8)))
         pdu.append(((nBits) & (0xff)))
         
-        # // may throw an exception
+        
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1203,7 +1194,7 @@ class YSerialPort(YFunction):
         pdu.append(((nBits) >> (8)))
         pdu.append(((nBits) & (0xff)))
         
-        # // may throw an exception
+        
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1255,7 +1246,7 @@ class YSerialPort(YFunction):
         pdu.append(((nWords) >> (8)))
         pdu.append(((nWords) & (0xff)))
         
-        # // may throw an exception
+        
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1300,7 +1291,7 @@ class YSerialPort(YFunction):
         pdu.append(((nWords) >> (8)))
         pdu.append(((nWords) & (0xff)))
         
-        # // may throw an exception
+        
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1345,7 +1336,7 @@ class YSerialPort(YFunction):
         pdu.append(value)
         pdu.append(0x00)
         
-        # // may throw an exception
+        
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1401,7 +1392,7 @@ class YSerialPort(YFunction):
         if mask != 1:
             pdu.append(val)
         
-        # // may throw an exception
+        
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1435,7 +1426,7 @@ class YSerialPort(YFunction):
         pdu.append(((value) >> (8)))
         pdu.append(((value) & (0xff)))
         
-        # // may throw an exception
+        
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1481,7 +1472,7 @@ class YSerialPort(YFunction):
             pdu.append(((val) & (0xff)))
             regpos = regpos + 1
         
-        # // may throw an exception
+        
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1535,7 +1526,7 @@ class YSerialPort(YFunction):
             pdu.append(((val) & (0xff)))
             regpos = regpos + 1
         
-        # // may throw an exception
+        
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res

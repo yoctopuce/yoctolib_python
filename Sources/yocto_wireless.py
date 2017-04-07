@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_wireless.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_wireless.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindWireless(), the high-level API for Wireless functions
 #*
@@ -344,7 +344,7 @@ class YWireless(YFunction):
         # json
         wlanlist = []
         res = []
-        # // may throw an exception
+        
         json = self._download("wlan.json?by=name")
         wlanlist = self._json_get_array(json)
         del res[:]

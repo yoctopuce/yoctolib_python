@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_cellular.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -684,7 +684,7 @@ class YCellular(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # retcode
-        # // may throw an exception
+        
         retcode = self.set_dataReceived(0)
         if retcode != YAPI.SUCCESS:
             return retcode
@@ -735,7 +735,6 @@ class YCellular(YFunction):
         # // max 2 minutes (each iteration may take up to 5 seconds if waiting)
         waitMore = 24
         while waitMore > 0:
-            #
             buff = self._download(cmd)
             bufflen = len(buff)
             buffstr = YByte2String(buff)
@@ -744,13 +743,13 @@ class YCellular(YFunction):
             while (idx > 0) and (YGetByte(buff, idx) != 64) and (YGetByte(buff, idx) != 10) and (YGetByte(buff, idx) != 13):
                 idx = idx - 1
             if YGetByte(buff, idx) == 64:
-                #
+                # // continuation detected
                 suffixlen = bufflen - idx
                 cmd = "at.txt?cmd=" + (buffstr)[buffstrlen - suffixlen: buffstrlen - suffixlen + suffixlen]
                 buffstr = (buffstr)[0: 0 + buffstrlen - suffixlen]
                 waitMore = waitMore - 1
             else:
-                #
+                # // request complete
                 waitMore = 0
             res = "" + res + "" + buffstr
         return res
@@ -769,7 +768,7 @@ class YCellular(YFunction):
         # idx
         # slen
         res = []
-        # // may throw an exception
+        
         cops = self._AT("+COPS=?")
         slen = len(cops)
         del res[:]
@@ -812,7 +811,7 @@ class YCellular(YFunction):
         # tad
         # oper
         res = []
-        # // may throw an exception
+        
         moni = self._AT("+CCED=0;#MONI=7;#MONI")
         mccs = (moni)[7: 7 + 3]
         if (mccs)[0: 0 + 1] == "0":

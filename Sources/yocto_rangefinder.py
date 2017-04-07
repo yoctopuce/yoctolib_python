@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_rangefinder.py 26826 2017-03-17 11:20:57Z mvuilleu $
+#* $Id: yocto_rangefinder.py 26996 2017-03-30 16:18:14Z seb $
 #*
 #* Implements yFindRangeFinder(), the high-level API for RangeFinder functions
 #*
@@ -231,7 +231,6 @@ class YRangeFinder(YSensor):
                 On failure, throws an exception or return YAPI.INVALID_DOUBLE.
         """
         # hwcal
-        
         hwcal = self.get_hardwareCalibration()
         if not ((hwcal)[0: 0 + 1] == "@"):
             return YAPI.INVALID_DOUBLE
@@ -275,7 +274,6 @@ class YRangeFinder(YSensor):
                 On failure, throws an exception or returns a negative error code.
         """
         # distmm
-        
         if self.get_unit() == "\"":
             distmm = round(targetDist * 25.4)
         else:
@@ -296,7 +294,6 @@ class YRangeFinder(YSensor):
                 On failure, throws an exception or returns a negative error code.
         """
         # distmm
-        
         if self.get_unit() == "\"":
             distmm = round(targetDist * 25.4)
         else:

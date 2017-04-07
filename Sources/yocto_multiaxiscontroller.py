@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_multiaxiscontroller.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_multiaxiscontroller.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
 #*
@@ -181,7 +181,6 @@ class YMultiAxisController(YFunction):
         return obj
 
     def sendCommand(self, command):
-        # //may throw an exception
         return self.set_command(command)
 
     def reset(self):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_carbondioxide.py 26826 2017-03-17 11:20:57Z mvuilleu $
+#* $Id: yocto_carbondioxide.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
 #*
@@ -177,7 +177,6 @@ class YCarbonDioxide(YSensor):
         return self.set_command("BC")
 
     def triggetBaselineCalibration(self):
-        # // may throw an exception
         return self.triggerBaselineCalibration()
 
     def triggerZeroCalibration(self):
@@ -200,7 +199,6 @@ class YCarbonDioxide(YSensor):
         return self.set_command("ZC")
 
     def triggetZeroCalibration(self):
-        # // may throw an exception
         return self.triggerZeroCalibration()
 
     def nextCarbonDioxide(self):

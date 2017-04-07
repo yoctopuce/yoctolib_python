@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupmonitor.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_wakeupmonitor.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
 #*
@@ -276,7 +276,6 @@ class YWakeUpMonitor(YFunction):
         """
         Forces a wake up.
         """
-        # // may throw an exception
         return self.set_wakeUpState(YWakeUpMonitor.WAKEUPSTATE_AWAKE)
 
     def sleep(self, secBeforeSleep):

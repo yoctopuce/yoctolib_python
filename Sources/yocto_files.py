@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_files.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -185,7 +185,7 @@ class YFiles(YFunction):
     def sendCommand(self, command):
         # url
         url = "files.json?a=" + command
-        # // may throw an exception
+        
         return self._download(url)
 
     def format_fs(self):

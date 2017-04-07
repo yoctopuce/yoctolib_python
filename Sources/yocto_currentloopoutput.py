@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_currentloopoutput.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_currentloopoutput.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
 #*
@@ -231,7 +231,7 @@ class YCurrentLoopOutput(YFunction):
         if mA_target > 21.0:
             mA_target = 21.0
         newval = "" + str(int(round(mA_target*1000))) + ":" + str(int(ms_duration))
-        # // may throw an exception
+        
         return self.set_currentTransition(newval)
 
     def nextCurrentLoopOutput(self):

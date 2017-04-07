@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_motor.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_motor.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindMotor(), the high-level API for Motor functions
 #*
@@ -450,7 +450,6 @@ class YMotor(YFunction):
         is running properly. Otherwise, the motor is automatically stopped after the specified
         timeout. Calling a motor <i>set</i> function implicitely rearms the failsafe timer.
         """
-        # // may throw an exception
         return self.set_command("K")
 
     def resetStatus(self):
@@ -458,7 +457,6 @@ class YMotor(YFunction):
         Reset the controller state to IDLE. This function must be invoked explicitely
         after any error condition is signaled.
         """
-        # // may throw an exception
         return self.set_motorStatus(YMotor.MOTORSTATUS_IDLE)
 
     def drivingForceMove(self, targetPower, delay):

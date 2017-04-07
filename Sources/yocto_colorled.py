@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorled.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_colorled.py 27118 2017-04-06 22:38:36Z seb $
 #*
 #* Implements yFindColorLed(), the high-level API for ColorLed functions
 #*
@@ -367,7 +367,6 @@ class YColorLed(YFunction):
         return obj
 
     def sendCommand(self, command):
-        # //may throw an exception
         return self.set_command(command)
 
     def addHslMoveToBlinkSeq(self, HSLcolor, msDelay):

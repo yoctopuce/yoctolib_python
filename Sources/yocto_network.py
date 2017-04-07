@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_network.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -983,7 +983,7 @@ class YNetwork(YFunction):
         @return a string with the result of the ping.
         """
         # content
-        # // may throw an exception
+        
         content = self._download("ping.txt?host=" + host)
         return YByte2String(content)
 
@@ -998,8 +998,6 @@ class YNetwork(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // Rewrite the callback method to trigger the callback
-        # // may throw an exception
         return self.set_callbackMethod(self.get_callbackMethod())
 
     def nextNetwork(self):

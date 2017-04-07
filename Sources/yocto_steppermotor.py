@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_steppermotor.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_steppermotor.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #*
@@ -541,7 +541,6 @@ class YStepperMotor(YFunction):
         return obj
 
     def sendCommand(self, command):
-        # //may throw an exception
         return self.set_command(command)
 
     def reset(self):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupschedule.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_wakeupschedule.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #*
@@ -326,7 +326,7 @@ class YWakeUpSchedule(YFunction):
         Returns all the minutes of each hour that are scheduled for wake up.
         """
         # res
-        # // may throw an exception
+        
         res = self.get_minutesB()
         res = ((res) << (30))
         res = res + self.get_minutesA()
@@ -342,7 +342,6 @@ class YWakeUpSchedule(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         self.set_minutesA(((bitmap) & (0x3fffffff)))
         bitmap = ((bitmap) >> (30))
         return self.set_minutesB(((bitmap) & (0x3fffffff)))

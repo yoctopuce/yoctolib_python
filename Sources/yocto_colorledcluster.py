@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_colorledcluster.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -219,7 +219,6 @@ class YColorLedCluster(YFunction):
         return obj
 
     def sendCommand(self, command):
-        # //may throw an exception
         return self.set_command(command)
 
     def set_rgbColor(self, ledIndex, count, rgbValue):
@@ -502,7 +501,6 @@ class YColorLedCluster(YFunction):
         return self.sendCommand("WL")
 
     def saveLedsState(self):
-        # // may throw an exception
         return self.sendCommand("WL")
 
     def saveBlinkSeq(self, seqIndex):
@@ -532,7 +530,6 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         return self._upload("rgb:0:" + str(int(ledIndex)), buff)
 
     def set_rgbColorArray(self, ledIndex, rgbList):
@@ -562,7 +559,7 @@ class YColorLedCluster(YFunction):
             buff[3*idx+1] = ((((rgb) >> (8))) & (255))
             buff[3*idx+2] = ((rgb) & (255))
             idx = idx + 1
-        # // may throw an exception
+        
         res = self._upload("rgb:0:" + str(int(ledIndex)), buff)
         return res
 
@@ -593,7 +590,7 @@ class YColorLedCluster(YFunction):
             buff[3*idx+1] = ((((rgb) >> (8))) & (255))
             buff[3*idx+2] = ((rgb) & (255))
             idx = idx + 1
-        # // may throw an exception
+        
         res = self._upload("rgb:" + str(int(delay)), buff)
         return res
 
@@ -610,7 +607,6 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         return self._upload("hsl:0:" + str(int(ledIndex)), buff)
 
     def set_hslColorArray(self, ledIndex, hslList):
@@ -640,7 +636,7 @@ class YColorLedCluster(YFunction):
             buff[3*idx+1] = ((((hsl) >> (8))) & (255))
             buff[3*idx+2] = ((hsl) & (255))
             idx = idx + 1
-        # // may throw an exception
+        
         res = self._upload("hsl:0:" + str(int(ledIndex)), buff)
         return res
 
@@ -671,7 +667,7 @@ class YColorLedCluster(YFunction):
             buff[3*idx+1] = ((((hsl) >> (8))) & (255))
             buff[3*idx+2] = ((hsl) & (255))
             idx = idx + 1
-        # // may throw an exception
+        
         res = self._upload("hsl:" + str(int(delay)), buff)
         return res
 
@@ -688,7 +684,6 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns an empty binary buffer.
         """
-        # // may throw an exception
         return self._download("rgb.bin?typ=0&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
 
     def get_rgbColorArray(self, ledIndex, count):
@@ -710,7 +705,7 @@ class YColorLedCluster(YFunction):
         # r
         # g
         # b
-        # // may throw an exception
+        
         buff = self._download("rgb.bin?typ=0&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
         del res[:]
         
@@ -743,7 +738,7 @@ class YColorLedCluster(YFunction):
         # r
         # g
         # b
-        # // may throw an exception
+        
         buff = self._download("rgb.bin?typ=4&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
         del res[:]
         
@@ -774,7 +769,7 @@ class YColorLedCluster(YFunction):
         res = []
         # idx
         # seq
-        # // may throw an exception
+        
         buff = self._download("rgb.bin?typ=1&pos=" + str(int(ledIndex)) + "&len=" + str(int(count)))
         del res[:]
         
@@ -806,7 +801,7 @@ class YColorLedCluster(YFunction):
         # hl
         # lh
         # ll
-        # // may throw an exception
+        
         buff = self._download("rgb.bin?typ=2&pos=" + str(int(4*seqIndex)) + "&len=" + str(int(4*count)))
         del res[:]
         
@@ -837,7 +832,7 @@ class YColorLedCluster(YFunction):
         # idx
         # lh
         # ll
-        # // may throw an exception
+        
         buff = self._download("rgb.bin?typ=6&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
         del res[:]
         
@@ -865,7 +860,7 @@ class YColorLedCluster(YFunction):
         res = []
         # idx
         # started
-        # // may throw an exception
+        
         buff = self._download("rgb.bin?typ=5&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
         del res[:]
         
@@ -892,7 +887,7 @@ class YColorLedCluster(YFunction):
         res = []
         # idx
         # started
-        # // may throw an exception
+        
         buff = self._download("rgb.bin?typ=3&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
         del res[:]
         

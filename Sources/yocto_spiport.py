@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_spiport.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_spiport.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindSpiPort(), the high-level API for SpiPort functions
 #*
@@ -524,7 +524,6 @@ class YSpiPort(YFunction):
         return obj
 
     def sendCommand(self, text):
-        # // may throw an exception
         return self.set_command(text)
 
     def reset(self):
@@ -538,7 +537,7 @@ class YSpiPort(YFunction):
         self._rxptr = 0
         self._rxbuffptr = 0
         self._rxbuff = bytearray(0)
-        # // may throw an exception
+        
         return self.sendCommand("Z")
 
     def writeByte(self, code):
@@ -551,7 +550,6 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         return self.sendCommand("$" + ("%02X" % code))
 
     def writeStr(self, text):
@@ -571,7 +569,7 @@ class YSpiPort(YFunction):
         buff = YString2Byte(text)
         bufflen = len(buff)
         if bufflen < 100:
-            #
+            # // if string is pure text, we can send it as a simple command (faster)
             ch = 0x20
             idx = 0
             while (idx < bufflen) and (ch != 0):
@@ -581,7 +579,6 @@ class YSpiPort(YFunction):
                 else:
                     ch = 0
             if idx >= bufflen:
-                #
                 return self.sendCommand("+" + text)
         # // send string using file upload
         return self._upload("txdata", buff)
@@ -596,7 +593,6 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         return self._upload("txdata", buff)
 
     def writeArray(self, byteList):
@@ -621,7 +617,7 @@ class YSpiPort(YFunction):
             hexb = byteList[idx]
             buff[idx] = hexb
             idx = idx + 1
-        # // may throw an exception
+        
         res = self._upload("txdata", buff)
         return res
 
@@ -642,7 +638,6 @@ class YSpiPort(YFunction):
         # res
         bufflen = len(hexString)
         if bufflen < 100:
-            #
             return self.sendCommand("$" + hexString)
         bufflen = ((bufflen) >> (1))
         buff = bytearray(bufflen)
@@ -651,7 +646,7 @@ class YSpiPort(YFunction):
             hexb = int((hexString)[2 * idx: 2 * idx + 2], 16)
             buff[idx] = hexb
             idx = idx + 1
-        # // may throw an exception
+        
         res = self._upload("txdata", buff)
         return res
 
@@ -672,7 +667,7 @@ class YSpiPort(YFunction):
         buff = YString2Byte("" + text + "\r\n")
         bufflen = len(buff)-2
         if bufflen < 100:
-            #
+            # // if string is pure text, we can send it as a simple command (faster)
             ch = 0x20
             idx = 0
             while (idx < bufflen) and (ch != 0):
@@ -682,7 +677,6 @@ class YSpiPort(YFunction):
                 else:
                     ch = 0
             if idx >= bufflen:
-                #
                 return self.sendCommand("!" + text)
         # // send string using file upload
         return self._upload("txdata", buff)
@@ -737,7 +731,7 @@ class YSpiPort(YFunction):
         # // still mixed, need to process character by character
         self._rxptr = currpos
         
-        # // may throw an exception
+        
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=1")
         bufflen = len(buff) - 1
         endpos = 0
@@ -771,7 +765,7 @@ class YSpiPort(YFunction):
         # res
         if nChars > 65535:
             nChars = 65535
-        # // may throw an exception
+        
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -804,7 +798,7 @@ class YSpiPort(YFunction):
         # res
         if nChars > 65535:
             nChars = 65535
-        # // may throw an exception
+        
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -842,7 +836,7 @@ class YSpiPort(YFunction):
         res = []
         if nChars > 65535:
             nChars = 65535
-        # // may throw an exception
+        
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -881,7 +875,7 @@ class YSpiPort(YFunction):
         # res
         if nBytes > 65535:
             nBytes = 65535
-        # // may throw an exception
+        
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nBytes)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -920,7 +914,7 @@ class YSpiPort(YFunction):
         msgarr = []
         # msglen
         # res
-        # // may throw an exception
+        
         url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&len=1&maxw=1"
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
@@ -963,7 +957,7 @@ class YSpiPort(YFunction):
         # msglen
         res = []
         # idx
-        # // may throw an exception
+        
         url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&pat=" + pattern
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
@@ -1012,7 +1006,7 @@ class YSpiPort(YFunction):
         # buff
         # bufflen
         # res
-        # // may throw an exception
+        
         buff = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
         bufflen = len(buff) - 1
         while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
@@ -1038,7 +1032,7 @@ class YSpiPort(YFunction):
         msgarr = []
         # msglen
         # res
-        # // may throw an exception
+        
         url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + query
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
@@ -1080,7 +1074,6 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         return self.set_currentJob(jobfile)
 
     def set_SS(self, val):
@@ -1094,7 +1087,6 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         return self.sendCommand("S" + str(int(val)))
 
     def nextSpiPort(self):

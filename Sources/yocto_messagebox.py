@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_messagebox.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -126,10 +126,10 @@ class YSms(object):
         # i
         
         if self._alphab == 0:
-            #
+            # // using GSM standard 7-bit alphabet
             return self._mbox.gsm2str(self._udata)
         if self._alphab == 2:
-            #
+            # // using UCS-2 alphabet
             isosize = ((len(self._udata)) >> (1))
             isolatin = bytearray(isosize)
             i = 0
@@ -148,10 +148,10 @@ class YSms(object):
         # i
         
         if self._alphab == 0:
-            #
+            # // using GSM standard 7-bit alphabet
             return self._mbox.gsm2unicode(self._udata)
         if self._alphab == 2:
-            #
+            # // using UCS-2 alphabet
             unisize = ((len(self._udata)) >> (1))
             del res[:]
             i = 0
@@ -160,7 +160,7 @@ class YSms(object):
                 res.append(unival)
                 i = i + 1
         else:
-            #
+            # // return straight 8-bit values
             unisize = len(self._udata)
             del res[:]
             i = 0
@@ -302,11 +302,11 @@ class YSms(object):
             return YAPI.SUCCESS
         
         if self._alphab == 0:
-            #
+            # // Try to append using GSM 7-bit alphabet
             newdata = self._mbox.str2gsm(val)
             newdatalen = len(newdata)
             if newdatalen == 0:
-                #
+                # // 7-bit not possible, switch to unicode
                 self.convertToUnicode()
                 newdata = YString2Byte(val)
                 newdatalen = len(newdata)
@@ -315,7 +315,7 @@ class YSms(object):
             newdatalen = len(newdata)
         udatalen = len(self._udata)
         if self._alphab == 2:
-            #
+            # // Append in unicode directly
             udata = bytearray(udatalen + 2*newdatalen)
             i = 0
             while i < udatalen:
@@ -327,7 +327,7 @@ class YSms(object):
                 udatalen = udatalen + 2
                 i = i + 1
         else:
-            #
+            # // Append binary buffers
             udata = bytearray(udatalen+newdatalen)
             i = 0
             while i < udatalen:
@@ -506,7 +506,7 @@ class YSms(object):
         res = ""
         addrType = ((YGetByte(addr, ofs)) & (112))
         if addrType == 80:
-            #
+            # // alphanumeric number
             siz = int((4*siz) / (7))
             gsm7 = bytearray(siz)
             rpos = 1
@@ -527,7 +527,7 @@ class YSms(object):
                 i = i + 1
             return self._mbox.gsm2str(gsm7)
         else:
-            #
+            # // standard phone number
             if addrType == 16:
                 res = "+"
             siz = (((siz+1)) >> (1))
@@ -536,7 +536,7 @@ class YSms(object):
                 byt = YGetByte(addr, ofs+i+1)
                 res = "" + res + "" + ("%X" % ((byt) & (15))) + "" + ("%X" % ((byt) >> (4)))
                 i = i + 1
-            #
+            # // remove padding digit if needed
             if ((YGetByte(addr, ofs+siz)) >> (4)) == 15:
                 res = (res)[0: 0 + len(res)-1]
             return res
@@ -571,7 +571,7 @@ class YSms(object):
             res[0] = n
             return res
         if (exp)[4: 4 + 1] == "-" or (exp)[4: 4 + 1] == "/":
-            #
+            # // ignore century
             exp = (exp)[2: 2 + explen-2]
             explen = len(exp)
         expasc = YString2Byte(exp)
@@ -593,7 +593,7 @@ class YSms(object):
             res[n] = 0
             n = n + 1
         if i+2 < explen:
-            #
+            # // convert for timezone in cleartext ISO format +/-nn:nn
             v1 = YGetByte(expasc, i-3)
             v2 = YGetByte(expasc, i)
             if ((v1 == 43) or (v1 == 45)) and (v2 == 58):
@@ -696,13 +696,13 @@ class YSms(object):
         carry = 0
         # // 1. Encode UDL
         if self._alphab == 0:
-            #
+            # // 7-bit encoding
             if udhsize > 0:
                 udhlen = int(((8 + 8*udhsize + 6)) / (7))
                 nbits = 7*udhlen - 8 - 8*udhsize
             res[0] = udhlen+udlen
         else:
-            #
+            # // 8-bit encoding
             res[0] = udsize
         # // 2. Encode UDHL and UDL
         wpos = 1
@@ -716,7 +716,7 @@ class YSms(object):
                 i = i + 1
         # // 3. Encode UD
         if self._alphab == 0:
-            #
+            # // 7-bit encoding
             i = 0
             while i < udlen:
                 if nbits == 0:
@@ -732,7 +732,7 @@ class YSms(object):
             if nbits > 0:
                 res[wpos] = carry
         else:
-            #
+            # // 8-bit encoding
             i = 0
             while i < udlen:
                 res[wpos] = YGetByte(self._udata, i)
@@ -764,9 +764,9 @@ class YSms(object):
             partno = partno + 1
             newudh = bytearray(5+udhsize)
             newudh[0] = 0
-            #
+            # // IEI: concatenated message
             newudh[1] = 3
-            #
+            # // IEDL: 3 bytes
             newudh[2] = self._mref
             newudh[3] = self._npdu
             newudh[4] = partno
@@ -810,7 +810,7 @@ class YSms(object):
         # // Determine if the message can fit within a single PDU
         del self._parts[:]
         if self.udataSize() > 140:
-            #
+            # // multiple PDU are needed
             self._pdu = bytearray(0)
             return self.generateParts()
         sca = self.encodeAddress(self._smsc)
@@ -888,13 +888,13 @@ class YSms(object):
             i = i + 2
             if i + ielen <= udhlen:
                 if (iei == 0) and (ielen == 3):
-                    #
+                    # // concatenated SMS, 8-bit ref
                     sig = "" + self._orig + "-" + self._dest + "-" + ("%02X" % self._mref) + "-" + ("%02X" % YGetByte(self._udh, i))
                     self._aggSig = sig
                     self._aggCnt = YGetByte(self._udh, i+1)
                     self._aggIdx = YGetByte(self._udh, i+2)
                 if (iei == 8) and (ielen == 4):
-                    #
+                    # // concatenated SMS, 16-bit ref
                     sig = "" + self._orig + "-" + self._dest + "-" + ("%02X" % self._mref) + "-" + ("%02X" % YGetByte(self._udh, i)) + "" + ("%02X" % YGetByte(self._udh, i+1))
                     self._aggSig = sig
                     self._aggCnt = YGetByte(self._udh, i+2)
@@ -970,7 +970,7 @@ class YSms(object):
                 rpos = rpos + 1
                 i = i + 1
             if self._alphab == 0:
-                #
+                # // 7-bit encoding
                 udhlen = int(((8 + 8*udhsize + 6)) / (7))
                 nbits = 7*udhlen - 8 - 8*udhsize
                 if nbits > 0:
@@ -979,7 +979,7 @@ class YSms(object):
                     carry = ((thisb) >> (nbits))
                     nbits = 8 - nbits
             else:
-                #
+                # // byte encoding
                 udhlen = 1+udhsize
             udlen = udlen - udhlen
         else:
@@ -987,7 +987,7 @@ class YSms(object):
             self._udh = bytearray(0)
         self._udata = bytearray(udlen)
         if self._alphab == 0:
-            #
+            # // 7-bit encoding
             i = 0
             while i < udlen:
                 if nbits == 7:
@@ -1002,7 +1002,7 @@ class YSms(object):
                     nbits = nbits + 1
                 i = i + 1
         else:
-            #
+            # // 8-bit encoding
             i = 0
             while i < udlen:
                 self._udata[i] = YGetByte(pdu, rpos)
@@ -1016,7 +1016,7 @@ class YSms(object):
         # i
         # retcode
         # pdu
-        # // may throw an exception
+        
         if self._npdu == 0:
             self.generatePdu()
         if self._npdu == 1:
@@ -1033,7 +1033,7 @@ class YSms(object):
         # i
         # retcode
         # pdu
-        # // may throw an exception
+        
         if self._slot > 0:
             return self._mbox.clearSIMSlot(self._slot)
         retcode = YAPI.SUCCESS
@@ -1257,7 +1257,6 @@ class YMessageBox(YFunction):
         return self._nextMsgRef
 
     def clearSIMSlot(self, slot):
-        # // may throw an exception
         self._prevBitmapStr = ""
         return self.set_command("DS" + str(int(slot)))
 
@@ -1267,7 +1266,7 @@ class YMessageBox(YFunction):
         # hexPdu
         # sms
         
-        # // may throw an exception
+        
         binPdu = self._download("sms.json?pos=" + str(int(slot)) + "&len=1")
         arrPdu = self._json_get_array(binPdu)
         hexPdu = self._decode_json_string(arrPdu[0])
@@ -1348,7 +1347,7 @@ class YMessageBox(YFunction):
             i = i + 1
         i = 0
         while i < 4:
-            #
+            # // mark escape sequences
             self._iso2gsm[91+i] = 27
             self._iso2gsm[123+i] = 27
             i = i + 1
@@ -1516,7 +1515,7 @@ class YMessageBox(YFunction):
             if gsm7 == 27:
                 extra = extra + 1
             if gsm7 == 0:
-                #
+                # // cannot use standard GSM encoding
                 res = bytearray(0)
                 return res
             i = i + 1
@@ -1576,7 +1575,7 @@ class YMessageBox(YFunction):
         signatures = []
         # sms
         
-        # // may throw an exception
+        
         bitmapStr = self.get_slotsBitmap()
         if bitmapStr == self._prevBitmapStr:
             return YAPI.SUCCESS
@@ -1664,7 +1663,6 @@ class YMessageBox(YFunction):
         return YAPI.SUCCESS
 
     def get_pdus(self):
-        # // may throw an exception
         self.checkNewMessages()
         return self._pdus
 
@@ -1677,7 +1675,7 @@ class YMessageBox(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # retcode
-        # // may throw an exception
+        
         retcode = self.set_pduReceived(0)
         if retcode != YAPI.SUCCESS:
             return retcode
@@ -1701,7 +1699,7 @@ class YMessageBox(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # sms
-        # // may throw an exception
+        
         sms = YSms(self)
         sms.set_recipient(recipient)
         sms.addText(message)
@@ -1725,7 +1723,7 @@ class YMessageBox(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # sms
-        # // may throw an exception
+        
         sms = YSms(self)
         sms.set_recipient(recipient)
         sms.set_msgClass(0)
@@ -1757,7 +1755,6 @@ class YMessageBox(YFunction):
 
         On failure, throws an exception or returns an empty list.
         """
-        # // may throw an exception
         self.checkNewMessages()
         
         return self._messages

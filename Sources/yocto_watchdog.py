@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_watchdog.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_watchdog.py 27118 2017-04-06 22:38:36Z seb $
 #*
 #* Implements yFindWatchdog(), the high-level API for Watchdog functions
 #*

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_buzzer.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_buzzer.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindBuzzer(), the high-level API for Buzzer functions
 #*
@@ -40,6 +40,7 @@
 
 
 __docformat__ = 'restructuredtext en'
+import math
 from yocto_api import *
 
 
@@ -250,8 +251,7 @@ class YBuzzer(YFunction):
         return obj
 
     def sendCommand(self, command):
-        # //may throw an exception
-                return self.set_command(command)
+        return self.set_command(command)
 
     def addFreqMoveToPlaySeq(self, freq, msDelay):
         """
@@ -290,11 +290,152 @@ class YBuzzer(YFunction):
         """
         return self.sendCommand("C" + str(int(volume)) + "," + str(int(msDuration)))
 
+    def addNotesToPlaySeq(self, notes):
+        """
+        Adds notes to the playing sequence. Notes are provided as text words, separated by
+        spaces. The pitch is specified using the usual letter from A to G. The duration is
+        specified as the divisor of a whole note: 4 for a fourth, 8 for an eight note, etc.
+        Some modifiers are supported: # and b to alter a note pitch,
+        ' and , to move to the upper/lower octave, . to enlarge
+        the note duration.
+
+        @param notes : notes to be played, as a text string.
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        # tempo
+        # prevPitch
+        # prevDuration
+        # prevFreq
+        # note
+        # num
+        # typ
+        # ascNotes
+        # notesLen
+        # i
+        # ch
+        # dNote
+        # pitch
+        # freq
+        # ms
+        # ms16
+        # rest
+        tempo = 100
+        prevPitch = 3
+        prevDuration = 4
+        prevFreq = 110
+        note = -99
+        num = 0
+        typ = 3
+        ascNotes = YString2Byte(notes)
+        notesLen = len(ascNotes)
+        i = 0
+        while i < notesLen:
+            ch = YGetByte(ascNotes, i)
+            # // A (note))
+            if ch == 65:
+                note = 0
+            # // B (note)
+            if ch == 66:
+                note = 2
+            # // C (note)
+            if ch == 67:
+                note = 3
+            # // D (note)
+            if ch == 68:
+                note = 5
+            # // E (note)
+            if ch == 69:
+                note = 7
+            # // F (note)
+            if ch == 70:
+                note = 8
+            # // G (note)
+            if ch == 71:
+                note = 10
+            # // '#' (sharp modifier)
+            if ch == 35:
+                note = note + 1
+            # // 'b' (flat modifier)
+            if ch == 98:
+                note = note - 1
+            # // ' (octave up)
+            if ch == 39:
+                prevPitch = prevPitch + 12
+            # // , (octave down)
+            if ch == 44:
+                prevPitch = prevPitch - 12
+            # // R (rest)
+            if ch == 82:
+                typ = 0
+            # // ! (staccato modifier)
+            if ch == 33:
+                typ = 1
+            # // ^ (short modifier)
+            if ch == 94:
+                typ = 2
+            # // _ (legato modifier)
+            if ch == 95:
+                typ = 4
+            # // - (glissando modifier)
+            if ch == 45:
+                typ = 5
+            # // % (tempo change)
+            if (ch == 37) and (num > 0):
+                tempo = num
+                num = 0
+            if (ch >= 48) and (ch <= 57):
+                # // 0-9 (number)
+                num = (num * 10) + (ch - 48)
+            if ch == 46:
+                # // . (duration modifier)
+                num = int((num * 2) / (3))
+            if ((ch == 32) or (i+1 == notesLen)) and ((note > -99) or (typ != 3)):
+                if num == 0:
+                    num = prevDuration
+                else:
+                    prevDuration = num
+                ms = round(320000.0 / (tempo * num))
+                if typ == 0:
+                    self.addPulseToPlaySeq(0, ms)
+                else:
+                    dNote = note - (((prevPitch) % (12)))
+                    if dNote > 6:
+                        dNote = dNote - 12
+                    if dNote <= -6:
+                        dNote = dNote + 12
+                    pitch = prevPitch + dNote
+                    freq = round(440 * math.exp(pitch * 0.05776226504666))
+                    ms16 = ((ms) >> (4))
+                    rest = 0
+                    if typ == 3:
+                        rest = 2 * ms16
+                    if typ == 2:
+                        rest = 8 * ms16
+                    if typ == 1:
+                        rest = 12 * ms16
+                    if typ == 5:
+                        self.addPulseToPlaySeq(prevFreq, ms16)
+                        self.addFreqMoveToPlaySeq(freq, 8 * ms16)
+                        self.addPulseToPlaySeq(freq, ms - 9 * ms16)
+                    else:
+                        self.addPulseToPlaySeq(freq, ms - rest)
+                        if rest > 0:
+                            self.addPulseToPlaySeq(0, rest)
+                    prevFreq = freq
+                    prevPitch = pitch
+                note = -99
+                num = 0
+                typ = 3
+            i = i + 1
+        return YAPI.SUCCESS
+
     def startPlaySeq(self):
         """
         Starts the preprogrammed playing sequence. The sequence
         runs in loop until it is stopped by stopPlaySeq or an explicit
-        change.
+        change. To play the sequence only once, use oncePlaySeq().
 
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
@@ -318,6 +459,15 @@ class YBuzzer(YFunction):
                 On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("Z")
+
+    def oncePlaySeq(self):
+        """
+        Starts the preprogrammed playing sequence and run it once only.
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("s")
 
     def pulse(self, frequency, duration):
         """
@@ -357,6 +507,24 @@ class YBuzzer(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_command("V" + str(int(volume)) + "," + str(int(duration)))
+
+    def playNotes(self, notes):
+        """
+        Immediately play a note sequence. Notes are provided as text words, separated by
+        spaces. The pitch is specified using the usual letter from A to G. The duration is
+        specified as the divisor of a whole note: 4 for a fourth, 8 for an eight note, etc.
+        Some modifiers are supported: # and b to alter a note pitch,
+        ' and , to move to the upper/lower octave, . to enlarge
+        the note duration.
+
+        @param notes : notes to be played, as a text string.
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        self.resetPlaySeq()
+        self.addNotesToPlaySeq(notes)
+        return self.oncePlaySeq()
 
     def nextBuzzer(self):
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_gyro.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -353,7 +353,6 @@ class YGyro(YSensor):
                 self._qt_x = YQt.FindQt("" + self._serial + ".qt2")
                 self._qt_y = YQt.FindQt("" + self._serial + ".qt3")
                 self._qt_z = YQt.FindQt("" + self._serial + ".qt4")
-            #
             if self._qt_w.load(9) != YAPI.SUCCESS:
                 return YAPI.DEVICE_NOT_FOUND
             if self._qt_x.load(9) != YAPI.SUCCESS:
@@ -376,7 +375,7 @@ class YGyro(YSensor):
         # sqz
         # norm
         # delta
-        # // may throw an exception
+        
         if self._loadQuaternion() != YAPI.SUCCESS:
             return YAPI.DEVICE_NOT_FOUND
         if self._angles_stamp != self._qt_stamp:
@@ -387,12 +386,12 @@ class YGyro(YSensor):
             norm = sqx + sqy + sqz + sqw
             delta = self._y * self._w - self._x * self._z
             if delta > 0.499 * norm:
-                #
+                # // singularity at north pole
                 self._pitch = 90.0
                 self._head  = round(2.0 * 1800.0/math.pi * math.atan2(self._x,-self._w)) / 10.0
             else:
                 if delta < -0.499 * norm:
-                    #
+                    # // singularity at south pole
                     self._pitch = -90.0
                     self._head  = round(-2.0 * 1800.0/math.pi * math.atan2(self._x,-self._w)) / 10.0
                 else:
@@ -414,7 +413,6 @@ class YGyro(YSensor):
         @return a floating-point number corresponding to roll angle
                 in degrees, between -180 and +180.
         """
-        # // may throw an exception
         self._loadAngles()
         return self._roll
 
@@ -430,7 +428,6 @@ class YGyro(YSensor):
         @return a floating-point number corresponding to pitch angle
                 in degrees, between -90 and +90.
         """
-        # // may throw an exception
         self._loadAngles()
         return self._pitch
 
@@ -446,7 +443,6 @@ class YGyro(YSensor):
         @return a floating-point number corresponding to heading
                 in degrees, between 0 and 360.
         """
-        # // may throw an exception
         self._loadAngles()
         return self._head
 
@@ -460,7 +456,6 @@ class YGyro(YSensor):
         @return a floating-point number corresponding to the w
                 component of the quaternion.
         """
-        # // may throw an exception
         self._loadQuaternion()
         return self._w
 
@@ -475,7 +470,6 @@ class YGyro(YSensor):
         @return a floating-point number corresponding to the x
                 component of the quaternion.
         """
-        # // may throw an exception
         self._loadQuaternion()
         return self._x
 
@@ -490,7 +484,6 @@ class YGyro(YSensor):
         @return a floating-point number corresponding to the y
                 component of the quaternion.
         """
-        # // may throw an exception
         self._loadQuaternion()
         return self._y
 
@@ -505,7 +498,6 @@ class YGyro(YSensor):
         @return a floating-point number corresponding to the z
                 component of the quaternion.
         """
-        # // may throw an exception
         self._loadQuaternion()
         return self._z
 
@@ -527,7 +519,6 @@ class YGyro(YSensor):
         """
         self._quatCallback = callback
         if callback is not None:
-            #
             if self._loadQuaternion() != YAPI.SUCCESS:
                 return YAPI.DEVICE_NOT_FOUND
             self._qt_w.set_userData(self)
@@ -564,7 +555,6 @@ class YGyro(YSensor):
         """
         self._anglesCallback = callback
         if callback is not None:
-            #
             if self._loadQuaternion() != YAPI.SUCCESS:
                 return YAPI.DEVICE_NOT_FOUND
             self._qt_w.set_userData(self)
@@ -598,7 +588,6 @@ class YGyro(YSensor):
         if self._quatCallback is not None:
             self._quatCallback(self, self._w, self._x, self._y, self._z)
         if self._anglesCallback is not None:
-            #
             self._loadAngles()
             self._anglesCallback(self, self._roll, self._pitch, self._head)
         return 0

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_display.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -176,7 +176,7 @@ class YDisplayLayer(object):
         but you can disable it if you prefer. This setting has no effect
         on monochrome displays.
 
-        @param mode : <t>true</t> to enable antialiasing, <t>false</t> to
+        @param mode : true to enable antialiasing, false to
                 disable it.
 
         @return YAPI.SUCCESS if the call succeeds.

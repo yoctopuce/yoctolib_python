@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_refframe.py 27103 2017-04-06 22:13:40Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -40,6 +40,7 @@
 
 
 __docformat__ = 'restructuredtext en'
+import math
 from yocto_api import *
 
 
@@ -307,7 +308,7 @@ class YRefFrame(YFunction):
         iCalib = []
         # caltyp
         # res
-        # // may throw an exception
+        
         calibParam = self.get_calibrationParam()
         iCalib = YAPI._decodeFloats(calibParam)
         caltyp = int((iCalib[0]) / (1000))
@@ -334,7 +335,7 @@ class YRefFrame(YFunction):
         iCalib = []
         # caltyp
         # res
-        # // may throw an exception
+        
         calibParam = self.get_calibrationParam()
         iCalib = YAPI._decodeFloats(calibParam)
         caltyp = int((iCalib[0]) / (1000))
@@ -396,7 +397,6 @@ class YRefFrame(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         if not (self.isOnline()):
             return YAPI.DEVICE_NOT_FOUND
         if self._calibStage != 0:
@@ -429,13 +429,11 @@ class YRefFrame(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         if self._calibV2:
             return self.more3DCalibrationV2()
         return self.more3DCalibrationV1()
 
     def more3DCalibrationV1(self):
-        # // may throw an exception
         # currTick
         # jsonData
         # xVal
@@ -481,7 +479,7 @@ class YRefFrame(YFunction):
             return YAPI.SUCCESS
         if zSq >= 1.44:
             return YAPI.SUCCESS
-        norm = sqrt(xSq + ySq + zSq)
+        norm = math.sqrt(xSq + ySq + zSq)
         if norm < 0.8 or norm > 1.2:
             return YAPI.SUCCESS
         self._calibPrevTick = currTick
@@ -504,7 +502,7 @@ class YRefFrame(YFunction):
                 orient = 5
         # // Discard measures that are not in the proper orientation
         if self._calibStageProgress == 0:
-            #
+            # // New stage, check that this orientation is not yet done
             idx = 0
             err = 0
             while idx + 1 < self._calibStage:
@@ -516,7 +514,7 @@ class YRefFrame(YFunction):
                 return YAPI.SUCCESS
             self._calibOrient.append(orient)
         else:
-            #
+            # // Make sure device is not turned before stage is completed
             if orient != self._calibOrient[self._calibStage-1]:
                 self._calibStageHint = "Not yet done, please move back to the previous face"
                 return YAPI.SUCCESS
@@ -568,7 +566,7 @@ class YRefFrame(YFunction):
             xVal = self._calibDataAccX[intpos] - self._calibAccXOfs
             yVal = self._calibDataAccY[intpos] - self._calibAccYOfs
             zVal = self._calibDataAccZ[intpos] - self._calibAccZOfs
-            norm = sqrt(xVal * xVal + yVal * yVal + zVal * zVal)
+            norm = math.sqrt(xVal * xVal + yVal * yVal + zVal * zVal)
             self._calibDataAcc[intpos] = norm
             intpos = intpos + 1
         idx = 0
@@ -621,7 +619,7 @@ class YRefFrame(YFunction):
                 self._calibStageProgress = int((currTick) / (40))
                 self._calibProgress = 1
                 return YAPI.SUCCESS
-        # // may throw an exception
+        
         calibParam = self._download("api/refFrame/calibrationParam.txt")
         iCalib = YAPI._decodeFloats(YByte2String(calibParam))
         cal3 = int((iCalib[1]) / (1000))
@@ -705,13 +703,11 @@ class YRefFrame(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # // may throw an exception
         if self._calibV2:
             return self.save3DCalibrationV2()
         return self.save3DCalibrationV1()
 
     def save3DCalibrationV1(self):
-        # // may throw an exception
         # shiftX
         # shiftY
         # shiftZ
@@ -765,7 +761,6 @@ class YRefFrame(YFunction):
         return self.set_calibrationParam(newcalib)
 
     def save3DCalibrationV2(self):
-        # // may throw an exception
         return self.set_calibrationParam("5,5,5,5,5,5")
 
     def cancel3DCalibration(self):
@@ -776,7 +771,7 @@ class YRefFrame(YFunction):
         """
         if self._calibStage == 0:
             return YAPI.SUCCESS
-        # // may throw an exception
+        
         self._calibStage = 0
         return self.set_calibrationParam(self._calibSavedParams)
 
