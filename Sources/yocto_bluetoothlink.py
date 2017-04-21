@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_bluetoothlink.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_bluetoothlink.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
 #*
@@ -95,38 +95,28 @@ class YBluetoothLink(YFunction):
         #--- (end of YBluetoothLink attributes)
 
     #--- (YBluetoothLink implementation)
-    def _parseAttr(self, member):
-        if member.name == "ownAddress":
-            self._ownAddress = member.svalue
-            return 1
-        if member.name == "pairingPin":
-            self._pairingPin = member.svalue
-            return 1
-        if member.name == "remoteAddress":
-            self._remoteAddress = member.svalue
-            return 1
-        if member.name == "remoteName":
-            self._remoteName = member.svalue
-            return 1
-        if member.name == "mute":
-            self._mute = member.ivalue
-            return 1
-        if member.name == "preAmplifier":
-            self._preAmplifier = member.ivalue
-            return 1
-        if member.name == "volume":
-            self._volume = member.ivalue
-            return 1
-        if member.name == "linkState":
-            self._linkState = member.ivalue
-            return 1
-        if member.name == "linkQuality":
-            self._linkQuality = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YBluetoothLink, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("ownAddress"):
+            self._ownAddress = json_val.getString("ownAddress")
+        if json_val.has("pairingPin"):
+            self._pairingPin = json_val.getString("pairingPin")
+        if json_val.has("remoteAddress"):
+            self._remoteAddress = json_val.getString("remoteAddress")
+        if json_val.has("remoteName"):
+            self._remoteName = json_val.getString("remoteName")
+        if json_val.has("mute"):
+            self._mute = (json_val.getInt("mute") > 0 if 1 else 0)
+        if json_val.has("preAmplifier"):
+            self._preAmplifier = json_val.getInt("preAmplifier")
+        if json_val.has("volume"):
+            self._volume = json_val.getInt("volume")
+        if json_val.has("linkState"):
+            self._linkState = json_val.getInt("linkState")
+        if json_val.has("linkQuality"):
+            self._linkQuality = json_val.getInt("linkQuality")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YBluetoothLink, self)._parseAttr(json_val)
 
     def get_ownAddress(self):
         """

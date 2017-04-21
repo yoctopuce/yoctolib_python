@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_realtimeclock.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_realtimeclock.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #*
@@ -79,20 +79,16 @@ class YRealTimeClock(YFunction):
         #--- (end of YRealTimeClock attributes)
 
     #--- (YRealTimeClock implementation)
-    def _parseAttr(self, member):
-        if member.name == "unixTime":
-            self._unixTime = member.ivalue
-            return 1
-        if member.name == "dateTime":
-            self._dateTime = member.svalue
-            return 1
-        if member.name == "utcOffset":
-            self._utcOffset = member.ivalue
-            return 1
-        if member.name == "timeSet":
-            self._timeSet = member.ivalue
-            return 1
-        super(YRealTimeClock, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("unixTime"):
+            self._unixTime = json_val.getLong("unixTime")
+        if json_val.has("dateTime"):
+            self._dateTime = json_val.getString("dateTime")
+        if json_val.has("utcOffset"):
+            self._utcOffset = json_val.getInt("utcOffset")
+        if json_val.has("timeSet"):
+            self._timeSet = (json_val.getInt("timeSet") > 0 if 1 else 0)
+        super(YRealTimeClock, self)._parseAttr(json_val)
 
     def get_unixTime(self):
         """

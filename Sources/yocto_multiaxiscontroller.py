@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_multiaxiscontroller.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_multiaxiscontroller.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
 #*
@@ -78,17 +78,14 @@ class YMultiAxisController(YFunction):
         #--- (end of YMultiAxisController attributes)
 
     #--- (YMultiAxisController implementation)
-    def _parseAttr(self, member):
-        if member.name == "nAxis":
-            self._nAxis = member.ivalue
-            return 1
-        if member.name == "globalState":
-            self._globalState = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YMultiAxisController, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("nAxis"):
+            self._nAxis = json_val.getInt("nAxis")
+        if json_val.has("globalState"):
+            self._globalState = json_val.getInt("globalState")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YMultiAxisController, self)._parseAttr(json_val)
 
     def get_nAxis(self):
         """
@@ -207,7 +204,7 @@ class YMultiAxisController(YFunction):
         ndim = len(speed)
         cmd = "H" + str(int(round(1000*speed[0])))
         i = 1
-        while i + 1 < ndim:
+        while i < ndim:
             cmd = "" + cmd + "," + str(int(round(1000*speed[i])))
             i = i + 1
         return self.sendCommand(cmd)
@@ -230,7 +227,7 @@ class YMultiAxisController(YFunction):
         ndim = len(absPos)
         cmd = "M" + str(int(round(16*absPos[0])))
         i = 1
-        while i + 1 < ndim:
+        while i < ndim:
             cmd = "" + cmd + "," + str(int(round(16*absPos[i])))
             i = i + 1
         return self.sendCommand(cmd)
@@ -253,7 +250,7 @@ class YMultiAxisController(YFunction):
         ndim = len(relPos)
         cmd = "m" + str(int(round(16*relPos[0])))
         i = 1
-        while i + 1 < ndim:
+        while i < ndim:
             cmd = "" + cmd + "," + str(int(round(16*relPos[i])))
             i = i + 1
         return self.sendCommand(cmd)

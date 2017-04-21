@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_motor.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_motor.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindMotor(), the high-level API for Motor functions
 #*
@@ -96,35 +96,26 @@ class YMotor(YFunction):
         #--- (end of YMotor attributes)
 
     #--- (YMotor implementation)
-    def _parseAttr(self, member):
-        if member.name == "motorStatus":
-            self._motorStatus = member.ivalue
-            return 1
-        if member.name == "drivingForce":
-            self._drivingForce = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "brakingForce":
-            self._brakingForce = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "cutOffVoltage":
-            self._cutOffVoltage = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "overCurrentLimit":
-            self._overCurrentLimit = member.ivalue
-            return 1
-        if member.name == "frequency":
-            self._frequency = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "starterTime":
-            self._starterTime = member.ivalue
-            return 1
-        if member.name == "failSafeTimeout":
-            self._failSafeTimeout = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YMotor, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("motorStatus"):
+            self._motorStatus = json_val.getInt("motorStatus")
+        if json_val.has("drivingForce"):
+            self._drivingForce = round(json_val.getDouble("drivingForce") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("brakingForce"):
+            self._brakingForce = round(json_val.getDouble("brakingForce") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("cutOffVoltage"):
+            self._cutOffVoltage = round(json_val.getDouble("cutOffVoltage") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("overCurrentLimit"):
+            self._overCurrentLimit = json_val.getInt("overCurrentLimit")
+        if json_val.has("frequency"):
+            self._frequency = round(json_val.getDouble("frequency") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("starterTime"):
+            self._starterTime = json_val.getInt("starterTime")
+        if json_val.has("failSafeTimeout"):
+            self._failSafeTimeout = json_val.getInt("failSafeTimeout")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YMotor, self)._parseAttr(json_val)
 
     def get_motorStatus(self):
         """

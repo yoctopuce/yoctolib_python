@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupmonitor.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_wakeupmonitor.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
 #*
@@ -88,26 +88,20 @@ class YWakeUpMonitor(YFunction):
         #--- (end of YWakeUpMonitor attributes)
 
     #--- (YWakeUpMonitor implementation)
-    def _parseAttr(self, member):
-        if member.name == "powerDuration":
-            self._powerDuration = member.ivalue
-            return 1
-        if member.name == "sleepCountdown":
-            self._sleepCountdown = member.ivalue
-            return 1
-        if member.name == "nextWakeUp":
-            self._nextWakeUp = member.ivalue
-            return 1
-        if member.name == "wakeUpReason":
-            self._wakeUpReason = member.ivalue
-            return 1
-        if member.name == "wakeUpState":
-            self._wakeUpState = member.ivalue
-            return 1
-        if member.name == "rtcTime":
-            self._rtcTime = member.ivalue
-            return 1
-        super(YWakeUpMonitor, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("powerDuration"):
+            self._powerDuration = json_val.getInt("powerDuration")
+        if json_val.has("sleepCountdown"):
+            self._sleepCountdown = json_val.getInt("sleepCountdown")
+        if json_val.has("nextWakeUp"):
+            self._nextWakeUp = json_val.getLong("nextWakeUp")
+        if json_val.has("wakeUpReason"):
+            self._wakeUpReason = json_val.getInt("wakeUpReason")
+        if json_val.has("wakeUpState"):
+            self._wakeUpState = json_val.getInt("wakeUpState")
+        if json_val.has("rtcTime"):
+            self._rtcTime = json_val.getLong("rtcTime")
+        super(YWakeUpMonitor, self)._parseAttr(json_val)
 
     def get_powerDuration(self):
         """

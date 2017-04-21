@@ -1,77 +1,70 @@
 # -*- coding: utf-8 -*-
-#*********************************************************************
-#*
-#* $Id: yocto_wireless.py 27103 2017-04-06 22:13:40Z seb $
-#*
-#* Implements yFindWireless(), the high-level API for Wireless functions
-#*
-#* - - - - - - - - - License information: - - - - - - - - -
-#*
-#*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
-#*
-#*  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
-#*  non-exclusive license to use, modify, copy and integrate this
-#*  file into your software for the sole purpose of interfacing
-#*  with Yoctopuce products.
-#*
-#*  You may reproduce and distribute copies of this file in
-#*  source or object form, as long as the sole purpose of this
-#*  code is to interface with Yoctopuce products. You must retain
-#*  this notice in the distributed source file.
-#*
-#*  You should refer to Yoctopuce General Terms and Conditions
-#*  for additional information regarding your rights and
-#*  obligations.
-#*
-#*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
-#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
-#*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
-#*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
-#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
-#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
-#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
-#*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
-#*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
-#*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
-#*  WARRANTY, OR OTHERWISE.
-#*
-#*********************************************************************/
+# *********************************************************************
+# *
+# * $Id: yocto_wireless.py 27167 2017-04-13 10:24:02Z seb $
+# *
+# * Implements yFindWireless(), the high-level API for Wireless functions
+# *
+# * - - - - - - - - - License information: - - - - - - - - -
+# *
+# *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+# *
+# *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+# *  non-exclusive license to use, modify, copy and integrate this
+# *  file into your software for the sole purpose of interfacing
+# *  with Yoctopuce products.
+# *
+# *  You may reproduce and distribute copies of this file in
+# *  source or object form, as long as the sole purpose of this
+# *  code is to interface with Yoctopuce products. You must retain
+# *  this notice in the distributed source file.
+# *
+# *  You should refer to Yoctopuce General Terms and Conditions
+# *  for additional information regarding your rights and
+# *  obligations.
+# *
+# *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+# *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+# *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
+# *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+# *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+# *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+# *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+# *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
+# *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+# *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+# *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+# *  WARRANTY, OR OTHERWISE.
+# *
+# *********************************************************************/
 
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
 
 
-#--- (generated code: YWlanRecord class start)
+# --- (generated code: YWlanRecord class start)
 #noinspection PyProtectedMember
 class YWlanRecord(object):
 #--- (end of generated code: YWlanRecord class start)
-    #--- (generated code: YWlanRecord definitions)
+    # --- (generated code: YWlanRecord definitions)
     #--- (end of generated code: YWlanRecord definitions)
 
-    def __init__(self, json):
-    #--- (generated code: YWlanRecord attributes)
+    def __init__(self, json_str):
+        # --- (generated code: YWlanRecord attributes)
         self._ssid = ''
         self._channel = 0
         self._sec = ''
         self._rssi = 0
         #--- (end of generated code: YWlanRecord attributes)
-        self._channel = -1
-        self._rssi = -1
-        j = YAPI.TJsonParser(json, False)
-        node = j.GetRootNode()
-        for member in node.members:
-            if member.name == "ssid":
-                self._ssid = member.svalue
-            if member.name == "sec":
-                self._sec = member.svalue
-            elif member.name == "channel":
-                self._channel = member.ivalue
-            elif member.name == "rssi":
-                self._rssi = member.ivalue
+        json = YJSONObject(json_str, 0, len(json_str))
+        json.parse()
+        self._ssid = json.getString("ssid")
+        self._channel = json.getInt("channel")
+        self._sec = json.getString("sec")
+        self._rssi = json.getInt("rssi")
 
-    #--- (generated code: YWlanRecord implementation)
+    # --- (generated code: YWlanRecord implementation)
     def get_ssid(self):
         return self._ssid
 
@@ -86,11 +79,11 @@ class YWlanRecord(object):
 
 #--- (end of generated code: YWlanRecord implementation)
 
-#--- (WlanRecord generated code: functions)
-#--- (end of WlanRecord generated code: functions)
+# --- (WlanRecord generated code: functions)
+# --- (end of WlanRecord generated code: functions)
 
 
-#--- (generated code: YWireless class start)
+# --- (generated code: YWireless class start)
 #noinspection PyProtectedMember
 class YWireless(YFunction):
     """
@@ -99,7 +92,7 @@ class YWireless(YFunction):
 
     """
 #--- (end of generated code: YWireless class start)
-    #--- (generated code: YWireless definitions)
+    # --- (generated code: YWireless definitions)
     LINKQUALITY_INVALID = YAPI.INVALID_UINT
     SSID_INVALID = YAPI.INVALID_STRING
     CHANNEL_INVALID = YAPI.INVALID_UINT
@@ -116,7 +109,7 @@ class YWireless(YFunction):
     def __init__(self, func):
         super(YWireless, self).__init__(func)
         self._className = "Wireless"
-        #--- (generated code: YWireless attributes)
+        # --- (generated code: YWireless attributes)
         self._callback = None
         self._linkQuality = YWireless.LINKQUALITY_INVALID
         self._ssid = YWireless.SSID_INVALID
@@ -126,27 +119,21 @@ class YWireless(YFunction):
         self._wlanConfig = YWireless.WLANCONFIG_INVALID
         #--- (end of generated code: YWireless attributes)
 
-    #--- (generated code: YWireless implementation)
-    def _parseAttr(self, member):
-        if member.name == "linkQuality":
-            self._linkQuality = member.ivalue
-            return 1
-        if member.name == "ssid":
-            self._ssid = member.svalue
-            return 1
-        if member.name == "channel":
-            self._channel = member.ivalue
-            return 1
-        if member.name == "security":
-            self._security = member.ivalue
-            return 1
-        if member.name == "message":
-            self._message = member.svalue
-            return 1
-        if member.name == "wlanConfig":
-            self._wlanConfig = member.svalue
-            return 1
-        super(YWireless, self)._parseAttr(member)
+    # --- (generated code: YWireless implementation)
+    def _parseAttr(self, json_val):
+        if json_val.has("linkQuality"):
+            self._linkQuality = json_val.getInt("linkQuality")
+        if json_val.has("ssid"):
+            self._ssid = json_val.getString("ssid")
+        if json_val.has("channel"):
+            self._channel = json_val.getInt("channel")
+        if json_val.has("security"):
+            self._security = json_val.getInt("security")
+        if json_val.has("message"):
+            self._message = json_val.getString("message")
+        if json_val.has("wlanConfig"):
+            self._wlanConfig = json_val.getString("wlanConfig")
+        super(YWireless, self)._parseAttr(json_val)
 
     def get_linkQuality(self):
         """
@@ -369,7 +356,7 @@ class YWireless(YFunction):
 
 #--- (end of generated code: YWireless implementation)
 
-#--- (generated code: Wireless functions)
+    # --- (generated code: Wireless functions)
 
     @staticmethod
     def FirstWireless():

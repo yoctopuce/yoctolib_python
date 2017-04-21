@@ -1,48 +1,48 @@
 # -*- coding: utf-8 -*-
-#*********************************************************************
-#*
-#* $Id: yocto_datalogger.py 27103 2017-04-06 22:13:40Z seb $
-#*
-#* Implements yFindDataLogger(), the high-level API for DataLogger
-#*
-#* - - - - - - - - - License information: - - - - - - - - -
-#*
-#*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
-#*
-#*  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
-#*  non-exclusive license to use, modify, copy and integrate this
-#*  file into your software for the sole purpose of interfacing
-#*  with Yoctopuce products.
-#*
-#*  You may reproduce and distribute copies of this file in
-#*  source or object form, as long as the sole purpose of this
-#*  code is to interface with Yoctopuce products. You must retain
-#*  this notice in the distributed source file.
-#*
-#*  You should refer to Yoctopuce General Terms and Conditions
-#*  for additional information regarding your rights and
-#*  obligations.
-#*
-#*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
-#*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
-#*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
-#*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
-#*  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
-#*  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
-#*  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
-#*  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
-#*  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
-#*  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
-#*  WARRANTY, OR OTHERWISE.
-#*
-#*********************************************************************/
+# *********************************************************************
+# *
+# * $Id: yocto_datalogger.py 27164 2017-04-13 09:57:00Z seb $
+# *
+# * Implements yFindDataLogger(), the high-level API for DataLogger
+# *
+# * - - - - - - - - - License information: - - - - - - - - -
+# *
+# *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+# *
+# *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+# *  non-exclusive license to use, modify, copy and integrate this
+# *  file into your software for the sole purpose of interfacing
+# *  with Yoctopuce products.
+# *
+# *  You may reproduce and distribute copies of this file in
+# *  source or object form, as long as the sole purpose of this
+# *  code is to interface with Yoctopuce products. You must retain
+# *  this notice in the distributed source file.
+# *
+# *  You should refer to Yoctopuce General Terms and Conditions
+# *  for additional information regarding your rights and
+# *  obligations.
+# *
+# *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+# *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+# *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
+# *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+# *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+# *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+# *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+# *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
+# *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+# *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+# *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+# *  WARRANTY, OR OTHERWISE.
+# *
+# *********************************************************************/
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
 
 
-#--- (generated code: YDataLogger class start)
+# --- (generated code: YDataLogger class start)
 #noinspection PyProtectedMember
 class YDataLogger(YFunction):
     """
@@ -56,7 +56,7 @@ class YDataLogger(YFunction):
 
     Y_DATA_INVALID = YAPI.INVALID_DOUBLE
 
-    #--- (generated code: YDataLogger definitions)
+    # --- (generated code: YDataLogger definitions)
     CURRENTRUNINDEX_INVALID = YAPI.INVALID_UINT
     TIMEUTC_INVALID = YAPI.INVALID_LONG
     RECORDING_OFF = 0
@@ -77,7 +77,7 @@ class YDataLogger(YFunction):
     def __init__(self, func):
         super(YDataLogger, self).__init__(func)
         self._className = "DataLogger"
-        #--- (generated code: YDataLogger attributes)
+        # --- (generated code: YDataLogger attributes)
         self._callback = None
         self._currentRunIndex = YDataLogger.CURRENTRUNINDEX_INVALID
         self._timeUTC = YDataLogger.TIMEUTC_INVALID
@@ -88,27 +88,21 @@ class YDataLogger(YFunction):
         #--- (end of generated code: YDataLogger attributes)
         self._dataLoggerURL = ""
 
-    #--- (generated code: YDataLogger implementation)
-    def _parseAttr(self, member):
-        if member.name == "currentRunIndex":
-            self._currentRunIndex = member.ivalue
-            return 1
-        if member.name == "timeUTC":
-            self._timeUTC = member.ivalue
-            return 1
-        if member.name == "recording":
-            self._recording = member.ivalue
-            return 1
-        if member.name == "autoStart":
-            self._autoStart = member.ivalue
-            return 1
-        if member.name == "beaconDriven":
-            self._beaconDriven = member.ivalue
-            return 1
-        if member.name == "clearHistory":
-            self._clearHistory = member.ivalue
-            return 1
-        super(YDataLogger, self)._parseAttr(member)
+    # --- (generated code: YDataLogger implementation)
+    def _parseAttr(self, json_val):
+        if json_val.has("currentRunIndex"):
+            self._currentRunIndex = json_val.getInt("currentRunIndex")
+        if json_val.has("timeUTC"):
+            self._timeUTC = json_val.getLong("timeUTC")
+        if json_val.has("recording"):
+            self._recording = json_val.getInt("recording")
+        if json_val.has("autoStart"):
+            self._autoStart = (json_val.getInt("autoStart") > 0 if 1 else 0)
+        if json_val.has("beaconDriven"):
+            self._beaconDriven = (json_val.getInt("beaconDriven") > 0 if 1 else 0)
+        if json_val.has("clearHistory"):
+            self._clearHistory = (json_val.getInt("clearHistory") > 0 if 1 else 0)
+        super(YDataLogger, self)._parseAttr(json_val)
 
     def get_currentRunIndex(self):
         """
@@ -376,17 +370,14 @@ class YDataLogger(YFunction):
             if YAPI.YISERR(res):
                 self._throw(res, errmsgRef.value)
                 return res
-        try:
-            jsondataRef.value = YAPI.TJsonParser(bufferRef.value)
-        except YAPI.JsonError as e:
-            if not errmsgRef is None:
-                errmsgRef.value = "unexpected JSON structure: " + e.msg
-            return YAPI.IO_ERROR
-        if jsondataRef.value.httpcode == 404 and self._dataLoggerURL != "/dataLogger.json":
-            # retry using backward-compatible datalogger URL
-            self._dataLoggerURL = "/dataLogger.json"
-            return self.getData(runIdx, timeIdx, jsondataRef)
 
+        buffer = YByte2String(bufferRef.value)
+        (httpcode, http_headerlen, errmsg) = YAPI.parseHTTP(buffer, 0, len(buffer))
+        if httpcode != 200:
+            errmsgRef.value = "Unexpected HTTP return code:%s" % httpcode
+            return YAPI.IO_ERROR
+
+        jsondataRef.value = buffer[http_headerlen:]
         return YAPI.SUCCESS
 
     def get_dataStreams(self, v):
@@ -413,20 +404,19 @@ class YDataLogger(YFunction):
         if res != YAPI.SUCCESS:
             return res
 
-        root = jRef.value.GetRootNode()
-        if len(root.items) == 0:
+        jsonAllStreams = YJSONArray(jRef.value, 0, len(jRef.value))
+        jsonAllStreams.parse()
+        if jsonAllStreams.length() == 0:
             return YAPI.SUCCESS
-        if root.items[0].recordtype == YAPI.TJSONRECORDTYPE.JSON_ARRAY:
-            for i in range(len(root.items)):
+        if jsonAllStreams.get(0).getJSONType() == YJSONType.ARRAY:
+            for i in range(0, jsonAllStreams.length()):
                 # old datalogger format: [runIdx, timerel, utc, interval]
-                el = root.items[i]
-                v.value.append(
-                    YOldDataStream(self, el.items[0].ivalue,
-                                   el.items[1].ivalue, el.items[2].ivalue, el.items[3].ivalue))
-        elif root.items[0].recordtype == YAPI.TJSONRECORDTYPE.JSON_STRUCT:
-            # new datalogger format: {"id":"...","unit":"...","streams":["...",...]}
-            json_buffer = jRef.value.convertToString(root, False)
-            sets = self.parse_dataSets(YString2Byte(json_buffer))
+                arr = jsonAllStreams.getYJSONArray(i)
+                stream = YOldDataStream(self, arr.getInt(0), arr.getInt(1), arr.getLong(2), arr.getInt(3))
+                v.value.append(stream)
+        else:
+            # new datalogger format: {"id": "...", "unit": "...", "streams": ["...", ...]}
+            sets = self.parse_dataSets(YString2Byte(jsonAllStreams.toJSON()))
             for curset in sets:
                 ds = curset.get_privateDataStreams()
                 for si in ds:
@@ -434,7 +424,7 @@ class YDataLogger(YFunction):
                     v.value.append(si)
         return YAPI.SUCCESS
 
-    #--- (generated code: DataLogger functions)
+    # --- (generated code: DataLogger functions)
 
     @staticmethod
     def FirstDataLogger():
@@ -472,7 +462,6 @@ class YDataLogger(YFunction):
 
 
 class YOldDataStream(YDataStream):
-
     def __init__(self, parent, run, stamp, utc, itv):
         super(YOldDataStream, self).__init__(parent)
         self._dataLogger = parent
@@ -529,100 +518,120 @@ class YOldDataStream(YDataStream):
         res = self._dataLogger.getData(self._runNo, self._timeStamp, jsonRef)
         if res != YAPI.SUCCESS:
             return res
+        jsonObj = YJSONObject(jsonRef.value, 0, len(jsonRef.value))
+        jsonObj.parse()
         self._nRows = 0
         self._nCols = 0
         del self._columnNames[:]
         self._values = [[]]
-        root = jsonRef.value.GetRootNode()
-        for i in range(len(root.members)):
-            el = root.members[i]
-            name = el.name
-            if name == "time":
-                self._timeStamp = el.ivalue
-            elif name == "UTC":
-                self._utcStamp = el.ivalue
-            elif name == "interval":
-                self._interval = el.ivalue
-            elif name == "nRows":
-                self._nRows = el.ivalue
-            elif name == "keys":
-                if not self._nCols:
-                    self._nCols = len(el.items)
-                for j in range(self._nCols):
-                    self._columnNames.append(el.items[j].svalue)
-            elif name == "div":
-                if not self._nCols:
-                    self._nCols = len(el.items)
-                for j in range(self._nCols):
-                    coldiv.append(el.items[j].ivalue)
-            elif name == "type":
-                if not self._nCols:
-                    self._nCols = len(el.items)
-                for j in range(self._nCols):
-                    coltype.append(el.items[j].ivalue)
-            elif name == "scal":
-                if not self._nCols:
-                    self._nCols = len(el.items)
-                for j in range(self._nCols):
-                    colscl.append(el.items[j].ivalue / 65536.0)
-                    if coltype[j]:
-                        colofs.append(-32767)
-                    else:
-                        colofs.append(0)
-            elif name == "data":
-                if len(colscl) <= 0:
-                    for j in range(self._nCols):
-                        colscl.append(1.0 / coldiv[j])
-                        if coltype[j]:
-                            colofs[j] = -32767
-                        else:
-                            colofs[j] = 0
+        if jsonObj.has("time"):
+            self._timeStamp = jsonObj.getInt("time")
+        if jsonObj.has("UTC"):
+            self._utcStamp = jsonObj.getLong("UTC")
+        if jsonObj.has("interval"):
+            self._interval = jsonObj.getInt("interval")
+        if jsonObj.has("nRows"):
+            self._nRows = jsonObj.getInt("nRows")
+        if jsonObj.has("keys"):
+            jsonKeys = jsonObj.getYJSONArray("keys")
+            if self._nCols == 0:
+                self._nCols = jsonKeys.length()
+            elif self._nCols != jsonKeys.length():
+                self._nCols = 0
+                raise YAPI_Exception(YAPI.IO_ERROR, "DataStream corrupted")
+            for j in range(0, self._nCols):
+                self._columnNames.append(jsonKeys.getString(j))
+        if jsonObj.has("div"):
+            coldiv = jsonObj.getYJSONArray("div")
+            if self._nCols == 0:
+                self._nCols = coldiv.length()
+            elif self._nCols != coldiv.length():
+                self._nCols = 0
+                raise YAPI_Exception(YAPI.IO_ERROR, "DataStream corrupted")
+            for j in range(self._nCols):
+                coldiv.append(coldiv.getInt(j))
+        if jsonObj.has("type"):
+            types = jsonObj.getYJSONArray("type")
+            if self._nCols == 0:
+                self._nCols = types.length()
+            elif self._nCols != types.length():
+                self._nCols = 0
+                raise YAPI_Exception(YAPI.IO_ERROR, "DataStream corrupted")
+            for j in range(self._nCols):
+                coltype.append(types.getInt(j))
+        if jsonObj.has("scal"):
+            scal = jsonObj.getYJSONArray("scal")
+            if self._nCols == 0:
+                self._nCols = scal.length()
+            elif self._nCols != scal.length():
+                self._nCols = 0
+                raise YAPI_Exception(YAPI.IO_ERROR, "DataStream corrupted")
+            for j in range(self._nCols):
+                colscl.append(scal.getInt(j) / 65536.0)
+                if coltype[j]:
+                    colofs.append(-32767)
+                else:
+                    colofs.append(0)
 
-                del udat[:]
-                if el.recordtype == YAPI.TJSONRECORDTYPE.JSON_STRING:
-                    sdat = el.svalue
-                    p = 0
-                    while p < len(sdat):
+        if jsonObj.has("data"):
+            if self._nCols == 0 or len(coldiv) == 0 or len(coltype) == 0:
+                raise YAPI_Exception(YAPI.IO_ERROR, "DataStream corrupted")
+
+            if len(colscl) <= 0:
+                for j in range(self._nCols):
+                    colscl.append(1.0 / coldiv[j])
+                    if coltype[j]:
+                        colofs[j] = -32767
+                    else:
+                        colofs[j] = 0
+
+            del udat[:]
+            dat = jsonObj.get("data")
+            if dat.getYJSONType() == YJSONType.STRING:
+                sdat = jsonObj.getString("data")
+                p = 0
+                while p < len(sdat):
+                    c = sdat[p]
+                    p += 1
+                    if c >= 'a':
+                        srcpos = int(len(udat) - 1 - (ord(c) - ord('a')))
+                        if srcpos < 0:
+                            # noinspection PyProtectedMember
+                            self._dataLogger._throw(YAPI.IO_ERROR, "Unexpected JSON reply format")
+                            return YAPI.IO_ERROR
+                        val = udat[srcpos]
+                    else:
+                        if p + 2 > len(sdat):
+                            # noinspection PyProtectedMember
+                            self._dataLogger._throw(YAPI.IO_ERROR, "Unexpected JSON reply format")
+                            return YAPI.IO_ERROR
+
+                        val = (ord(c) - ord('0'))
                         c = sdat[p]
                         p += 1
-                        if c >= 'a':
-                            srcpos = int(len(udat) - 1 - (ord(c) - ord('a')))
-                            if srcpos < 0:
-                                #noinspection PyProtectedMember
-                                self._dataLogger._throw(YAPI.IO_ERROR, "Unexpected JSON reply format")
-                                return YAPI.IO_ERROR
-                            val = udat[srcpos]
-                        else:
-                            if p + 2 > len(sdat):
-                                #noinspection PyProtectedMember
-                                self._dataLogger._throw(YAPI.IO_ERROR, "Unexpected JSON reply format")
-                                return YAPI.IO_ERROR
-
-                            val = (ord(c) - ord('0'))
-                            c = sdat[p]
-                            p += 1
-                            val += (ord(c) - ord('0')) << 5
-                            c = sdat[p]
-                            p += 1
-                            if c == 'z':
-                                c = "\\"
-                            val += (ord(c) - ord('0')) << 10
-                        udat.append(val)
+                        val += (ord(c) - ord('0')) << 5
+                        c = sdat[p]
+                        p += 1
+                        if c == 'z':
+                            c = "\\"
+                        val += (ord(c) - ord('0')) << 10
+                    udat.append(val)
+            else:
+                arr = jsonObj.getYJSONArray("data")
+                count = arr.length()
+                for j in range(count):
+                    tmp = arr.getInt(j)
+                    udat.append(tmp)
+            self._values = [[0] * self._nCols] * self._nRows
+            for uval in udat:
+                if coltype[x] < 2:
+                    value = (uval + colofs[x]) * colscl[x]
                 else:
-                    count = len(el.items)
-                    for j in range(count):
-                        tmp = int(el.items[j].ivalue)
-                        udat.append(tmp)
-                self._values = [[0] * self._nCols] * self._nRows
-                for uval in udat:
-                    if coltype[x] < 2:
-                        value = (uval + colofs[x]) * colscl[x]
-                    else:
-                        #noinspection PyProtectedMember
-                        value = YAPI._decimalToDouble(uval - 32767)
-                    self._values[y][x] = value
-                    x += 1
-                    if x == self._nCols:
-                        x = 0
-                        y += 1
+                    # noinspection PyProtectedMember
+                    value = YAPI._decimalToDouble(uval - 32767)
+                self._values[y][x] = value
+                x += 1
+                if x == self._nCols:
+                    x = 0
+                    y += 1
         return YAPI.SUCCESS

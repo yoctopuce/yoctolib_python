@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_hubport.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_hubport.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindHubPort(), the high-level API for HubPort functions
 #*
@@ -82,17 +82,14 @@ class YHubPort(YFunction):
         #--- (end of YHubPort attributes)
 
     #--- (YHubPort implementation)
-    def _parseAttr(self, member):
-        if member.name == "enabled":
-            self._enabled = member.ivalue
-            return 1
-        if member.name == "portState":
-            self._portState = member.ivalue
-            return 1
-        if member.name == "baudRate":
-            self._baudRate = member.ivalue
-            return 1
-        super(YHubPort, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("enabled"):
+            self._enabled = (json_val.getInt("enabled") > 0 if 1 else 0)
+        if json_val.has("portState"):
+            self._portState = json_val.getInt("portState")
+        if json_val.has("baudRate"):
+            self._baudRate = json_val.getInt("baudRate")
+        super(YHubPort, self)._parseAttr(json_val)
 
     def get_enabled(self):
         """

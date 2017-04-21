@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwminput.py 26826 2017-03-17 11:20:57Z mvuilleu $
+#* $Id: yocto_pwminput.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindPwmInput(), the high-level API for PwmInput functions
 #*
@@ -88,29 +88,22 @@ class YPwmInput(YSensor):
         #--- (end of YPwmInput attributes)
 
     #--- (YPwmInput implementation)
-    def _parseAttr(self, member):
-        if member.name == "dutyCycle":
-            self._dutyCycle = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "pulseDuration":
-            self._pulseDuration = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "frequency":
-            self._frequency = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "period":
-            self._period = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "pulseCounter":
-            self._pulseCounter = member.ivalue
-            return 1
-        if member.name == "pulseTimer":
-            self._pulseTimer = member.ivalue
-            return 1
-        if member.name == "pwmReportMode":
-            self._pwmReportMode = member.ivalue
-            return 1
-        super(YPwmInput, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("dutyCycle"):
+            self._dutyCycle = round(json_val.getDouble("dutyCycle") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("pulseDuration"):
+            self._pulseDuration = round(json_val.getDouble("pulseDuration") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("frequency"):
+            self._frequency = round(json_val.getDouble("frequency") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("period"):
+            self._period = round(json_val.getDouble("period") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("pulseCounter"):
+            self._pulseCounter = json_val.getLong("pulseCounter")
+        if json_val.has("pulseTimer"):
+            self._pulseTimer = json_val.getLong("pulseTimer")
+        if json_val.has("pwmReportMode"):
+            self._pwmReportMode = json_val.getInt("pwmReportMode")
+        super(YPwmInput, self)._parseAttr(json_val)
 
     def get_dutyCycle(self):
         """

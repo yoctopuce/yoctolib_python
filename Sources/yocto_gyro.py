@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_gyro.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -66,8 +66,8 @@ class YQt(YSensor):
         #--- (end of generated code: YQt attributes)
 
     #--- (generated code: YQt implementation)
-    def _parseAttr(self, member):
-        super(YQt, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        super(YQt, self)._parseAttr(json_val)
 
     @staticmethod
     def FindQt(func):
@@ -216,20 +216,16 @@ class YGyro(YSensor):
         #--- (end of generated code: YGyro attributes)
 
     #--- (generated code: YGyro implementation)
-    def _parseAttr(self, member):
-        if member.name == "bandwidth":
-            self._bandwidth = member.ivalue
-            return 1
-        if member.name == "xValue":
-            self._xValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "yValue":
-            self._yValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "zValue":
-            self._zValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        super(YGyro, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("bandwidth"):
+            self._bandwidth = json_val.getInt("bandwidth")
+        if json_val.has("xValue"):
+            self._xValue = round(json_val.getDouble("xValue") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("yValue"):
+            self._yValue = round(json_val.getDouble("yValue") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("zValue"):
+            self._zValue = round(json_val.getDouble("zValue") * 1000.0 / 65536.0) / 1000.0
+        super(YGyro, self)._parseAttr(json_val)
 
     def get_bandwidth(self):
         """

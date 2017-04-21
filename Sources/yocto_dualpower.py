@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_dualpower.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_dualpower.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindDualPower(), the high-level API for DualPower functions
 #*
@@ -83,17 +83,14 @@ class YDualPower(YFunction):
         #--- (end of YDualPower attributes)
 
     #--- (YDualPower implementation)
-    def _parseAttr(self, member):
-        if member.name == "powerState":
-            self._powerState = member.ivalue
-            return 1
-        if member.name == "powerControl":
-            self._powerControl = member.ivalue
-            return 1
-        if member.name == "extVoltage":
-            self._extVoltage = member.ivalue
-            return 1
-        super(YDualPower, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("powerState"):
+            self._powerState = json_val.getInt("powerState")
+        if json_val.has("powerControl"):
+            self._powerControl = json_val.getInt("powerControl")
+        if json_val.has("extVoltage"):
+            self._extVoltage = json_val.getInt("extVoltage")
+        super(YDualPower, self)._parseAttr(json_val)
 
     def get_powerState(self):
         """

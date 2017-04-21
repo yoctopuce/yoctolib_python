@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_temperature.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -93,20 +93,16 @@ class YTemperature(YSensor):
         #--- (end of YTemperature attributes)
 
     #--- (YTemperature implementation)
-    def _parseAttr(self, member):
-        if member.name == "sensorType":
-            self._sensorType = member.ivalue
-            return 1
-        if member.name == "signalValue":
-            self._signalValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "signalUnit":
-            self._signalUnit = member.svalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YTemperature, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("sensorType"):
+            self._sensorType = json_val.getInt("sensorType")
+        if json_val.has("signalValue"):
+            self._signalValue = round(json_val.getDouble("signalValue") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("signalUnit"):
+            self._signalUnit = json_val.getString("signalUnit")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YTemperature, self)._parseAttr(json_val)
 
     def set_unit(self, newval):
         """

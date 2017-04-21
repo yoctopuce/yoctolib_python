@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_lightsensor.py 26826 2017-03-17 11:20:57Z mvuilleu $
+#* $Id: yocto_lightsensor.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindLightSensor(), the high-level API for LightSensor functions
 #*
@@ -79,11 +79,10 @@ class YLightSensor(YSensor):
         #--- (end of YLightSensor attributes)
 
     #--- (YLightSensor implementation)
-    def _parseAttr(self, member):
-        if member.name == "measureType":
-            self._measureType = member.ivalue
-            return 1
-        super(YLightSensor, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("measureType"):
+            self._measureType = json_val.getInt("measureType")
+        super(YLightSensor, self)._parseAttr(json_val)
 
     def set_currentValue(self, newval):
         rest_val = str(int(round(newval * 65536.0, 1)))

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_power.py 26826 2017-03-17 11:20:57Z mvuilleu $
+#* $Id: yocto_power.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindPower(), the high-level API for Power functions
 #*
@@ -75,17 +75,14 @@ class YPower(YSensor):
         #--- (end of YPower attributes)
 
     #--- (YPower implementation)
-    def _parseAttr(self, member):
-        if member.name == "cosPhi":
-            self._cosPhi = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "meter":
-            self._meter = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "meterTimer":
-            self._meterTimer = member.ivalue
-            return 1
-        super(YPower, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("cosPhi"):
+            self._cosPhi = round(json_val.getDouble("cosPhi") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("meter"):
+            self._meter = round(json_val.getDouble("meter") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("meterTimer"):
+            self._meterTimer = json_val.getInt("meterTimer")
+        super(YPower, self)._parseAttr(json_val)
 
     def get_cosPhi(self):
         """

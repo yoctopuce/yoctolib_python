@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pressure.py 26826 2017-03-17 11:20:57Z mvuilleu $
+#* $Id: yocto_pressure.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindPressure(), the high-level API for Pressure functions
 #*
@@ -68,8 +68,8 @@ class YPressure(YSensor):
         #--- (end of YPressure attributes)
 
     #--- (YPressure implementation)
-    def _parseAttr(self, member):
-        super(YPressure, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        super(YPressure, self)._parseAttr(json_val)
 
     @staticmethod
     def FindPressure(func):

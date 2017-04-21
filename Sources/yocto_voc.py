@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_voc.py 26826 2017-03-17 11:20:57Z mvuilleu $
+#* $Id: yocto_voc.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindVoc(), the high-level API for Voc functions
 #*
@@ -68,8 +68,8 @@ class YVoc(YSensor):
         #--- (end of YVoc attributes)
 
     #--- (YVoc implementation)
-    def _parseAttr(self, member):
-        super(YVoc, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        super(YVoc, self)._parseAttr(json_val)
 
     @staticmethod
     def FindVoc(func):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_daisychain.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_daisychain.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindDaisyChain(), the high-level API for DaisyChain functions
 #*
@@ -79,17 +79,14 @@ class YDaisyChain(YFunction):
         #--- (end of YDaisyChain attributes)
 
     #--- (YDaisyChain implementation)
-    def _parseAttr(self, member):
-        if member.name == "daisyState":
-            self._daisyState = member.ivalue
-            return 1
-        if member.name == "childCount":
-            self._childCount = member.ivalue
-            return 1
-        if member.name == "requiredChildCount":
-            self._requiredChildCount = member.ivalue
-            return 1
-        super(YDaisyChain, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("daisyState"):
+            self._daisyState = json_val.getInt("daisyState")
+        if json_val.has("childCount"):
+            self._childCount = json_val.getInt("childCount")
+        if json_val.has("requiredChildCount"):
+            self._requiredChildCount = json_val.getInt("requiredChildCount")
+        super(YDaisyChain, self)._parseAttr(json_val)
 
     def get_daisyState(self):
         """

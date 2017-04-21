@@ -91,32 +91,24 @@ class YProximity(YSensor):
         #--- (end of YProximity attributes)
 
     #--- (YProximity implementation)
-    def _parseAttr(self, member):
-        if member.name == "signalValue":
-            self._signalValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "detectionThreshold":
-            self._detectionThreshold = member.ivalue
-            return 1
-        if member.name == "isPresent":
-            self._isPresent = member.ivalue
-            return 1
-        if member.name == "lastTimeApproached":
-            self._lastTimeApproached = member.ivalue
-            return 1
-        if member.name == "lastTimeRemoved":
-            self._lastTimeRemoved = member.ivalue
-            return 1
-        if member.name == "pulseCounter":
-            self._pulseCounter = member.ivalue
-            return 1
-        if member.name == "pulseTimer":
-            self._pulseTimer = member.ivalue
-            return 1
-        if member.name == "proximityReportMode":
-            self._proximityReportMode = member.ivalue
-            return 1
-        super(YProximity, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("signalValue"):
+            self._signalValue = round(json_val.getDouble("signalValue") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("detectionThreshold"):
+            self._detectionThreshold = json_val.getInt("detectionThreshold")
+        if json_val.has("isPresent"):
+            self._isPresent = (json_val.getInt("isPresent") > 0 if 1 else 0)
+        if json_val.has("lastTimeApproached"):
+            self._lastTimeApproached = json_val.getLong("lastTimeApproached")
+        if json_val.has("lastTimeRemoved"):
+            self._lastTimeRemoved = json_val.getLong("lastTimeRemoved")
+        if json_val.has("pulseCounter"):
+            self._pulseCounter = json_val.getLong("pulseCounter")
+        if json_val.has("pulseTimer"):
+            self._pulseTimer = json_val.getLong("pulseTimer")
+        if json_val.has("proximityReportMode"):
+            self._proximityReportMode = json_val.getInt("proximityReportMode")
+        super(YProximity, self)._parseAttr(json_val)
 
     def get_signalValue(self):
         """

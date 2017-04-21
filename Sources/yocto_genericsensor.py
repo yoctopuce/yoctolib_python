@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_genericsensor.py 26826 2017-03-17 11:20:57Z mvuilleu $
+#* $Id: yocto_genericsensor.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #*
@@ -86,26 +86,20 @@ class YGenericSensor(YSensor):
         #--- (end of YGenericSensor attributes)
 
     #--- (YGenericSensor implementation)
-    def _parseAttr(self, member):
-        if member.name == "signalValue":
-            self._signalValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "signalUnit":
-            self._signalUnit = member.svalue
-            return 1
-        if member.name == "signalRange":
-            self._signalRange = member.svalue
-            return 1
-        if member.name == "valueRange":
-            self._valueRange = member.svalue
-            return 1
-        if member.name == "signalBias":
-            self._signalBias = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "signalSampling":
-            self._signalSampling = member.ivalue
-            return 1
-        super(YGenericSensor, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("signalValue"):
+            self._signalValue = round(json_val.getDouble("signalValue") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("signalUnit"):
+            self._signalUnit = json_val.getString("signalUnit")
+        if json_val.has("signalRange"):
+            self._signalRange = json_val.getString("signalRange")
+        if json_val.has("valueRange"):
+            self._valueRange = json_val.getString("valueRange")
+        if json_val.has("signalBias"):
+            self._signalBias = round(json_val.getDouble("signalBias") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("signalSampling"):
+            self._signalSampling = json_val.getInt("signalSampling")
+        super(YGenericSensor, self)._parseAttr(json_val)
 
     def set_unit(self, newval):
         """

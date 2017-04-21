@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_segmenteddisplay.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_segmenteddisplay.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
 #*
@@ -74,14 +74,12 @@ class YSegmentedDisplay(YFunction):
         #--- (end of YSegmentedDisplay attributes)
 
     #--- (YSegmentedDisplay implementation)
-    def _parseAttr(self, member):
-        if member.name == "displayedText":
-            self._displayedText = member.svalue
-            return 1
-        if member.name == "displayMode":
-            self._displayMode = member.ivalue
-            return 1
-        super(YSegmentedDisplay, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("displayedText"):
+            self._displayedText = json_val.getString("displayedText")
+        if json_val.has("displayMode"):
+            self._displayMode = json_val.getInt("displayMode")
+        super(YSegmentedDisplay, self)._parseAttr(json_val)
 
     def get_displayedText(self):
         """

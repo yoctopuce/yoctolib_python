@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_relay.py 27118 2017-04-06 22:38:36Z seb $
+#* $Id: yocto_relay.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindRelay(), the high-level API for Relay functions
 #*
@@ -95,41 +95,31 @@ class YRelay(YFunction):
         #--- (end of YRelay attributes)
 
     #--- (YRelay implementation)
-    def _parseAttr(self, member):
-        if member.name == "state":
-            self._state = member.ivalue
-            return 1
-        if member.name == "stateAtPowerOn":
-            self._stateAtPowerOn = member.ivalue
-            return 1
-        if member.name == "maxTimeOnStateA":
-            self._maxTimeOnStateA = member.ivalue
-            return 1
-        if member.name == "maxTimeOnStateB":
-            self._maxTimeOnStateB = member.ivalue
-            return 1
-        if member.name == "output":
-            self._output = member.ivalue
-            return 1
-        if member.name == "pulseTimer":
-            self._pulseTimer = member.ivalue
-            return 1
-        if member.name == "delayedPulseTimer":
-            if member.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT:
-                self._delayedPulseTimer = -1
+    def _parseAttr(self, json_val):
+        if json_val.has("state"):
+            self._state = (json_val.getInt("state") > 0 if 1 else 0)
+        if json_val.has("stateAtPowerOn"):
+            self._stateAtPowerOn = json_val.getInt("stateAtPowerOn")
+        if json_val.has("maxTimeOnStateA"):
+            self._maxTimeOnStateA = json_val.getLong("maxTimeOnStateA")
+        if json_val.has("maxTimeOnStateB"):
+            self._maxTimeOnStateB = json_val.getLong("maxTimeOnStateB")
+        if json_val.has("output"):
+            self._output = (json_val.getInt("output") > 0 if 1 else 0)
+        if json_val.has("pulseTimer"):
+            self._pulseTimer = json_val.getLong("pulseTimer")
+        if json_val.has("delayedPulseTimer"):
+            subjson = json_val.getYJSONObject("delayedPulseTimer");
             self._delayedPulseTimer = {"moving": None, "target": None, "ms": None}
-            for submemb in member.members:
-                if submemb.name == "moving":
-                    self._delayedPulseTimer["moving"] = submemb.ivalue
-                elif submemb.name == "target":
-                    self._delayedPulseTimer["target"] = submemb.ivalue
-                elif submemb.name == "ms":
-                    self._delayedPulseTimer["ms"] = submemb.ivalue
-            return 1
-        if member.name == "countdown":
-            self._countdown = member.ivalue
-            return 1
-        super(YRelay, self)._parseAttr(member)
+            if subjson.has("moving"):
+                self._delayedPulseTimer["moving"] = subjson.getInt("moving")
+            if subjson.has("target"):
+                self._delayedPulseTimer["target"] = subjson.getInt("target")
+            if subjson.has("ms"):
+                self._delayedPulseTimer["ms"] = subjson.getInt("ms")
+        if json_val.has("countdown"):
+            self._countdown = json_val.getLong("countdown")
+        super(YRelay, self)._parseAttr(json_val)
 
     def get_state(self):
         """

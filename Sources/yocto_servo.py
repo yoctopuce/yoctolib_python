@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_servo.py 27118 2017-04-06 22:38:36Z seb $
+#* $Id: yocto_servo.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindServo(), the high-level API for Servo functions
 #*
@@ -87,38 +87,29 @@ class YServo(YFunction):
         #--- (end of YServo attributes)
 
     #--- (YServo implementation)
-    def _parseAttr(self, member):
-        if member.name == "position":
-            self._position = member.ivalue
-            return 1
-        if member.name == "enabled":
-            self._enabled = member.ivalue
-            return 1
-        if member.name == "range":
-            self._range = member.ivalue
-            return 1
-        if member.name == "neutral":
-            self._neutral = member.ivalue
-            return 1
-        if member.name == "move":
-            if member.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT:
-                self._move = -1
+    def _parseAttr(self, json_val):
+        if json_val.has("position"):
+            self._position = json_val.getInt("position")
+        if json_val.has("enabled"):
+            self._enabled = (json_val.getInt("enabled") > 0 if 1 else 0)
+        if json_val.has("range"):
+            self._range = json_val.getInt("range")
+        if json_val.has("neutral"):
+            self._neutral = json_val.getInt("neutral")
+        if json_val.has("move"):
+            subjson = json_val.getYJSONObject("move");
             self._move = {"moving": None, "target": None, "ms": None}
-            for submemb in member.members:
-                if submemb.name == "moving":
-                    self._move["moving"] = submemb.ivalue
-                elif submemb.name == "target":
-                    self._move["target"] = submemb.ivalue
-                elif submemb.name == "ms":
-                    self._move["ms"] = submemb.ivalue
-            return 1
-        if member.name == "positionAtPowerOn":
-            self._positionAtPowerOn = member.ivalue
-            return 1
-        if member.name == "enabledAtPowerOn":
-            self._enabledAtPowerOn = member.ivalue
-            return 1
-        super(YServo, self)._parseAttr(member)
+            if subjson.has("moving"):
+                self._move["moving"] = subjson.getInt("moving")
+            if subjson.has("target"):
+                self._move["target"] = subjson.getInt("target")
+            if subjson.has("ms"):
+                self._move["ms"] = subjson.getInt("ms")
+        if json_val.has("positionAtPowerOn"):
+            self._positionAtPowerOn = json_val.getInt("positionAtPowerOn")
+        if json_val.has("enabledAtPowerOn"):
+            self._enabledAtPowerOn = (json_val.getInt("enabledAtPowerOn") > 0 if 1 else 0)
+        super(YServo, self)._parseAttr(json_val)
 
     def get_position(self):
         """

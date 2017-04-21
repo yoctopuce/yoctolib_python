@@ -1,1 +1,1 @@
-- Add playNotes support in YBuzzer class
+- Add support for new JZON protocol (improve overall performance)

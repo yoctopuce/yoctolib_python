@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_poweroutput.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_poweroutput.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindPowerOutput(), the high-level API for PowerOutput functions
 #*
@@ -72,11 +72,10 @@ class YPowerOutput(YFunction):
         #--- (end of YPowerOutput attributes)
 
     #--- (YPowerOutput implementation)
-    def _parseAttr(self, member):
-        if member.name == "voltage":
-            self._voltage = member.ivalue
-            return 1
-        super(YPowerOutput, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("voltage"):
+            self._voltage = json_val.getInt("voltage")
+        super(YPowerOutput, self)._parseAttr(json_val)
 
     def get_voltage(self):
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_carbondioxide.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_carbondioxide.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
 #*
@@ -73,14 +73,12 @@ class YCarbonDioxide(YSensor):
         #--- (end of YCarbonDioxide attributes)
 
     #--- (YCarbonDioxide implementation)
-    def _parseAttr(self, member):
-        if member.name == "abcPeriod":
-            self._abcPeriod = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YCarbonDioxide, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("abcPeriod"):
+            self._abcPeriod = json_val.getInt("abcPeriod")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YCarbonDioxide, self)._parseAttr(json_val)
 
     def get_abcPeriod(self):
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_refframe.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -106,17 +106,14 @@ class YRefFrame(YFunction):
         #--- (end of YRefFrame attributes)
 
     #--- (YRefFrame implementation)
-    def _parseAttr(self, member):
-        if member.name == "mountPos":
-            self._mountPos = member.ivalue
-            return 1
-        if member.name == "bearing":
-            self._bearing = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "calibrationParam":
-            self._calibrationParam = member.svalue
-            return 1
-        super(YRefFrame, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("mountPos"):
+            self._mountPos = json_val.getInt("mountPos")
+        if json_val.has("bearing"):
+            self._bearing = round(json_val.getDouble("bearing") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("calibrationParam"):
+            self._calibrationParam = json_val.getString("calibrationParam")
+        super(YRefFrame, self)._parseAttr(json_val)
 
     def get_mountPos(self):
         # res

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_oscontrol.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_oscontrol.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindOsControl(), the high-level API for OsControl functions
 #*
@@ -70,11 +70,10 @@ class YOsControl(YFunction):
         #--- (end of YOsControl attributes)
 
     #--- (YOsControl implementation)
-    def _parseAttr(self, member):
-        if member.name == "shutdownCountdown":
-            self._shutdownCountdown = member.ivalue
-            return 1
-        super(YOsControl, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("shutdownCountdown"):
+            self._shutdownCountdown = json_val.getInt("shutdownCountdown")
+        super(YOsControl, self)._parseAttr(json_val)
 
     def get_shutdownCountdown(self):
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_steppermotor.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_steppermotor.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #*
@@ -107,53 +107,38 @@ class YStepperMotor(YFunction):
         #--- (end of YStepperMotor attributes)
 
     #--- (YStepperMotor implementation)
-    def _parseAttr(self, member):
-        if member.name == "motorState":
-            self._motorState = member.ivalue
-            return 1
-        if member.name == "diags":
-            self._diags = member.ivalue
-            return 1
-        if member.name == "stepPos":
-            self._stepPos = member.ivalue / 16.0
-            return 1
-        if member.name == "speed":
-            self._speed = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "pullinSpeed":
-            self._pullinSpeed = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "maxAccel":
-            self._maxAccel = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "maxSpeed":
-            self._maxSpeed = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "stepping":
-            self._stepping = member.ivalue
-            return 1
-        if member.name == "overcurrent":
-            self._overcurrent = member.ivalue
-            return 1
-        if member.name == "tCurrStop":
-            self._tCurrStop = member.ivalue
-            return 1
-        if member.name == "tCurrRun":
-            self._tCurrRun = member.ivalue
-            return 1
-        if member.name == "alertMode":
-            self._alertMode = member.svalue
-            return 1
-        if member.name == "auxMode":
-            self._auxMode = member.svalue
-            return 1
-        if member.name == "auxSignal":
-            self._auxSignal = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YStepperMotor, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("motorState"):
+            self._motorState = json_val.getInt("motorState")
+        if json_val.has("diags"):
+            self._diags = json_val.getInt("diags")
+        if json_val.has("stepPos"):
+            self._stepPos = json_val.getDouble("stepPos") / 16.0
+        if json_val.has("speed"):
+            self._speed = round(json_val.getDouble("speed") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("pullinSpeed"):
+            self._pullinSpeed = round(json_val.getDouble("pullinSpeed") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("maxAccel"):
+            self._maxAccel = round(json_val.getDouble("maxAccel") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("maxSpeed"):
+            self._maxSpeed = round(json_val.getDouble("maxSpeed") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("stepping"):
+            self._stepping = json_val.getInt("stepping")
+        if json_val.has("overcurrent"):
+            self._overcurrent = json_val.getInt("overcurrent")
+        if json_val.has("tCurrStop"):
+            self._tCurrStop = json_val.getInt("tCurrStop")
+        if json_val.has("tCurrRun"):
+            self._tCurrRun = json_val.getInt("tCurrRun")
+        if json_val.has("alertMode"):
+            self._alertMode = json_val.getString("alertMode")
+        if json_val.has("auxMode"):
+            self._auxMode = json_val.getString("auxMode")
+        if json_val.has("auxSignal"):
+            self._auxSignal = json_val.getInt("auxSignal")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YStepperMotor, self)._parseAttr(json_val)
 
     def get_motorState(self):
         """

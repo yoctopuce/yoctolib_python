@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_led.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_led.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindLed(), the high-level API for Led functions
 #*
@@ -82,17 +82,14 @@ class YLed(YFunction):
         #--- (end of YLed attributes)
 
     #--- (YLed implementation)
-    def _parseAttr(self, member):
-        if member.name == "power":
-            self._power = member.ivalue
-            return 1
-        if member.name == "luminosity":
-            self._luminosity = member.ivalue
-            return 1
-        if member.name == "blinking":
-            self._blinking = member.ivalue
-            return 1
-        super(YLed, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("power"):
+            self._power = (json_val.getInt("power") > 0 if 1 else 0)
+        if json_val.has("luminosity"):
+            self._luminosity = json_val.getInt("luminosity")
+        if json_val.has("blinking"):
+            self._blinking = json_val.getInt("blinking")
+        super(YLed, self)._parseAttr(json_val)
 
     def get_power(self):
         """

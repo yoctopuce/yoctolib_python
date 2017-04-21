@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_latitude.py 26826 2017-03-17 11:20:57Z mvuilleu $
+#* $Id: yocto_latitude.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindLatitude(), the high-level API for Latitude functions
 #*
@@ -69,8 +69,8 @@ class YLatitude(YSensor):
         #--- (end of YLatitude attributes)
 
     #--- (YLatitude implementation)
-    def _parseAttr(self, member):
-        super(YLatitude, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        super(YLatitude, self)._parseAttr(json_val)
 
     @staticmethod
     def FindLatitude(func):

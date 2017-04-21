@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_anbutton.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_anbutton.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindAnButton(), the high-level API for AnButton functions
 #*
@@ -97,41 +97,30 @@ class YAnButton(YFunction):
         #--- (end of YAnButton attributes)
 
     #--- (YAnButton implementation)
-    def _parseAttr(self, member):
-        if member.name == "calibratedValue":
-            self._calibratedValue = member.ivalue
-            return 1
-        if member.name == "rawValue":
-            self._rawValue = member.ivalue
-            return 1
-        if member.name == "analogCalibration":
-            self._analogCalibration = member.ivalue
-            return 1
-        if member.name == "calibrationMax":
-            self._calibrationMax = member.ivalue
-            return 1
-        if member.name == "calibrationMin":
-            self._calibrationMin = member.ivalue
-            return 1
-        if member.name == "sensitivity":
-            self._sensitivity = member.ivalue
-            return 1
-        if member.name == "isPressed":
-            self._isPressed = member.ivalue
-            return 1
-        if member.name == "lastTimePressed":
-            self._lastTimePressed = member.ivalue
-            return 1
-        if member.name == "lastTimeReleased":
-            self._lastTimeReleased = member.ivalue
-            return 1
-        if member.name == "pulseCounter":
-            self._pulseCounter = member.ivalue
-            return 1
-        if member.name == "pulseTimer":
-            self._pulseTimer = member.ivalue
-            return 1
-        super(YAnButton, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("calibratedValue"):
+            self._calibratedValue = json_val.getInt("calibratedValue")
+        if json_val.has("rawValue"):
+            self._rawValue = json_val.getInt("rawValue")
+        if json_val.has("analogCalibration"):
+            self._analogCalibration = (json_val.getInt("analogCalibration") > 0 if 1 else 0)
+        if json_val.has("calibrationMax"):
+            self._calibrationMax = json_val.getInt("calibrationMax")
+        if json_val.has("calibrationMin"):
+            self._calibrationMin = json_val.getInt("calibrationMin")
+        if json_val.has("sensitivity"):
+            self._sensitivity = json_val.getInt("sensitivity")
+        if json_val.has("isPressed"):
+            self._isPressed = (json_val.getInt("isPressed") > 0 if 1 else 0)
+        if json_val.has("lastTimePressed"):
+            self._lastTimePressed = json_val.getLong("lastTimePressed")
+        if json_val.has("lastTimeReleased"):
+            self._lastTimeReleased = json_val.getLong("lastTimeReleased")
+        if json_val.has("pulseCounter"):
+            self._pulseCounter = json_val.getLong("pulseCounter")
+        if json_val.has("pulseTimer"):
+            self._pulseTimer = json_val.getLong("pulseTimer")
+        super(YAnButton, self)._parseAttr(json_val)
 
     def get_calibratedValue(self):
         """

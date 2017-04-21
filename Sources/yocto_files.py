@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_files.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -50,23 +50,17 @@ class YFileRecord(object):
     #--- (generated code: YFileRecord definitions)
     #--- (end of generated code: YFileRecord definitions)
 
-    def __init__(self, json):
+    def __init__(self, json_str):
     #--- (generated code: YFileRecord attributes)
         self._name = ''
         self._size = 0
         self._crc = 0
         #--- (end of generated code: YFileRecord attributes)
-        self._crc = -1
-        self._size = -1
-        j = YAPI.TJsonParser(json, False)
-        node = j.GetRootNode()
-        for member in node.members:
-            if member.name == "name":
-                self._name = member.svalue
-            elif member.name == "crc":
-                self._crc = member.ivalue
-            elif member.name == "size":
-                self._size = member.ivalue
+        json = YJSONObject(json_str,0,len(json_str))
+        json.parse()
+        self._name = json.getString("name")
+        self._crc = json.getInt("crc")
+        self._size = json.getInt("size")
 
     #--- (generated code: YFileRecord implementation)
     def get_name(self):
@@ -111,14 +105,12 @@ class YFiles(YFunction):
         #--- (end of generated code: YFiles attributes)
 
     #--- (generated code: YFiles implementation)
-    def _parseAttr(self, member):
-        if member.name == "filesCount":
-            self._filesCount = member.ivalue
-            return 1
-        if member.name == "freeSpace":
-            self._freeSpace = member.ivalue
-            return 1
-        super(YFiles, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("filesCount"):
+            self._filesCount = json_val.getInt("filesCount")
+        if json_val.has("freeSpace"):
+            self._freeSpace = json_val.getInt("freeSpace")
+        super(YFiles, self)._parseAttr(json_val)
 
     def get_filesCount(self):
         """

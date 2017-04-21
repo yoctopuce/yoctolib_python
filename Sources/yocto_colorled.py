@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorled.py 27118 2017-04-06 22:38:36Z seb $
+#* $Id: yocto_colorled.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindColorLed(), the high-level API for ColorLed functions
 #*
@@ -89,53 +89,40 @@ class YColorLed(YFunction):
         #--- (end of YColorLed attributes)
 
     #--- (YColorLed implementation)
-    def _parseAttr(self, member):
-        if member.name == "rgbColor":
-            self._rgbColor = member.ivalue
-            return 1
-        if member.name == "hslColor":
-            self._hslColor = member.ivalue
-            return 1
-        if member.name == "rgbMove":
-            if member.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT:
-                self._rgbMove = -1
+    def _parseAttr(self, json_val):
+        if json_val.has("rgbColor"):
+            self._rgbColor = json_val.getInt("rgbColor")
+        if json_val.has("hslColor"):
+            self._hslColor = json_val.getInt("hslColor")
+        if json_val.has("rgbMove"):
+            subjson = json_val.getYJSONObject("rgbMove");
             self._rgbMove = {"moving": None, "target": None, "ms": None}
-            for submemb in member.members:
-                if submemb.name == "moving":
-                    self._rgbMove["moving"] = submemb.ivalue
-                elif submemb.name == "target":
-                    self._rgbMove["target"] = submemb.ivalue
-                elif submemb.name == "ms":
-                    self._rgbMove["ms"] = submemb.ivalue
-            return 1
-        if member.name == "hslMove":
-            if member.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT:
-                self._hslMove = -1
+            if subjson.has("moving"):
+                self._rgbMove["moving"] = subjson.getInt("moving")
+            if subjson.has("target"):
+                self._rgbMove["target"] = subjson.getInt("target")
+            if subjson.has("ms"):
+                self._rgbMove["ms"] = subjson.getInt("ms")
+        if json_val.has("hslMove"):
+            subjson = json_val.getYJSONObject("hslMove");
             self._hslMove = {"moving": None, "target": None, "ms": None}
-            for submemb in member.members:
-                if submemb.name == "moving":
-                    self._hslMove["moving"] = submemb.ivalue
-                elif submemb.name == "target":
-                    self._hslMove["target"] = submemb.ivalue
-                elif submemb.name == "ms":
-                    self._hslMove["ms"] = submemb.ivalue
-            return 1
-        if member.name == "rgbColorAtPowerOn":
-            self._rgbColorAtPowerOn = member.ivalue
-            return 1
-        if member.name == "blinkSeqSize":
-            self._blinkSeqSize = member.ivalue
-            return 1
-        if member.name == "blinkSeqMaxSize":
-            self._blinkSeqMaxSize = member.ivalue
-            return 1
-        if member.name == "blinkSeqSignature":
-            self._blinkSeqSignature = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YColorLed, self)._parseAttr(member)
+            if subjson.has("moving"):
+                self._hslMove["moving"] = subjson.getInt("moving")
+            if subjson.has("target"):
+                self._hslMove["target"] = subjson.getInt("target")
+            if subjson.has("ms"):
+                self._hslMove["ms"] = subjson.getInt("ms")
+        if json_val.has("rgbColorAtPowerOn"):
+            self._rgbColorAtPowerOn = json_val.getInt("rgbColorAtPowerOn")
+        if json_val.has("blinkSeqSize"):
+            self._blinkSeqSize = json_val.getInt("blinkSeqSize")
+        if json_val.has("blinkSeqMaxSize"):
+            self._blinkSeqMaxSize = json_val.getInt("blinkSeqMaxSize")
+        if json_val.has("blinkSeqSignature"):
+            self._blinkSeqSignature = json_val.getInt("blinkSeqSignature")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YColorLed, self)._parseAttr(json_val)
 
     def get_rgbColor(self):
         """

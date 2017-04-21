@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_groundspeed.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_groundspeed.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
 #*
@@ -69,8 +69,8 @@ class YGroundSpeed(YSensor):
         #--- (end of YGroundSpeed attributes)
 
     #--- (YGroundSpeed implementation)
-    def _parseAttr(self, member):
-        super(YGroundSpeed, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        super(YGroundSpeed, self)._parseAttr(json_val)
 
     @staticmethod
     def FindGroundSpeed(func):

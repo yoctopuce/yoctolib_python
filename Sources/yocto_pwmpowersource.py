@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwmpowersource.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_pwmpowersource.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
 #*
@@ -73,11 +73,10 @@ class YPwmPowerSource(YFunction):
         #--- (end of YPwmPowerSource attributes)
 
     #--- (YPwmPowerSource implementation)
-    def _parseAttr(self, member):
-        if member.name == "powerMode":
-            self._powerMode = member.ivalue
-            return 1
-        super(YPwmPowerSource, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("powerMode"):
+            self._powerMode = json_val.getInt("powerMode")
+        super(YPwmPowerSource, self)._parseAttr(json_val)
 
     def get_powerMode(self):
         """

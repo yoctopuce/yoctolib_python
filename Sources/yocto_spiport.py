@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_spiport.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_spiport.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindSpiPort(), the high-level API for SpiPort functions
 #*
@@ -112,50 +112,36 @@ class YSpiPort(YFunction):
         #--- (end of YSpiPort attributes)
 
     #--- (YSpiPort implementation)
-    def _parseAttr(self, member):
-        if member.name == "rxCount":
-            self._rxCount = member.ivalue
-            return 1
-        if member.name == "txCount":
-            self._txCount = member.ivalue
-            return 1
-        if member.name == "errCount":
-            self._errCount = member.ivalue
-            return 1
-        if member.name == "rxMsgCount":
-            self._rxMsgCount = member.ivalue
-            return 1
-        if member.name == "txMsgCount":
-            self._txMsgCount = member.ivalue
-            return 1
-        if member.name == "lastMsg":
-            self._lastMsg = member.svalue
-            return 1
-        if member.name == "currentJob":
-            self._currentJob = member.svalue
-            return 1
-        if member.name == "startupJob":
-            self._startupJob = member.svalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        if member.name == "voltageLevel":
-            self._voltageLevel = member.ivalue
-            return 1
-        if member.name == "protocol":
-            self._protocol = member.svalue
-            return 1
-        if member.name == "spiMode":
-            self._spiMode = member.svalue
-            return 1
-        if member.name == "ssPolarity":
-            self._ssPolarity = member.ivalue
-            return 1
-        if member.name == "shitftSampling":
-            self._shitftSampling = member.ivalue
-            return 1
-        super(YSpiPort, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("rxCount"):
+            self._rxCount = json_val.getInt("rxCount")
+        if json_val.has("txCount"):
+            self._txCount = json_val.getInt("txCount")
+        if json_val.has("errCount"):
+            self._errCount = json_val.getInt("errCount")
+        if json_val.has("rxMsgCount"):
+            self._rxMsgCount = json_val.getInt("rxMsgCount")
+        if json_val.has("txMsgCount"):
+            self._txMsgCount = json_val.getInt("txMsgCount")
+        if json_val.has("lastMsg"):
+            self._lastMsg = json_val.getString("lastMsg")
+        if json_val.has("currentJob"):
+            self._currentJob = json_val.getString("currentJob")
+        if json_val.has("startupJob"):
+            self._startupJob = json_val.getString("startupJob")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        if json_val.has("voltageLevel"):
+            self._voltageLevel = json_val.getInt("voltageLevel")
+        if json_val.has("protocol"):
+            self._protocol = json_val.getString("protocol")
+        if json_val.has("spiMode"):
+            self._spiMode = json_val.getString("spiMode")
+        if json_val.has("ssPolarity"):
+            self._ssPolarity = (json_val.getInt("ssPolarity") > 0 if 1 else 0)
+        if json_val.has("shitftSampling"):
+            self._shitftSampling = (json_val.getInt("shitftSampling") > 0 if 1 else 0)
+        super(YSpiPort, self)._parseAttr(json_val)
 
     def get_rxCount(self):
         """

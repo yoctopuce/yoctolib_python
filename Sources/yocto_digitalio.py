@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_digitalio.py 26949 2017-03-28 15:36:15Z mvuilleu $
+#* $Id: yocto_digitalio.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #*
@@ -88,32 +88,24 @@ class YDigitalIO(YFunction):
         #--- (end of YDigitalIO attributes)
 
     #--- (YDigitalIO implementation)
-    def _parseAttr(self, member):
-        if member.name == "portState":
-            self._portState = member.ivalue
-            return 1
-        if member.name == "portDirection":
-            self._portDirection = member.ivalue
-            return 1
-        if member.name == "portOpenDrain":
-            self._portOpenDrain = member.ivalue
-            return 1
-        if member.name == "portPolarity":
-            self._portPolarity = member.ivalue
-            return 1
-        if member.name == "portDiags":
-            self._portDiags = member.ivalue
-            return 1
-        if member.name == "portSize":
-            self._portSize = member.ivalue
-            return 1
-        if member.name == "outputVoltage":
-            self._outputVoltage = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YDigitalIO, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("portState"):
+            self._portState = json_val.getInt("portState")
+        if json_val.has("portDirection"):
+            self._portDirection = json_val.getInt("portDirection")
+        if json_val.has("portOpenDrain"):
+            self._portOpenDrain = json_val.getInt("portOpenDrain")
+        if json_val.has("portPolarity"):
+            self._portPolarity = json_val.getInt("portPolarity")
+        if json_val.has("portDiags"):
+            self._portDiags = json_val.getInt("portDiags")
+        if json_val.has("portSize"):
+            self._portSize = json_val.getInt("portSize")
+        if json_val.has("outputVoltage"):
+            self._outputVoltage = json_val.getInt("outputVoltage")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YDigitalIO, self)._parseAttr(json_val)
 
     def get_portState(self):
         """

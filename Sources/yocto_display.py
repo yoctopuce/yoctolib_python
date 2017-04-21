@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_display.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -595,41 +595,30 @@ class YDisplay(YFunction):
         self._recording = False
 
     #--- (generated code: YDisplay implementation)
-    def _parseAttr(self, member):
-        if member.name == "enabled":
-            self._enabled = member.ivalue
-            return 1
-        if member.name == "startupSeq":
-            self._startupSeq = member.svalue
-            return 1
-        if member.name == "brightness":
-            self._brightness = member.ivalue
-            return 1
-        if member.name == "orientation":
-            self._orientation = member.ivalue
-            return 1
-        if member.name == "displayWidth":
-            self._displayWidth = member.ivalue
-            return 1
-        if member.name == "displayHeight":
-            self._displayHeight = member.ivalue
-            return 1
-        if member.name == "displayType":
-            self._displayType = member.ivalue
-            return 1
-        if member.name == "layerWidth":
-            self._layerWidth = member.ivalue
-            return 1
-        if member.name == "layerHeight":
-            self._layerHeight = member.ivalue
-            return 1
-        if member.name == "layerCount":
-            self._layerCount = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YDisplay, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("enabled"):
+            self._enabled = (json_val.getInt("enabled") > 0 if 1 else 0)
+        if json_val.has("startupSeq"):
+            self._startupSeq = json_val.getString("startupSeq")
+        if json_val.has("brightness"):
+            self._brightness = json_val.getInt("brightness")
+        if json_val.has("orientation"):
+            self._orientation = json_val.getInt("orientation")
+        if json_val.has("displayWidth"):
+            self._displayWidth = json_val.getInt("displayWidth")
+        if json_val.has("displayHeight"):
+            self._displayHeight = json_val.getInt("displayHeight")
+        if json_val.has("displayType"):
+            self._displayType = json_val.getInt("displayType")
+        if json_val.has("layerWidth"):
+            self._layerWidth = json_val.getInt("layerWidth")
+        if json_val.has("layerHeight"):
+            self._layerHeight = json_val.getInt("layerHeight")
+        if json_val.has("layerCount"):
+            self._layerCount = json_val.getInt("layerCount")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YDisplay, self)._parseAttr(json_val)
 
     def get_enabled(self):
         """

@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_cellular.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -167,56 +167,40 @@ class YCellular(YFunction):
         #--- (end of generated code: YCellular attributes)
 
     #--- (generated code: YCellular implementation)
-    def _parseAttr(self, member):
-        if member.name == "linkQuality":
-            self._linkQuality = member.ivalue
-            return 1
-        if member.name == "cellOperator":
-            self._cellOperator = member.svalue
-            return 1
-        if member.name == "cellIdentifier":
-            self._cellIdentifier = member.svalue
-            return 1
-        if member.name == "cellType":
-            self._cellType = member.ivalue
-            return 1
-        if member.name == "imsi":
-            self._imsi = member.svalue
-            return 1
-        if member.name == "message":
-            self._message = member.svalue
-            return 1
-        if member.name == "pin":
-            self._pin = member.svalue
-            return 1
-        if member.name == "lockedOperator":
-            self._lockedOperator = member.svalue
-            return 1
-        if member.name == "airplaneMode":
-            self._airplaneMode = member.ivalue
-            return 1
-        if member.name == "enableData":
-            self._enableData = member.ivalue
-            return 1
-        if member.name == "apn":
-            self._apn = member.svalue
-            return 1
-        if member.name == "apnSecret":
-            self._apnSecret = member.svalue
-            return 1
-        if member.name == "pingInterval":
-            self._pingInterval = member.ivalue
-            return 1
-        if member.name == "dataSent":
-            self._dataSent = member.ivalue
-            return 1
-        if member.name == "dataReceived":
-            self._dataReceived = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YCellular, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("linkQuality"):
+            self._linkQuality = json_val.getInt("linkQuality")
+        if json_val.has("cellOperator"):
+            self._cellOperator = json_val.getString("cellOperator")
+        if json_val.has("cellIdentifier"):
+            self._cellIdentifier = json_val.getString("cellIdentifier")
+        if json_val.has("cellType"):
+            self._cellType = json_val.getInt("cellType")
+        if json_val.has("imsi"):
+            self._imsi = json_val.getString("imsi")
+        if json_val.has("message"):
+            self._message = json_val.getString("message")
+        if json_val.has("pin"):
+            self._pin = json_val.getString("pin")
+        if json_val.has("lockedOperator"):
+            self._lockedOperator = json_val.getString("lockedOperator")
+        if json_val.has("airplaneMode"):
+            self._airplaneMode = (json_val.getInt("airplaneMode") > 0 if 1 else 0)
+        if json_val.has("enableData"):
+            self._enableData = json_val.getInt("enableData")
+        if json_val.has("apn"):
+            self._apn = json_val.getString("apn")
+        if json_val.has("apnSecret"):
+            self._apnSecret = json_val.getString("apnSecret")
+        if json_val.has("pingInterval"):
+            self._pingInterval = json_val.getInt("pingInterval")
+        if json_val.has("dataSent"):
+            self._dataSent = json_val.getInt("dataSent")
+        if json_val.has("dataReceived"):
+            self._dataReceived = json_val.getInt("dataReceived")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YCellular, self)._parseAttr(json_val)
 
     def get_linkQuality(self):
         """

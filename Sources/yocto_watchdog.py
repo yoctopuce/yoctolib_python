@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_watchdog.py 27118 2017-04-06 22:38:36Z seb $
+#* $Id: yocto_watchdog.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindWatchdog(), the high-level API for Watchdog functions
 #*
@@ -106,53 +106,39 @@ class YWatchdog(YFunction):
         #--- (end of YWatchdog attributes)
 
     #--- (YWatchdog implementation)
-    def _parseAttr(self, member):
-        if member.name == "state":
-            self._state = member.ivalue
-            return 1
-        if member.name == "stateAtPowerOn":
-            self._stateAtPowerOn = member.ivalue
-            return 1
-        if member.name == "maxTimeOnStateA":
-            self._maxTimeOnStateA = member.ivalue
-            return 1
-        if member.name == "maxTimeOnStateB":
-            self._maxTimeOnStateB = member.ivalue
-            return 1
-        if member.name == "output":
-            self._output = member.ivalue
-            return 1
-        if member.name == "pulseTimer":
-            self._pulseTimer = member.ivalue
-            return 1
-        if member.name == "delayedPulseTimer":
-            if member.recordtype != YAPI.TJSONRECORDTYPE.JSON_STRUCT:
-                self._delayedPulseTimer = -1
+    def _parseAttr(self, json_val):
+        if json_val.has("state"):
+            self._state = (json_val.getInt("state") > 0 if 1 else 0)
+        if json_val.has("stateAtPowerOn"):
+            self._stateAtPowerOn = json_val.getInt("stateAtPowerOn")
+        if json_val.has("maxTimeOnStateA"):
+            self._maxTimeOnStateA = json_val.getLong("maxTimeOnStateA")
+        if json_val.has("maxTimeOnStateB"):
+            self._maxTimeOnStateB = json_val.getLong("maxTimeOnStateB")
+        if json_val.has("output"):
+            self._output = (json_val.getInt("output") > 0 if 1 else 0)
+        if json_val.has("pulseTimer"):
+            self._pulseTimer = json_val.getLong("pulseTimer")
+        if json_val.has("delayedPulseTimer"):
+            subjson = json_val.getYJSONObject("delayedPulseTimer");
             self._delayedPulseTimer = {"moving": None, "target": None, "ms": None}
-            for submemb in member.members:
-                if submemb.name == "moving":
-                    self._delayedPulseTimer["moving"] = submemb.ivalue
-                elif submemb.name == "target":
-                    self._delayedPulseTimer["target"] = submemb.ivalue
-                elif submemb.name == "ms":
-                    self._delayedPulseTimer["ms"] = submemb.ivalue
-            return 1
-        if member.name == "countdown":
-            self._countdown = member.ivalue
-            return 1
-        if member.name == "autoStart":
-            self._autoStart = member.ivalue
-            return 1
-        if member.name == "running":
-            self._running = member.ivalue
-            return 1
-        if member.name == "triggerDelay":
-            self._triggerDelay = member.ivalue
-            return 1
-        if member.name == "triggerDuration":
-            self._triggerDuration = member.ivalue
-            return 1
-        super(YWatchdog, self)._parseAttr(member)
+            if subjson.has("moving"):
+                self._delayedPulseTimer["moving"] = subjson.getInt("moving")
+            if subjson.has("target"):
+                self._delayedPulseTimer["target"] = subjson.getInt("target")
+            if subjson.has("ms"):
+                self._delayedPulseTimer["ms"] = subjson.getInt("ms")
+        if json_val.has("countdown"):
+            self._countdown = json_val.getLong("countdown")
+        if json_val.has("autoStart"):
+            self._autoStart = (json_val.getInt("autoStart") > 0 if 1 else 0)
+        if json_val.has("running"):
+            self._running = (json_val.getInt("running") > 0 if 1 else 0)
+        if json_val.has("triggerDelay"):
+            self._triggerDelay = json_val.getLong("triggerDelay")
+        if json_val.has("triggerDuration"):
+            self._triggerDuration = json_val.getLong("triggerDuration")
+        super(YWatchdog, self)._parseAttr(json_val)
 
     def get_state(self):
         """

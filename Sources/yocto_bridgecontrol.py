@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_bridgecontrol.py 27017 2017-03-31 14:47:59Z seb $
+#* $Id: yocto_bridgecontrol.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindBridgeControl(), the high-level API for BridgeControl functions
 #*
@@ -80,20 +80,16 @@ class YBridgeControl(YFunction):
         #--- (end of YBridgeControl attributes)
 
     #--- (YBridgeControl implementation)
-    def _parseAttr(self, member):
-        if member.name == "excitationMode":
-            self._excitationMode = member.ivalue
-            return 1
-        if member.name == "bridgeLatency":
-            self._bridgeLatency = member.ivalue
-            return 1
-        if member.name == "adValue":
-            self._adValue = member.ivalue
-            return 1
-        if member.name == "adGain":
-            self._adGain = member.ivalue
-            return 1
-        super(YBridgeControl, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("excitationMode"):
+            self._excitationMode = json_val.getInt("excitationMode")
+        if json_val.has("bridgeLatency"):
+            self._bridgeLatency = json_val.getInt("bridgeLatency")
+        if json_val.has("adValue"):
+            self._adValue = json_val.getInt("adValue")
+        if json_val.has("adGain"):
+            self._adGain = json_val.getInt("adGain")
+        super(YBridgeControl, self)._parseAttr(json_val)
 
     def get_excitationMode(self):
         """

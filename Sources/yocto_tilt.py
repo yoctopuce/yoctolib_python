@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_tilt.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_tilt.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindTilt(), the high-level API for Tilt functions
 #*
@@ -81,14 +81,12 @@ class YTilt(YSensor):
         #--- (end of YTilt attributes)
 
     #--- (YTilt implementation)
-    def _parseAttr(self, member):
-        if member.name == "bandwidth":
-            self._bandwidth = member.ivalue
-            return 1
-        if member.name == "axis":
-            self._axis = member.ivalue
-            return 1
-        super(YTilt, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("bandwidth"):
+            self._bandwidth = json_val.getInt("bandwidth")
+        if json_val.has("axis"):
+            self._axis = json_val.getInt("axis")
+        super(YTilt, self)._parseAttr(json_val)
 
     def get_bandwidth(self):
         """

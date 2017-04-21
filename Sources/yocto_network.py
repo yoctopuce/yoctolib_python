@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_network.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -135,80 +135,56 @@ class YNetwork(YFunction):
         #--- (end of YNetwork attributes)
 
     #--- (YNetwork implementation)
-    def _parseAttr(self, member):
-        if member.name == "readiness":
-            self._readiness = member.ivalue
-            return 1
-        if member.name == "macAddress":
-            self._macAddress = member.svalue
-            return 1
-        if member.name == "ipAddress":
-            self._ipAddress = member.svalue
-            return 1
-        if member.name == "subnetMask":
-            self._subnetMask = member.svalue
-            return 1
-        if member.name == "router":
-            self._router = member.svalue
-            return 1
-        if member.name == "ipConfig":
-            self._ipConfig = member.svalue
-            return 1
-        if member.name == "primaryDNS":
-            self._primaryDNS = member.svalue
-            return 1
-        if member.name == "secondaryDNS":
-            self._secondaryDNS = member.svalue
-            return 1
-        if member.name == "ntpServer":
-            self._ntpServer = member.svalue
-            return 1
-        if member.name == "userPassword":
-            self._userPassword = member.svalue
-            return 1
-        if member.name == "adminPassword":
-            self._adminPassword = member.svalue
-            return 1
-        if member.name == "httpPort":
-            self._httpPort = member.ivalue
-            return 1
-        if member.name == "defaultPage":
-            self._defaultPage = member.svalue
-            return 1
-        if member.name == "discoverable":
-            self._discoverable = member.ivalue
-            return 1
-        if member.name == "wwwWatchdogDelay":
-            self._wwwWatchdogDelay = member.ivalue
-            return 1
-        if member.name == "callbackUrl":
-            self._callbackUrl = member.svalue
-            return 1
-        if member.name == "callbackMethod":
-            self._callbackMethod = member.ivalue
-            return 1
-        if member.name == "callbackEncoding":
-            self._callbackEncoding = member.ivalue
-            return 1
-        if member.name == "callbackCredentials":
-            self._callbackCredentials = member.svalue
-            return 1
-        if member.name == "callbackInitialDelay":
-            self._callbackInitialDelay = member.ivalue
-            return 1
-        if member.name == "callbackSchedule":
-            self._callbackSchedule = member.svalue
-            return 1
-        if member.name == "callbackMinDelay":
-            self._callbackMinDelay = member.ivalue
-            return 1
-        if member.name == "callbackMaxDelay":
-            self._callbackMaxDelay = member.ivalue
-            return 1
-        if member.name == "poeCurrent":
-            self._poeCurrent = member.ivalue
-            return 1
-        super(YNetwork, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("readiness"):
+            self._readiness = json_val.getInt("readiness")
+        if json_val.has("macAddress"):
+            self._macAddress = json_val.getString("macAddress")
+        if json_val.has("ipAddress"):
+            self._ipAddress = json_val.getString("ipAddress")
+        if json_val.has("subnetMask"):
+            self._subnetMask = json_val.getString("subnetMask")
+        if json_val.has("router"):
+            self._router = json_val.getString("router")
+        if json_val.has("ipConfig"):
+            self._ipConfig = json_val.getString("ipConfig")
+        if json_val.has("primaryDNS"):
+            self._primaryDNS = json_val.getString("primaryDNS")
+        if json_val.has("secondaryDNS"):
+            self._secondaryDNS = json_val.getString("secondaryDNS")
+        if json_val.has("ntpServer"):
+            self._ntpServer = json_val.getString("ntpServer")
+        if json_val.has("userPassword"):
+            self._userPassword = json_val.getString("userPassword")
+        if json_val.has("adminPassword"):
+            self._adminPassword = json_val.getString("adminPassword")
+        if json_val.has("httpPort"):
+            self._httpPort = json_val.getInt("httpPort")
+        if json_val.has("defaultPage"):
+            self._defaultPage = json_val.getString("defaultPage")
+        if json_val.has("discoverable"):
+            self._discoverable = (json_val.getInt("discoverable") > 0 if 1 else 0)
+        if json_val.has("wwwWatchdogDelay"):
+            self._wwwWatchdogDelay = json_val.getInt("wwwWatchdogDelay")
+        if json_val.has("callbackUrl"):
+            self._callbackUrl = json_val.getString("callbackUrl")
+        if json_val.has("callbackMethod"):
+            self._callbackMethod = json_val.getInt("callbackMethod")
+        if json_val.has("callbackEncoding"):
+            self._callbackEncoding = json_val.getInt("callbackEncoding")
+        if json_val.has("callbackCredentials"):
+            self._callbackCredentials = json_val.getString("callbackCredentials")
+        if json_val.has("callbackInitialDelay"):
+            self._callbackInitialDelay = json_val.getInt("callbackInitialDelay")
+        if json_val.has("callbackSchedule"):
+            self._callbackSchedule = json_val.getString("callbackSchedule")
+        if json_val.has("callbackMinDelay"):
+            self._callbackMinDelay = json_val.getInt("callbackMinDelay")
+        if json_val.has("callbackMaxDelay"):
+            self._callbackMaxDelay = json_val.getInt("callbackMaxDelay")
+        if json_val.has("poeCurrent"):
+            self._poeCurrent = json_val.getInt("poeCurrent")
+        super(YNetwork, self)._parseAttr(json_val)
 
     def get_readiness(self):
         """

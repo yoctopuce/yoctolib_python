@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_colorledcluster.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -83,23 +83,18 @@ class YColorLedCluster(YFunction):
         #--- (end of YColorLedCluster attributes)
 
     #--- (YColorLedCluster implementation)
-    def _parseAttr(self, member):
-        if member.name == "activeLedCount":
-            self._activeLedCount = member.ivalue
-            return 1
-        if member.name == "maxLedCount":
-            self._maxLedCount = member.ivalue
-            return 1
-        if member.name == "blinkSeqMaxCount":
-            self._blinkSeqMaxCount = member.ivalue
-            return 1
-        if member.name == "blinkSeqMaxSize":
-            self._blinkSeqMaxSize = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YColorLedCluster, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("activeLedCount"):
+            self._activeLedCount = json_val.getInt("activeLedCount")
+        if json_val.has("maxLedCount"):
+            self._maxLedCount = json_val.getInt("maxLedCount")
+        if json_val.has("blinkSeqMaxCount"):
+            self._blinkSeqMaxCount = json_val.getInt("blinkSeqMaxCount")
+        if json_val.has("blinkSeqMaxSize"):
+            self._blinkSeqMaxSize = json_val.getInt("blinkSeqMaxSize")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YColorLedCluster, self)._parseAttr(json_val)
 
     def get_activeLedCount(self):
         """

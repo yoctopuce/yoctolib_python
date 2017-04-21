@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gps.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_gps.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindGps(), the high-level API for Gps functions
 #*
@@ -101,47 +101,34 @@ class YGps(YFunction):
         #--- (end of YGps attributes)
 
     #--- (YGps implementation)
-    def _parseAttr(self, member):
-        if member.name == "isFixed":
-            self._isFixed = member.ivalue
-            return 1
-        if member.name == "satCount":
-            self._satCount = member.ivalue
-            return 1
-        if member.name == "coordSystem":
-            self._coordSystem = member.ivalue
-            return 1
-        if member.name == "latitude":
-            self._latitude = member.svalue
-            return 1
-        if member.name == "longitude":
-            self._longitude = member.svalue
-            return 1
-        if member.name == "dilution":
-            self._dilution = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "altitude":
-            self._altitude = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "groundSpeed":
-            self._groundSpeed = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "direction":
-            self._direction = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "unixTime":
-            self._unixTime = member.ivalue
-            return 1
-        if member.name == "dateTime":
-            self._dateTime = member.svalue
-            return 1
-        if member.name == "utcOffset":
-            self._utcOffset = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YGps, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("isFixed"):
+            self._isFixed = (json_val.getInt("isFixed") > 0 if 1 else 0)
+        if json_val.has("satCount"):
+            self._satCount = json_val.getLong("satCount")
+        if json_val.has("coordSystem"):
+            self._coordSystem = json_val.getInt("coordSystem")
+        if json_val.has("latitude"):
+            self._latitude = json_val.getString("latitude")
+        if json_val.has("longitude"):
+            self._longitude = json_val.getString("longitude")
+        if json_val.has("dilution"):
+            self._dilution = round(json_val.getDouble("dilution") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("altitude"):
+            self._altitude = round(json_val.getDouble("altitude") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("groundSpeed"):
+            self._groundSpeed = round(json_val.getDouble("groundSpeed") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("direction"):
+            self._direction = round(json_val.getDouble("direction") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("unixTime"):
+            self._unixTime = json_val.getLong("unixTime")
+        if json_val.has("dateTime"):
+            self._dateTime = json_val.getString("dateTime")
+        if json_val.has("utcOffset"):
+            self._utcOffset = json_val.getInt("utcOffset")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YGps, self)._parseAttr(json_val)
 
     def get_isFixed(self):
         """

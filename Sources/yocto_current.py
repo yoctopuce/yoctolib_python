@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_current.py 26826 2017-03-17 11:20:57Z mvuilleu $
+#* $Id: yocto_current.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindCurrent(), the high-level API for Current functions
 #*
@@ -72,11 +72,10 @@ class YCurrent(YSensor):
         #--- (end of YCurrent attributes)
 
     #--- (YCurrent implementation)
-    def _parseAttr(self, member):
-        if member.name == "enabled":
-            self._enabled = member.ivalue
-            return 1
-        super(YCurrent, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("enabled"):
+            self._enabled = (json_val.getInt("enabled") > 0 if 1 else 0)
+        super(YCurrent, self)._parseAttr(json_val)
 
     def get_enabled(self):
         # res

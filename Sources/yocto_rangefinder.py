@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_rangefinder.py 26996 2017-03-30 16:18:14Z seb $
+#* $Id: yocto_rangefinder.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindRangeFinder(), the high-level API for RangeFinder functions
 #*
@@ -82,20 +82,16 @@ class YRangeFinder(YSensor):
         #--- (end of YRangeFinder attributes)
 
     #--- (YRangeFinder implementation)
-    def _parseAttr(self, member):
-        if member.name == "rangeFinderMode":
-            self._rangeFinderMode = member.ivalue
-            return 1
-        if member.name == "hardwareCalibration":
-            self._hardwareCalibration = member.svalue
-            return 1
-        if member.name == "currentTemperature":
-            self._currentTemperature = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YRangeFinder, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("rangeFinderMode"):
+            self._rangeFinderMode = json_val.getInt("rangeFinderMode")
+        if json_val.has("hardwareCalibration"):
+            self._hardwareCalibration = json_val.getString("hardwareCalibration")
+        if json_val.has("currentTemperature"):
+            self._currentTemperature = round(json_val.getDouble("currentTemperature") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YRangeFinder, self)._parseAttr(json_val)
 
     def set_unit(self, newval):
         """

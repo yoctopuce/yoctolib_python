@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupschedule.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_wakeupschedule.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #*
@@ -82,29 +82,22 @@ class YWakeUpSchedule(YFunction):
         #--- (end of YWakeUpSchedule attributes)
 
     #--- (YWakeUpSchedule implementation)
-    def _parseAttr(self, member):
-        if member.name == "minutesA":
-            self._minutesA = member.ivalue
-            return 1
-        if member.name == "minutesB":
-            self._minutesB = member.ivalue
-            return 1
-        if member.name == "hours":
-            self._hours = member.ivalue
-            return 1
-        if member.name == "weekDays":
-            self._weekDays = member.ivalue
-            return 1
-        if member.name == "monthDays":
-            self._monthDays = member.ivalue
-            return 1
-        if member.name == "months":
-            self._months = member.ivalue
-            return 1
-        if member.name == "nextOccurence":
-            self._nextOccurence = member.ivalue
-            return 1
-        super(YWakeUpSchedule, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("minutesA"):
+            self._minutesA = json_val.getInt("minutesA")
+        if json_val.has("minutesB"):
+            self._minutesB = json_val.getInt("minutesB")
+        if json_val.has("hours"):
+            self._hours = json_val.getInt("hours")
+        if json_val.has("weekDays"):
+            self._weekDays = json_val.getInt("weekDays")
+        if json_val.has("monthDays"):
+            self._monthDays = json_val.getInt("monthDays")
+        if json_val.has("months"):
+            self._months = json_val.getInt("months")
+        if json_val.has("nextOccurence"):
+            self._nextOccurence = json_val.getLong("nextOccurence")
+        super(YWakeUpSchedule, self)._parseAttr(json_val)
 
     def get_minutesA(self):
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_audioin.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_audioin.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindAudioIn(), the high-level API for AudioIn functions
 #*
@@ -78,23 +78,18 @@ class YAudioIn(YFunction):
         #--- (end of YAudioIn attributes)
 
     #--- (YAudioIn implementation)
-    def _parseAttr(self, member):
-        if member.name == "volume":
-            self._volume = member.ivalue
-            return 1
-        if member.name == "mute":
-            self._mute = member.ivalue
-            return 1
-        if member.name == "volumeRange":
-            self._volumeRange = member.svalue
-            return 1
-        if member.name == "signal":
-            self._signal = member.ivalue
-            return 1
-        if member.name == "noSignalFor":
-            self._noSignalFor = member.ivalue
-            return 1
-        super(YAudioIn, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("volume"):
+            self._volume = json_val.getInt("volume")
+        if json_val.has("mute"):
+            self._mute = (json_val.getInt("mute") > 0 if 1 else 0)
+        if json_val.has("volumeRange"):
+            self._volumeRange = json_val.getString("volumeRange")
+        if json_val.has("signal"):
+            self._signal = json_val.getInt("signal")
+        if json_val.has("noSignalFor"):
+            self._noSignalFor = json_val.getInt("noSignalFor")
+        super(YAudioIn, self)._parseAttr(json_val)
 
     def get_volume(self):
         """

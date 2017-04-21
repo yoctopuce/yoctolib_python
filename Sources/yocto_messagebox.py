@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_messagebox.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -1093,26 +1093,20 @@ class YMessageBox(YFunction):
         #--- (end of generated code: YMessageBox attributes)
 
     #--- (generated code: YMessageBox implementation)
-    def _parseAttr(self, member):
-        if member.name == "slotsInUse":
-            self._slotsInUse = member.ivalue
-            return 1
-        if member.name == "slotsCount":
-            self._slotsCount = member.ivalue
-            return 1
-        if member.name == "slotsBitmap":
-            self._slotsBitmap = member.svalue
-            return 1
-        if member.name == "pduSent":
-            self._pduSent = member.ivalue
-            return 1
-        if member.name == "pduReceived":
-            self._pduReceived = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YMessageBox, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("slotsInUse"):
+            self._slotsInUse = json_val.getInt("slotsInUse")
+        if json_val.has("slotsCount"):
+            self._slotsCount = json_val.getInt("slotsCount")
+        if json_val.has("slotsBitmap"):
+            self._slotsBitmap = json_val.getString("slotsBitmap")
+        if json_val.has("pduSent"):
+            self._pduSent = json_val.getInt("pduSent")
+        if json_val.has("pduReceived"):
+            self._pduReceived = json_val.getInt("pduReceived")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YMessageBox, self)._parseAttr(json_val)
 
     def get_slotsInUse(self):
         """

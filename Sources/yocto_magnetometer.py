@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_magnetometer.py 26675 2017-02-28 13:45:40Z seb $
+#* $Id: yocto_magnetometer.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindMagnetometer(), the high-level API for Magnetometer functions
 #*
@@ -82,20 +82,16 @@ class YMagnetometer(YSensor):
         #--- (end of YMagnetometer attributes)
 
     #--- (YMagnetometer implementation)
-    def _parseAttr(self, member):
-        if member.name == "bandwidth":
-            self._bandwidth = member.ivalue
-            return 1
-        if member.name == "xValue":
-            self._xValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "yValue":
-            self._yValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "zValue":
-            self._zValue = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        super(YMagnetometer, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("bandwidth"):
+            self._bandwidth = json_val.getInt("bandwidth")
+        if json_val.has("xValue"):
+            self._xValue = round(json_val.getDouble("xValue") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("yValue"):
+            self._yValue = round(json_val.getDouble("yValue") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("zValue"):
+            self._zValue = round(json_val.getDouble("zValue") * 1000.0 / 65536.0) / 1000.0
+        super(YMagnetometer, self)._parseAttr(json_val)
 
     def get_bandwidth(self):
         """

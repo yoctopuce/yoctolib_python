@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_buzzer.py 27103 2017-04-06 22:13:40Z seb $
+#* $Id: yocto_buzzer.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindBuzzer(), the high-level API for Buzzer functions
 #*
@@ -81,26 +81,20 @@ class YBuzzer(YFunction):
         #--- (end of YBuzzer attributes)
 
     #--- (YBuzzer implementation)
-    def _parseAttr(self, member):
-        if member.name == "frequency":
-            self._frequency = round(member.ivalue * 1000.0 / 65536.0) / 1000.0
-            return 1
-        if member.name == "volume":
-            self._volume = member.ivalue
-            return 1
-        if member.name == "playSeqSize":
-            self._playSeqSize = member.ivalue
-            return 1
-        if member.name == "playSeqMaxSize":
-            self._playSeqMaxSize = member.ivalue
-            return 1
-        if member.name == "playSeqSignature":
-            self._playSeqSignature = member.ivalue
-            return 1
-        if member.name == "command":
-            self._command = member.svalue
-            return 1
-        super(YBuzzer, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        if json_val.has("frequency"):
+            self._frequency = round(json_val.getDouble("frequency") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("volume"):
+            self._volume = json_val.getInt("volume")
+        if json_val.has("playSeqSize"):
+            self._playSeqSize = json_val.getInt("playSeqSize")
+        if json_val.has("playSeqMaxSize"):
+            self._playSeqMaxSize = json_val.getInt("playSeqMaxSize")
+        if json_val.has("playSeqSignature"):
+            self._playSeqSignature = json_val.getInt("playSeqSignature")
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        super(YBuzzer, self)._parseAttr(json_val)
 
     def set_frequency(self, newval):
         """

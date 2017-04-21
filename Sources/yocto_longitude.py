@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_longitude.py 26473 2017-01-25 14:27:17Z seb $
+#* $Id: yocto_longitude.py 27164 2017-04-13 09:57:00Z seb $
 #*
 #* Implements yFindLongitude(), the high-level API for Longitude functions
 #*
@@ -69,8 +69,8 @@ class YLongitude(YSensor):
         #--- (end of YLongitude attributes)
 
     #--- (YLongitude implementation)
-    def _parseAttr(self, member):
-        super(YLongitude, self)._parseAttr(member)
+    def _parseAttr(self, json_val):
+        super(YLongitude, self)._parseAttr(json_val)
 
     @staticmethod
     def FindLongitude(func):
