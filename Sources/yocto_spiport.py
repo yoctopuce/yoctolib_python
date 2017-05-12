@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_spiport.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_spiport.py 27283 2017-04-25 15:47:39Z seb $
 #*
 #* Implements yFindSpiPort(), the high-level API for SpiPort functions
 #*
@@ -523,7 +523,7 @@ class YSpiPort(YFunction):
         self._rxptr = 0
         self._rxbuffptr = 0
         self._rxbuff = bytearray(0)
-        
+
         return self.sendCommand("Z")
 
     def writeByte(self, code):
@@ -603,7 +603,7 @@ class YSpiPort(YFunction):
             hexb = byteList[idx]
             buff[idx] = hexb
             idx = idx + 1
-        
+
         res = self._upload("txdata", buff)
         return res
 
@@ -632,7 +632,7 @@ class YSpiPort(YFunction):
             hexb = int((hexString)[2 * idx: 2 * idx + 2], 16)
             buff[idx] = hexb
             idx = idx + 1
-        
+
         res = self._upload("txdata", buff)
         return res
 
@@ -684,14 +684,14 @@ class YSpiPort(YFunction):
         # mult
         # endpos
         # res
-        
+
         # // first check if we have the requested character in the look-ahead buffer
         bufflen = len(self._rxbuff)
         if (self._rxptr >= self._rxbuffptr) and (self._rxptr < self._rxbuffptr+bufflen):
             res = YGetByte(self._rxbuff, self._rxptr-self._rxbuffptr)
             self._rxptr = self._rxptr + 1
             return res
-        
+
         # // try to preload more than one byte to speed-up byte-per-byte access
         currpos = self._rxptr
         reqlen = 1024
@@ -716,8 +716,8 @@ class YSpiPort(YFunction):
             return res
         # // still mixed, need to process character by character
         self._rxptr = currpos
-        
-        
+
+
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=1")
         bufflen = len(buff) - 1
         endpos = 0
@@ -751,7 +751,7 @@ class YSpiPort(YFunction):
         # res
         if nChars > 65535:
             nChars = 65535
-        
+
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -784,7 +784,7 @@ class YSpiPort(YFunction):
         # res
         if nChars > 65535:
             nChars = 65535
-        
+
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -822,7 +822,7 @@ class YSpiPort(YFunction):
         res = []
         if nChars > 65535:
             nChars = 65535
-        
+
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -838,7 +838,7 @@ class YSpiPort(YFunction):
             b = YGetByte(buff, idx)
             res.append(b)
             idx = idx + 1
-        
+
         return res
 
     def readHex(self, nBytes):
@@ -861,7 +861,7 @@ class YSpiPort(YFunction):
         # res
         if nBytes > 65535:
             nBytes = 65535
-        
+
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nBytes)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -900,7 +900,7 @@ class YSpiPort(YFunction):
         msgarr = []
         # msglen
         # res
-        
+
         url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&len=1&maxw=1"
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
@@ -943,7 +943,7 @@ class YSpiPort(YFunction):
         # msglen
         res = []
         # idx
-        
+
         url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&pat=" + pattern
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
@@ -954,11 +954,11 @@ class YSpiPort(YFunction):
         msglen = msglen - 1
         self._rxptr = YAPI._atoi(msgarr[msglen])
         idx = 0
-        
+
         while idx < msglen:
             res.append(self._json_get_string(YString2Byte(msgarr[idx])))
             idx = idx + 1
-        
+
         return res
 
     def read_seek(self, absPos):
@@ -992,7 +992,7 @@ class YSpiPort(YFunction):
         # buff
         # bufflen
         # res
-        
+
         buff = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
         bufflen = len(buff) - 1
         while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
@@ -1018,7 +1018,7 @@ class YSpiPort(YFunction):
         msgarr = []
         # msglen
         # res
-        
+
         url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + query
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)

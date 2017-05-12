@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_messagebox.py 27422 2017-05-11 10:01:51Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -124,7 +124,6 @@ class YSms(object):
         # isolatin
         # isosize
         # i
-        
         if self._alphab == 0:
             # // using GSM standard 7-bit alphabet
             return self._mbox.gsm2str(self._udata)
@@ -137,7 +136,6 @@ class YSms(object):
                 isolatin[i] = YGetByte(self._udata, 2*i+1)
                 i = i + 1
             return YByte2String(isolatin)
-        
         # // default: convert 8 bit to string as-is
         return YByte2String(self._udata)
 
@@ -146,7 +144,6 @@ class YSms(object):
         # unisize
         # unival
         # i
-        
         if self._alphab == 0:
             # // using GSM standard 7-bit alphabet
             return self._mbox.gsm2unicode(self._udata)
@@ -167,6 +164,7 @@ class YSms(object):
             while i < unisize:
                 res.append(YGetByte(self._udata, i)+0)
                 i = i + 1
+
         return res
 
     def get_partCount(self):
@@ -272,7 +270,6 @@ class YSms(object):
         # udatalen
         # i
         # uni
-        
         if self._alphab == 2:
             return YAPI.SUCCESS
         if self._alphab == 0:
@@ -288,7 +285,6 @@ class YSms(object):
         self._alphab = 2
         self._udata = bytearray(0)
         self.addUnicodeData(ucs2)
-        
         return YAPI.SUCCESS
 
     def addText(self, val):
@@ -297,10 +293,8 @@ class YSms(object):
         # newdata
         # newdatalen
         # i
-        
         if len(val) == 0:
             return YAPI.SUCCESS
-        
         if self._alphab == 0:
             # // Try to append using GSM 7-bit alphabet
             newdata = self._mbox.str2gsm(val)
@@ -338,7 +332,6 @@ class YSms(object):
                 udata[udatalen] = YGetByte(newdata, i)
                 udatalen = udatalen + 1
                 i = i + 1
-        
         return self.set_userData(udata)
 
     def addUnicodeData(self, val):
@@ -349,7 +342,6 @@ class YSms(object):
         # udata
         # udatalen
         # surrogate
-        
         if self._alphab != 2:
             self.convertToUnicode()
         # // compute number of 16-bit code units
@@ -382,7 +374,6 @@ class YSms(object):
             udata[udatalen+1] = ((uni) & (255))
             udatalen = udatalen + 2
             i = i + 1
-        
         return self.set_userData(udata)
 
     def set_pdu(self, pdu):
@@ -403,7 +394,6 @@ class YSms(object):
         self._npdu = len(parts)
         if self._npdu == 0:
             return YAPI.INVALID_ARGUMENT
-        
         del sorted[:]
         partno = 0
         while partno < self._npdu:
@@ -417,7 +407,7 @@ class YSms(object):
                 i = i + 1
             if initpartno == partno:
                 partno = partno + 1
-        
+
         self._parts = sorted
         self._npdu = len(sorted)
         # // inherit header fields from first part
@@ -876,7 +866,6 @@ class YSms(object):
         # iei
         # ielen
         # sig
-        
         self._aggSig = ""
         self._aggIdx = 0
         self._aggCnt = 0
@@ -915,10 +904,8 @@ class YSms(object):
         # carry
         # nbits
         # thisb
-        
         self._pdu = pdu
         self._npdu = 1
-        
         # // parse meta-data
         self._smsc = self.decodeAddress(pdu, 1, 2*(YGetByte(pdu, 0)-1))
         rpos = 1+YGetByte(pdu, 0)
@@ -954,7 +941,6 @@ class YSms(object):
         self._mclass = ((dcs) & (16+3))
         self._stamp = self.decodeTimeStamp(pdu, rpos, tslen)
         rpos = rpos + tslen
-        
         # // parse user data (including udh)
         nbits = 0
         carry = 0
@@ -1009,14 +995,13 @@ class YSms(object):
                 rpos = rpos + 1
                 i = i + 1
         self.parseUserDataHeader()
-        
         return YAPI.SUCCESS
 
     def send(self):
         # i
         # retcode
         # pdu
-        
+
         if self._npdu == 0:
             self.generatePdu()
         if self._npdu == 1:
@@ -1033,7 +1018,7 @@ class YSms(object):
         # i
         # retcode
         # pdu
-        
+
         if self._slot > 0:
             return self._mbox.clearSIMSlot(self._slot)
         retcode = YAPI.SUCCESS
@@ -1259,8 +1244,7 @@ class YMessageBox(YFunction):
         arrPdu = []
         # hexPdu
         # sms
-        
-        
+
         binPdu = self._download("sms.json?pos=" + str(int(slot)) + "&len=1")
         arrPdu = self._json_get_array(binPdu)
         hexPdu = self._decode_json_string(arrPdu[0])
@@ -1272,7 +1256,6 @@ class YMessageBox(YFunction):
     def initGsm2Unicode(self):
         # i
         # uni
-        
         del self._gsm2unicode[:]
         # // 00-07
         self._gsm2unicode.append(64)
@@ -1330,7 +1313,7 @@ class YMessageBox(YFunction):
         self._gsm2unicode.append(241)
         self._gsm2unicode.append(252)
         self._gsm2unicode.append(224)
-        
+
         # // Invert table as well wherever possible
         self._iso2gsm = bytearray(256)
         i = 0
@@ -1347,7 +1330,6 @@ class YMessageBox(YFunction):
             i = i + 1
         # // Done
         self._gsm2unicodeReady = True
-        
         return YAPI.SUCCESS
 
     def gsm2unicode(self, gsm):
@@ -1356,7 +1338,6 @@ class YMessageBox(YFunction):
         # reslen
         res = []
         # uni
-        
         if not (self._gsm2unicodeReady):
             self.initGsm2Unicode()
         gsmlen = len(gsm)
@@ -1413,7 +1394,7 @@ class YMessageBox(YFunction):
             if uni > 0:
                 res.append(uni)
             i = i + 1
-        
+
         return res
 
     def gsm2str(self, gsm):
@@ -1423,7 +1404,6 @@ class YMessageBox(YFunction):
         # resbin
         # resstr
         # uni
-        
         if not (self._gsm2unicodeReady):
             self.initGsm2Unicode()
         gsmlen = len(gsm)
@@ -1496,7 +1476,6 @@ class YMessageBox(YFunction):
         # extra
         # res
         # wpos
-        
         if not (self._gsm2unicodeReady):
             self.initGsm2Unicode()
         asc = YString2Byte(msg)
@@ -1568,8 +1547,7 @@ class YMessageBox(YFunction):
         newAgg = []
         signatures = []
         # sms
-        
-        
+
         bitmapStr = self.get_slotsBitmap()
         if bitmapStr == self._prevBitmapStr:
             return YAPI.SUCCESS
@@ -1629,7 +1607,7 @@ class YMessageBox(YFunction):
                             signatures.append(sig)
                             nsig = nsig + 1
             slot = slot + 1
-        
+
         self._pdus = newArr
         # // append complete concatenated messages
         i = 0
@@ -1651,9 +1629,8 @@ class YMessageBox(YFunction):
                 sms.set_parts(newAgg)
                 newMsg.append(sms)
             i = i + 1
-        
+
         self._messages = newMsg
-        
         return YAPI.SUCCESS
 
     def get_pdus(self):
@@ -1669,7 +1646,7 @@ class YMessageBox(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # retcode
-        
+
         retcode = self.set_pduReceived(0)
         if retcode != YAPI.SUCCESS:
             return retcode
@@ -1693,7 +1670,7 @@ class YMessageBox(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # sms
-        
+
         sms = YSms(self)
         sms.set_recipient(recipient)
         sms.addText(message)
@@ -1717,7 +1694,7 @@ class YMessageBox(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # sms
-        
+
         sms = YSms(self)
         sms.set_recipient(recipient)
         sms.set_msgClass(0)
@@ -1750,7 +1727,6 @@ class YMessageBox(YFunction):
         On failure, throws an exception or returns an empty list.
         """
         self.checkNewMessages()
-        
         return self._messages
 
     def nextMessageBox(self):

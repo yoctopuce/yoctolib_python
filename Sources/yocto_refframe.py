@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_refframe.py 27283 2017-04-25 15:47:39Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -305,7 +305,7 @@ class YRefFrame(YFunction):
         iCalib = []
         # caltyp
         # res
-        
+
         calibParam = self.get_calibrationParam()
         iCalib = YAPI._decodeFloats(calibParam)
         caltyp = int((iCalib[0]) / (1000))
@@ -332,7 +332,7 @@ class YRefFrame(YFunction):
         iCalib = []
         # caltyp
         # res
-        
+
         calibParam = self.get_calibrationParam()
         iCalib = YAPI._decodeFloats(calibParam)
         caltyp = int((iCalib[0]) / (1000))
@@ -616,7 +616,7 @@ class YRefFrame(YFunction):
                 self._calibStageProgress = int((currTick) / (40))
                 self._calibProgress = 1
                 return YAPI.SUCCESS
-        
+
         calibParam = self._download("api/refFrame/calibrationParam.txt")
         iCalib = YAPI._decodeFloats(YByte2String(calibParam))
         cal3 = int((iCalib[1]) / (1000))
@@ -768,7 +768,7 @@ class YRefFrame(YFunction):
         """
         if self._calibStage == 0:
             return YAPI.SUCCESS
-        
+
         self._calibStage = 0
         return self.set_calibrationParam(self._calibSavedParams)
 

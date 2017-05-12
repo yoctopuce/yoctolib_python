@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupschedule.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_wakeupschedule.py 27283 2017-04-25 15:47:39Z seb $
 #*
 #* Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #*
@@ -319,7 +319,7 @@ class YWakeUpSchedule(YFunction):
         Returns all the minutes of each hour that are scheduled for wake up.
         """
         # res
-        
+
         res = self.get_minutesB()
         res = ((res) << (30))
         res = res + self.get_minutesA()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_colorledcluster.py 27283 2017-04-25 15:47:39Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -554,7 +554,7 @@ class YColorLedCluster(YFunction):
             buff[3*idx+1] = ((((rgb) >> (8))) & (255))
             buff[3*idx+2] = ((rgb) & (255))
             idx = idx + 1
-        
+
         res = self._upload("rgb:0:" + str(int(ledIndex)), buff)
         return res
 
@@ -585,7 +585,7 @@ class YColorLedCluster(YFunction):
             buff[3*idx+1] = ((((rgb) >> (8))) & (255))
             buff[3*idx+2] = ((rgb) & (255))
             idx = idx + 1
-        
+
         res = self._upload("rgb:" + str(int(delay)), buff)
         return res
 
@@ -631,7 +631,7 @@ class YColorLedCluster(YFunction):
             buff[3*idx+1] = ((((hsl) >> (8))) & (255))
             buff[3*idx+2] = ((hsl) & (255))
             idx = idx + 1
-        
+
         res = self._upload("hsl:0:" + str(int(ledIndex)), buff)
         return res
 
@@ -662,7 +662,7 @@ class YColorLedCluster(YFunction):
             buff[3*idx+1] = ((((hsl) >> (8))) & (255))
             buff[3*idx+2] = ((hsl) & (255))
             idx = idx + 1
-        
+
         res = self._upload("hsl:" + str(int(delay)), buff)
         return res
 
@@ -700,10 +700,10 @@ class YColorLedCluster(YFunction):
         # r
         # g
         # b
-        
+
         buff = self._download("rgb.bin?typ=0&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
         del res[:]
-        
+
         idx = 0
         while idx < count:
             r = YGetByte(buff, 3*idx)
@@ -711,7 +711,7 @@ class YColorLedCluster(YFunction):
             b = YGetByte(buff, 3*idx+2)
             res.append(r*65536+g*256+b)
             idx = idx + 1
-        
+
         return res
 
     def get_rgbColorArrayAtPowerOn(self, ledIndex, count):
@@ -733,10 +733,10 @@ class YColorLedCluster(YFunction):
         # r
         # g
         # b
-        
+
         buff = self._download("rgb.bin?typ=4&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
         del res[:]
-        
+
         idx = 0
         while idx < count:
             r = YGetByte(buff, 3*idx)
@@ -744,7 +744,7 @@ class YColorLedCluster(YFunction):
             b = YGetByte(buff, 3*idx+2)
             res.append(r*65536+g*256+b)
             idx = idx + 1
-        
+
         return res
 
     def get_linkedSeqArray(self, ledIndex, count):
@@ -764,16 +764,16 @@ class YColorLedCluster(YFunction):
         res = []
         # idx
         # seq
-        
+
         buff = self._download("rgb.bin?typ=1&pos=" + str(int(ledIndex)) + "&len=" + str(int(count)))
         del res[:]
-        
+
         idx = 0
         while idx < count:
             seq = YGetByte(buff, idx)
             res.append(seq)
             idx = idx + 1
-        
+
         return res
 
     def get_blinkSeqSignatures(self, seqIndex, count):
@@ -796,10 +796,10 @@ class YColorLedCluster(YFunction):
         # hl
         # lh
         # ll
-        
+
         buff = self._download("rgb.bin?typ=2&pos=" + str(int(4*seqIndex)) + "&len=" + str(int(4*count)))
         del res[:]
-        
+
         idx = 0
         while idx < count:
             hh = YGetByte(buff, 4*idx)
@@ -808,7 +808,7 @@ class YColorLedCluster(YFunction):
             ll = YGetByte(buff, 4*idx+3)
             res.append(((hh) << (24))+((hl) << (16))+((lh) << (8))+ll)
             idx = idx + 1
-        
+
         return res
 
     def get_blinkSeqStateSpeed(self, seqIndex, count):
@@ -827,17 +827,17 @@ class YColorLedCluster(YFunction):
         # idx
         # lh
         # ll
-        
+
         buff = self._download("rgb.bin?typ=6&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
         del res[:]
-        
+
         idx = 0
         while idx < count:
             lh = YGetByte(buff, 2*idx)
             ll = YGetByte(buff, 2*idx+1)
             res.append(((lh) << (8))+ll)
             idx = idx + 1
-        
+
         return res
 
     def get_blinkSeqStateAtPowerOn(self, seqIndex, count):
@@ -855,16 +855,16 @@ class YColorLedCluster(YFunction):
         res = []
         # idx
         # started
-        
+
         buff = self._download("rgb.bin?typ=5&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
         del res[:]
-        
+
         idx = 0
         while idx < count:
             started = YGetByte(buff, idx)
             res.append(started)
             idx = idx + 1
-        
+
         return res
 
     def get_blinkSeqState(self, seqIndex, count):
@@ -882,16 +882,16 @@ class YColorLedCluster(YFunction):
         res = []
         # idx
         # started
-        
+
         buff = self._download("rgb.bin?typ=3&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
         del res[:]
-        
+
         idx = 0
         while idx < count:
             started = YGetByte(buff, idx)
             res.append(started)
             idx = idx + 1
-        
+
         return res
 
     def nextColorLedCluster(self):

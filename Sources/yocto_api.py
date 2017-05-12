@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 27164 2017-04-13 09:57:00Z seb $
+# * $Id: yocto_api.py 27283 2017-04-25 15:47:39Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "27228"
+    YOCTO_API_BUILD_NO = "27439"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2828,7 +2828,7 @@ class YDataStream(object):
         if len(sdata) == 0:
             self._nRows = 0
             return YAPI.SUCCESS
-        
+
         udat = YAPI._decodeWords(self._parent._json_get_string(sdata))
         del self._values[:]
         idx = 0
@@ -2859,7 +2859,7 @@ class YDataStream(object):
                     dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
                     self._values.append(dat[:])
                     idx = idx + 2
-        
+
         self._nRows = len(self._values)
         return YAPI.SUCCESS
 
@@ -3356,7 +3356,7 @@ class YDataSet(object):
         # minCol
         # avgCol
         # maxCol
-        
+
         if progress != self._progress:
             return self._progress
         if self._progress < 0:
@@ -3385,13 +3385,13 @@ class YDataSet(object):
             maxCol = 2
         else:
             maxCol = 0
-        
+
         for y in dataRows:
             if (tim >= self._startTime) and ((self._endTime == 0) or (tim <= self._endTime)):
                 self._measures.append(YMeasure(tim - itv, tim, y[minCol], y[avgCol], y[maxCol]))
             tim = tim + itv
             tim = round(tim * 1000) / 1000.0
-        
+
         return self.get_progress()
 
     def get_privateDataStreams(self):
@@ -3564,7 +3564,7 @@ class YDataSet(object):
         # minCol
         # avgCol
         # maxCol
-        
+
         startUtc = round(measure.get_startTimeUTC())
         stream = None
         for y in self._streams:
@@ -3589,12 +3589,12 @@ class YDataSet(object):
             maxCol = 2
         else:
             maxCol = 0
-        
+
         for y in dataRows:
             if (tim >= self._startTime) and ((self._endTime == 0) or (tim <= self._endTime)):
                 measures.append(YMeasure(tim - itv, tim, y[minCol], y[avgCol], y[maxCol]))
             tim = tim + itv
-        
+
         return measures
 
     def get_measures(self):
@@ -5230,7 +5230,7 @@ class YModule(YFunction):
         """
         # serial
         # settings
-        
+
         serial = self.get_serialNumber()
         settings = self.get_allSettings()
         if len(settings) == 0:
@@ -5273,7 +5273,7 @@ class YModule(YFunction):
         # ext_settings
         filelist = []
         templist = []
-        
+
         settings = self._download("api.json")
         if len(settings) == 0:
             return settings
@@ -5318,7 +5318,7 @@ class YModule(YFunction):
         # ofs
         # size
         url = "api/" + funcId + ".json?command=Z"
-        
+
         self._download(url)
         # // add records in growing resistance value
         values = self._json_get_array(YString2Byte(jsonExtra))
@@ -5404,7 +5404,7 @@ class YModule(YFunction):
         # count
         # i
         # fid
-        
+
         count  = self.functionCount()
         i = 0
         while i < count:
@@ -5426,10 +5426,10 @@ class YModule(YFunction):
         # i
         # ftype
         res = []
-        
+
         count = self.functionCount()
         i = 0
-        
+
         while i < count:
             ftype = self.functionType(i)
             if ftype == funType:
@@ -5439,7 +5439,7 @@ class YModule(YFunction):
                 if ftype == funType:
                     res.append(self.functionId(i))
             i = i + 1
-        
+
         return res
 
     def _flattenJsonStruct(self, jsoncomplex):
@@ -5695,9 +5695,9 @@ class YModule(YFunction):
         newval = ""
         old_json_flat = self._flattenJsonStruct(settings)
         old_dslist = self._json_get_array(old_json_flat)
-        
-        
-        
+
+
+
         for y in old_dslist:
             each_str = self._json_get_string(YString2Byte(y))
             # // split json path and attr
@@ -5712,16 +5712,16 @@ class YModule(YFunction):
             old_jpath.append(jpath)
             old_jpath_len.append(len(jpath))
             old_val_arr.append(value)
-        
-        
-        
-        
+
+
+
+
         actualSettings = self._download("api.json")
         actualSettings = self._flattenJsonStruct(actualSettings)
         new_dslist = self._json_get_array(actualSettings)
-        
-        
-        
+
+
+
         for y in new_dslist:
             # // remove quotes
             each_str = self._json_get_string(YString2Byte(y))
@@ -5737,10 +5737,10 @@ class YModule(YFunction):
             new_jpath.append(jpath)
             new_jpath_len.append(len(jpath))
             new_val_arr.append(value)
-        
-        
-        
-        
+
+
+
+
         i = 0
         while i < len(new_jpath):
             njpath = new_jpath[i]
@@ -5877,7 +5877,7 @@ class YModule(YFunction):
                     else:
                         self._download(url)
             i = i + 1
-        
+
         for y in restoreLast:
             self._download(y)
         return YAPI.SUCCESS
@@ -5913,7 +5913,7 @@ class YModule(YFunction):
                 On failure, throws an exception or returns  YAPI.INVALID_STRING.
         """
         # content
-        
+
         content = self._download("logs.txt")
         return YByte2String(content)
 
@@ -5948,7 +5948,7 @@ class YModule(YFunction):
         # subdevice_list
         subdevices = []
         # serial
-        
+
         serial = self.get_serialNumber()
         fullsize.value = 0
         yapi_res = YAPI._yapiGetSubdevices(ctypes.create_string_buffer(YString2Byte(serial)), smallbuff, 1024, ctypes.byref(fullsize), errmsg)
@@ -5983,7 +5983,7 @@ class YModule(YFunction):
         pathsize = ctypes.c_int()
         # yapi_res
         # serial
-        
+
         serial = self.get_serialNumber()
         # // retrieve device object
         pathsize.value = 0
@@ -6004,7 +6004,7 @@ class YModule(YFunction):
         pathsize = ctypes.c_int()
         # yapi_res
         # serial
-        
+
         serial = self.get_serialNumber()
         # // retrieve device object
         pathsize.value = 0
@@ -6145,7 +6145,7 @@ class YModule(YFunction):
         @param functionIndex : the index of the function for which the information is desired, starting at
         0 for the first function.
 
-        @return a the type of the function
+        @return a string corresponding to the type of the function
 
         On failure, throws an exception or returns an empty string.
         """
@@ -6173,11 +6173,12 @@ class YModule(YFunction):
     def functionBaseType(self, functionIndex):
         """
         Retrieves the base type of the <i>n</i>th function on the module.
+        For instance, the base type of all measuring functions is "Sensor".
 
         @param functionIndex : the index of the function for which the information is desired, starting at
         0 for the first function.
 
-        @return a the base type of the function
+        @return a string corresponding to the base type of the function
 
         On failure, throws an exception or returns an empty string.
         """
@@ -6801,7 +6802,7 @@ class YSensor(YFunction):
         @return YAPI.SUCCESS if the call succeeds.
         """
         # res
-        
+
         res = self._download("api/dataLogger/recording?recording=1")
         if not (len(res)>0):
             self._throw(YAPI.IO_ERROR, "unable to start datalogger")
@@ -6814,7 +6815,7 @@ class YSensor(YFunction):
         @return YAPI.SUCCESS if the call succeeds.
         """
         # res
-        
+
         res = self._download("api/dataLogger/recording?recording=0")
         if not (len(res)>0):
             self._throw(YAPI.IO_ERROR, "unable to stop datalogger")
@@ -6849,7 +6850,7 @@ class YSensor(YFunction):
         """
         # funcid
         # funit
-        
+
         funcid = self.get_functionId()
         funit = self.get_unit()
         return YDataSet(self, funcid, funit, startTime, endTime)
@@ -6904,7 +6905,7 @@ class YSensor(YFunction):
         """
         # rest_val
         # res
-        
+
         rest_val = self._encodeCalibrationPoints(rawValues, refValues)
         res = self._setAttr("calibrationParam", rest_val)
         return res

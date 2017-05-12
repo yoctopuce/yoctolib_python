@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_gyro.py 27283 2017-04-25 15:47:39Z seb $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -371,7 +371,7 @@ class YGyro(YSensor):
         # sqz
         # norm
         # delta
-        
+
         if self._loadQuaternion() != YAPI.SUCCESS:
             return YAPI.DEVICE_NOT_FOUND
         if self._angles_stamp != self._qt_stamp:

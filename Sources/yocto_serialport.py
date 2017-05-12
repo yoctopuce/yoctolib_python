@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_serialport.py 27283 2017-04-25 15:47:39Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -459,7 +459,7 @@ class YSerialPort(YFunction):
         self._rxptr = 0
         self._rxbuffptr = 0
         self._rxbuff = bytearray(0)
-        
+
         return self.sendCommand("Z")
 
     def writeByte(self, code):
@@ -539,7 +539,7 @@ class YSerialPort(YFunction):
             hexb = byteList[idx]
             buff[idx] = hexb
             idx = idx + 1
-        
+
         res = self._upload("txdata", buff)
         return res
 
@@ -568,7 +568,7 @@ class YSerialPort(YFunction):
             hexb = int((hexString)[2 * idx: 2 * idx + 2], 16)
             buff[idx] = hexb
             idx = idx + 1
-        
+
         res = self._upload("txdata", buff)
         return res
 
@@ -620,14 +620,14 @@ class YSerialPort(YFunction):
         # mult
         # endpos
         # res
-        
+
         # // first check if we have the requested character in the look-ahead buffer
         bufflen = len(self._rxbuff)
         if (self._rxptr >= self._rxbuffptr) and (self._rxptr < self._rxbuffptr+bufflen):
             res = YGetByte(self._rxbuff, self._rxptr-self._rxbuffptr)
             self._rxptr = self._rxptr + 1
             return res
-        
+
         # // try to preload more than one byte to speed-up byte-per-byte access
         currpos = self._rxptr
         reqlen = 1024
@@ -652,8 +652,8 @@ class YSerialPort(YFunction):
             return res
         # // still mixed, need to process character by character
         self._rxptr = currpos
-        
-        
+
+
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=1")
         bufflen = len(buff) - 1
         endpos = 0
@@ -687,7 +687,7 @@ class YSerialPort(YFunction):
         # res
         if nChars > 65535:
             nChars = 65535
-        
+
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -720,7 +720,7 @@ class YSerialPort(YFunction):
         # res
         if nChars > 65535:
             nChars = 65535
-        
+
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -758,7 +758,7 @@ class YSerialPort(YFunction):
         res = []
         if nChars > 65535:
             nChars = 65535
-        
+
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -774,7 +774,7 @@ class YSerialPort(YFunction):
             b = YGetByte(buff, idx)
             res.append(b)
             idx = idx + 1
-        
+
         return res
 
     def readHex(self, nBytes):
@@ -797,7 +797,7 @@ class YSerialPort(YFunction):
         # res
         if nBytes > 65535:
             nBytes = 65535
-        
+
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nBytes)))
         bufflen = len(buff) - 1
         endpos = 0
@@ -836,7 +836,7 @@ class YSerialPort(YFunction):
         msgarr = []
         # msglen
         # res
-        
+
         url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&len=1&maxw=1"
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
@@ -879,7 +879,7 @@ class YSerialPort(YFunction):
         # msglen
         res = []
         # idx
-        
+
         url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&pat=" + pattern
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
@@ -890,11 +890,11 @@ class YSerialPort(YFunction):
         msglen = msglen - 1
         self._rxptr = YAPI._atoi(msgarr[msglen])
         idx = 0
-        
+
         while idx < msglen:
             res.append(self._json_get_string(YString2Byte(msgarr[idx])))
             idx = idx + 1
-        
+
         return res
 
     def read_seek(self, absPos):
@@ -928,7 +928,7 @@ class YSerialPort(YFunction):
         # buff
         # bufflen
         # res
-        
+
         buff = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
         bufflen = len(buff) - 1
         while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
@@ -954,7 +954,7 @@ class YSerialPort(YFunction):
         msgarr = []
         # msglen
         # res
-        
+
         url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + query
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
@@ -1022,7 +1022,7 @@ class YSerialPort(YFunction):
         """
         # buff
         # res
-        
+
         buff = self._download("cts.txt")
         if not (len(buff) == 1):
             self._throw(YAPI.IO_ERROR, "invalid CTS reply")
@@ -1076,7 +1076,7 @@ class YSerialPort(YFunction):
         while i < len(pduBytes):
             cmd = "" + cmd + "" + ("%02X" % ((pduBytes[i]) & (0xff)))
             i = i + 1
-        
+
         url = "rxmsg.json?cmd=:" + cmd + "&pat=:" + pat
         msgs = self._download(url)
         reps = self._json_get_array(msgs)
@@ -1122,20 +1122,20 @@ class YSerialPort(YFunction):
         # idx
         # val
         # mask
-        
+
         pdu.append(0x01)
         pdu.append(((pduAddr) >> (8)))
         pdu.append(((pduAddr) & (0xff)))
         pdu.append(((nBits) >> (8)))
         pdu.append(((nBits) & (0xff)))
-        
-        
+
+
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
         if reply[0] != pdu[0]:
             return res
-        
+
         bitpos = 0
         idx = 2
         val = reply[idx]
@@ -1152,7 +1152,7 @@ class YSerialPort(YFunction):
                 mask = 1
             else:
                 mask = ((mask) << (1))
-        
+
         return res
 
     def modbusReadInputBits(self, slaveNo, pduAddr, nBits):
@@ -1175,20 +1175,20 @@ class YSerialPort(YFunction):
         # idx
         # val
         # mask
-        
+
         pdu.append(0x02)
         pdu.append(((pduAddr) >> (8)))
         pdu.append(((pduAddr) & (0xff)))
         pdu.append(((nBits) >> (8)))
         pdu.append(((nBits) & (0xff)))
-        
-        
+
+
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
         if reply[0] != pdu[0]:
             return res
-        
+
         bitpos = 0
         idx = 2
         val = reply[idx]
@@ -1205,7 +1205,7 @@ class YSerialPort(YFunction):
                 mask = 1
             else:
                 mask = ((mask) << (1))
-        
+
         return res
 
     def modbusReadRegisters(self, slaveNo, pduAddr, nWords):
@@ -1227,20 +1227,20 @@ class YSerialPort(YFunction):
         # regpos
         # idx
         # val
-        
+
         pdu.append(0x03)
         pdu.append(((pduAddr) >> (8)))
         pdu.append(((pduAddr) & (0xff)))
         pdu.append(((nWords) >> (8)))
         pdu.append(((nWords) & (0xff)))
-        
-        
+
+
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
         if reply[0] != pdu[0]:
             return res
-        
+
         regpos = 0
         idx = 2
         while regpos < nWords:
@@ -1250,7 +1250,7 @@ class YSerialPort(YFunction):
             idx = idx + 1
             res.append(val)
             regpos = regpos + 1
-        
+
         return res
 
     def modbusReadInputRegisters(self, slaveNo, pduAddr, nWords):
@@ -1272,20 +1272,20 @@ class YSerialPort(YFunction):
         # regpos
         # idx
         # val
-        
+
         pdu.append(0x04)
         pdu.append(((pduAddr) >> (8)))
         pdu.append(((pduAddr) & (0xff)))
         pdu.append(((nWords) >> (8)))
         pdu.append(((nWords) & (0xff)))
-        
-        
+
+
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
         if reply[0] != pdu[0]:
             return res
-        
+
         regpos = 0
         idx = 2
         while regpos < nWords:
@@ -1295,7 +1295,7 @@ class YSerialPort(YFunction):
             idx = idx + 1
             res.append(val)
             regpos = regpos + 1
-        
+
         return res
 
     def modbusWriteBit(self, slaveNo, pduAddr, value):
@@ -1317,14 +1317,14 @@ class YSerialPort(YFunction):
         res = 0
         if value != 0:
             value = 0xff
-        
+
         pdu.append(0x05)
         pdu.append(((pduAddr) >> (8)))
         pdu.append(((pduAddr) & (0xff)))
         pdu.append(value)
         pdu.append(0x00)
-        
-        
+
+
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1357,7 +1357,7 @@ class YSerialPort(YFunction):
         res = 0
         nBits = len(bits)
         nBytes = (((nBits + 7)) >> (3))
-        
+
         pdu.append(0x0f)
         pdu.append(((pduAddr) >> (8)))
         pdu.append(((pduAddr) & (0xff)))
@@ -1379,8 +1379,8 @@ class YSerialPort(YFunction):
                 mask = ((mask) << (1))
         if mask != 1:
             pdu.append(val)
-        
-        
+
+
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1407,14 +1407,14 @@ class YSerialPort(YFunction):
         reply = []
         # res
         res = 0
-        
+
         pdu.append(0x06)
         pdu.append(((pduAddr) >> (8)))
         pdu.append(((pduAddr) & (0xff)))
         pdu.append(((value) >> (8)))
         pdu.append(((value) & (0xff)))
-        
-        
+
+
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1446,7 +1446,7 @@ class YSerialPort(YFunction):
         res = 0
         nWords = len(values)
         nBytes = 2 * nWords
-        
+
         pdu.append(0x10)
         pdu.append(((pduAddr) >> (8)))
         pdu.append(((pduAddr) & (0xff)))
@@ -1459,8 +1459,8 @@ class YSerialPort(YFunction):
             pdu.append(((val) >> (8)))
             pdu.append(((val) & (0xff)))
             regpos = regpos + 1
-        
-        
+
+
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
@@ -1496,7 +1496,7 @@ class YSerialPort(YFunction):
         res = []
         nWriteWords = len(values)
         nBytes = 2 * nWriteWords
-        
+
         pdu.append(0x17)
         pdu.append(((pduReadAddr) >> (8)))
         pdu.append(((pduReadAddr) & (0xff)))
@@ -1513,14 +1513,14 @@ class YSerialPort(YFunction):
             pdu.append(((val) >> (8)))
             pdu.append(((val) & (0xff)))
             regpos = regpos + 1
-        
-        
+
+
         reply = self.queryMODBUS(slaveNo, pdu)
         if len(reply) == 0:
             return res
         if reply[0] != pdu[0]:
             return res
-        
+
         regpos = 0
         idx = 2
         while regpos < nReadWords:
@@ -1530,7 +1530,7 @@ class YSerialPort(YFunction):
             idx = idx + 1
             res.append(val)
             regpos = regpos + 1
-        
+
         return res
 
     def nextSerialPort(self):

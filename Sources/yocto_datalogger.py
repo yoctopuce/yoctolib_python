@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_datalogger.py 27164 2017-04-13 09:57:00Z seb $
+# * $Id: yocto_datalogger.py 27283 2017-04-25 15:47:39Z seb $
 # *
 # * Implements yFindDataLogger(), the high-level API for DataLogger
 # *
@@ -318,7 +318,7 @@ class YDataLogger(YFunction):
         dslist = []
         # dataset
         res = []
-        
+
         dslist = self._json_get_array(json)
         del res[:]
         for y in dslist:

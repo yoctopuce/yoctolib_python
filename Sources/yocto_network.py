@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_network.py 27422 2017-05-11 10:01:51Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -933,6 +933,19 @@ class YNetwork(YFunction):
         """
         return self.set_ipConfig("DHCP:" + fallbackIpAddr + "/" + str(int(fallbackSubnetMaskLen)) + "/" + fallbackRouter)
 
+    def useDHCPauto(self):
+        """
+        Changes the configuration of the network interface to enable the use of an
+        IP address received from a DHCP server. Until an address is received from a DHCP
+        server, the module uses an IP of the network 169.254.0.0/16 (APIPA).
+        Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_ipConfig("DHCP:")
+
     def useStaticIP(self, ipAddress, subnetMaskLen, router):
         """
         Changes the configuration of the network interface to use a static IP address.
@@ -959,7 +972,7 @@ class YNetwork(YFunction):
         @return a string with the result of the ping.
         """
         # content
-        
+
         content = self._download("ping.txt?host=" + host)
         return YByte2String(content)
 

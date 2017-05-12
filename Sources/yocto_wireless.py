@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_wireless.py 27167 2017-04-13 10:24:02Z seb $
+# * $Id: yocto_wireless.py 27437 2017-05-12 13:13:55Z seb $
 # *
 # * Implements yFindWireless(), the high-level API for Wireless functions
 # *
@@ -104,6 +104,11 @@ class YWireless(YFunction):
     SECURITY_WPA = 3
     SECURITY_WPA2 = 4
     SECURITY_INVALID = -1
+    WLANSTATE_DOWN = 0
+    WLANSTATE_SCANNING = 1
+    WLANSTATE_CONNECTED = 2
+    WLANSTATE_REJECTED = 3
+    WLANSTATE_INVALID = -1
     #--- (end of generated code: YWireless definitions)
 
     def __init__(self, func):
@@ -117,6 +122,7 @@ class YWireless(YFunction):
         self._security = YWireless.SECURITY_INVALID
         self._message = YWireless.MESSAGE_INVALID
         self._wlanConfig = YWireless.WLANCONFIG_INVALID
+        self._wlanState = YWireless.WLANSTATE_INVALID
         #--- (end of generated code: YWireless attributes)
 
     # --- (generated code: YWireless implementation)
@@ -133,6 +139,8 @@ class YWireless(YFunction):
             self._message = json_val.getString("message")
         if json_val.has("wlanConfig"):
             self._wlanConfig = json_val.getString("wlanConfig")
+        if json_val.has("wlanState"):
+            self._wlanState = json_val.getInt("wlanState")
         super(YWireless, self)._parseAttr(json_val)
 
     def get_linkQuality(self):
@@ -225,6 +233,36 @@ class YWireless(YFunction):
         rest_val = newval
         return self._setAttr("wlanConfig", rest_val)
 
+    def get_wlanState(self):
+        """
+        Returns the current state of the wireless interface. The state YWireless.WLANSTATE_DOWN means that
+        the network interface is
+        not connected to a network. The state YWireless.WLANSTATE_SCANNING means that the network interface
+        is scanning available
+        frequencies. During this stage, the device is not reachable, and the network settings are not yet
+        applied. The state
+        YWireless.WLANSTATE_CONNECTED means that the network settings have been successfully applied ant
+        that the device is reachable
+        from the wireless network. If the device is configured to use ad-hoc or Soft AP mode, it means that
+        the wireless network
+        is up and that other devices can join the network. The state YWireless.WLANSTATE_REJECTED means
+        that the network interface has
+        not been able to join the requested network. The description of the error can be obtain with the
+        get_message() method.
+
+        @return a value among YWireless.WLANSTATE_DOWN, YWireless.WLANSTATE_SCANNING,
+        YWireless.WLANSTATE_CONNECTED and YWireless.WLANSTATE_REJECTED corresponding to the current state
+        of the wireless interface
+
+        On failure, throws an exception or returns YWireless.WLANSTATE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YWireless.WLANSTATE_INVALID
+        res = self._wlanState
+        return res
+
     @staticmethod
     def FindWireless(func):
         """
@@ -256,6 +294,22 @@ class YWireless(YFunction):
             obj = YWireless(func)
             YFunction._AddToCache("Wireless", func, obj)
         return obj
+
+    def startWlanScan(self):
+        """
+        Triggers a scan of the wireless frequency and builds the list of available networks.
+        The scan forces a disconnection from the current network. At then end of the process, the
+        the network interface attempts to reconnect to the previous network. During the scan, the wlanState
+        switches to YWireless.WLANSTATE_DOWN, then to YWireless.WLANSTATE_SCANNING. When the scan is completed,
+        get_wlanState() returns either YWireless.WLANSTATE_DOWN or YWireless.WLANSTATE_SCANNING. At this
+        point, the list of detected network can be retrieved with the get_detectedWlans() method.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # config
+        config = self.get_wlanConfig()
+        # // a full scan is triggered when a config is applied
+        return self.set_wlanConfig(config)
 
     def joinNetwork(self, ssid, securityKey):
         """
@@ -320,8 +374,8 @@ class YWireless(YFunction):
         """
         Returns a list of YWlanRecord objects that describe detected Wireless networks.
         This list is not updated when the module is already connected to an acces point (infrastructure mode).
-        To force an update of this list, adhocNetwork() must be called to disconnect
-        the module from the current network. The returned list must be unallocated by the caller.
+        To force an update of this list, startWlanScan() must be called.
+        Note that an languages without garbage collections, the returned list must be freed by the caller.
 
         @return a list of YWlanRecord objects, containing the SSID, channel,
                 link quality and the type of security of the wireless network.
@@ -331,7 +385,7 @@ class YWireless(YFunction):
         # json
         wlanlist = []
         res = []
-        
+
         json = self._download("wlan.json?by=name")
         wlanlist = self._json_get_array(json)
         del res[:]

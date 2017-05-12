@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_cellular.py 27283 2017-04-25 15:47:39Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -668,7 +668,7 @@ class YCellular(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # retcode
-        
+
         retcode = self.set_dataReceived(0)
         if retcode != YAPI.SUCCESS:
             return retcode
@@ -752,7 +752,7 @@ class YCellular(YFunction):
         # idx
         # slen
         res = []
-        
+
         cops = self._AT("+COPS=?")
         slen = len(cops)
         del res[:]
@@ -768,7 +768,7 @@ class YCellular(YFunction):
                 if idx > 0:
                     res.append((cops)[0: 0 + idx])
             idx = cops.find("(")
-        
+
         return res
 
     def quickCellSurvey(self):
@@ -795,7 +795,7 @@ class YCellular(YFunction):
         # tad
         # oper
         res = []
-        
+
         moni = self._AT("+CCED=0;#MONI=7;#MONI")
         mccs = (moni)[7: 7 + 3]
         if (mccs)[0: 0 + 1] == "0":
