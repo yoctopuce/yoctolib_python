@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 27422 2017-05-11 10:01:51Z seb $
+#* $Id: yocto_network.py 27846 2017-06-19 09:19:09Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -100,6 +100,7 @@ class YNetwork(YFunction):
     CALLBACKENCODING_AZURE = 7
     CALLBACKENCODING_INFLUXDB = 8
     CALLBACKENCODING_MQTT = 9
+    CALLBACKENCODING_YOCTO_API_JZON = 10
     CALLBACKENCODING_INVALID = -1
     #--- (end of YNetwork definitions)
 
@@ -226,7 +227,7 @@ class YNetwork(YFunction):
         On failure, throws an exception or returns YNetwork.MACADDRESS_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YNetwork.MACADDRESS_INVALID
         res = self._macAddress
@@ -666,8 +667,9 @@ class YNetwork(YFunction):
         YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV,
         YNetwork.CALLBACKENCODING_YOCTO_API, YNetwork.CALLBACKENCODING_JSON_NUM,
         YNetwork.CALLBACKENCODING_EMONCMS, YNetwork.CALLBACKENCODING_AZURE,
-        YNetwork.CALLBACKENCODING_INFLUXDB and YNetwork.CALLBACKENCODING_MQTT corresponding to the encoding
-        standard to use for representing notification values
+        YNetwork.CALLBACKENCODING_INFLUXDB, YNetwork.CALLBACKENCODING_MQTT and
+        YNetwork.CALLBACKENCODING_YOCTO_API_JZON corresponding to the encoding standard to use for
+        representing notification values
 
         On failure, throws an exception or returns YNetwork.CALLBACKENCODING_INVALID.
         """
@@ -686,8 +688,9 @@ class YNetwork(YFunction):
         YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV,
         YNetwork.CALLBACKENCODING_YOCTO_API, YNetwork.CALLBACKENCODING_JSON_NUM,
         YNetwork.CALLBACKENCODING_EMONCMS, YNetwork.CALLBACKENCODING_AZURE,
-        YNetwork.CALLBACKENCODING_INFLUXDB and YNetwork.CALLBACKENCODING_MQTT corresponding to the encoding
-        standard to use for representing notification values
+        YNetwork.CALLBACKENCODING_INFLUXDB, YNetwork.CALLBACKENCODING_MQTT and
+        YNetwork.CALLBACKENCODING_YOCTO_API_JZON corresponding to the encoding standard to use for
+        representing notification values
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -903,6 +906,10 @@ class YNetwork(YFunction):
         a network interface by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
+
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the matching device is plugged, make sure that you did
+        call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the network interface
 

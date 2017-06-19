@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_currentloopoutput.py 27283 2017-04-25 15:47:39Z seb $
+#* $Id: yocto_currentloopoutput.py 27846 2017-06-19 09:19:09Z seb $
 #*
 #* Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
 #*
@@ -199,6 +199,10 @@ class YCurrentLoopOutput(YFunction):
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the matching device is plugged, make sure that you did
+        call registerHub() at application initialization time.
+
         @param func : a string that uniquely characterizes the 4-20mA output
 
         @return a YCurrentLoopOutput object allowing you to drive the 4-20mA output.
@@ -216,7 +220,7 @@ class YCurrentLoopOutput(YFunction):
         change cancels any ongoing transition process.
 
         @param mA_target   : new current value at the end of the transition
-                (floating-point number, representing the transition duration in mA)
+                (floating-point number, representing the end current in mA)
         @param ms_duration : total duration of the transition, in milliseconds
 
         @return YAPI.SUCCESS when the call succeeds.

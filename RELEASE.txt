@@ -1,2 +1,1 @@
-- Add YNetwork.useDHCPauto(), YWireless.startWlanScan() and YWireless.get_wlanState() methods
-- Fix some functions comments
+- Add workaround python 3.6 bug with datetime.fromtimestamp(0) (https://bugs.python.org/issue29097)

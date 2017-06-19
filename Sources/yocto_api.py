@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 27283 2017-04-25 15:47:39Z seb $
+# * $Id: yocto_api.py 27846 2017-06-19 09:19:09Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -711,7 +711,7 @@ class YJSONObject(YJSONContent):
                 self._keys.append(key)
             else:
                 raise YAPI.YAPI_Exception(YAPI.INVALID_ARGUMENT, "Unable to convert %s to %s" % (
-                new_item.getJSONType(), reference.getJSONType()))
+                    new_item.getJSONType(), reference.getJSONType()))
 
     def getKeyFromIdx(self, i):
         return self._keys[i]
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "27439"
+    YOCTO_API_BUILD_NO = "27846"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -3272,7 +3272,7 @@ class YDataSet(object):
         self._endTime = 0
 
     def _parse(self, json):
-        p = YJSONObject(json,0,len(json))
+        p = YJSONObject(json, 0, len(json))
         if not YAPI.ExceptionsDisabled:
             p.parse()
         else:
@@ -3764,8 +3764,7 @@ class YDevice:
         request = "GET /api.json"
         if self._cacheJson is not None:
             request += "?fw=" + self._cacheJson.getYJSONObject("module").getString("firmwareRelease")
-            #print("JZON:"+ request)
-
+            # print("JZON:"+ request)
 
         res = self.HTTPRequest(request + " \r\n\r\n", http_data, errmsgRef)
         if YAPI.YISERR(res):
@@ -3893,7 +3892,7 @@ class YFunction(object):
         self._logicalName = YFunction.LOGICALNAME_INVALID
         self._advertisedValue = YFunction.ADVERTISEDVALUE_INVALID
         self._valueCallbackFunction = None
-        self._cacheExpiration = datetime.datetime.fromtimestamp(0)
+        self._cacheExpiration = datetime.datetime.fromtimestamp(86400)
         self._serial = ''
         self._funId = ''
         self._hwId = ''
@@ -4322,6 +4321,10 @@ class YFunction(object):
         a function by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
+
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the matching device is plugged, make sure that you did
+        call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the function
 
@@ -4889,7 +4892,7 @@ class YModule(YFunction):
         On failure, throws an exception or returns YModule.PRODUCTNAME_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.PRODUCTNAME_INVALID
         res = self._productName
@@ -4904,7 +4907,7 @@ class YModule(YFunction):
         On failure, throws an exception or returns YModule.SERIALNUMBER_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.SERIALNUMBER_INVALID
         res = self._serialNumber
@@ -4919,7 +4922,7 @@ class YModule(YFunction):
         On failure, throws an exception or returns YModule.PRODUCTID_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YModule.PRODUCTID_INVALID
         res = self._productId
@@ -5103,7 +5106,8 @@ class YModule(YFunction):
 
     def set_userVar(self, newval):
         """
-        Returns the value previously stored in this attribute.
+        Stores a 32 bit value in the device RAM. This attribute is at programmer disposal,
+        should he need to store a state variable.
         On startup and after a device reboot, the value is always reset to zero.
 
         @param newval : an integer
@@ -5127,6 +5131,10 @@ class YModule(YFunction):
         a module by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
+
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the device is plugged, make sure that you did
+        call registerHub() at application initialization time.
 
         @param func : a string containing either the serial number or
                 the logical name of the desired module
@@ -6644,6 +6652,10 @@ class YSensor(YFunction):
         a sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
+
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the matching device is plugged, make sure that you did
+        call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the sensor
 

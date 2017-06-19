@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_genericsensor.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_genericsensor.py 27846 2017-06-19 09:19:09Z seb $
 #*
 #* Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #*
@@ -141,7 +141,7 @@ class YGenericSensor(YSensor):
         On failure, throws an exception or returns YGenericSensor.SIGNALUNIT_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YGenericSensor.SIGNALUNIT_INVALID
         res = self._signalUnit
@@ -298,6 +298,10 @@ class YGenericSensor(YSensor):
         a generic sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
+
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the matching device is plugged, make sure that you did
+        call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the generic sensor
 

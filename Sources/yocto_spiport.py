@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_spiport.py 27283 2017-04-25 15:47:39Z seb $
+#* $Id: yocto_spiport.py 27701 2017-06-01 12:27:38Z seb $
 #*
 #* Implements yFindSpiPort(), the high-level API for SpiPort functions
 #*
@@ -497,6 +497,10 @@ class YSpiPort(YFunction):
         a SPI port by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
+
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the matching device is plugged, make sure that you did
+        call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the SPI port
 

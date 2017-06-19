@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 27283 2017-04-25 15:47:39Z seb $
+#* $Id: yocto_colorledcluster.py 27846 2017-06-19 09:19:09Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -133,7 +133,7 @@ class YColorLedCluster(YFunction):
         On failure, throws an exception or returns YColorLedCluster.MAXLEDCOUNT_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLedCluster.MAXLEDCOUNT_INVALID
         res = self._maxLedCount
@@ -148,7 +148,7 @@ class YColorLedCluster(YFunction):
         On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXCOUNT_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLedCluster.BLINKSEQMAXCOUNT_INVALID
         res = self._blinkSeqMaxCount
@@ -163,7 +163,7 @@ class YColorLedCluster(YFunction):
         On failure, throws an exception or returns YColorLedCluster.BLINKSEQMAXSIZE_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YColorLedCluster.BLINKSEQMAXSIZE_INVALID
         res = self._blinkSeqMaxSize
@@ -201,6 +201,10 @@ class YColorLedCluster(YFunction):
         a RGB LED cluster by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
+
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the matching device is plugged, make sure that you did
+        call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the RGB LED cluster
 

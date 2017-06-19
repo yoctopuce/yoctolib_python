@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_display.py 27846 2017-06-19 09:19:09Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -782,7 +782,7 @@ class YDisplay(YFunction):
         On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.DISPLAYTYPE_INVALID
         res = self._displayType
@@ -797,7 +797,7 @@ class YDisplay(YFunction):
         On failure, throws an exception or returns YDisplay.LAYERWIDTH_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.LAYERWIDTH_INVALID
         res = self._layerWidth
@@ -812,7 +812,7 @@ class YDisplay(YFunction):
         On failure, throws an exception or returns YDisplay.LAYERHEIGHT_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.LAYERHEIGHT_INVALID
         res = self._layerHeight
@@ -827,7 +827,7 @@ class YDisplay(YFunction):
         On failure, throws an exception or returns YDisplay.LAYERCOUNT_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YDisplay.LAYERCOUNT_INVALID
         res = self._layerCount
@@ -865,6 +865,10 @@ class YDisplay(YFunction):
         a display by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
+
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the matching device is plugged, make sure that you did
+        call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the display
 

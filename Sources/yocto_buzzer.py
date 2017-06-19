@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_buzzer.py 27164 2017-04-13 09:57:00Z seb $
+#* $Id: yocto_buzzer.py 27846 2017-06-19 09:19:09Z seb $
 #*
 #* Implements yFindBuzzer(), the high-level API for Buzzer functions
 #*
@@ -176,7 +176,7 @@ class YBuzzer(YFunction):
         On failure, throws an exception or returns YBuzzer.PLAYSEQMAXSIZE_INVALID.
         """
         # res
-        if self._cacheExpiration == datetime.datetime.fromtimestamp(0):
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
                 return YBuzzer.PLAYSEQMAXSIZE_INVALID
         res = self._playSeqMaxSize
@@ -232,6 +232,10 @@ class YBuzzer(YFunction):
         a buzzer by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
+
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the matching device is plugged, make sure that you did
+        call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the buzzer
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: pic24config.php 26780 2017-03-16 14:02:09Z mvuilleu $
+#* $Id: yocto_proximity.py 27701 2017-06-01 12:27:38Z seb $
 #*
 #* Implements yFindProximity(), the high-level API for Proximity functions
 #*
@@ -304,6 +304,10 @@ class YProximity(YSensor):
         a proximity sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
+
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the matching device is plugged, make sure that you did
+        call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the proximity sensor
 
