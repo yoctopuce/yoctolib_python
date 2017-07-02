@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_serialport.py 27948 2017-06-30 14:46:55Z mvuilleu $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -338,6 +338,8 @@ class YSerialPort(YFunction):
         "Frame:[timeout]ms" for binary messages separated by a delay time,
         "Modbus-ASCII" for MODBUS messages in ASCII mode,
         "Modbus-RTU" for MODBUS messages in RTU mode,
+        "Wiegand-ASCII" for Wiegand messages in ASCII mode,
+        "Wiegand-26","Wiegand-34", etc for Wiegand messages in byte mode,
         "Char" for a continuous ASCII stream or
         "Byte" for a continuous binary stream.
 
@@ -359,6 +361,8 @@ class YSerialPort(YFunction):
         "Frame:[timeout]ms" for binary messages separated by a delay time,
         "Modbus-ASCII" for MODBUS messages in ASCII mode,
         "Modbus-RTU" for MODBUS messages in RTU mode,
+        "Wiegand-ASCII" for Wiegand messages in ASCII mode,
+        "Wiegand-26","Wiegand-34", etc for Wiegand messages in byte mode,
         "Char" for a continuous ASCII stream or
         "Byte" for a continuous binary stream.
         The suffix "/[wait]ms" can be added to reduce the transmit rate so that there

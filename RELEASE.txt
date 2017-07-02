@@ -1,1 +1,2 @@
-- Add workaround python 3.6 bug with datetime.fromtimestamp(0) (https://bugs.python.org/issue29097)
+- Fix some functions documentation.
+- Add workaround for python 3.6 bug (https://bugs.python.org/issue29097)
