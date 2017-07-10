@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 27846 2017-06-19 09:19:09Z seb $
+#* $Id: yocto_network.py 28010 2017-07-07 13:15:07Z mvuilleu $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -995,6 +995,22 @@ class YNetwork(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_callbackMethod(self.get_callbackMethod())
+
+    def set_periodicCallbackSchedule(self, interval, offset):
+        """
+        Setup periodic HTTP callbacks (simplifed function).
+
+        @param interval : a string representing the callback periodicity, expressed in
+                seconds, minutes or hours, eg. "60s", "5m", "1h", "48h".
+        @param offset : an integer representing the time offset relative to the period
+                when the callback should occur. For instance, if the periodicity is
+                24h, an offset of 7 will make the callback occur each day at 7AM.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_callbackSchedule("every " + interval + "+" + str(int(offset)))
 
     def nextNetwork(self):
         """

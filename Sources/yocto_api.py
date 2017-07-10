@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 27846 2017-06-19 09:19:09Z seb $
+# * $Id: yocto_api.py 28024 2017-07-10 08:50:02Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "27961"
+    YOCTO_API_BUILD_NO = "28028"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1861,8 +1861,8 @@ class YAPI:
         network hub (this URL can be passed to RegisterHub). This callback will be invoked
         while yUpdateDeviceList is running. You will have to call this function on a regular basis.
 
-        @param hubDiscoveryCallback : a procedure taking two string parameter, or None
-                to unregister a previously registered  callback.
+        @param hubDiscoveryCallback : a procedure taking two string parameter, the serial
+                number and the hub URL. Use None to unregister a previously registered  callback.
         """
         global yHubDiscoveryCallback
         yHubDiscoveryCallback = hubDiscoveryCallback
@@ -2295,7 +2295,7 @@ class YAPI:
     @staticmethod
     def TriggerHubDiscovery(errmsg=None):
         """
-        Force a hub discovery, if a callback as been registered with yRegisterDeviceRemovalCallback it
+        Force a hub discovery, if a callback as been registered with yRegisterHubDiscoveryCallback it
         will be called for each net work hub that will respond to the discovery.
 
         @param errmsg : a string passed by reference to receive any error message.
@@ -3494,6 +3494,10 @@ class YDataSet(object):
         # stream
         if self._progress < 0:
             url = "logger.json?id=" + self._functionId
+            if self._startTime != 0:
+                url = "" + url + "&from=" + str(int(self._startTime))
+            if self._endTime != 0:
+                url = "" + url + "&to=" + str(int(self._endTime))
         else:
             if self._progress >= len(self._streams):
                 return 100

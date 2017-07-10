@@ -1,2 +1,1 @@
-- Fix some functions documentation.
-- Add workaround for python 3.6 bug (https://bugs.python.org/issue29097)
+- Improve datalogger summary load performance when using limited time range
