@@ -47,13 +47,13 @@ if not (io.isOnline()):
     die('device not connected')
 
 # lets configure the channels direction
-# bits 0..3 as output
-# bits 4..7 as input
-io.set_portDirection(0x0F)
+# bits 0..1 as output
+# bits 2..3 as input
+io.set_portDirection(0x03)
 io.set_portPolarity(0)  # polarity set to regular
 io.set_portOpenDrain(0)  # No open drain
 
-print("Channels 0..3 are configured as outputs and channels 4..7")
+print("Channels 0..1 are configured as outputs and channels 2..3")
 print("are configured as inputs, you can connect some inputs to ")
 print("ouputs and see what happens")
 
@@ -61,13 +61,13 @@ outputdata = 0
 while io.isOnline():
     inputdata = io.get_portState()  # read port values
     line = ""  # display part state value as binary
-    for i in range(0, 8):
-        if (inputdata & (128 >> i)) > 0:
+    for i in range(0, 4):
+        if (inputdata & (8 >> i)) > 0:
             line += '1'
         else:
             line += '0'
     print(" port value = " + line)
-    outputdata = (outputdata + 1) % 16  # cycle ouput 0..15
+    outputdata = (outputdata + 1) % 4  # cycle ouput 0..3
     io.set_portState(outputdata)  # We could have used set_bitState as well
     YAPI.Sleep(1000, errmsg)
 

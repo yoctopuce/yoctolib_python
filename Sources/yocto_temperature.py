@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 27846 2017-06-19 09:19:09Z seb $
+#* $Id: yocto_temperature.py 28142 2017-07-25 20:24:23Z mvuilleu $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -78,6 +78,7 @@ class YTemperature(YSensor):
     SENSORTYPE_RES_OHM = 11
     SENSORTYPE_RES_NTC = 12
     SENSORTYPE_RES_LINEAR = 13
+    SENSORTYPE_RES_INTERNAL = 14
     SENSORTYPE_INVALID = -1
     #--- (end of YTemperature definitions)
 
@@ -134,8 +135,8 @@ class YTemperature(YSensor):
         YTemperature.SENSORTYPE_TYPE_R, YTemperature.SENSORTYPE_TYPE_S, YTemperature.SENSORTYPE_TYPE_T,
         YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES,
         YTemperature.SENSORTYPE_PT100_2WIRES, YTemperature.SENSORTYPE_RES_OHM,
-        YTemperature.SENSORTYPE_RES_NTC and YTemperature.SENSORTYPE_RES_LINEAR corresponding to the
-        temperature sensor type
+        YTemperature.SENSORTYPE_RES_NTC, YTemperature.SENSORTYPE_RES_LINEAR and
+        YTemperature.SENSORTYPE_RES_INTERNAL corresponding to the temperature sensor type
 
         On failure, throws an exception or returns YTemperature.SENSORTYPE_INVALID.
         """
@@ -159,7 +160,7 @@ class YTemperature(YSensor):
         YTemperature.SENSORTYPE_TYPE_R, YTemperature.SENSORTYPE_TYPE_S, YTemperature.SENSORTYPE_TYPE_T,
         YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES,
         YTemperature.SENSORTYPE_PT100_2WIRES, YTemperature.SENSORTYPE_RES_OHM,
-        YTemperature.SENSORTYPE_RES_NTC and YTemperature.SENSORTYPE_RES_LINEAR
+        YTemperature.SENSORTYPE_RES_NTC, YTemperature.SENSORTYPE_RES_LINEAR and YTemperature.SENSORTYPE_RES_INTERNAL
 
         @return YAPI.SUCCESS if the call succeeds.
 

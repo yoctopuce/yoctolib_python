@@ -1,1 +1,4 @@
-- Improve datalogger summary load performance when using limited time range
+- Add support for Yocto-0-10V-Tx and Yocto-Bridge
+- Add getDataLogger() method to YSensor class
+- Add workaround for python 3.6 bug (https://bugs.python.org/issue29097)
+- Fix decoding of negative values from the datalogger

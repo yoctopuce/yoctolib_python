@@ -33,7 +33,7 @@ if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
     sys.exit("init error" + errmsg.value)
 
 if target == 'any':
-    # retreive any temperature sensor
+    # retrieve any temperature sensor
     sensor = YTemperature.FirstTemperature()
     if sensor is None:
         die('No module connected')

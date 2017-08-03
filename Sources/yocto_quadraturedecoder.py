@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_quadraturedecoder.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_quadraturedecoder.py 28159 2017-07-27 09:37:52Z seb $
 #*
 #* Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
 #*
@@ -97,9 +97,9 @@ class YQuadratureDecoder(YSensor):
 
     def get_speed(self):
         """
-        Returns the PWM frequency in Hz.
+        Returns the increments frequency, in Hz.
 
-        @return a floating point number corresponding to the PWM frequency in Hz
+        @return a floating point number corresponding to the increments frequency, in Hz
 
         On failure, throws an exception or returns YQuadratureDecoder.SPEED_INVALID.
         """
