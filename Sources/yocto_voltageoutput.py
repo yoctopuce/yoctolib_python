@@ -202,7 +202,7 @@ class YVoltageOutput(YFunction):
             V_target  = 0.0
         if V_target > 10.0:
             V_target = 10.0
-        newval = "" + str(int(round(V_target*1000))) + ":" + str(int(ms_duration))
+        newval = "" + str(int(round(V_target*65536))) + ":" + str(int(ms_duration))
 
         return self.set_voltageTransition(newval)
 
