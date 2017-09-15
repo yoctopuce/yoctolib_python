@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_refframe.py 28457 2017-09-06 08:34:21Z mvuilleu $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -72,6 +72,12 @@ class YRefFrame(YFunction):
     MOUNTPOS_INVALID = YAPI.INVALID_UINT
     BEARING_INVALID = YAPI.INVALID_DOUBLE
     CALIBRATIONPARAM_INVALID = YAPI.INVALID_STRING
+    FUSIONMODE_NDOF = 0
+    FUSIONMODE_NDOF_FMC_OFF = 1
+    FUSIONMODE_M4G = 2
+    FUSIONMODE_COMPASS = 3
+    FUSIONMODE_IMU = 4
+    FUSIONMODE_INVALID = -1
     #--- (end of YRefFrame definitions)
 
     def __init__(self, func):
@@ -82,6 +88,7 @@ class YRefFrame(YFunction):
         self._mountPos = YRefFrame.MOUNTPOS_INVALID
         self._bearing = YRefFrame.BEARING_INVALID
         self._calibrationParam = YRefFrame.CALIBRATIONPARAM_INVALID
+        self._fusionMode = YRefFrame.FUSIONMODE_INVALID
         self._calibV2 = 0
         self._calibStage = 0
         self._calibStageHint = ''
@@ -113,6 +120,8 @@ class YRefFrame(YFunction):
             self._bearing = round(json_val.getDouble("bearing") * 1000.0 / 65536.0) / 1000.0
         if json_val.has("calibrationParam"):
             self._calibrationParam = json_val.getString("calibrationParam")
+        if json_val.has("fusionMode"):
+            self._fusionMode = json_val.getInt("fusionMode")
         super(YRefFrame, self)._parseAttr(json_val)
 
     def get_mountPos(self):
@@ -181,6 +190,18 @@ class YRefFrame(YFunction):
     def set_calibrationParam(self, newval):
         rest_val = newval
         return self._setAttr("calibrationParam", rest_val)
+
+    def get_fusionMode(self):
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YRefFrame.FUSIONMODE_INVALID
+        res = self._fusionMode
+        return res
+
+    def set_fusionMode(self, newval):
+        rest_val = str(newval)
+        return self._setAttr("fusionMode", rest_val)
 
     @staticmethod
     def FindRefFrame(func):

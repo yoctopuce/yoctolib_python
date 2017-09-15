@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwminput.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_pwminput.py 28559 2017-09-15 15:01:38Z seb $
 #*
 #* Implements yFindPwmInput(), the high-level API for PwmInput functions
 #*
@@ -66,6 +66,7 @@ class YPwmInput(YSensor):
     PERIOD_INVALID = YAPI.INVALID_DOUBLE
     PULSECOUNTER_INVALID = YAPI.INVALID_LONG
     PULSETIMER_INVALID = YAPI.INVALID_LONG
+    DEBOUNCEPERIOD_INVALID = YAPI.INVALID_UINT
     PWMREPORTMODE_PWM_DUTYCYCLE = 0
     PWMREPORTMODE_PWM_FREQUENCY = 1
     PWMREPORTMODE_PWM_PULSEDURATION = 2
@@ -85,6 +86,7 @@ class YPwmInput(YSensor):
         self._pulseCounter = YPwmInput.PULSECOUNTER_INVALID
         self._pulseTimer = YPwmInput.PULSETIMER_INVALID
         self._pwmReportMode = YPwmInput.PWMREPORTMODE_INVALID
+        self._debouncePeriod = YPwmInput.DEBOUNCEPERIOD_INVALID
         #--- (end of YPwmInput attributes)
 
     #--- (YPwmInput implementation)
@@ -103,6 +105,8 @@ class YPwmInput(YSensor):
             self._pulseTimer = json_val.getLong("pulseTimer")
         if json_val.has("pwmReportMode"):
             self._pwmReportMode = json_val.getInt("pwmReportMode")
+        if json_val.has("debouncePeriod"):
+            self._debouncePeriod = json_val.getInt("debouncePeriod")
         super(YPwmInput, self)._parseAttr(json_val)
 
     def get_dutyCycle(self):
@@ -223,14 +227,15 @@ class YPwmInput(YSensor):
 
     def set_pwmReportMode(self, newval):
         """
-        Modifies the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
+        Changes the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
         get_currentValue function and callbacks.
         The edge count value is limited to the 6 lowest digits. For values greater than one million, use
         get_pulseCounter().
 
         @param newval : a value among YPwmInput.PWMREPORTMODE_PWM_DUTYCYCLE,
         YPwmInput.PWMREPORTMODE_PWM_FREQUENCY, YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION and
-        YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT
+        YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT corresponding to the  parameter  type (frequency/duty cycle,
+        pulse width, or edge count) returned by the get_currentValue function and callbacks
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -238,6 +243,34 @@ class YPwmInput(YSensor):
         """
         rest_val = str(newval)
         return self._setAttr("pwmReportMode", rest_val)
+
+    def get_debouncePeriod(self):
+        """
+        Returns the shortest expected pulse duration, in ms. Any shorter pulse will be automatically ignored (debounce).
+
+        @return an integer corresponding to the shortest expected pulse duration, in ms
+
+        On failure, throws an exception or returns YPwmInput.DEBOUNCEPERIOD_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YPwmInput.DEBOUNCEPERIOD_INVALID
+        res = self._debouncePeriod
+        return res
+
+    def set_debouncePeriod(self, newval):
+        """
+        Changes the shortest expected pulse duration, in ms. Any shorter pulse will be automatically ignored (debounce).
+
+        @param newval : an integer corresponding to the shortest expected pulse duration, in ms
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("debouncePeriod", rest_val)
 
     @staticmethod
     def FindPwmInput(func):

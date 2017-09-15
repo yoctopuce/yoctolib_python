@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 28142 2017-07-25 20:24:23Z mvuilleu $
+#* $Id: yocto_temperature.py 28559 2017-09-15 15:01:38Z seb $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -149,7 +149,7 @@ class YTemperature(YSensor):
 
     def set_sensorType(self, newval):
         """
-        Modifies the temperature sensor type.  This function is used
+        Changes the temperature sensor type.  This function is used
         to define the type of thermocouple (K,E...) used with the device.
         It has no effect if module is using a digital sensor or a thermistor.
         Remember to call the saveToFlash() method of the module if the
@@ -160,7 +160,8 @@ class YTemperature(YSensor):
         YTemperature.SENSORTYPE_TYPE_R, YTemperature.SENSORTYPE_TYPE_S, YTemperature.SENSORTYPE_TYPE_T,
         YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES,
         YTemperature.SENSORTYPE_PT100_2WIRES, YTemperature.SENSORTYPE_RES_OHM,
-        YTemperature.SENSORTYPE_RES_NTC, YTemperature.SENSORTYPE_RES_LINEAR and YTemperature.SENSORTYPE_RES_INTERNAL
+        YTemperature.SENSORTYPE_RES_NTC, YTemperature.SENSORTYPE_RES_LINEAR and
+        YTemperature.SENSORTYPE_RES_INTERNAL corresponding to the temperature sensor type
 
         @return YAPI.SUCCESS if the call succeeds.
 

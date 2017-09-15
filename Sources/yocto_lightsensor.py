@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_lightsensor.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_lightsensor.py 28559 2017-09-15 15:01:38Z seb $
 #*
 #* Implements yFindLightSensor(), the high-level API for LightSensor functions
 #*
@@ -124,7 +124,7 @@ class YLightSensor(YSensor):
 
     def set_measureType(self, newval):
         """
-        Modifies the light sensor type used in the device. The measure can either
+        Changes the light sensor type used in the device. The measure can either
         approximate the response of the human eye, focus on a specific light
         spectrum, depending on the capabilities of the light-sensitive cell.
         Remember to call the saveToFlash() method of the module if the
@@ -132,7 +132,8 @@ class YLightSensor(YSensor):
 
         @param newval : a value among YLightSensor.MEASURETYPE_HUMAN_EYE,
         YLightSensor.MEASURETYPE_WIDE_SPECTRUM, YLightSensor.MEASURETYPE_INFRARED,
-        YLightSensor.MEASURETYPE_HIGH_RATE and YLightSensor.MEASURETYPE_HIGH_ENERGY
+        YLightSensor.MEASURETYPE_HIGH_RATE and YLightSensor.MEASURETYPE_HIGH_ENERGY corresponding to the
+        light sensor type used in the device
 
         @return YAPI.SUCCESS if the call succeeds.
 

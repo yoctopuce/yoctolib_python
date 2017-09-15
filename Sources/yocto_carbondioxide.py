@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_carbondioxide.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_carbondioxide.py 28559 2017-09-15 15:01:38Z seb $
 #*
 #* Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
 #*
@@ -98,13 +98,13 @@ class YCarbonDioxide(YSensor):
 
     def set_abcPeriod(self, newval):
         """
-        Modifies Automatic Baseline Calibration period, in hours. If you need
+        Changes Automatic Baseline Calibration period, in hours. If you need
         to disable automatic baseline calibration (for instance when using the
         sensor in an environment that is constantly above 400ppm CO2), set the
         period to -1. Remember to call the saveToFlash() method of the
         module if the modification must be kept.
 
-        @param newval : an integer
+        @param newval : an integer corresponding to Automatic Baseline Calibration period, in hours
 
         @return YAPI.SUCCESS if the call succeeds.
 

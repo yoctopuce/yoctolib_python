@@ -1,5 +1,2 @@
-- Add get_dataLogger() method to YSensor class
-- Add support for Yocto-0-10V-Tx and Yocto-Bridge
-- Add workaround for python 3.6 bug (https://bugs.python.org/issue29097)
-- Fix voltage/current transitions for Yocto-4-20mA-Tx and Yocto-0-10V-Tx
-- Fix decoding of negative values from the datalogger
+- Add support for jumps and stops in ColorLedCluster sequences
+- Improve error reporting during firmware update

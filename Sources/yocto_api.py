@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 28265 2017-08-02 07:41:22Z mvuilleu $
+# * $Id: yocto_api.py 28559 2017-09-15 15:01:38Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "28296"
+    YOCTO_API_BUILD_NO = "28564"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2485,7 +2485,7 @@ class YFirmwareUpdate(object):
         # settings
         # prod_prefix
         # force
-        if self._progress_c < 100:
+        if self._progress_c < 100 and self._progress_c != YAPI.VERSION_MISMATCH:
             serial = self._serial
             firmwarepath = self._firmwarepath
             settings = YByte2String(self._settings)
@@ -2494,6 +2494,10 @@ class YFirmwareUpdate(object):
             else:
                 force = 0
             res = YAPI._yapiUpdateFirmwareEx(ctypes.create_string_buffer(YString2Byte(serial)), ctypes.create_string_buffer(YString2Byte(firmwarepath)), ctypes.create_string_buffer(YString2Byte(settings)), force, newupdate, errmsg)
+            if res == YAPI.VERSION_MISMATCH and (len(self._settings) != 0):
+                self._progress_c = res
+                self._progress_msg = YByte2String(errmsg.value)
+                return self._progress
             if res < 0:
                 self._progress = res
                 self._progress_msg = YByte2String(errmsg.value)
@@ -2519,8 +2523,12 @@ class YFirmwareUpdate(object):
                     m.set_allSettingsAndFiles(self._settings)
                     m.saveToFlash()
                     self._settings = bytearray(0)
-                    self._progress = 100
-                    self._progress_msg = "success"
+                    if self._progress_c == YAPI.VERSION_MISMATCH:
+                        self._progress = YAPI.IO_ERROR
+                        self._progress_msg = "Unable to update firmware"
+                    else:
+                        self._progress =  100
+                        self._progress_msg = "success"
             else:
                 self._progress =  100
                 self._progress_msg = "success"
@@ -6340,6 +6348,11 @@ class YSensor(YFunction):
     CALIBRATIONPARAM_INVALID = YAPI.INVALID_STRING
     RESOLUTION_INVALID = YAPI.INVALID_DOUBLE
     SENSORSTATE_INVALID = YAPI.INVALID_INT
+    ADVMODE_IMMEDIATE = 0
+    ADVMODE_PERIOD_AVG = 1
+    ADVMODE_PERIOD_MIN = 2
+    ADVMODE_PERIOD_MAX = 3
+    ADVMODE_INVALID = -1
     #--- (end of generated code: YSensor definitions)
 
     def __init__(self, func):
@@ -6354,6 +6367,7 @@ class YSensor(YFunction):
         self._currentRawValue = YSensor.CURRENTRAWVALUE_INVALID
         self._logFrequency = YSensor.LOGFREQUENCY_INVALID
         self._reportFrequency = YSensor.REPORTFREQUENCY_INVALID
+        self._advMode = YSensor.ADVMODE_INVALID
         self._calibrationParam = YSensor.CALIBRATIONPARAM_INVALID
         self._resolution = YSensor.RESOLUTION_INVALID
         self._sensorState = YSensor.SENSORSTATE_INVALID
@@ -6388,6 +6402,8 @@ class YSensor(YFunction):
             self._logFrequency = json_val.getString("logFrequency")
         if json_val.has("reportFrequency"):
             self._reportFrequency = json_val.getString("reportFrequency")
+        if json_val.has("advMode"):
+            self._advMode = json_val.getInt("advMode")
         if json_val.has("calibrationParam"):
             self._calibrationParam = json_val.getString("calibrationParam")
         if json_val.has("resolution"):
@@ -6575,6 +6591,38 @@ class YSensor(YFunction):
         """
         rest_val = newval
         return self._setAttr("reportFrequency", rest_val)
+
+    def get_advMode(self):
+        """
+        Returns the measuring mode used for the advertised value pushed to the parent hub.
+
+        @return a value among YSensor.ADVMODE_IMMEDIATE, YSensor.ADVMODE_PERIOD_AVG,
+        YSensor.ADVMODE_PERIOD_MIN and YSensor.ADVMODE_PERIOD_MAX corresponding to the measuring mode used
+        for the advertised value pushed to the parent hub
+
+        On failure, throws an exception or returns YSensor.ADVMODE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YSensor.ADVMODE_INVALID
+        res = self._advMode
+        return res
+
+    def set_advMode(self, newval):
+        """
+        Changes the measuring mode used for the advertised value pushed to the parent hub.
+
+        @param newval : a value among YSensor.ADVMODE_IMMEDIATE, YSensor.ADVMODE_PERIOD_AVG,
+        YSensor.ADVMODE_PERIOD_MIN and YSensor.ADVMODE_PERIOD_MAX corresponding to the measuring mode used
+        for the advertised value pushed to the parent hub
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("advMode", rest_val)
 
     def get_calibrationParam(self):
         # res

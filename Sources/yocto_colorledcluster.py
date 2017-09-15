@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 27846 2017-06-19 09:19:09Z seb $
+#* $Id: yocto_colorledcluster.py 28443 2017-09-01 14:45:46Z mvuilleu $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -350,6 +350,35 @@ class YColorLedCluster(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("AC" + str(int(seqIndex)) + ",0,0")
+
+    def addJumpToBlinkSeq(self, seqIndex, linkSeqIndex):
+        """
+        Adds to a sequence a jump to another sequence. When a pixel will reach this jump,
+        it will be automatically relinked to the new sequence, and will run it starting
+        from the beginning.
+
+        @param seqIndex : sequence index.
+        @param linkSeqIndex : index of the sequence to chain.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("AC" + str(int(seqIndex)) + ",100," + str(int(linkSeqIndex)) + ",1000")
+
+    def addUnlinkToBlinkSeq(self, seqIndex):
+        """
+        Adds a to a sequence a hard stop code. When a pixel will reach this stop code,
+        instead of restarting the sequence in a loop it will automatically be unlinked
+        from the sequence.
+
+        @param seqIndex : sequence index.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("AC" + str(int(seqIndex)) + ",100,-1,1000")
 
     def linkLedToBlinkSeq(self, ledIndex, count, seqIndex, offset):
         """
