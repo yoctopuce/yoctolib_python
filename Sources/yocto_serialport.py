@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 27948 2017-06-30 14:46:55Z mvuilleu $
+#* $Id: yocto_serialport.py 28668 2017-09-27 08:25:19Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
-#* - - - - - - - - - License information: - - - - - - - - - 
+#* - - - - - - - - - License information: - - - - - - - - -
 #*
 #*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
@@ -24,7 +24,7 @@
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
 #*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -41,6 +41,47 @@
 
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
+
+
+
+# --- (generated code: YSnoopingRecord class start)
+#noinspection PyProtectedMember
+class YSnoopingRecord(object):
+#--- (end of generated code: YSnoopingRecord class start)
+    # --- (generated code: YSnoopingRecord definitions)
+    #--- (end of generated code: YSnoopingRecord definitions)
+
+    def __init__(self, json_str):
+        # --- (generated code: YSnoopingRecord attributes)
+        self._tim = 0
+        self._dir = 0
+        self._msg = ''
+        #--- (end of generated code: YSnoopingRecord attributes)
+        json = YJSONObject(json_str, 0, len(json_str))
+        json.parse()
+        self._tim = json.getInt("t")
+        m = json.getString("m")
+        if m[0] == '<':
+            self._dir = 1
+        else:
+            self._dir = 0
+        self._msg = m[1:]
+
+    # --- (generated code: YSnoopingRecord implementation)
+    def get_time(self):
+        return self._tim
+
+    def get_direction(self):
+        return self._dir
+
+    def get_message(self):
+        return self._msg
+
+#--- (end of generated code: YSnoopingRecord implementation)
+
+# --- (SnoopingRecord generated code: functions)
+# --- (end of SnoopingRecord generated code: functions)
+
 
 
 #--- (YSerialPort class start)
@@ -901,6 +942,47 @@ class YSerialPort(YFunction):
 
         while idx < msglen:
             res.append(self._json_get_string(YString2Byte(msgarr[idx])))
+            idx = idx + 1
+
+        return res
+
+    def snoopMessages(self, maxWait):
+        """
+        Retrieves messages (both direction) in the serial port buffer, starting at current position.
+        This function will only compare and return printable characters in the message strings.
+        Binary protocols are handled as hexadecimal strings.
+
+        If no message is found, the search waits for one up to the specified maximum timeout
+        (in milliseconds).
+
+        @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+                in the receive buffer.
+
+        @return an array of YSnoopingRecord objects containing the messages found, if any.
+                Binary messages are converted to hexadecimal representation.
+
+        On failure, throws an exception or returns an empty array.
+        """
+        # url
+        # msgbin
+        msgarr = []
+        # msglen
+        res = []
+        # idx
+
+        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&t=0"
+        msgbin = self._download(url)
+        msgarr = self._json_get_array(msgbin)
+        msglen = len(msgarr)
+        if msglen == 0:
+            return res
+        # // last element of array is the new position
+        msglen = msglen - 1
+        self._rxptr = YAPI._atoi(msgarr[msglen])
+        idx = 0
+
+        while idx < msglen:
+            res.append(YSnoopingRecord(msgarr[idx]))
             idx = idx + 1
 
         return res
