@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwminput.py 28559 2017-09-15 15:01:38Z seb $
+#* $Id: yocto_pwminput.py 28807 2017-10-12 09:46:33Z seb $
 #*
 #* Implements yFindPwmInput(), the high-level API for PwmInput functions
 #*
-#* - - - - - - - - - License information: - - - - - - - - - 
+#* - - - - - - - - - License information: - - - - - - - - -
 #*
 #*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
@@ -24,7 +24,7 @@
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
 #*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -71,6 +71,10 @@ class YPwmInput(YSensor):
     PWMREPORTMODE_PWM_FREQUENCY = 1
     PWMREPORTMODE_PWM_PULSEDURATION = 2
     PWMREPORTMODE_PWM_EDGECOUNT = 3
+    PWMREPORTMODE_PWM_PULSECOUNT = 4
+    PWMREPORTMODE_PWM_CPS = 5
+    PWMREPORTMODE_PWM_CPM = 6
+    PWMREPORTMODE_PWM_STATE = 7
     PWMREPORTMODE_INVALID = -1
     #--- (end of YPwmInput definitions)
 
@@ -174,7 +178,7 @@ class YPwmInput(YSensor):
         """
         Returns the pulse counter value. Actually that
         counter is incremented twice per period. That counter is
-        limited  to 1 billion
+        limited  to 1 billion.
 
         @return an integer corresponding to the pulse counter value
 
@@ -212,8 +216,10 @@ class YPwmInput(YSensor):
         get_currentValue function and callbacks. Attention
 
         @return a value among YPwmInput.PWMREPORTMODE_PWM_DUTYCYCLE, YPwmInput.PWMREPORTMODE_PWM_FREQUENCY,
-        YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION and YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT corresponding
-        to the parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
+        YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION, YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT,
+        YPwmInput.PWMREPORTMODE_PWM_PULSECOUNT, YPwmInput.PWMREPORTMODE_PWM_CPS,
+        YPwmInput.PWMREPORTMODE_PWM_CPM and YPwmInput.PWMREPORTMODE_PWM_STATE corresponding to the
+        parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
         function and callbacks
 
         On failure, throws an exception or returns YPwmInput.PWMREPORTMODE_INVALID.
@@ -233,8 +239,10 @@ class YPwmInput(YSensor):
         get_pulseCounter().
 
         @param newval : a value among YPwmInput.PWMREPORTMODE_PWM_DUTYCYCLE,
-        YPwmInput.PWMREPORTMODE_PWM_FREQUENCY, YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION and
-        YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT corresponding to the  parameter  type (frequency/duty cycle,
+        YPwmInput.PWMREPORTMODE_PWM_FREQUENCY, YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION,
+        YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT, YPwmInput.PWMREPORTMODE_PWM_PULSECOUNT,
+        YPwmInput.PWMREPORTMODE_PWM_CPS, YPwmInput.PWMREPORTMODE_PWM_CPM and
+        YPwmInput.PWMREPORTMODE_PWM_STATE corresponding to the  parameter  type (frequency/duty cycle,
         pulse width, or edge count) returned by the get_currentValue function and callbacks
 
         @return YAPI.SUCCESS if the call succeeds.
@@ -335,7 +343,7 @@ class YPwmInput(YSensor):
 
 #--- (end of YPwmInput implementation)
 
-#--- (PwmInput functions)
+#--- (YPwmInput functions)
 
     @staticmethod
     def FirstPwmInput():
@@ -369,4 +377,4 @@ class YPwmInput(YSensor):
 
         return YPwmInput.FindPwmInput(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of PwmInput functions)
+#--- (end of YPwmInput functions)

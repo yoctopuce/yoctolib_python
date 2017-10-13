@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 27846 2017-06-19 09:19:09Z seb $
+#* $Id: yocto_display.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -533,9 +533,8 @@ class YDisplayLayer(object):
 
 #--- (end of generated code: YDisplayLayer implementation)
 
-#--- (DisplayLayer generated code: functions)
-
-#--- (end of DisplayLayer generated code: functions)
+#--- (generated code: YDisplayLayer functions)
+#--- (end of generated code: YDisplayLayer functions)
 
 
 #--- (generated code: YDisplay class start)
@@ -1097,7 +1096,7 @@ class YDisplay(YFunction):
         self._sequence = self._sequence + cmd + '\n'
         return YAPI.SUCCESS
 
-    #--- (generated code: Display functions)
+    #--- (generated code: YDisplay functions)
 
     @staticmethod
     def FirstDisplay():
@@ -1131,4 +1130,4 @@ class YDisplay(YFunction):
 
         return YDisplay.FindDisplay(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of generated code: Display functions)
+#--- (end of generated code: YDisplay functions)

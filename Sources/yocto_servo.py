@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_servo.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_servo.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindServo(), the high-level API for Servo functions
 #*
-#* - - - - - - - - - License information: - - - - - - - - - 
+#* - - - - - - - - - License information: - - - - - - - - -
 #*
 #*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
@@ -24,7 +24,7 @@
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
 #*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -373,7 +373,7 @@ class YServo(YFunction):
 
 #--- (end of YServo implementation)
 
-#--- (Servo functions)
+#--- (YServo functions)
 
     @staticmethod
     def FirstServo():
@@ -407,4 +407,4 @@ class YServo(YFunction):
 
         return YServo.FindServo(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of Servo functions)
+#--- (end of YServo functions)

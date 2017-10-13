@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_daisychain.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_daisychain.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindDaisyChain(), the high-level API for DaisyChain functions
 #*
-#* - - - - - - - - - License information: - - - - - - - - - 
+#* - - - - - - - - - License information: - - - - - - - - -
 #*
 #*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
@@ -24,7 +24,7 @@
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
 #*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -204,7 +204,7 @@ class YDaisyChain(YFunction):
 
 #--- (end of YDaisyChain implementation)
 
-#--- (DaisyChain functions)
+#--- (YDaisyChain functions)
 
     @staticmethod
     def FirstDaisyChain():
@@ -238,4 +238,4 @@ class YDaisyChain(YFunction):
 
         return YDaisyChain.FindDaisyChain(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of DaisyChain functions)
+#--- (end of YDaisyChain functions)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 28668 2017-09-27 08:25:19Z seb $
+#* $Id: yocto_serialport.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -79,12 +79,12 @@ class YSnoopingRecord(object):
 
 #--- (end of generated code: YSnoopingRecord implementation)
 
-# --- (SnoopingRecord generated code: functions)
-# --- (end of SnoopingRecord generated code: functions)
+# --- (generated code: YSnoopingRecord functions)
+#--- (end of generated code: YSnoopingRecord functions)
 
 
 
-#--- (YSerialPort class start)
+#--- (generated code: YSerialPort class start)
 #noinspection PyProtectedMember
 class YSerialPort(YFunction):
     """
@@ -95,12 +95,12 @@ class YSerialPort(YFunction):
     They are meant to be used in the same way as all Yoctopuce devices.
 
     """
-#--- (end of YSerialPort class start)
-    #--- (YSerialPort return codes)
-    #--- (end of YSerialPort return codes)
-    #--- (YSerialPort dlldef)
-    #--- (end of YSerialPort dlldef)
-    #--- (YSerialPort definitions)
+#--- (end of generated code: YSerialPort class start)
+    #--- (generated code: YSerialPort return codes)
+    #--- (end of generated code: YSerialPort return codes)
+    #--- (generated code: YSerialPort dlldef)
+    #--- (end of generated code: YSerialPort dlldef)
+    #--- (generated code: YSerialPort definitions)
     RXCOUNT_INVALID = YAPI.INVALID_UINT
     TXCOUNT_INVALID = YAPI.INVALID_UINT
     ERRCOUNT_INVALID = YAPI.INVALID_UINT
@@ -120,12 +120,12 @@ class YSerialPort(YFunction):
     VOLTAGELEVEL_RS232 = 5
     VOLTAGELEVEL_RS485 = 6
     VOLTAGELEVEL_INVALID = -1
-    #--- (end of YSerialPort definitions)
+    #--- (end of generated code: YSerialPort definitions)
 
     def __init__(self, func):
         super(YSerialPort, self).__init__(func)
         self._className = 'SerialPort'
-        #--- (YSerialPort attributes)
+        #--- (generated code: YSerialPort attributes)
         self._callback = None
         self._rxCount = YSerialPort.RXCOUNT_INVALID
         self._txCount = YSerialPort.TXCOUNT_INVALID
@@ -142,9 +142,9 @@ class YSerialPort(YFunction):
         self._rxptr = 0
         self._rxbuff = ''
         self._rxbuffptr = 0
-        #--- (end of YSerialPort attributes)
+        #--- (end of generated code: YSerialPort attributes)
 
-    #--- (YSerialPort implementation)
+    #--- (generated code: YSerialPort implementation)
     def _parseAttr(self, json_val):
         if json_val.has("rxCount"):
             self._rxCount = json_val.getInt("rxCount")
@@ -669,14 +669,12 @@ class YSerialPort(YFunction):
         # mult
         # endpos
         # res
-
         # // first check if we have the requested character in the look-ahead buffer
         bufflen = len(self._rxbuff)
         if (self._rxptr >= self._rxbuffptr) and (self._rxptr < self._rxbuffptr+bufflen):
             res = YGetByte(self._rxbuff, self._rxptr-self._rxbuffptr)
             self._rxptr = self._rxptr + 1
             return res
-
         # // try to preload more than one byte to speed-up byte-per-byte access
         currpos = self._rxptr
         reqlen = 1024
@@ -701,7 +699,6 @@ class YSerialPort(YFunction):
             return res
         # // still mixed, need to process character by character
         self._rxptr = currpos
-
 
         buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=1")
         bufflen = len(buff) - 1
@@ -946,47 +943,6 @@ class YSerialPort(YFunction):
 
         return res
 
-    def snoopMessages(self, maxWait):
-        """
-        Retrieves messages (both direction) in the serial port buffer, starting at current position.
-        This function will only compare and return printable characters in the message strings.
-        Binary protocols are handled as hexadecimal strings.
-
-        If no message is found, the search waits for one up to the specified maximum timeout
-        (in milliseconds).
-
-        @param maxWait : the maximum number of milliseconds to wait for a message if none is found
-                in the receive buffer.
-
-        @return an array of YSnoopingRecord objects containing the messages found, if any.
-                Binary messages are converted to hexadecimal representation.
-
-        On failure, throws an exception or returns an empty array.
-        """
-        # url
-        # msgbin
-        msgarr = []
-        # msglen
-        res = []
-        # idx
-
-        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&t=0"
-        msgbin = self._download(url)
-        msgarr = self._json_get_array(msgbin)
-        msglen = len(msgarr)
-        if msglen == 0:
-            return res
-        # // last element of array is the new position
-        msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
-        idx = 0
-
-        while idx < msglen:
-            res.append(YSnoopingRecord(msgarr[idx]))
-            idx = idx + 1
-
-        return res
-
     def read_seek(self, absPos):
         """
         Changes the current internal stream position to the specified value. This function
@@ -1117,6 +1073,47 @@ class YSerialPort(YFunction):
         if not (len(buff) == 1):
             self._throw(YAPI.IO_ERROR, "invalid CTS reply")
         res = YGetByte(buff, 0) - 48
+        return res
+
+    def snoopMessages(self, maxWait):
+        """
+        Retrieves messages (both direction) in the serial port buffer, starting at current position.
+        This function will only compare and return printable characters in the message strings.
+        Binary protocols are handled as hexadecimal strings.
+
+        If no message is found, the search waits for one up to the specified maximum timeout
+        (in milliseconds).
+
+        @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+                in the receive buffer.
+
+        @return an array of YSnoopingRecord objects containing the messages found, if any.
+                Binary messages are converted to hexadecimal representation.
+
+        On failure, throws an exception or returns an empty array.
+        """
+        # url
+        # msgbin
+        msgarr = []
+        # msglen
+        res = []
+        # idx
+
+        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&t=0"
+        msgbin = self._download(url)
+        msgarr = self._json_get_array(msgbin)
+        msglen = len(msgarr)
+        if msglen == 0:
+            return res
+        # // last element of array is the new position
+        msglen = msglen - 1
+        self._rxptr = YAPI._atoi(msgarr[msglen])
+        idx = 0
+
+        while idx < msglen:
+            res.append(YSnoopingRecord(msgarr[idx]))
+            idx = idx + 1
+
         return res
 
     def writeMODBUS(self, hexString):
@@ -1638,9 +1635,9 @@ class YSerialPort(YFunction):
             return None
         return YSerialPort.FindSerialPort(hwidRef.value)
 
-#--- (end of YSerialPort implementation)
+#--- (end of generated code: YSerialPort implementation)
 
-#--- (SerialPort functions)
+#--- (generated code: YSerialPort functions)
 
     @staticmethod
     def FirstSerialPort():
@@ -1674,4 +1671,4 @@ class YSerialPort(YFunction):
 
         return YSerialPort.FindSerialPort(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of SerialPort functions)
+#--- (end of generated code: YSerialPort functions)

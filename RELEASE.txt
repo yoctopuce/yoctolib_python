@@ -1,1 +1,1 @@
-- Add YSnoopingRecord class
+- Add new methods in YPwmInput

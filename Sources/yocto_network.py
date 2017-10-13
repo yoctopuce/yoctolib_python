@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 28010 2017-07-07 13:15:07Z mvuilleu $
+#* $Id: yocto_network.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
-#* - - - - - - - - - License information: - - - - - - - - - 
+#* - - - - - - - - - License information: - - - - - - - - -
 #*
 #*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
@@ -24,7 +24,7 @@
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
 #*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -1029,7 +1029,7 @@ class YNetwork(YFunction):
 
 #--- (end of YNetwork implementation)
 
-#--- (Network functions)
+#--- (YNetwork functions)
 
     @staticmethod
     def FirstNetwork():
@@ -1063,4 +1063,4 @@ class YNetwork(YFunction):
 
         return YNetwork.FindNetwork(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of Network functions)
+#--- (end of YNetwork functions)

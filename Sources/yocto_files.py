@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_files.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -74,9 +74,8 @@ class YFileRecord(object):
 
 #--- (end of generated code: YFileRecord implementation)
 
-#--- (FileRecord generated code: functions)
-
-#--- (end of FileRecord generated code: functions)
+#--- (generated code: YFileRecord functions)
+#--- (end of generated code: YFileRecord functions)
 
 
 #--- (generated code: YFiles class start)
@@ -311,7 +310,7 @@ class YFiles(YFunction):
 
 #--- (end of generated code: YFiles implementation)
 
-#--- (generated code: Files functions)
+#--- (generated code: YFiles functions)
 
     @staticmethod
     def FirstFiles():
@@ -345,5 +344,5 @@ class YFiles(YFunction):
 
         return YFiles.FindFiles(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of generated code: Files functions)
+#--- (end of generated code: YFiles functions)
 

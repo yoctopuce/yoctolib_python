@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_segmenteddisplay.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_segmenteddisplay.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
 #*
-#* - - - - - - - - - License information: - - - - - - - - - 
+#* - - - - - - - - - License information: - - - - - - - - -
 #*
 #*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
@@ -24,7 +24,7 @@
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
 #*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -174,7 +174,7 @@ class YSegmentedDisplay(YFunction):
 
 #--- (end of YSegmentedDisplay implementation)
 
-#--- (SegmentedDisplay functions)
+#--- (YSegmentedDisplay functions)
 
     @staticmethod
     def FirstSegmentedDisplay():
@@ -208,4 +208,4 @@ class YSegmentedDisplay(YFunction):
 
         return YSegmentedDisplay.FindSegmentedDisplay(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of SegmentedDisplay functions)
+#--- (end of YSegmentedDisplay functions)

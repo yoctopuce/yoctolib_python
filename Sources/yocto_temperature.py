@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 28559 2017-09-15 15:01:38Z seb $
+#* $Id: yocto_temperature.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
-#* - - - - - - - - - License information: - - - - - - - - - 
+#* - - - - - - - - - License information: - - - - - - - - -
 #*
 #*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
@@ -24,7 +24,7 @@
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
 #*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -422,7 +422,7 @@ class YTemperature(YSensor):
 
 #--- (end of YTemperature implementation)
 
-#--- (Temperature functions)
+#--- (YTemperature functions)
 
     @staticmethod
     def FirstTemperature():
@@ -456,4 +456,4 @@ class YTemperature(YSensor):
 
         return YTemperature.FindTemperature(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of Temperature functions)
+#--- (end of YTemperature functions)

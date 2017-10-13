@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_gyro.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -122,7 +122,7 @@ class YQt(YSensor):
 
 #--- (end of generated code: YQt implementation)
 
-#--- (generated code: Qt functions)
+#--- (generated code: YQt functions)
 
     @staticmethod
     def FirstQt():
@@ -156,7 +156,7 @@ class YQt(YSensor):
 
         return YQt.FindQt(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of generated code: Qt functions)
+#--- (end of generated code: YQt functions)
 
 def yInternalGyroCallback(YQt_obj, str_value):
     gyro = YQt_obj.get_userData()
@@ -613,7 +613,7 @@ class YGyro(YSensor):
 
 #--- (end of generated code: YGyro implementation)
 
-#--- (generated code: Gyro functions)
+#--- (generated code: YGyro functions)
 
     @staticmethod
     def FirstGyro():
@@ -647,4 +647,4 @@ class YGyro(YSensor):
 
         return YGyro.FindGyro(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of generated code: Gyro functions)
+#--- (end of generated code: YGyro functions)

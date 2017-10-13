@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 28457 2017-09-06 08:34:21Z mvuilleu $
+#* $Id: yocto_refframe.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
-#* - - - - - - - - - License information: - - - - - - - - - 
+#* - - - - - - - - - License information: - - - - - - - - -
 #*
 #*  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
 #*
@@ -24,7 +24,7 @@
 #*  obligations.
 #*
 #*  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
-#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+#*  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
 #*  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
 #*  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
 #*  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -814,7 +814,7 @@ class YRefFrame(YFunction):
 
 #--- (end of YRefFrame implementation)
 
-#--- (RefFrame functions)
+#--- (YRefFrame functions)
 
     @staticmethod
     def FirstRefFrame():
@@ -848,4 +848,4 @@ class YRefFrame(YFunction):
 
         return YRefFrame.FindRefFrame(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of RefFrame functions)
+#--- (end of YRefFrame functions)

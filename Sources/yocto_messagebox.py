@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_messagebox.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -675,7 +675,7 @@ class YSms(object):
         # wpos
         # carry
         # nbits
-        # thisb
+        # thi_b
         # // nbits = number of bits in carry
         udsize = self.udataSize()
         udhsize = len(self._udh)
@@ -713,11 +713,11 @@ class YSms(object):
                     carry = YGetByte(self._udata, i)
                     nbits = 7
                 else:
-                    thisb = YGetByte(self._udata, i)
-                    res[wpos] = ((carry) | ((((((thisb) << (nbits)))) & (255))))
+                    thi_b = YGetByte(self._udata, i)
+                    res[wpos] = ((carry) | ((((((thi_b) << (nbits)))) & (255))))
                     wpos = wpos + 1
                     nbits = nbits - 1
-                    carry = ((thisb) >> ((7 - nbits)))
+                    carry = ((thi_b) >> ((7 - nbits)))
                 i = i + 1
             if nbits > 0:
                 res[wpos] = carry
@@ -903,7 +903,7 @@ class YSms(object):
         # i
         # carry
         # nbits
-        # thisb
+        # thi_b
         self._pdu = pdu
         self._npdu = 1
         # // parse meta-data
@@ -960,9 +960,9 @@ class YSms(object):
                 udhlen = int(((8 + 8*udhsize + 6)) / (7))
                 nbits = 7*udhlen - 8 - 8*udhsize
                 if nbits > 0:
-                    thisb = YGetByte(pdu, rpos)
+                    thi_b = YGetByte(pdu, rpos)
                     rpos = rpos + 1
-                    carry = ((thisb) >> (nbits))
+                    carry = ((thi_b) >> (nbits))
                     nbits = 8 - nbits
             else:
                 # // byte encoding
@@ -981,10 +981,10 @@ class YSms(object):
                     carry = 0
                     nbits = 0
                 else:
-                    thisb = YGetByte(pdu, rpos)
+                    thi_b = YGetByte(pdu, rpos)
                     rpos = rpos + 1
-                    self._udata[i] = ((carry) | ((((((thisb) << (nbits)))) & (127))))
-                    carry = ((thisb) >> ((7 - nbits)))
+                    self._udata[i] = ((carry) | ((((((thi_b) << (nbits)))) & (127))))
+                    carry = ((thi_b) >> ((7 - nbits)))
                     nbits = nbits + 1
                 i = i + 1
         else:
@@ -1031,8 +1031,8 @@ class YSms(object):
 
 #--- (end of generated code: YSms implementation)
 
-#--- (generated code: Sms functions)
-#--- (end of generated code: Sms functions)
+#--- (generated code: YSms functions)
+#--- (end of generated code: YSms functions)
 
 
 #--- (generated code: YMessageBox class start)
@@ -1750,7 +1750,7 @@ class YMessageBox(YFunction):
 
 #--- (end of generated code: YMessageBox implementation)
 
-#--- (generated code: MessageBox functions)
+#--- (generated code: YMessageBox functions)
 
     @staticmethod
     def FirstMessageBox():
@@ -1784,4 +1784,4 @@ class YMessageBox(YFunction):
 
         return YMessageBox.FindMessageBox(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of generated code: MessageBox functions)
+#--- (end of generated code: YMessageBox functions)

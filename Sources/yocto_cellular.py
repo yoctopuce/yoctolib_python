@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 27701 2017-06-01 12:27:38Z seb $
+#* $Id: yocto_cellular.py 28742 2017-10-03 08:12:07Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -95,8 +95,8 @@ class YCellRecord(object):
 
 #--- (end of generated code: YCellRecord implementation)
 
-#--- (generated code: CellRecord functions)
-#--- (end of generated code: CellRecord functions)
+#--- (generated code: YCellRecord functions)
+#--- (end of generated code: YCellRecord functions)
 
 
 #--- (generated code: YCellular class start)
@@ -856,7 +856,7 @@ class YCellular(YFunction):
 
 #--- (end of generated code: YCellular implementation)
 
-#--- (generated code: Cellular functions)
+#--- (generated code: YCellular functions)
 
     @staticmethod
     def FirstCellular():
@@ -890,4 +890,4 @@ class YCellular(YFunction):
 
         return YCellular.FindCellular(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of generated code: Cellular functions)
+#--- (end of generated code: YCellular functions)

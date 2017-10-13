@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 28559 2017-09-15 15:01:38Z seb $
+# * $Id: yocto_api.py 28799 2017-10-11 16:07:10Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "28707"
+    YOCTO_API_BUILD_NO = "28878"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2485,7 +2485,7 @@ class YFirmwareUpdate(object):
         # settings
         # prod_prefix
         # force
-        if self._progress_c < 100 and self._progress_c != YAPI.VERSION_MISMATCH:
+        if (self._progress_c < 100) and (self._progress_c != YAPI.VERSION_MISMATCH):
             serial = self._serial
             firmwarepath = self._firmwarepath
             settings = YByte2String(self._settings)
@@ -2494,7 +2494,7 @@ class YFirmwareUpdate(object):
             else:
                 force = 0
             res = YAPI._yapiUpdateFirmwareEx(ctypes.create_string_buffer(YString2Byte(serial)), ctypes.create_string_buffer(YString2Byte(firmwarepath)), ctypes.create_string_buffer(YString2Byte(settings)), force, newupdate, errmsg)
-            if res == YAPI.VERSION_MISMATCH and (len(self._settings) != 0):
+            if (res == YAPI.VERSION_MISMATCH) and (len(self._settings) != 0):
                 self._progress_c = res
                 self._progress_msg = YByte2String(errmsg.value)
                 return self._progress
@@ -2662,8 +2662,8 @@ class YFirmwareUpdate(object):
         return self._progress
 
 #--- (end of generated code: YFirmwareUpdate implementation)
-# --- (generated code: FirmwareUpdate functions)
-#--- (end of generated code: FirmwareUpdate functions)
+# --- (generated code: YFirmwareUpdate functions)
+#--- (end of generated code: YFirmwareUpdate functions)
 
 
 # --- (generated code: YDataStream class start)
@@ -3119,8 +3119,8 @@ class YDataStream(object):
         return self._values[row][col]
 
 #--- (end of generated code: YDataStream implementation)
-# --- (generated code: DataStream functions)
-#--- (end of generated code: DataStream functions)
+# --- (generated code: YDataStream functions)
+#--- (end of generated code: YDataStream functions)
 
 
 # --- (generated code: YMeasure class start)
@@ -3216,8 +3216,8 @@ class YMeasure(object):
 
 #--- (end of generated code: YMeasure implementation)
 
-# --- (generated code: Measure functions)
-#--- (end of generated code: Measure functions)
+# --- (generated code: YMeasure functions)
+#--- (end of generated code: YMeasure functions)
 
 
 # --- (generated code: YDataSet class start)
@@ -3639,8 +3639,8 @@ class YDataSet(object):
 
 #--- (end of generated code: YDataSet implementation)
 
-        # --- (generated code: DataSet functions)
-#--- (end of generated code: DataSet functions)
+        # --- (generated code: YDataSet functions)
+#--- (end of generated code: YDataSet functions)
 
 
 ## ------------------------------------------------------------------------------------
@@ -4786,7 +4786,7 @@ class YFunction(object):
     def setUserData(self, data):
         self.set_userData(data)
 
-    # --- (generated code: Function functions)
+    # --- (generated code: YFunction functions)
 
     @staticmethod
     def FirstFunction():
@@ -4814,7 +4814,7 @@ class YFunction(object):
 
         return YFunction.FindFunction(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of generated code: Function functions)
+#--- (end of generated code: YFunction functions)
 
 
 # --- (generated code: YModule class start)
@@ -6282,7 +6282,7 @@ class YModule(YFunction):
     def get_logCallback(self):
         return self._logCallback
 
-    # --- (generated code: Module functions)
+    # --- (generated code: YModule functions)
 
     @staticmethod
     def FirstModule():
@@ -6316,7 +6316,7 @@ class YModule(YFunction):
 
         return YModule.FindModule(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of generated code: Module functions)
+#--- (end of generated code: YModule functions)
 
 
 # --- (generated code: YSensor class start)
@@ -7246,7 +7246,7 @@ class YSensor(YFunction):
 
 #--- (end of generated code: YSensor implementation)
 
-    # --- (generated code: Sensor functions)
+    # --- (generated code: YSensor functions)
 
     @staticmethod
     def FirstSensor():
@@ -7280,7 +7280,7 @@ class YSensor(YFunction):
 
         return YSensor.FindSensor(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of generated code: Sensor functions)
+#--- (end of generated code: YSensor functions)
 
 # --- (generated code: YDataLogger class start)
 #noinspection PyProtectedMember
@@ -7668,7 +7668,7 @@ class YDataLogger(YFunction):
                     v.value.append(si)
         return YAPI.SUCCESS
 
-    # --- (generated code: DataLogger functions)
+    # --- (generated code: YDataLogger functions)
 
     @staticmethod
     def FirstDataLogger():
@@ -7702,7 +7702,7 @@ class YDataLogger(YFunction):
 
         return YDataLogger.FindDataLogger(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of generated code: DataLogger functions)
+#--- (end of generated code: YDataLogger functions)
 
 
 class YOldDataStream(YDataStream):
