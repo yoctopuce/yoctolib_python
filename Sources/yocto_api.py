@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 28799 2017-10-11 16:07:10Z seb $
+# * $Id: yocto_api.py 29078 2017-11-03 16:27:50Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "28878"
+    YOCTO_API_BUILD_NO = "29281"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -765,6 +765,8 @@ class YAPI:
     YOCTO_FIRMWARE_LEN = 22
     YOCTO_LOGICAL_LEN = 20
     YOCTO_FUNCTION_LEN = 20
+    HASH_BUF_SIZE = 28
+
     # Size of the data (can be non null terminated)
     YOCTO_PUBVAL_SIZE = 6
     # Temporary storage, > YOCTO_PUBVAL_SIZE

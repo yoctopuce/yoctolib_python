@@ -1,1 +1,3 @@
-- Add new methods in YPwmInput
+- Add methods to YColorLedCluster class
+- Improve handling of passwords exceeding maximal length
+- Fix attribute retrieval immediately after call to YModule.set_allSettings()

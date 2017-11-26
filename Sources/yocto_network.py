@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_network.py 29078 2017-11-03 16:27:50Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -430,6 +430,9 @@ class YNetwork(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
+        if len(newval) > YAPI.HASH_BUF_SIZE:
+            self._throw(YAPI.INVALID_ARGUMENT, "Password too long :" + newval)
+            return YAPI.INVALID_ARGUMENT
         rest_val = newval
         return self._setAttr("userPassword", rest_val)
 
@@ -464,6 +467,9 @@ class YNetwork(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
+        if len(newval) > YAPI.HASH_BUF_SIZE:
+            self._throw(YAPI.INVALID_ARGUMENT, "Password too long :" + newval)
+            return YAPI.INVALID_ARGUMENT
         rest_val = newval
         return self._setAttr("adminPassword", rest_val)
 

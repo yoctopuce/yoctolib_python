@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_colorledcluster.py 29186 2017-11-16 10:04:13Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -592,12 +592,13 @@ class YColorLedCluster(YFunction):
         res = self._upload("rgb:0:" + str(int(ledIndex)), buff)
         return res
 
-    def rgbArray_move(self, rgbList, delay):
+    def rgbArrayOfs_move(self, ledIndex, rgbList, delay):
         """
         Sets up a smooth RGB color transition to the specified pixel-by-pixel list of RGB
         color codes. The first color code represents the target RGB value of the first LED,
         the next color code represents the target value of the next LED, etc.
 
+        @param ledIndex : index of the first LED which should be updated
         @param rgbList : a list of target 24bit RGB codes, in the form 0xRRGGBB
         @param delay   : transition duration in ms
 
@@ -620,7 +621,25 @@ class YColorLedCluster(YFunction):
             buff[3*idx+2] = ((rgb) & (255))
             idx = idx + 1
 
-        res = self._upload("rgb:" + str(int(delay)), buff)
+        res = self._upload("rgb:" + str(int(delay)) + ":" + str(int(ledIndex)), buff)
+        return res
+
+    def rgbArray_move(self, rgbList, delay):
+        """
+        Sets up a smooth RGB color transition to the specified pixel-by-pixel list of RGB
+        color codes. The first color code represents the target RGB value of the first LED,
+        the next color code represents the target value of the next LED, etc.
+
+        @param rgbList : a list of target 24bit RGB codes, in the form 0xRRGGBB
+        @param delay   : transition duration in ms
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # res
+
+        res = self.rgbArrayOfs_move(0,rgbList,delay)
         return res
 
     def set_hslColorBuffer(self, ledIndex, buff):
@@ -682,6 +701,25 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
+        # res
+
+        res = self.hslArrayOfs_move(0,hslList, delay)
+        return res
+
+    def hslArrayOfs_move(self, ledIndex, hslList, delay):
+        """
+        Sets up a smooth HSL color transition to the specified pixel-by-pixel list of HSL
+        color codes. The first color code represents the target HSL value of the first LED,
+        the second color code represents the target value of the second LED, etc.
+
+        @param ledIndex : index of the first LED which should be updated
+        @param hslList : a list of target 24bit HSL codes, in the form 0xHHSSLL
+        @param delay   : transition duration in ms
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
         # listlen
         # buff
         # idx
@@ -697,7 +735,7 @@ class YColorLedCluster(YFunction):
             buff[3*idx+2] = ((hsl) & (255))
             idx = idx + 1
 
-        res = self._upload("hsl:" + str(int(delay)), buff)
+        res = self._upload("hsl:" + str(int(delay)) + ":" + str(int(ledIndex)), buff)
         return res
 
     def get_rgbColorBuffer(self, ledIndex, count):
