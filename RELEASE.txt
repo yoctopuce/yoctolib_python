@@ -1,3 +1,2 @@
-- Add methods to YColorLedCluster class
-- Improve handling of passwords exceeding maximal length
-- Fix attribute retrieval immediately after call to YModule.set_allSettings()
+- Fix cache issue on device plug
+- Fix rare IO errors on Raspberry PI

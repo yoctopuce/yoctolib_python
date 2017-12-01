@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 29078 2017-11-03 16:27:50Z seb $
+# * $Id: yocto_api.py 29366 2017-12-01 10:40:12Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "29281"
+    YOCTO_API_BUILD_NO = "29366"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1627,7 +1627,7 @@ class YAPI:
 
     @staticmethod
     def _bytesToHexStr(bindata):
-        return binascii.hexlify(bindata).upper()
+        return YByte2String(binascii.hexlify(bindata)).upper()
 
     @staticmethod
     def _hexStrToBin(hex_str):
@@ -1654,6 +1654,11 @@ class YAPI:
         On failure, throws an exception or returns a negative error code.
         """
         errBuffer = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+
+        if not YAPI._apiInitialized:
+            if errmsgRef is not None:
+                errmsgRef.value = "API not initialized"
+            return YAPI.NOT_INITIALIZED
 
         # noinspection PyUnresolvedReferences
         res = YAPI._yapiHandleEvents(errBuffer)
@@ -1725,7 +1730,7 @@ class YAPI:
         global yLogFct
         if yLogFct is not None:
             # noinspection PyCallingNonCallable
-            yLogFct(YByte2String(log))
+            yLogFct(y_byte_string)
         return 0
 
     @staticmethod
@@ -3681,7 +3686,7 @@ class YDevice:
     def PlugDevice(devdescr):
         for idx in range(len(YAPI.YDevice_devCache)):
             if YAPI.YDevice_devCache[idx]._devdescr == devdescr:
-                YAPI.YDevice_devCache[idx]._cacheStamp = datetime.datetime(year=1970, month=1, day=1)
+                YAPI.YDevice_devCache[idx].clearCache()
                 YAPI.YDevice_devCache[idx]._subpathinit = False
 
     def _HTTPRequestPrepare(self, request):
@@ -5902,6 +5907,7 @@ class YModule(YFunction):
 
         for y in restoreLast:
             self._download(y)
+        self.clearCache()
         return YAPI.SUCCESS
 
     def download(self, pathname):
