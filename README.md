@@ -61,6 +61,10 @@ WARRANTY, OR OTHERWISE.
 
 		Release notes
 
+## Installation
+
+Run the ``install.py`` script.
+
 ## Usage
 
 For more details, refer to the documentation specific to each product, which
