@@ -4,8 +4,7 @@ import os, sys
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..", "..", "Sources"))
 
-from yocto_api import *
-from yocto_colorled import *
+from yocto_api.yocto_colorled import *
 
 
 def usage():
