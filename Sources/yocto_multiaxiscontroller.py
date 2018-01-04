@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_multiaxiscontroller.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_multiaxiscontroller.py 29507 2017-12-28 14:14:56Z mvuilleu $
 #*
 #* Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
 #*
@@ -182,7 +182,22 @@ class YMultiAxisController(YFunction):
         return obj
 
     def sendCommand(self, command):
-        return self.set_command(command)
+        # url
+        # retBin
+        # res
+        url = "cmd.txt?X=" + command
+        # //may throw an exception
+        retBin = self._download(url)
+        res = YGetByte(retBin, 0)
+        if res == 49:
+            if not (res == 48):
+                self._throw(YAPI.DEVICE_BUSY, "Motor command pipeline is full, try again later")
+                return YAPI.DEVICE_BUSY
+        else:
+            if not (res == 48):
+                self._throw(YAPI.IO_ERROR, "Motor command failed permanently")
+                return YAPI.IO_ERROR
+        return YAPI.SUCCESS
 
     def reset(self):
         """

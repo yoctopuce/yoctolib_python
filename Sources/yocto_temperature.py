@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_temperature.py 29500 2017-12-27 17:36:26Z mvuilleu $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -309,12 +309,15 @@ class YTemperature(YSensor):
         siz = len(tempValues)
         if not (siz >= 2):
             self._throw(YAPI.INVALID_ARGUMENT, "thermistor response table must have at least two points")
+            return YAPI.INVALID_ARGUMENT
         if not (siz == len(resValues)):
             self._throw(YAPI.INVALID_ARGUMENT, "table sizes mismatch")
+            return YAPI.INVALID_ARGUMENT
 
         res = self.set_command("Z")
         if not (res==YAPI.SUCCESS):
             self._throw(YAPI.IO_ERROR, "unable to reset thermistor parameters")
+            return YAPI.IO_ERROR
         # // add records in growing resistance value
         found = 1
         prev = 0.0
@@ -334,6 +337,7 @@ class YTemperature(YSensor):
                 res = self.set_command("m" + str(int(round(1000*curr))) + ":" + str(int(round(1000*currTemp))))
                 if not (res==YAPI.SUCCESS):
                     self._throw(YAPI.IO_ERROR, "unable to reset thermistor parameters")
+                    return YAPI.IO_ERROR
                 prev = curr
         return YAPI.SUCCESS
 

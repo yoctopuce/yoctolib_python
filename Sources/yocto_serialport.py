@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_serialport.py 29500 2017-12-27 17:36:26Z mvuilleu $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -1072,6 +1072,7 @@ class YSerialPort(YFunction):
         buff = self._download("cts.txt")
         if not (len(buff) == 1):
             self._throw(YAPI.IO_ERROR, "invalid CTS reply")
+            return YAPI.IO_ERROR
         res = YGetByte(buff, 0) - 48
         return res
 
@@ -1169,6 +1170,7 @@ class YSerialPort(YFunction):
         reps = self._json_get_array(msgs)
         if not (len(reps) > 1):
             self._throw(YAPI.IO_ERROR, "no reply from slave")
+            return res
         if len(reps) > 1:
             rep = self._json_get_string(YString2Byte(reps[0]))
             replen = ((len(rep) - 3) >> (1))
@@ -1181,12 +1183,16 @@ class YSerialPort(YFunction):
                 i = res[1]
                 if not (i > 1):
                     self._throw(YAPI.NOT_SUPPORTED, "MODBUS error: unsupported function code")
+                    return res
                 if not (i > 2):
                     self._throw(YAPI.INVALID_ARGUMENT, "MODBUS error: illegal data address")
+                    return res
                 if not (i > 3):
                     self._throw(YAPI.INVALID_ARGUMENT, "MODBUS error: illegal data value")
+                    return res
                 if not (i > 4):
                     self._throw(YAPI.INVALID_ARGUMENT, "MODBUS error: failed to execute function")
+                    return res
         return res
 
     def modbusReadBits(self, slaveNo, pduAddr, nBits):

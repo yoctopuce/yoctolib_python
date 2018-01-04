@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 29366 2017-12-01 10:40:12Z seb $
+# * $Id: yocto_api.py 29500 2017-12-27 17:36:26Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "29366"
+    YOCTO_API_BUILD_NO = "29543"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -5409,6 +5409,7 @@ class YModule(YFunction):
             res = self._decode_json_string(res)
             if not (res == "ok"):
                 self._throw(YAPI.IO_ERROR, "format failed")
+                return YAPI.IO_ERROR
             json_files = self._get_json_path(json, "files")
             files = self._json_get_array(YString2Byte(json_files))
             for y in  files:
@@ -6457,7 +6458,8 @@ class YSensor(YFunction):
 
     def set_lowestValue(self, newval):
         """
-        Changes the recorded minimal value observed.
+        Changes the recorded minimal value observed. Can be used to reset the value returned
+        by get_lowestValue().
 
         @param newval : a floating point number corresponding to the recorded minimal value observed
 
@@ -6471,6 +6473,7 @@ class YSensor(YFunction):
     def get_lowestValue(self):
         """
         Returns the minimal value observed for the measure since the device was started.
+        Can be reset to an arbitrary value thanks to set_lowestValue().
 
         @return a floating point number corresponding to the minimal value observed for the measure since
         the device was started
@@ -6487,7 +6490,8 @@ class YSensor(YFunction):
 
     def set_highestValue(self, newval):
         """
-        Changes the recorded maximal value observed.
+        Changes the recorded maximal value observed. Can be used to reset the value returned
+        by get_lowestValue().
 
         @param newval : a floating point number corresponding to the recorded maximal value observed
 
@@ -6501,6 +6505,7 @@ class YSensor(YFunction):
     def get_highestValue(self):
         """
         Returns the maximal value observed for the measure since the device was started.
+        Can be reset to an arbitrary value thanks to set_highestValue().
 
         @return a floating point number corresponding to the maximal value observed for the measure since
         the device was started
@@ -6899,6 +6904,7 @@ class YSensor(YFunction):
         res = self._download("api/dataLogger/recording?recording=1")
         if not (len(res)>0):
             self._throw(YAPI.IO_ERROR, "unable to start datalogger")
+            return YAPI.IO_ERROR
         return YAPI.SUCCESS
 
     def stopDataLogger(self):
@@ -6912,6 +6918,7 @@ class YSensor(YFunction):
         res = self._download("api/dataLogger/recording?recording=0")
         if not (len(res)>0):
             self._throw(YAPI.IO_ERROR, "unable to stop datalogger")
+            return YAPI.IO_ERROR
         return YAPI.SUCCESS
 
     def get_recordedData(self, startTime, endTime):

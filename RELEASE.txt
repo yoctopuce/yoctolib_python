@@ -1,2 +1,3 @@
+- Add YMultiCellWeighScale class
 - Fix cache issue on device plug
 - Fix rare IO errors on Raspberry PI

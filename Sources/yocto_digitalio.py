@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_digitalio.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_digitalio.py 29500 2017-12-27 17:36:26Z mvuilleu $
 #*
 #* Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #*
@@ -356,8 +356,10 @@ class YDigitalIO(YFunction):
         """
         if not (bitstate >= 0):
             self._throw(YAPI.INVALID_ARGUMENT, "invalid bitstate")
+            return YAPI.INVALID_ARGUMENT
         if not (bitstate <= 1):
             self._throw(YAPI.INVALID_ARGUMENT, "invalid bitstate")
+            return YAPI.INVALID_ARGUMENT
         return self.set_command("" + str(chr(82+bitstate)) + "" + str(int(bitno)))
 
     def get_bitState(self, bitno):
@@ -400,8 +402,10 @@ class YDigitalIO(YFunction):
         """
         if not (bitdirection >= 0):
             self._throw(YAPI.INVALID_ARGUMENT, "invalid direction")
+            return YAPI.INVALID_ARGUMENT
         if not (bitdirection <= 1):
             self._throw(YAPI.INVALID_ARGUMENT, "invalid direction")
+            return YAPI.INVALID_ARGUMENT
         return self.set_command("" + str(chr(73+6*bitdirection)) + "" + str(int(bitno)))
 
     def get_bitDirection(self, bitno):
@@ -433,8 +437,10 @@ class YDigitalIO(YFunction):
         """
         if not (bitpolarity >= 0):
             self._throw(YAPI.INVALID_ARGUMENT, "invalid bitpolarity")
+            return YAPI.INVALID_ARGUMENT
         if not (bitpolarity <= 1):
             self._throw(YAPI.INVALID_ARGUMENT, "invalid bitpolarity")
+            return YAPI.INVALID_ARGUMENT
         return self.set_command("" + str(chr(110+4*bitpolarity)) + "" + str(int(bitno)))
 
     def get_bitPolarity(self, bitno):
@@ -467,8 +473,10 @@ class YDigitalIO(YFunction):
         """
         if not (opendrain >= 0):
             self._throw(YAPI.INVALID_ARGUMENT, "invalid state")
+            return YAPI.INVALID_ARGUMENT
         if not (opendrain <= 1):
             self._throw(YAPI.INVALID_ARGUMENT, "invalid state")
+            return YAPI.INVALID_ARGUMENT
         return self.set_command("" + str(chr(100-32*opendrain)) + "" + str(int(bitno)))
 
     def get_bitOpenDrain(self, bitno):

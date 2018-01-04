@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_files.py 29500 2017-12-27 17:36:26Z mvuilleu $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -198,6 +198,7 @@ class YFiles(YFunction):
         res = self._json_get_key(json, "res")
         if not (res == "ok"):
             self._throw(YAPI.IO_ERROR, "format failed")
+            return YAPI.IO_ERROR
         return YAPI.SUCCESS
 
     def get_list(self, pattern):
@@ -291,6 +292,7 @@ class YFiles(YFunction):
         res  = self._json_get_key(json, "res")
         if not (res == "ok"):
             self._throw(YAPI.IO_ERROR, "unable to remove file")
+            return YAPI.IO_ERROR
         return YAPI.SUCCESS
 
     def nextFiles(self):

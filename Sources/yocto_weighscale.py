@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_weighscale.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_weighscale.py 29500 2017-12-27 17:36:26Z mvuilleu $
 #*
 #* Implements yFindWeighScale(), the high-level API for WeighScale functions
 #*
@@ -60,8 +60,9 @@ class YWeighScale(YSensor):
     #--- (YWeighScale dlldef)
     #--- (end of YWeighScale dlldef)
     #--- (YWeighScale definitions)
-    ADAPTRATIO_INVALID = YAPI.INVALID_DOUBLE
-    COMPTEMPERATURE_INVALID = YAPI.INVALID_DOUBLE
+    COMPTEMPADAPTRATIO_INVALID = YAPI.INVALID_DOUBLE
+    COMPTEMPAVG_INVALID = YAPI.INVALID_DOUBLE
+    COMPTEMPCHG_INVALID = YAPI.INVALID_DOUBLE
     COMPENSATION_INVALID = YAPI.INVALID_DOUBLE
     ZEROTRACKING_INVALID = YAPI.INVALID_DOUBLE
     COMMAND_INVALID = YAPI.INVALID_STRING
@@ -77,8 +78,9 @@ class YWeighScale(YSensor):
         #--- (YWeighScale attributes)
         self._callback = None
         self._excitation = YWeighScale.EXCITATION_INVALID
-        self._adaptRatio = YWeighScale.ADAPTRATIO_INVALID
-        self._compTemperature = YWeighScale.COMPTEMPERATURE_INVALID
+        self._compTempAdaptRatio = YWeighScale.COMPTEMPADAPTRATIO_INVALID
+        self._compTempAvg = YWeighScale.COMPTEMPAVG_INVALID
+        self._compTempChg = YWeighScale.COMPTEMPCHG_INVALID
         self._compensation = YWeighScale.COMPENSATION_INVALID
         self._zeroTracking = YWeighScale.ZEROTRACKING_INVALID
         self._command = YWeighScale.COMMAND_INVALID
@@ -88,10 +90,12 @@ class YWeighScale(YSensor):
     def _parseAttr(self, json_val):
         if json_val.has("excitation"):
             self._excitation = json_val.getInt("excitation")
-        if json_val.has("adaptRatio"):
-            self._adaptRatio = round(json_val.getDouble("adaptRatio") * 1000.0 / 65536.0) / 1000.0
-        if json_val.has("compTemperature"):
-            self._compTemperature = round(json_val.getDouble("compTemperature") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("compTempAdaptRatio"):
+            self._compTempAdaptRatio = round(json_val.getDouble("compTempAdaptRatio") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("compTempAvg"):
+            self._compTempAvg = round(json_val.getDouble("compTempAvg") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("compTempChg"):
+            self._compTempChg = round(json_val.getDouble("compTempChg") * 1000.0 / 65536.0) / 1000.0
         if json_val.has("compensation"):
             self._compensation = round(json_val.getDouble("compensation") * 1000.0 / 65536.0) / 1000.0
         if json_val.has("zeroTracking"):
@@ -130,48 +134,69 @@ class YWeighScale(YSensor):
         rest_val = str(newval)
         return self._setAttr("excitation", rest_val)
 
-    def set_adaptRatio(self, newval):
+    def set_compTempAdaptRatio(self, newval):
         """
-        Changes the compensation temperature update rate, in percents.
+        Changes the averaged temperature update rate, in percents.
+        The averaged temperature is updated every 10 seconds, by applying this adaptation rate
+        to the difference between the measures ambiant temperature and the current compensation
+        temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
 
-        @param newval : a floating point number corresponding to the compensation temperature update rate, in percents
+        @param newval : a floating point number corresponding to the averaged temperature update rate, in percents
 
         @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(int(round(newval * 65536.0, 1)))
-        return self._setAttr("adaptRatio", rest_val)
+        return self._setAttr("compTempAdaptRatio", rest_val)
 
-    def get_adaptRatio(self):
+    def get_compTempAdaptRatio(self):
         """
-        Returns the compensation temperature update rate, in percents.
-        the maximal value is 65 percents.
+        Returns the averaged temperature update rate, in percents.
+        The averaged temperature is updated every 10 seconds, by applying this adaptation rate
+        to the difference between the measures ambiant temperature and the current compensation
+        temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
 
-        @return a floating point number corresponding to the compensation temperature update rate, in percents
+        @return a floating point number corresponding to the averaged temperature update rate, in percents
 
-        On failure, throws an exception or returns YWeighScale.ADAPTRATIO_INVALID.
+        On failure, throws an exception or returns YWeighScale.COMPTEMPADAPTRATIO_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YWeighScale.ADAPTRATIO_INVALID
-        res = self._adaptRatio
+                return YWeighScale.COMPTEMPADAPTRATIO_INVALID
+        res = self._compTempAdaptRatio
         return res
 
-    def get_compTemperature(self):
+    def get_compTempAvg(self):
         """
-        Returns the current compensation temperature.
+        Returns the current averaged temperature, used for thermal compensation.
 
-        @return a floating point number corresponding to the current compensation temperature
+        @return a floating point number corresponding to the current averaged temperature, used for thermal compensation
 
-        On failure, throws an exception or returns YWeighScale.COMPTEMPERATURE_INVALID.
+        On failure, throws an exception or returns YWeighScale.COMPTEMPAVG_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YWeighScale.COMPTEMPERATURE_INVALID
-        res = self._compTemperature
+                return YWeighScale.COMPTEMPAVG_INVALID
+        res = self._compTempAvg
+        return res
+
+    def get_compTempChg(self):
+        """
+        Returns the current temperature variation, used for thermal compensation.
+
+        @return a floating point number corresponding to the current temperature variation, used for
+        thermal compensation
+
+        On failure, throws an exception or returns YWeighScale.COMPTEMPCHG_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YWeighScale.COMPTEMPCHG_INVALID
+        res = self._compTempChg
         return res
 
     def get_compensation(self):
@@ -292,13 +317,85 @@ class YWeighScale(YSensor):
         """
         return self.set_command("S" + str(int(round(1000*currWeight))) + ":" + str(int(round(1000*maxWeight))))
 
-    def set_offsetCompensationTable(self, tempValues, compValues):
+    def setCompensationTable(self, tableIndex, tempValues, compValues):
+        # siz
+        # res
+        # idx
+        # found
+        # prev
+        # curr
+        # currComp
+        # idxTemp
+        siz = len(tempValues)
+        if not (siz != 1):
+            self._throw(YAPI.INVALID_ARGUMENT, "thermal compensation table must have at least two points")
+            return YAPI.INVALID_ARGUMENT
+        if not (siz == len(compValues)):
+            self._throw(YAPI.INVALID_ARGUMENT, "table sizes mismatch")
+            return YAPI.INVALID_ARGUMENT
+
+        res = self.set_command("" + str(int(tableIndex)) + "Z")
+        if not (res==YAPI.SUCCESS):
+            self._throw(YAPI.IO_ERROR, "unable to reset thermal compensation table")
+            return YAPI.IO_ERROR
+        # // add records in growing temperature value
+        found = 1
+        prev = -999999.0
+        while found > 0:
+            found = 0
+            curr = 99999999.0
+            currComp = -999999.0
+            idx = 0
+            while idx < siz:
+                idxTemp = tempValues[idx]
+                if (idxTemp > prev) and (idxTemp < curr):
+                    curr = idxTemp
+                    currComp = compValues[idx]
+                    found = 1
+                idx = idx + 1
+            if found > 0:
+                res = self.set_command("" + str(int(tableIndex)) + "m" + str(int(round(1000*curr))) + ":" + str(int(round(1000*currComp))))
+                if not (res==YAPI.SUCCESS):
+                    self._throw(YAPI.IO_ERROR, "unable to set thermal compensation table")
+                    return YAPI.IO_ERROR
+                prev = curr
+        return YAPI.SUCCESS
+
+    def loadCompensationTable(self, tableIndex, tempValues, compValues):
+        # id
+        # bin_json
+        paramlist = []
+        # siz
+        # idx
+        # temp
+        # comp
+
+        id = self.get_functionId()
+        id = (id)[10: 10 + len(id) - 10]
+        bin_json = self._download("extra.json?page=" + str(int((4*YAPI._atoi(id))+tableIndex)))
+        paramlist = self._json_get_array(bin_json)
+        # // convert all values to float and append records
+        siz = ((len(paramlist)) >> (1))
+        del tempValues[:]
+        del compValues[:]
+        idx = 0
+        while idx < siz:
+            temp = float(paramlist[2*idx])/1000.0
+            comp = float(paramlist[2*idx+1])/1000.0
+            tempValues.append(temp)
+            compValues.append(comp)
+            idx = idx + 1
+
+
+        return YAPI.SUCCESS
+
+    def set_offsetAvgCompensationTable(self, tempValues, compValues):
         """
         Records a weight offset thermal compensation table, in order to automatically correct the
-        measured weight based on the compensation temperature.
+        measured weight based on the averaged compensation temperature.
         The weight correction will be applied by linear interpolation between specified points.
 
-        @param tempValues : array of floating point numbers, corresponding to all
+        @param tempValues : array of floating point numbers, corresponding to all averaged
                 temperatures for which an offset correction is specified.
         @param compValues : array of floating point numbers, corresponding to the offset correction
                 to apply for each of the temperature included in the first
@@ -308,53 +405,16 @@ class YWeighScale(YSensor):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # siz
-        # res
-        # idx
-        # found
-        # prev
-        # curr
-        # currComp
-        # idxTemp
-        siz = len(tempValues)
-        if not (siz != 1):
-            self._throw(YAPI.INVALID_ARGUMENT, "thermal compensation table must have at least two points")
-        if not (siz == len(compValues)):
-            self._throw(YAPI.INVALID_ARGUMENT, "table sizes mismatch")
+        return self.setCompensationTable(0, tempValues, compValues)
 
-        res = self.set_command("2Z")
-        if not (res==YAPI.SUCCESS):
-            self._throw(YAPI.IO_ERROR, "unable to reset thermal compensation table")
-        # // add records in growing temperature value
-        found = 1
-        prev = -999999.0
-        while found > 0:
-            found = 0
-            curr = 99999999.0
-            currComp = -999999.0
-            idx = 0
-            while idx < siz:
-                idxTemp = tempValues[idx]
-                if (idxTemp > prev) and (idxTemp < curr):
-                    curr = idxTemp
-                    currComp = compValues[idx]
-                    found = 1
-                idx = idx + 1
-            if found > 0:
-                res = self.set_command("2m" + str(int(round(1000*curr))) + ":" + str(int(round(1000*currComp))))
-                if not (res==YAPI.SUCCESS):
-                    self._throw(YAPI.IO_ERROR, "unable to set thermal compensation table")
-                prev = curr
-        return YAPI.SUCCESS
-
-    def loadOffsetCompensationTable(self, tempValues, compValues):
+    def loadOffsetAvgCompensationTable(self, tempValues, compValues):
         """
         Retrieves the weight offset thermal compensation table previously configured using the
-        set_offsetCompensationTable function.
+        set_offsetAvgCompensationTable function.
         The weight correction is applied by linear interpolation between specified points.
 
         @param tempValues : array of floating point numbers, that is filled by the function
-                with all temperatures for which an offset correction is specified.
+                with all averaged temperatures for which an offset correction is specified.
         @param compValues : array of floating point numbers, that is filled by the function
                 with the offset correction applied for each of the temperature
                 included in the first argument, index by index.
@@ -363,40 +423,51 @@ class YWeighScale(YSensor):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # id
-        # bin_json
-        paramlist = []
-        # siz
-        # idx
-        # temp
-        # comp
+        return self.loadCompensationTable(0, tempValues, compValues)
 
-        id = self.get_functionId()
-        id = (id)[11: 11 + len(id) - 11]
-        bin_json = self._download("extra.json?page=2")
-        paramlist = self._json_get_array(bin_json)
-        # // convert all values to float and append records
-        siz = ((len(paramlist)) >> (1))
-        del tempValues[:]
-        del compValues[:]
-        idx = 0
-        while idx < siz:
-            temp = float(paramlist[2*idx])/1000.0
-            comp = float(paramlist[2*idx+1])/1000.0
-            tempValues.append(temp)
-            compValues.append(comp)
-            idx = idx + 1
+    def set_offsetChgCompensationTable(self, tempValues, compValues):
+        """
+        Records a weight offset thermal compensation table, in order to automatically correct the
+        measured weight based on the variation of temperature.
+        The weight correction will be applied by linear interpolation between specified points.
 
+        @param tempValues : array of floating point numbers, corresponding to temperature
+                variations for which an offset correction is specified.
+        @param compValues : array of floating point numbers, corresponding to the offset correction
+                to apply for each of the temperature variation included in the first
+                argument, index by index.
 
-        return YAPI.SUCCESS
+        @return YAPI.SUCCESS if the call succeeds.
 
-    def set_spanCompensationTable(self, tempValues, compValues):
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.setCompensationTable(1, tempValues, compValues)
+
+    def loadOffsetChgCompensationTable(self, tempValues, compValues):
+        """
+        Retrieves the weight offset thermal compensation table previously configured using the
+        set_offsetChgCompensationTable function.
+        The weight correction is applied by linear interpolation between specified points.
+
+        @param tempValues : array of floating point numbers, that is filled by the function
+                with all temperature variations for which an offset correction is specified.
+        @param compValues : array of floating point numbers, that is filled by the function
+                with the offset correction applied for each of the temperature
+                variation included in the first argument, index by index.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.loadCompensationTable(1, tempValues, compValues)
+
+    def set_spanAvgCompensationTable(self, tempValues, compValues):
         """
         Records a weight span thermal compensation table, in order to automatically correct the
         measured weight based on the compensation temperature.
         The weight correction will be applied by linear interpolation between specified points.
 
-        @param tempValues : array of floating point numbers, corresponding to all
+        @param tempValues : array of floating point numbers, corresponding to all averaged
                 temperatures for which a span correction is specified.
         @param compValues : array of floating point numbers, corresponding to the span correction
                 (in percents) to apply for each of the temperature included in the first
@@ -406,53 +477,16 @@ class YWeighScale(YSensor):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # siz
-        # res
-        # idx
-        # found
-        # prev
-        # curr
-        # currComp
-        # idxTemp
-        siz = len(tempValues)
-        if not (siz != 1):
-            self._throw(YAPI.INVALID_ARGUMENT, "thermal compensation table must have at least two points")
-        if not (siz == len(compValues)):
-            self._throw(YAPI.INVALID_ARGUMENT, "table sizes mismatch")
+        return self.setCompensationTable(2, tempValues, compValues)
 
-        res = self.set_command("3Z")
-        if not (res==YAPI.SUCCESS):
-            self._throw(YAPI.IO_ERROR, "unable to reset thermal compensation table")
-        # // add records in growing temperature value
-        found = 1
-        prev = -999999.0
-        while found > 0:
-            found = 0
-            curr = 99999999.0
-            currComp = -999999.0
-            idx = 0
-            while idx < siz:
-                idxTemp = tempValues[idx]
-                if (idxTemp > prev) and (idxTemp < curr):
-                    curr = idxTemp
-                    currComp = compValues[idx]
-                    found = 1
-                idx = idx + 1
-            if found > 0:
-                res = self.set_command("3m" + str(int(round(1000*curr))) + ":" + str(int(round(1000*currComp))))
-                if not (res==YAPI.SUCCESS):
-                    self._throw(YAPI.IO_ERROR, "unable to set thermal compensation table")
-                prev = curr
-        return YAPI.SUCCESS
-
-    def loadSpanCompensationTable(self, tempValues, compValues):
+    def loadSpanAvgCompensationTable(self, tempValues, compValues):
         """
         Retrieves the weight span thermal compensation table previously configured using the
-        set_spanCompensationTable function.
+        set_spanAvgCompensationTable function.
         The weight correction is applied by linear interpolation between specified points.
 
         @param tempValues : array of floating point numbers, that is filled by the function
-                with all temperatures for which an span correction is specified.
+                with all averaged temperatures for which an span correction is specified.
         @param compValues : array of floating point numbers, that is filled by the function
                 with the span correction applied for each of the temperature
                 included in the first argument, index by index.
@@ -461,32 +495,43 @@ class YWeighScale(YSensor):
 
         On failure, throws an exception or returns a negative error code.
         """
-        # id
-        # bin_json
-        paramlist = []
-        # siz
-        # idx
-        # temp
-        # comp
+        return self.loadCompensationTable(2, tempValues, compValues)
 
-        id = self.get_functionId()
-        id = (id)[11: 11 + len(id) - 11]
-        bin_json = self._download("extra.json?page=3")
-        paramlist = self._json_get_array(bin_json)
-        # // convert all values to float and append records
-        siz = ((len(paramlist)) >> (1))
-        del tempValues[:]
-        del compValues[:]
-        idx = 0
-        while idx < siz:
-            temp = float(paramlist[2*idx])/1000.0
-            comp = float(paramlist[2*idx+1])/1000.0
-            tempValues.append(temp)
-            compValues.append(comp)
-            idx = idx + 1
+    def set_spanChgCompensationTable(self, tempValues, compValues):
+        """
+        Records a weight span thermal compensation table, in order to automatically correct the
+        measured weight based on the variation of temperature.
+        The weight correction will be applied by linear interpolation between specified points.
 
+        @param tempValues : array of floating point numbers, corresponding to all variations of
+                temperatures for which a span correction is specified.
+        @param compValues : array of floating point numbers, corresponding to the span correction
+                (in percents) to apply for each of the temperature variation included
+                in the first argument, index by index.
 
-        return YAPI.SUCCESS
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.setCompensationTable(3, tempValues, compValues)
+
+    def loadSpanChgCompensationTable(self, tempValues, compValues):
+        """
+        Retrieves the weight span thermal compensation table previously configured using the
+        set_spanChgCompensationTable function.
+        The weight correction is applied by linear interpolation between specified points.
+
+        @param tempValues : array of floating point numbers, that is filled by the function
+                with all variation of temperature for which an span correction is specified.
+        @param compValues : array of floating point numbers, that is filled by the function
+                with the span correction applied for each of variation of temperature
+                included in the first argument, index by index.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.loadCompensationTable(3, tempValues, compValues)
 
     def nextWeighScale(self):
         """
