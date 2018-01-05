@@ -61,7 +61,37 @@ WARRANTY, OR OTHERWISE.
 
 		Release notes
 
-## Usage
+## PyPI package
+
+This library is also published on PyPI (the Python Package Index).
+https://pypi.python.org/pypi/yoctopuce
+
+To install it form PyPI simply run the pip install command like this
+
+````
+pip install yoctopuce
+````
+
+If you allready have the library installed from PyPI you can upgrade it with the following command:
+
+
+````
+pip install -U yoctopuce
+````
+
+
+Note that if you use the library form PyPI you need to specify the package name  in the
+the ``"from .. import"`` statements.
+
+
+````
+from yoctopuce.yocto_api import *
+from yoctopuce.yocto_temperature import *
+
+````
+
+
+## More help
 
 For more details, refer to the documentation specific to each product, which
 includes sample code with explanations, and a programming reference manual.
