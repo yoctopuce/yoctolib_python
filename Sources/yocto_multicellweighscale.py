@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_multicellweighscale.py 29478 2017-12-21 08:10:05Z seb $
+#* $Id: yocto_multicellweighscale.py 29661 2018-01-18 13:32:13Z mvuilleu $
 #*
 #* Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
 #*
@@ -107,6 +107,21 @@ class YMultiCellWeighScale(YSensor):
         if json_val.has("command"):
             self._command = json_val.getString("command")
         super(YMultiCellWeighScale, self)._parseAttr(json_val)
+
+    def set_unit(self, newval):
+        """
+        Changes the measuring unit for the weight.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+
+        @param newval : a string corresponding to the measuring unit for the weight
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("unit", rest_val)
 
     def get_cellCount(self):
         """

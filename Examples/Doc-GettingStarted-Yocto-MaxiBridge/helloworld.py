@@ -5,8 +5,7 @@ import os, sys
 sys.path.append(os.path.join("..", "..", "Sources"))
 
 from yocto_api import *
-from yocto_genericsensor import *
-
+from yocto_multicellweighscale import *
 
 def usage():
     scriptname = os.path.basename(sys.argv[0])
@@ -19,7 +18,6 @@ def usage():
 
 def die(msg):
     sys.exit(msg + ' (check USB cable)')
-
 
 errmsg = YRefParam()
 
@@ -34,24 +32,22 @@ if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
 
 if target == 'any':
     # retreive any genericSensor sensor
-    sensor = YGenericSensor.FirstGenericSensor()
+    sensor = YMultiCellWeighScale.FirstMultiCellWeighScale()
     if sensor is None:
         die('No module connected')
 else:
-    sensor = YGenericSensor.FindGenericSensor(target + '.genericSensor1')
+    sensor = YGenericSensor.FindMultiCellWeighScale(target + '.multiCellWeighScale')
 
 if not (sensor.isOnline()): die('device not connected')
 
-# retreive module serial
-serial = sensor.get_module().get_serialNumber()
+# On startup, enable excitation and tare weigh scale
+print("Resetting tare weight...");
+sensor.set_excitation(YMultiCellWeighScale.EXCITATION_AC);
+YAPI.Sleep(3000);
+sensor.tare();
 
-# retreive both channels
-channel1 = YGenericSensor.FindGenericSensor(serial + '.genericSensor1')
-channel2 = YGenericSensor.FindGenericSensor(serial + '.genericSensor2')
-
-while channel1.isOnline() and channel2.isOnline():
-    print("channel 1:  %f %s" % (channel1.get_currentValue(), channel1.get_unit()))
-    print("channel 2:  %f %s" % (channel2.get_currentValue(), channel2.get_unit()))
+while sensor.isOnline():
+    print("Weight:  %f %s" % (sensor.get_currentValue(), sensor.get_unit()))
     print("  (Ctrl-C to stop)")
     YAPI.Sleep(1000)
 YAPI.FreeAPI()

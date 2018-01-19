@@ -1,3 +1,2 @@
-- Add YMultiCellWeighScale class
-- Fix cache issue on device plug
-- Fix rare IO errors on Raspberry PI
+- Fix handling of functionIds of length 19 (Yocto-MaxiBridge & Yocto-Stepper)
+- Add installation procedure for PyPI package in README file

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_weighscale.py 29500 2017-12-27 17:36:26Z mvuilleu $
+#* $Id: yocto_weighscale.py 29661 2018-01-18 13:32:13Z mvuilleu $
 #*
 #* Implements yFindWeighScale(), the high-level API for WeighScale functions
 #*
@@ -103,6 +103,21 @@ class YWeighScale(YSensor):
         if json_val.has("command"):
             self._command = json_val.getString("command")
         super(YWeighScale, self)._parseAttr(json_val)
+
+    def set_unit(self, newval):
+        """
+        Changes the measuring unit for the weight.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+
+        @param newval : a string corresponding to the measuring unit for the weight
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("unit", rest_val)
 
     def get_excitation(self):
         """

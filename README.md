@@ -81,7 +81,7 @@ pip install -U yoctopuce
 
 
 Note that if you use the library form PyPI you need to specify the package name  in the
-the ``"from .. import"`` statements.
+the ``from .. import`` statements.
 
 
 ````
