@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_proximity.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_proximity.py 29768 2018-01-26 08:54:17Z seb $
 #*
 #* Implements yFindProximity(), the high-level API for Proximity functions
 #*
@@ -62,6 +62,9 @@ class YProximity(YSensor):
     #--- (YProximity definitions)
     SIGNALVALUE_INVALID = YAPI.INVALID_DOUBLE
     DETECTIONTHRESHOLD_INVALID = YAPI.INVALID_UINT
+    DETECTIONHYSTERESIS_INVALID = YAPI.INVALID_UINT
+    PRESENCEMINTIME_INVALID = YAPI.INVALID_UINT
+    REMOVALMINTIME_INVALID = YAPI.INVALID_UINT
     LASTTIMEAPPROACHED_INVALID = YAPI.INVALID_LONG
     LASTTIMEREMOVED_INVALID = YAPI.INVALID_LONG
     PULSECOUNTER_INVALID = YAPI.INVALID_LONG
@@ -82,6 +85,9 @@ class YProximity(YSensor):
         self._callback = None
         self._signalValue = YProximity.SIGNALVALUE_INVALID
         self._detectionThreshold = YProximity.DETECTIONTHRESHOLD_INVALID
+        self._detectionHysteresis = YProximity.DETECTIONHYSTERESIS_INVALID
+        self._presenceMinTime = YProximity.PRESENCEMINTIME_INVALID
+        self._removalMinTime = YProximity.REMOVALMINTIME_INVALID
         self._isPresent = YProximity.ISPRESENT_INVALID
         self._lastTimeApproached = YProximity.LASTTIMEAPPROACHED_INVALID
         self._lastTimeRemoved = YProximity.LASTTIMEREMOVED_INVALID
@@ -96,6 +102,12 @@ class YProximity(YSensor):
             self._signalValue = round(json_val.getDouble("signalValue") * 1000.0 / 65536.0) / 1000.0
         if json_val.has("detectionThreshold"):
             self._detectionThreshold = json_val.getInt("detectionThreshold")
+        if json_val.has("detectionHysteresis"):
+            self._detectionHysteresis = json_val.getInt("detectionHysteresis")
+        if json_val.has("presenceMinTime"):
+            self._presenceMinTime = json_val.getInt("presenceMinTime")
+        if json_val.has("removalMinTime"):
+            self._removalMinTime = json_val.getInt("removalMinTime")
         if json_val.has("isPresent"):
             self._isPresent = (json_val.getInt("isPresent") > 0 if 1 else 0)
         if json_val.has("lastTimeApproached"):
@@ -158,6 +170,100 @@ class YProximity(YSensor):
         """
         rest_val = str(newval)
         return self._setAttr("detectionThreshold", rest_val)
+
+    def get_detectionHysteresis(self):
+        """
+        Returns the hysteresis used to determine the logical state of the proximity sensor, when considered
+        as a binary input (on/off).
+
+        @return an integer corresponding to the hysteresis used to determine the logical state of the
+        proximity sensor, when considered
+                as a binary input (on/off)
+
+        On failure, throws an exception or returns YProximity.DETECTIONHYSTERESIS_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YProximity.DETECTIONHYSTERESIS_INVALID
+        res = self._detectionHysteresis
+        return res
+
+    def set_detectionHysteresis(self, newval):
+        """
+        Changes the hysteresis used to determine the logical state of the proximity sensor, when considered
+        as a binary input (on/off).
+
+        @param newval : an integer corresponding to the hysteresis used to determine the logical state of
+        the proximity sensor, when considered
+                as a binary input (on/off)
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("detectionHysteresis", rest_val)
+
+    def get_presenceMinTime(self):
+        """
+        Returns the minimal detection duration before signaling a presence event. Any shorter detection is
+        considered as noise or bounce (false positive) and filtered out.
+
+        @return an integer corresponding to the minimal detection duration before signaling a presence event
+
+        On failure, throws an exception or returns YProximity.PRESENCEMINTIME_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YProximity.PRESENCEMINTIME_INVALID
+        res = self._presenceMinTime
+        return res
+
+    def set_presenceMinTime(self, newval):
+        """
+        Changes the minimal detection duration before signaling a presence event. Any shorter detection is
+        considered as noise or bounce (false positive) and filtered out.
+
+        @param newval : an integer corresponding to the minimal detection duration before signaling a presence event
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("presenceMinTime", rest_val)
+
+    def get_removalMinTime(self):
+        """
+        Returns the minimal detection duration before signaling a removal event. Any shorter detection is
+        considered as noise or bounce (false positive) and filtered out.
+
+        @return an integer corresponding to the minimal detection duration before signaling a removal event
+
+        On failure, throws an exception or returns YProximity.REMOVALMINTIME_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YProximity.REMOVALMINTIME_INVALID
+        res = self._removalMinTime
+        return res
+
+    def set_removalMinTime(self, newval):
+        """
+        Changes the minimal detection duration before signaling a removal event. Any shorter detection is
+        considered as noise or bounce (false positive) and filtered out.
+
+        @param newval : an integer corresponding to the minimal detection duration before signaling a removal event
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("removalMinTime", rest_val)
 
     def get_isPresent(self):
         """

@@ -1,2 +1,3 @@
-- Fix handling of functionIds of length 19 (Yocto-MaxiBridge & Yocto-Stepper)
-- Add installation procedure for PyPI package in README file
+- Add Example for Yocto-MaxiBridge and Yocto-Bridge
+- Add support for GatewayHub
+- Add methods in YProximity class to configure debouncing/hysteresis for Yocto-Proximity
