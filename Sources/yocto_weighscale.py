@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_weighscale.py 29661 2018-01-18 13:32:13Z mvuilleu $
+#* $Id: yocto_weighscale.py 29804 2018-01-30 18:05:21Z mvuilleu $
 #*
 #* Implements yFindWeighScale(), the high-level API for WeighScale functions
 #*
@@ -231,9 +231,11 @@ class YWeighScale(YSensor):
 
     def set_zeroTracking(self, newval):
         """
-        Changes the compensation temperature update rate, in percents.
+        Changes the zero tracking threshold value. When this threshold is larger than
+        zero, any measure under the threshold will automatically be ignored and the
+        zero compensation will be updated.
 
-        @param newval : a floating point number corresponding to the compensation temperature update rate, in percents
+        @param newval : a floating point number corresponding to the zero tracking threshold value
 
         @return YAPI.SUCCESS if the call succeeds.
 

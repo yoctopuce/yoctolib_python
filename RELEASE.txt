@@ -1,3 +1,1 @@
-- Add Example for Yocto-MaxiBridge and Yocto-Bridge
-- Add support for GatewayHub
-- Add methods in YProximity class to configure debouncing/hysteresis for Yocto-Proximity
+- Add support and examples for Yocto-Bridge and Yocto-MaxiBridge

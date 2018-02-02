@@ -36,7 +36,7 @@ if target == 'any':
     if sensor is None:
         die('No module connected')
 else:
-    sensor = YGenericSensor.FindWeighScale(target + '.WeighScale')
+    sensor = YWeighScale.FindWeighScale(target + '.weighScale1')
 
 if not (sensor.isOnline()): die('device not connected')
 
