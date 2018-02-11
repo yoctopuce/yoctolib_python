@@ -394,7 +394,7 @@ class YBuzzer(YFunction):
                     num = prevDuration
                 else:
                     prevDuration = num
-                ms = round(320000.0 / (tempo * num))
+                ms = int(round(320000.0 / (tempo * num)))
                 if typ == 0:
                     self.addPulseToPlaySeq(0, ms)
                 else:
