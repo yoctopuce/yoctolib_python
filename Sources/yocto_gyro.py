@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_gyro.py 29980 2018-02-20 16:27:13Z seb $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -347,7 +347,7 @@ class YGyro(YSensor):
     def _loadQuaternion(self):
         # now_stamp
         # age_ms
-        now_stamp = (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
+        now_stamp = int((YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF)))
         age_ms = (((now_stamp - self._qt_stamp)) & (0x7FFFFFFF))
         if (age_ms >= 10) or (self._qt_stamp == 0):
             if self.load(10) != YAPI.SUCCESS:
@@ -588,7 +588,7 @@ class YGyro(YSensor):
             self._z = qtValue
         if qtIndex < 4:
             return 0
-        self._qt_stamp = (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
+        self._qt_stamp = int((YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF)))
         if self._quatCallback is not None:
             self._quatCallback(self, self._w, self._x, self._y, self._z)
         if self._anglesCallback is not None:

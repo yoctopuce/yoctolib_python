@@ -1,1 +1,1 @@
-- Add support and examples for Yocto-Bridge and Yocto-MaxiBridge
+- Fix type error that can occur with python 2.7

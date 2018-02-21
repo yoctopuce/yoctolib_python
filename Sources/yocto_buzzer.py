@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_buzzer.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_buzzer.py 29980 2018-02-20 16:27:13Z seb $
 #*
 #* Implements yFindBuzzer(), the high-level API for Buzzer functions
 #*
@@ -394,7 +394,7 @@ class YBuzzer(YFunction):
                     num = prevDuration
                 else:
                     prevDuration = num
-                ms = round(320000.0 / (tempo * num))
+                ms = int(round(320000.0 / (tempo * num)))
                 if typ == 0:
                     self.addPulseToPlaySeq(0, ms)
                 else:
@@ -404,7 +404,7 @@ class YBuzzer(YFunction):
                     if dNote <= -6:
                         dNote = dNote + 12
                     pitch = prevPitch + dNote
-                    freq = round(440 * math.exp(pitch * 0.05776226504666))
+                    freq = int(round(440 * math.exp(pitch * 0.05776226504666)))
                     ms16 = ((ms) >> (4))
                     rest = 0
                     if typ == 3:

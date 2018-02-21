@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_rangefinder.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_rangefinder.py 29980 2018-02-20 16:27:13Z seb $
 #*
 #* Implements yFindRangeFinder(), the high-level API for RangeFinder functions
 #*
@@ -275,9 +275,9 @@ class YRangeFinder(YSensor):
         """
         # distmm
         if self.get_unit() == "\"":
-            distmm = round(targetDist * 25.4)
+            distmm = int(round(targetDist * 25.4))
         else:
-            distmm = round(targetDist)
+            distmm = int(round(targetDist))
         return self.set_command("O" + str(int(distmm)))
 
     def triggerXTalkCalibration(self, targetDist):
@@ -295,9 +295,9 @@ class YRangeFinder(YSensor):
         """
         # distmm
         if self.get_unit() == "\"":
-            distmm = round(targetDist * 25.4)
+            distmm = int(round(targetDist * 25.4))
         else:
-            distmm = round(targetDist)
+            distmm = int(round(targetDist))
         return self.set_command("X" + str(int(distmm)))
 
     def cancelCoverGlassCalibrations(self):

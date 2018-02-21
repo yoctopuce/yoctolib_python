@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 29500 2017-12-27 17:36:26Z mvuilleu $
+# * $Id: yocto_api.py 29998 2018-02-20 23:46:56Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "29837"
+    YOCTO_API_BUILD_NO = "30008"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2764,7 +2764,7 @@ class YDataStream(object):
             val = 0
         self._nRows = val
         duration_float = self._nRows * 3600 / self._samplesPerHour
-        self._duration = round(duration_float)
+        self._duration = int(round(duration_float))
         # // precompute decoding parameters
         self._decexp = 1.0
         if self._scale == 0:
@@ -3386,7 +3386,7 @@ class YDataSet(object):
         self._progress = self._progress + 1
         if len(dataRows) == 0:
             return self.get_progress()
-        tim = stream.get_startTimeUTC()
+        tim = int(stream.get_startTimeUTC())
         itv = stream.get_dataSamplesInterval()
         if tim < itv:
             tim = itv
@@ -3584,7 +3584,7 @@ class YDataSet(object):
         # avgCol
         # maxCol
 
-        startUtc = round(measure.get_startTimeUTC())
+        startUtc = int(round(measure.get_startTimeUTC()))
         stream = None
         for y in self._streams:
             if y.get_startTimeUTC() == startUtc:
@@ -3594,7 +3594,7 @@ class YDataSet(object):
         dataRows = stream.get_dataRows()
         if len(dataRows) == 0:
             return measures
-        tim = stream.get_startTimeUTC()
+        tim = int(stream.get_startTimeUTC())
         itv = stream.get_dataSamplesInterval()
         if tim < itv:
             tim = itv
@@ -3782,7 +3782,9 @@ class YDevice:
             return YAPI.SUCCESS
         request = "GET /api.json"
         if self._cacheJson is not None:
-            request += "?fw=" + self._cacheJson.getYJSONObject("module").getString("firmwareRelease")
+            fwrelease = self._cacheJson.getYJSONObject("module").getString("firmwareRelease")
+            fwrelease = YFunction._escapeAttr(fwrelease)
+            request += "?fw=" + fwrelease
             # print("JZON:"+ request)
 
         res = self.HTTPRequest(request + " \r\n\r\n", http_data, errmsgRef)
@@ -5593,7 +5595,7 @@ class YModule(YFunction):
                         maxSize = len(words)
                     i = 3
                     while i < maxSize:
-                        calibData.append(words[i])
+                        calibData.append(int(words[i]))
                         i = i + 1
             else:
                 if paramVer == 1:
@@ -5608,7 +5610,7 @@ class YModule(YFunction):
                             maxSize = len(words)
                         i = 1
                         while i < maxSize:
-                            calibData.append(words[i])
+                            calibData.append(int(words[i]))
                             i = i + 1
                 else:
                     if paramVer == 0:
@@ -5625,12 +5627,12 @@ class YModule(YFunction):
                     calibData[i] = (calibData[i] - paramOffset) / paramScale
                 else:
                     # // floating-point decoding
-                    calibData[i] = YAPI._decimalToDouble(round(calibData[i]))
+                    calibData[i] = YAPI._decimalToDouble(int(round(calibData[i])))
                 i = i + 1
         else:
             # // Handle latest 32bit parameter format
             iCalib = YAPI._decodeFloats(param)
-            calibType = round(iCalib[0] / 1000.0)
+            calibType = int(round(iCalib[0] / 1000.0))
             if calibType >= 30:
                 calibType = calibType - 30
             i = 1
@@ -5649,7 +5651,7 @@ class YModule(YFunction):
                         param = param + ":"
                     else:
                         param = param + " "
-                    param = param + str(round(calibData[i] * 1000.0 / 1000.0))
+                    param = param + str(int(round(calibData[i] * 1000.0 / 1000.0)))
                     i = i + 1
                 param = param + ","
         else:
@@ -5660,7 +5662,7 @@ class YModule(YFunction):
                 i = 0
                 while i < 2 * nPoints:
                     if funScale == 0:
-                        wordVal = YAPI._doubleToDecimal(round(calibData[i]))
+                        wordVal = YAPI._doubleToDecimal(int(round(calibData[i])))
                     else:
                         wordVal = calibData[i] * funScale + funOffset
                     param = param + "," + str(round(wordVal))
@@ -7075,8 +7077,8 @@ class YSensor(YFunction):
                 res = "" + str(int(npt))
                 idx = 0
                 while idx < npt:
-                    iRaw = round(rawValues[idx] * self._scale + self._offset)
-                    iRef = round(refValues[idx] * self._scale + self._offset)
+                    iRaw = int(round(rawValues[idx] * self._scale + self._offset))
+                    iRef = int(round(refValues[idx] * self._scale + self._offset))
                     res = "" + res + "," + str(int(iRaw)) + "," + str(int(iRef))
                     idx = idx + 1
             else:
@@ -7084,8 +7086,8 @@ class YSensor(YFunction):
                 res = "" + str(int(10 + npt))
                 idx = 0
                 while idx < npt:
-                    iRaw = YAPI._doubleToDecimal(rawValues[idx])
-                    iRef = YAPI._doubleToDecimal(refValues[idx])
+                    iRaw = int(YAPI._doubleToDecimal(rawValues[idx]))
+                    iRef = int(YAPI._doubleToDecimal(refValues[idx]))
                     res = "" + res + "," + str(int(iRaw)) + "," + str(int(iRef))
                     idx = idx + 1
         return res

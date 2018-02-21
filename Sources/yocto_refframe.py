@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_refframe.py 29980 2018-02-20 16:27:13Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -432,7 +432,7 @@ class YRefFrame(YFunction):
         self._calibStageProgress = 0
         self._calibProgress = 1
         self._calibInternalPos = 0
-        self._calibPrevTick = (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
+        self._calibPrevTick = int((YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF)))
         del self._calibOrient[:]
         del self._calibDataAccX[:]
         del self._calibDataAccY[:]
@@ -475,7 +475,7 @@ class YRefFrame(YFunction):
         if self._calibProgress == 100:
             return YAPI.SUCCESS
         # // make sure we leave at least 160ms between samples
-        currTick =  (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
+        currTick =  int((YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF)))
         if ((currTick - self._calibPrevTick) & (0x7FFFFFFF)) < 160:
             return YAPI.SUCCESS
         # // load current accelerometer values, make sure we are on a straight angle
@@ -634,7 +634,7 @@ class YRefFrame(YFunction):
             return YAPI.SUCCESS
         # // make sure we don't start before previous calibration is cleared
         if self._calibStage == 1:
-            currTick = (YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF))
+            currTick = int((YRelTickCount(YAPI.GetTickCount()) & (0x7FFFFFFF)))
             currTick = ((currTick - self._calibPrevTick) & (0x7FFFFFFF))
             if currTick < 1600:
                 self._calibStageHint = "Set down the device on a steady horizontal surface"
@@ -743,18 +743,18 @@ class YRefFrame(YFunction):
         if self._calibProgress != 100:
             return YAPI.INVALID_ARGUMENT
         # // Compute integer values (correction unit is 732ug/count)
-        shiftX = -round(self._calibAccXOfs / 0.000732)
+        shiftX = -int(round(self._calibAccXOfs / 0.000732))
         if shiftX < 0:
             shiftX = shiftX + 65536
-        shiftY = -round(self._calibAccYOfs / 0.000732)
+        shiftY = -int(round(self._calibAccYOfs / 0.000732))
         if shiftY < 0:
             shiftY = shiftY + 65536
-        shiftZ = -round(self._calibAccZOfs / 0.000732)
+        shiftZ = -int(round(self._calibAccZOfs / 0.000732))
         if shiftZ < 0:
             shiftZ = shiftZ + 65536
-        scaleX = round(2048.0 / self._calibAccXScale) - 2048
-        scaleY = round(2048.0 / self._calibAccYScale) - 2048
-        scaleZ = round(2048.0 / self._calibAccZScale) - 2048
+        scaleX = int(round(2048.0 / self._calibAccXScale)) - 2048
+        scaleY = int(round(2048.0 / self._calibAccYScale)) - 2048
+        scaleZ = int(round(2048.0 / self._calibAccZScale)) - 2048
         if scaleX < -2048 or scaleX >= 2048 or scaleY < -2048 or scaleY >= 2048 or scaleZ < -2048 or scaleZ >= 2048:
             scaleExp = 3
         else:
