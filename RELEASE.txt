@@ -1,1 +1,1 @@
-- Fix type error that can occur with python 2.7
+- Fix type cast error that can occure with python 2.7
