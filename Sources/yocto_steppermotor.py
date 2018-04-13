@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_steppermotor.py 29507 2017-12-28 14:14:56Z mvuilleu $
+#* $Id: yocto_steppermotor.py 30483 2018-03-29 07:43:07Z mvuilleu $
 #*
 #* Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #*
@@ -557,7 +557,7 @@ class YStepperMotor(YFunction):
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("Z")
+        return self.set_command("Z")
 
     def findHomePosition(self, speed):
         """
@@ -641,7 +641,7 @@ class YStepperMotor(YFunction):
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("!")
+        return self.set_command("!")
 
     def alertStepOut(self):
         """
@@ -652,7 +652,7 @@ class YStepperMotor(YFunction):
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand(".")
+        return self.set_command(".")
 
     def alertStepDir(self, dir):
         """
@@ -669,8 +669,8 @@ class YStepperMotor(YFunction):
             self._throw(YAPI.INVALID_ARGUMENT, "direction must be +1 or -1")
             return YAPI.INVALID_ARGUMENT
         if dir > 0:
-            return self.sendCommand(".+")
-        return self.sendCommand(".-")
+            return self.set_command(".+")
+        return self.set_command(".-")
 
     def abortAndBrake(self):
         """
@@ -679,7 +679,7 @@ class YStepperMotor(YFunction):
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("B")
+        return self.set_command("B")
 
     def abortAndHiZ(self):
         """
@@ -688,7 +688,7 @@ class YStepperMotor(YFunction):
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("z")
+        return self.set_command("z")
 
     def nextStepperMotor(self):
         """

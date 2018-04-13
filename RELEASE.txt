@@ -1,1 +1,1 @@
-- Fix type cast error that can occure with python 2.7
+- Add new PWMOutput methods

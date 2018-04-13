@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 29186 2017-11-16 10:04:13Z seb $
+#* $Id: yocto_colorledcluster.py 30500 2018-04-04 07:53:46Z mvuilleu $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -68,6 +68,9 @@ class YColorLedCluster(YFunction):
     BLINKSEQMAXCOUNT_INVALID = YAPI.INVALID_UINT
     BLINKSEQMAXSIZE_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
+    LEDTYPE_RGB = 0
+    LEDTYPE_RGBW = 1
+    LEDTYPE_INVALID = -1
     #--- (end of YColorLedCluster definitions)
 
     def __init__(self, func):
@@ -76,6 +79,7 @@ class YColorLedCluster(YFunction):
         #--- (YColorLedCluster attributes)
         self._callback = None
         self._activeLedCount = YColorLedCluster.ACTIVELEDCOUNT_INVALID
+        self._ledType = YColorLedCluster.LEDTYPE_INVALID
         self._maxLedCount = YColorLedCluster.MAXLEDCOUNT_INVALID
         self._blinkSeqMaxCount = YColorLedCluster.BLINKSEQMAXCOUNT_INVALID
         self._blinkSeqMaxSize = YColorLedCluster.BLINKSEQMAXSIZE_INVALID
@@ -86,6 +90,8 @@ class YColorLedCluster(YFunction):
     def _parseAttr(self, json_val):
         if json_val.has("activeLedCount"):
             self._activeLedCount = json_val.getInt("activeLedCount")
+        if json_val.has("ledType"):
+            self._ledType = json_val.getInt("ledType")
         if json_val.has("maxLedCount"):
             self._maxLedCount = json_val.getInt("maxLedCount")
         if json_val.has("blinkSeqMaxCount"):
@@ -123,6 +129,36 @@ class YColorLedCluster(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("activeLedCount", rest_val)
+
+    def get_ledType(self):
+        """
+        Returns the RGB LED type currently handled by the device.
+
+        @return either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to the RGB
+        LED type currently handled by the device
+
+        On failure, throws an exception or returns YColorLedCluster.LEDTYPE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YColorLedCluster.LEDTYPE_INVALID
+        res = self._ledType
+        return res
+
+    def set_ledType(self, newval):
+        """
+        Changes the RGB LED type currently handled by the device.
+
+        @param newval : either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to
+        the RGB LED type currently handled by the device
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("ledType", rest_val)
 
     def get_maxLedCount(self):
         """

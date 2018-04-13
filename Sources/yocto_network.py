@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 29078 2017-11-03 16:27:50Z seb $
+#* $Id: yocto_network.py 30462 2018-03-26 09:19:24Z mvuilleu $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -101,6 +101,7 @@ class YNetwork(YFunction):
     CALLBACKENCODING_INFLUXDB = 8
     CALLBACKENCODING_MQTT = 9
     CALLBACKENCODING_YOCTO_API_JZON = 10
+    CALLBACKENCODING_PRTG = 11
     CALLBACKENCODING_INVALID = -1
     #--- (end of YNetwork definitions)
 
@@ -673,9 +674,9 @@ class YNetwork(YFunction):
         YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV,
         YNetwork.CALLBACKENCODING_YOCTO_API, YNetwork.CALLBACKENCODING_JSON_NUM,
         YNetwork.CALLBACKENCODING_EMONCMS, YNetwork.CALLBACKENCODING_AZURE,
-        YNetwork.CALLBACKENCODING_INFLUXDB, YNetwork.CALLBACKENCODING_MQTT and
-        YNetwork.CALLBACKENCODING_YOCTO_API_JZON corresponding to the encoding standard to use for
-        representing notification values
+        YNetwork.CALLBACKENCODING_INFLUXDB, YNetwork.CALLBACKENCODING_MQTT,
+        YNetwork.CALLBACKENCODING_YOCTO_API_JZON and YNetwork.CALLBACKENCODING_PRTG corresponding to the
+        encoding standard to use for representing notification values
 
         On failure, throws an exception or returns YNetwork.CALLBACKENCODING_INVALID.
         """
@@ -694,9 +695,9 @@ class YNetwork(YFunction):
         YNetwork.CALLBACKENCODING_JSON_ARRAY, YNetwork.CALLBACKENCODING_CSV,
         YNetwork.CALLBACKENCODING_YOCTO_API, YNetwork.CALLBACKENCODING_JSON_NUM,
         YNetwork.CALLBACKENCODING_EMONCMS, YNetwork.CALLBACKENCODING_AZURE,
-        YNetwork.CALLBACKENCODING_INFLUXDB, YNetwork.CALLBACKENCODING_MQTT and
-        YNetwork.CALLBACKENCODING_YOCTO_API_JZON corresponding to the encoding standard to use for
-        representing notification values
+        YNetwork.CALLBACKENCODING_INFLUXDB, YNetwork.CALLBACKENCODING_MQTT,
+        YNetwork.CALLBACKENCODING_YOCTO_API_JZON and YNetwork.CALLBACKENCODING_PRTG corresponding to the
+        encoding standard to use for representing notification values
 
         @return YAPI.SUCCESS if the call succeeds.
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_multiaxiscontroller.py 29507 2017-12-28 14:14:56Z mvuilleu $
+#* $Id: yocto_multiaxiscontroller.py 30483 2018-03-29 07:43:07Z mvuilleu $
 #*
 #* Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
 #*
@@ -206,7 +206,7 @@ class YMultiAxisController(YFunction):
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("Z")
+        return self.set_command("Z")
 
     def findHomePosition(self, speed):
         """
@@ -292,7 +292,7 @@ class YMultiAxisController(YFunction):
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("!")
+        return self.set_command("!")
 
     def abortAndBrake(self):
         """
@@ -301,7 +301,7 @@ class YMultiAxisController(YFunction):
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("B")
+        return self.set_command("B")
 
     def abortAndHiZ(self):
         """
@@ -310,7 +310,7 @@ class YMultiAxisController(YFunction):
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("z")
+        return self.set_command("z")
 
     def nextMultiAxisController(self):
         """

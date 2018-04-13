@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 29998 2018-02-20 23:46:56Z seb $
+# * $Id: yocto_api.py 30553 2018-04-05 17:14:59Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "30378"
+    YOCTO_API_BUILD_NO = "30598"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -3646,7 +3646,7 @@ class YDataSet(object):
 
 #--- (end of generated code: YDataSet implementation)
 
-        # --- (generated code: YDataSet functions)
+# --- (generated code: YDataSet functions)
 #--- (end of generated code: YDataSet functions)
 
 
@@ -3792,16 +3792,22 @@ class YDevice:
             # make sure a device scan does not solve the issue
             res = YAPI.yapiUpdateDeviceList(1, errmsgRef)
             if YAPI.YISERR(res):
+                if not YAPI.ExceptionsDisabled:
+                    raise YAPI.YAPI_Exception(res, errmsgRef.value)
                 return res
 
             res = self.HTTPRequest(request + " \r\n\r\n", http_data, errmsgRef)
             if YAPI.YISERR(res):
+                if not YAPI.ExceptionsDisabled:
+                    raise YAPI.YAPI_Exception(res, errmsgRef.value)
                 return res
 
         buffer = YByte2String(http_data.value)
         (httpcode, http_headerlen, errmsg) = YAPI.parseHTTP(buffer, 0, len(buffer))
         if httpcode != 200:
             errmsgRef.value = "Unexpected HTTP return code:%s" % httpcode
+            if not YAPI.ExceptionsDisabled:
+                raise YAPI.YAPI_Exception(res, errmsgRef.value)
             return YAPI.IO_ERROR
         try:
             apires = YJSONObject(buffer, http_headerlen, len(buffer))
@@ -3810,6 +3816,8 @@ class YDevice:
             self._cacheJson = None
             if not errmsgRef is None:
                 errmsgRef.value = "JSON error: " + ex.errorMessage
+            if not YAPI.ExceptionsDisabled:
+                raise YAPI.YAPI_Exception(res, errmsgRef.value)
             return YAPI.IO_ERROR
         # store result in cache
         self._cacheJson = apires
@@ -4046,10 +4054,10 @@ class YFunction(object):
             c = changeval[ofs]
             if c <= ' ' or \
                     (c > 'z' and c != '~') or c == '"' or c == '%' or c == '&' or c == '+' or \
-                            c == '<' or c == '=' or c == '>' or c == '\\' or c == '^' or c == '`':
+                    c == '<' or c == '=' or c == '>' or c == '\\' or c == '^' or c == '`':
                 c_ord = ord(c)
                 if ((c_ord == 0xc2 or c_ord == 0xc3) and (ofs + 1 < nb_bytes) and (
-                            ord(changeval[ofs + 1]) & 0xc0) == 0x80):
+                        ord(changeval[ofs + 1]) & 0xc0) == 0x80):
                     # UTF8-encoded ISO-8859-1 character: translate to plain ISO-8859-1
                     c_ord = (c_ord & 1) * 0x40
                     ofs += 1

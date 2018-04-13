@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwmoutput.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_pwmoutput.py 30595 2018-04-12 21:36:11Z mvuilleu $
 #*
 #* Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #*
@@ -359,8 +359,8 @@ class YPwmOutput(YFunction):
 
     def pulseDurationMove(self, ms_target, ms_duration):
         """
-        Performs a smooth transistion of the pulse duration toward a given value. Any period,
-        frequency, duty cycle or pulse width change will cancel any ongoing transition process.
+        Performs a smooth transistion of the pulse duration toward a given value.
+        Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
 
         @param ms_target   : new pulse duration at the end of the transition
                 (floating-point number, representing the pulse duration in milliseconds)
@@ -378,10 +378,11 @@ class YPwmOutput(YFunction):
 
     def dutyCycleMove(self, target, ms_duration):
         """
-        Performs a smooth change of the pulse duration toward a given value.
+        Performs a smooth change of the duty cycle toward a given value.
+        Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
 
         @param target      : new duty cycle at the end of the transition
-                (floating-point number, between 0 and 1)
+                (percentage, floating-point number between 0 and 100)
         @param ms_duration : total duration of the transition, in milliseconds
 
         @return YAPI.SUCCESS when the call succeeds.
@@ -394,6 +395,83 @@ class YPwmOutput(YFunction):
         if target > 100.0:
             target = 100.0
         newval = "" + str(int(round(target*65536))) + ":" + str(int(ms_duration))
+        return self.set_pwmTransition(newval)
+
+    def frequencyMove(self, target, ms_duration):
+        """
+        Performs a smooth frequency change toward a given value.
+        Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
+
+        @param target      : new freuency at the end of the transition (floating-point number)
+        @param ms_duration : total duration of the transition, in milliseconds
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # newval
+        if target < 0.001:
+            target = 0.001
+        newval = "" + str(target) + "Hz:" + str(int(ms_duration))
+        return self.set_pwmTransition(newval)
+
+    def triggerPulsesByDuration(self, ms_target, n_pulses):
+        """
+        Trigger a given number of pulses of specified duration, at current frequency.
+        At the end of the pulse train, revert to the original state of the PWM generator.
+
+        @param ms_target : desired pulse duration
+                (floating-point number, representing the pulse duration in milliseconds)
+        @param n_pulses  : desired pulse count
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # newval
+        if ms_target < 0.0:
+            ms_target = 0.0
+        newval = "" + str(int(round(ms_target*65536))) + "ms*" + str(int(n_pulses))
+        return self.set_pwmTransition(newval)
+
+    def triggerPulsesByDutyCycle(self, target, n_pulses):
+        """
+        Trigger a given number of pulses of specified duration, at current frequency.
+        At the end of the pulse train, revert to the original state of the PWM generator.
+
+        @param target   : desired duty cycle for the generated pulses
+                (percentage, floating-point number between 0 and 100)
+        @param n_pulses : desired pulse count
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # newval
+        if target < 0.0:
+            target = 0.0
+        if target > 100.0:
+            target = 100.0
+        newval = "" + str(int(round(target*65536))) + "*" + str(int(n_pulses))
+        return self.set_pwmTransition(newval)
+
+    def triggerPulsesByFrequency(self, target, n_pulses):
+        """
+        Trigger a given number of pulses at the specified frequency, using current duty cycle.
+        At the end of the pulse train, revert to the original state of the PWM generator.
+
+        @param target   : desired frequency for the generated pulses (floating-point number)
+                (percentage, floating-point number between 0 and 100)
+        @param n_pulses : desired pulse count
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # newval
+        if target < 0.001:
+            target = 0.001
+        newval = "" + str(target) + "Hz*" + str(int(n_pulses))
         return self.set_pwmTransition(newval)
 
     def nextPwmOutput(self):
