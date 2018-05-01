@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_messagebox.py 30658 2018-04-19 12:59:51Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -524,7 +524,7 @@ class YSms(object):
             i = 0
             while i < siz:
                 byt = YGetByte(addr, ofs+i+1)
-                res = "" + res + "" + ("%X" % ((byt) & (15))) + "" + ("%X" % ((byt) >> (4)))
+                res = "" + res + "" + ("%x" % ((byt) & (15))) + "" + ("%x" % ((byt) >> (4)))
                 i = i + 1
             # // remove padding digit if needed
             if ((YGetByte(addr, ofs+siz)) >> (4)) == 15:
@@ -625,7 +625,7 @@ class YSms(object):
         i = 0
         while (i < siz) and (i < 6):
             byt = YGetByte(exp, ofs+i)
-            res = "" + res + "" + ("%X" % ((byt) & (15))) + "" + ("%X" % ((byt) >> (4)))
+            res = "" + res + "" + ("%x" % ((byt) & (15))) + "" + ("%x" % ((byt) >> (4)))
             if i < 3:
                 if i < 2:
                     res = "" + res + "-"
@@ -878,13 +878,13 @@ class YSms(object):
             if i + ielen <= udhlen:
                 if (iei == 0) and (ielen == 3):
                     # // concatenated SMS, 8-bit ref
-                    sig = "" + self._orig + "-" + self._dest + "-" + ("%02X" % self._mref) + "-" + ("%02X" % YGetByte(self._udh, i))
+                    sig = "" + self._orig + "-" + self._dest + "-" + ("%02x" % self._mref) + "-" + ("%02x" % YGetByte(self._udh, i))
                     self._aggSig = sig
                     self._aggCnt = YGetByte(self._udh, i+1)
                     self._aggIdx = YGetByte(self._udh, i+2)
                 if (iei == 8) and (ielen == 4):
                     # // concatenated SMS, 16-bit ref
-                    sig = "" + self._orig + "-" + self._dest + "-" + ("%02X" % self._mref) + "-" + ("%02X" % YGetByte(self._udh, i)) + "" + ("%02X" % YGetByte(self._udh, i+1))
+                    sig = "" + self._orig + "-" + self._dest + "-" + ("%02x" % self._mref) + "-" + ("%02x" % YGetByte(self._udh, i)) + "" + ("%02x" % YGetByte(self._udh, i+1))
                     self._aggSig = sig
                     self._aggCnt = YGetByte(self._udh, i+2)
                     self._aggIdx = YGetByte(self._udh, i+3)

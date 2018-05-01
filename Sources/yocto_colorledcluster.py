@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 30500 2018-04-04 07:53:46Z mvuilleu $
+#* $Id: yocto_colorledcluster.py 30658 2018-04-19 12:59:51Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -269,7 +269,7 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("SR" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % rgbValue))
+        return self.sendCommand("SR" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%x" % rgbValue))
 
     def set_rgbColorAtPowerOn(self, ledIndex, count, rgbValue):
         """
@@ -286,7 +286,7 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("SC" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % rgbValue))
+        return self.sendCommand("SC" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%x" % rgbValue))
 
     def set_hslColor(self, ledIndex, count, hslValue):
         """
@@ -301,7 +301,7 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("SH" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % hslValue))
+        return self.sendCommand("SH" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%x" % hslValue))
 
     def rgb_move(self, ledIndex, count, rgbValue, delay):
         """
@@ -317,7 +317,7 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("MR" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % rgbValue) + "," + str(int(delay)))
+        return self.sendCommand("MR" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%x" % rgbValue) + "," + str(int(delay)))
 
     def hsl_move(self, ledIndex, count, hslValue, delay):
         """
@@ -337,7 +337,7 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("MH" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%X" % hslValue) + "," + str(int(delay)))
+        return self.sendCommand("MH" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%x" % hslValue) + "," + str(int(delay)))
 
     def addRgbMoveToBlinkSeq(self, seqIndex, rgbValue, delay):
         """
@@ -353,7 +353,7 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("AR" + str(int(seqIndex)) + "," + ("%X" % rgbValue) + "," + str(int(delay)))
+        return self.sendCommand("AR" + str(int(seqIndex)) + "," + ("%x" % rgbValue) + "," + str(int(delay)))
 
     def addHslMoveToBlinkSeq(self, seqIndex, hslValue, delay):
         """
@@ -369,7 +369,7 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("AH" + str(int(seqIndex)) + "," + ("%X" % hslValue) + "," + str(int(delay)))
+        return self.sendCommand("AH" + str(int(seqIndex)) + "," + ("%x" % hslValue) + "," + str(int(delay)))
 
     def addMirrorToBlinkSeq(self, seqIndex):
         """

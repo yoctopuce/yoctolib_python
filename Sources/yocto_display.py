@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_display.py 30658 2018-04-19 12:59:51Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -134,7 +134,7 @@ class YDisplayLayer(object):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.command_push("c" + ("%06X" % color))
+        return self.command_push("c" + ("%06x" % color))
 
     def selectGrayPen(self, graylevel):
         """

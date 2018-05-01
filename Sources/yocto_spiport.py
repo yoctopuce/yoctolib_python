@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_spiport.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_spiport.py 30685 2018-04-24 13:46:18Z seb $
 #*
 #* Implements yFindSpiPort(), the high-level API for SpiPort functions
 #*

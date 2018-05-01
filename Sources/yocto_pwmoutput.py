@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwmoutput.py 30595 2018-04-12 21:36:11Z mvuilleu $
+#* $Id: yocto_pwmoutput.py 30679 2018-04-24 09:34:17Z mvuilleu $
 #*
 #* Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #*
@@ -473,6 +473,12 @@ class YPwmOutput(YFunction):
             target = 0.001
         newval = "" + str(target) + "Hz*" + str(int(n_pulses))
         return self.set_pwmTransition(newval)
+
+    def markForRepeat(self):
+        return self.set_pwmTransition(":")
+
+    def repeatFromMark(self):
+        return self.set_pwmTransition("R")
 
     def nextPwmOutput(self):
         """

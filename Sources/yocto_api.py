@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 30553 2018-04-05 17:14:59Z seb $
+# * $Id: yocto_api.py 30636 2018-04-16 13:59:49Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "30598"
+    YOCTO_API_BUILD_NO = "30760"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1730,7 +1730,7 @@ class YAPI:
         global yLogFct
         if yLogFct is not None:
             # noinspection PyCallingNonCallable
-            yLogFct(y_byte_string)
+            yLogFct(YByte2String(log))
         return 0
 
     @staticmethod

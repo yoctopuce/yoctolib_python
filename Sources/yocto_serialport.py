@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 29500 2017-12-27 17:36:26Z mvuilleu $
+#* $Id: yocto_serialport.py 30685 2018-04-24 13:46:18Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
