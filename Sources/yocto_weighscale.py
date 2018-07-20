@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_weighscale.py 29804 2018-01-30 18:05:21Z mvuilleu $
+#* $Id: yocto_weighscale.py 31016 2018-06-04 08:45:40Z mvuilleu $
 #*
 #* Implements yFindWeighScale(), the high-level API for WeighScale functions
 #*
@@ -60,7 +60,8 @@ class YWeighScale(YSensor):
     #--- (YWeighScale dlldef)
     #--- (end of YWeighScale dlldef)
     #--- (YWeighScale definitions)
-    COMPTEMPADAPTRATIO_INVALID = YAPI.INVALID_DOUBLE
+    TEMPAVGADAPTRATIO_INVALID = YAPI.INVALID_DOUBLE
+    TEMPCHGADAPTRATIO_INVALID = YAPI.INVALID_DOUBLE
     COMPTEMPAVG_INVALID = YAPI.INVALID_DOUBLE
     COMPTEMPCHG_INVALID = YAPI.INVALID_DOUBLE
     COMPENSATION_INVALID = YAPI.INVALID_DOUBLE
@@ -78,7 +79,8 @@ class YWeighScale(YSensor):
         #--- (YWeighScale attributes)
         self._callback = None
         self._excitation = YWeighScale.EXCITATION_INVALID
-        self._compTempAdaptRatio = YWeighScale.COMPTEMPADAPTRATIO_INVALID
+        self._tempAvgAdaptRatio = YWeighScale.TEMPAVGADAPTRATIO_INVALID
+        self._tempChgAdaptRatio = YWeighScale.TEMPCHGADAPTRATIO_INVALID
         self._compTempAvg = YWeighScale.COMPTEMPAVG_INVALID
         self._compTempChg = YWeighScale.COMPTEMPCHG_INVALID
         self._compensation = YWeighScale.COMPENSATION_INVALID
@@ -90,8 +92,10 @@ class YWeighScale(YSensor):
     def _parseAttr(self, json_val):
         if json_val.has("excitation"):
             self._excitation = json_val.getInt("excitation")
-        if json_val.has("compTempAdaptRatio"):
-            self._compTempAdaptRatio = round(json_val.getDouble("compTempAdaptRatio") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("tempAvgAdaptRatio"):
+            self._tempAvgAdaptRatio = round(json_val.getDouble("tempAvgAdaptRatio") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("tempChgAdaptRatio"):
+            self._tempChgAdaptRatio = round(json_val.getDouble("tempChgAdaptRatio") * 1000.0 / 65536.0) / 1000.0
         if json_val.has("compTempAvg"):
             self._compTempAvg = round(json_val.getDouble("compTempAvg") * 1000.0 / 65536.0) / 1000.0
         if json_val.has("compTempChg"):
@@ -149,38 +153,74 @@ class YWeighScale(YSensor):
         rest_val = str(newval)
         return self._setAttr("excitation", rest_val)
 
-    def set_compTempAdaptRatio(self, newval):
+    def set_tempAvgAdaptRatio(self, newval):
         """
-        Changes the averaged temperature update rate, in percents.
+        Changes the averaged temperature update rate, in per mille.
+        The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
         The averaged temperature is updated every 10 seconds, by applying this adaptation rate
         to the difference between the measures ambiant temperature and the current compensation
-        temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+        temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
 
-        @param newval : a floating point number corresponding to the averaged temperature update rate, in percents
+        @param newval : a floating point number corresponding to the averaged temperature update rate, in per mille
 
         @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(int(round(newval * 65536.0, 1)))
-        return self._setAttr("compTempAdaptRatio", rest_val)
+        return self._setAttr("tempAvgAdaptRatio", rest_val)
 
-    def get_compTempAdaptRatio(self):
+    def get_tempAvgAdaptRatio(self):
         """
-        Returns the averaged temperature update rate, in percents.
+        Returns the averaged temperature update rate, in per mille.
+        The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
         The averaged temperature is updated every 10 seconds, by applying this adaptation rate
         to the difference between the measures ambiant temperature and the current compensation
-        temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+        temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
 
-        @return a floating point number corresponding to the averaged temperature update rate, in percents
+        @return a floating point number corresponding to the averaged temperature update rate, in per mille
 
-        On failure, throws an exception or returns YWeighScale.COMPTEMPADAPTRATIO_INVALID.
+        On failure, throws an exception or returns YWeighScale.TEMPAVGADAPTRATIO_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
-                return YWeighScale.COMPTEMPADAPTRATIO_INVALID
-        res = self._compTempAdaptRatio
+                return YWeighScale.TEMPAVGADAPTRATIO_INVALID
+        res = self._tempAvgAdaptRatio
+        return res
+
+    def set_tempChgAdaptRatio(self, newval):
+        """
+        Changes the temperature change update rate, in per mille.
+        The temperature change is updated every 10 seconds, by applying this adaptation rate
+        to the difference between the measures ambiant temperature and the current temperature used for
+        change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+
+        @param newval : a floating point number corresponding to the temperature change update rate, in per mille
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(int(round(newval * 65536.0, 1)))
+        return self._setAttr("tempChgAdaptRatio", rest_val)
+
+    def get_tempChgAdaptRatio(self):
+        """
+        Returns the temperature change update rate, in per mille.
+        The temperature change is updated every 10 seconds, by applying this adaptation rate
+        to the difference between the measures ambiant temperature and the current temperature used for
+        change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+
+        @return a floating point number corresponding to the temperature change update rate, in per mille
+
+        On failure, throws an exception or returns YWeighScale.TEMPCHGADAPTRATIO_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+                return YWeighScale.TEMPCHGADAPTRATIO_INVALID
+        res = self._tempChgAdaptRatio
         return res
 
     def get_compTempAvg(self):

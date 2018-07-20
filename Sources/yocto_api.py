@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 30636 2018-04-16 13:59:49Z seb $
+# * $Id: yocto_api.py 31239 2018-07-17 11:33:44Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -751,7 +751,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "30760"
+    YOCTO_API_BUILD_NO = "31315"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -979,6 +979,11 @@ class YAPI:
         YAPI._yapiRegisterDeviceChangeCallback = YAPI._yApiCLib.yapiRegisterDeviceChangeCallback
         YAPI._yapiRegisterDeviceChangeCallback.restypes = ctypes.c_int
         YAPI._yapiRegisterDeviceChangeCallback.argtypes = [ctypes.c_void_p]
+
+        #  private extern static void _yapiRegisterDeviceConfigChangeCallback(IntPtr fct);
+        YAPI._yapiRegisterDeviceConfigChangeCallback = YAPI._yApiCLib.yapiRegisterDeviceConfigChangeCallback
+        YAPI._yapiRegisterDeviceConfigChangeCallback.restypes = ctypes.c_int
+        YAPI._yapiRegisterDeviceConfigChangeCallback.argtypes = [ctypes.c_void_p]
 
         #  private extern static void _yapiRegisterFunctionUpdateCallback(IntPtr fct);
         YAPI._yapiRegisterFunctionUpdateCallback = YAPI._yApiCLib.yapiRegisterFunctionUpdateCallback
@@ -1239,7 +1244,7 @@ class YAPI:
 
     class _Event:
         ARRIVAL, REMOVAL, CHANGE, FUN_VALUE, FUN_TIMEDREPORT, \
-        HUB_DISCOVERY, YAPI_NOP = range(7)
+        HUB_DISCOVERY, CONFCHANGE, YAPI_NOP = range(8)
 
         def __init__(self):
             self.ev = self.YAPI_NOP
@@ -1261,6 +1266,10 @@ class YAPI:
 
         def setChange(self, module):
             self.ev = self.CHANGE
+            self.module = module
+
+        def setConfigChange(self, module):
+            self.ev = self.CONFCHANGE
             self.module = module
 
         def setFunVal(self, fun_descr, value):
@@ -1312,6 +1321,8 @@ class YAPI:
                         if YFunction._TimedReportCallbackList[i].get_functionDescriptor() == self.fun_descr:
                             sensor = YFunction._TimedReportCallbackList[i]
                             sensor._invokeTimedReportCallback(sensor._decodeTimedReport(self.timestamp, self.report))
+            elif self.ev == self.CONFCHANGE:
+                self.module._invokeConfigChangeCallback()
 
     ##--- (generated code: YFunction return codes)
     # Yoctopuce error codes, used by default as function return value
@@ -1898,6 +1909,19 @@ class YAPI:
         global yChangeFct
         yChangeFct = callback
 
+    # noinspection PyUnresolvedReferences
+    @staticmethod
+    def native_yDeviceConfigChangeCallback(d):
+        infos = YAPI.emptyDeviceSt()
+        errmsgRef = YRefParam()
+        if YAPI.yapiGetDeviceInfo(d, infos, errmsgRef) != YAPI.SUCCESS:
+            return
+        modul = YModule.FindModule(YByte2String(infos.serial) + ".module")
+        ev = YAPI._Event()
+        ev.setConfigChange(modul)
+        YAPI._DataEvents.append(ev)
+        return 0
+
     @staticmethod
     def queuesCleanUp():
         del YAPI._PlugEvents[:]
@@ -2094,6 +2118,8 @@ class YAPI:
         YAPI._yapiRegisterDeviceRemovalCallback(native_yDeviceRemovalAnchor)
         # noinspection PyUnresolvedReferences
         YAPI._yapiRegisterDeviceChangeCallback(native_yDeviceChangeAnchor)
+        # noinspection PyUnresolvedReferences
+        YAPI._yapiRegisterDeviceConfigChangeCallback(native_yDeviceConfigChangeAnchor)
         # noinspection PyUnresolvedReferences
         YAPI._yapiRegisterFunctionUpdateCallback(native_yFunctionUpdateAnchor)
         # noinspection PyUnresolvedReferences
@@ -3869,6 +3895,8 @@ native_yDeviceRemovalAnchor = YAPI._yapiDeviceUpdateFunc(YAPI.native_yDeviceRemo
 # noinspection PyProtectedMember
 native_yDeviceChangeAnchor = YAPI._yapiDeviceUpdateFunc(YAPI.native_yDeviceChangeCallback)
 # noinspection PyProtectedMember
+native_yDeviceConfigChangeAnchor = YAPI._yapiDeviceUpdateFunc(YAPI.native_yDeviceConfigChangeCallback)
+# noinspection PyProtectedMember
 native_yHubDiscoveryAnchor = YAPI._yapiHubDiscoveryCallback(YAPI.native_HubDiscoveryCallback)
 # noinspection PyProtectedMember
 native_yDeviceLogAnchor = YAPI._yapiDeviceLogCallback(YAPI.native_DeviceLogCallback)
@@ -4882,6 +4910,7 @@ class YModule(YFunction):
         self._rebootCountdown = YModule.REBOOTCOUNTDOWN_INVALID
         self._userVar = YModule.USERVAR_INVALID
         self._logCallback = None
+        self._confChangeCallback = None
         #--- (end of generated code: YModule attributes)
 
     # --- (generated code: YModule implementation)
@@ -5224,6 +5253,29 @@ class YModule(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_rebootCountdown(-secBeforeReboot)
+
+    def registerConfigChangeCallback(self, callback):
+        """
+        Register a callback function, to be called when a persistent settings in
+        a device configuration has been changed (e.g. change of unit, etc).
+
+        @param callback : a procedure taking a YModule parameter, or None
+                to unregister a previously registered  callback.
+        """
+        self._confChangeCallback = callback
+        return 0
+
+    def _invokeConfigChangeCallback(self):
+        if self._confChangeCallback is not None:
+            self._confChangeCallback(self)
+        return 0
+
+    def triggerConfigChangeCallback(self):
+        """
+        Triggers a configuration change callback, to check if they are supported or not.
+        """
+        self._setAttr("persistentSettings","2")
+        return 0
 
     def checkFirmware(self, path, onlynew):
         """

@@ -18,9 +18,14 @@ def sensorTimedReportCallback(fct, measure):
     print(info['hwId'] + ": " + str(measure.get_averageValue()) + " " + info['unit'] + " (timed report)")
 
 
+def configChangeCallback(mod):
+    print(mod.get_serialNumber() + ": configuration change")
+
+
 def deviceArrival(m):
     serial = m.get_serialNumber()
     print('Device arrival : ' + serial)
+    m.registerConfigChangeCallback(configChangeCallback)
 
     # First solution: look for a specific type of function (eg. anButton)
     fctcount = m.functionCount()

@@ -1,5 +1,5 @@
-- Add new PWMOutput methods
-- Improve function documentation in French for PWM-Tx
-- Fix Modbus ASCII message handling
-- Fix syntax error when using the YAPI.RegisterLogFunction function
-- Fix search of function by deviceref.func_logicalname
+Python v1.10.31315
+
+- Add support for phaseMove in PWMOutput class
+- Add support for config change notifications
+- Improve error recovery with WebSocket connection

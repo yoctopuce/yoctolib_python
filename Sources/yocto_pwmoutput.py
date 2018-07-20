@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwmoutput.py 30679 2018-04-24 09:34:17Z mvuilleu $
+#* $Id: yocto_pwmoutput.py 31296 2018-07-19 12:34:36Z mvuilleu $
 #*
 #* Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #*
@@ -415,6 +415,25 @@ class YPwmOutput(YFunction):
         newval = "" + str(target) + "Hz:" + str(int(ms_duration))
         return self.set_pwmTransition(newval)
 
+    def phaseMove(self, target, ms_duration):
+        """
+        Performs a smooth transition toward a specified value of the phase shift between this channel
+        and the other channel. The phase shift is executed by slightly changing the frequency
+        temporarily during the specified duration. This function only makes sense when both channels
+        are running, either at the same frequency, or at a multiple of the channel frequency.
+        Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
+
+        @param target      : phase shift at the end of the transition, in milliseconds (floating-point number)
+        @param ms_duration : total duration of the transition, in milliseconds
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # newval
+        newval = "" + str(target) + "ps:" + str(int(ms_duration))
+        return self.set_pwmTransition(newval)
+
     def triggerPulsesByDuration(self, ms_target, n_pulses):
         """
         Trigger a given number of pulses of specified duration, at current frequency.
@@ -461,7 +480,6 @@ class YPwmOutput(YFunction):
         At the end of the pulse train, revert to the original state of the PWM generator.
 
         @param target   : desired frequency for the generated pulses (floating-point number)
-                (percentage, floating-point number between 0 and 100)
         @param n_pulses : desired pulse count
 
         @return YAPI.SUCCESS when the call succeeds.
