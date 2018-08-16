@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 30658 2018-04-19 12:59:51Z seb $
+#* $Id: yocto_colorledcluster.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -62,6 +62,8 @@ class YColorLedCluster(YFunction):
     #--- (end of YColorLedCluster return codes)
     #--- (YColorLedCluster dlldef)
     #--- (end of YColorLedCluster dlldef)
+    #--- (YColorLedCluster yapiwrapper)
+    #--- (end of YColorLedCluster yapiwrapper)
     #--- (YColorLedCluster definitions)
     ACTIVELEDCOUNT_INVALID = YAPI.INVALID_UINT
     MAXLEDCOUNT_INVALID = YAPI.INVALID_UINT
@@ -112,7 +114,7 @@ class YColorLedCluster(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLedCluster.ACTIVELEDCOUNT_INVALID
         res = self._activeLedCount
         return res
@@ -141,7 +143,7 @@ class YColorLedCluster(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLedCluster.LEDTYPE_INVALID
         res = self._ledType
         return res
@@ -170,7 +172,7 @@ class YColorLedCluster(YFunction):
         """
         # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLedCluster.MAXLEDCOUNT_INVALID
         res = self._maxLedCount
         return res
@@ -185,7 +187,7 @@ class YColorLedCluster(YFunction):
         """
         # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLedCluster.BLINKSEQMAXCOUNT_INVALID
         res = self._blinkSeqMaxCount
         return res
@@ -200,7 +202,7 @@ class YColorLedCluster(YFunction):
         """
         # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLedCluster.BLINKSEQMAXSIZE_INVALID
         res = self._blinkSeqMaxSize
         return res
@@ -208,7 +210,7 @@ class YColorLedCluster(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLedCluster.COMMAND_INVALID
         res = self._command
         return res

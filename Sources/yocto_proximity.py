@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_proximity.py 29768 2018-01-26 08:54:17Z seb $
+#* $Id: yocto_proximity.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindProximity(), the high-level API for Proximity functions
 #*
@@ -59,6 +59,8 @@ class YProximity(YSensor):
     #--- (end of YProximity return codes)
     #--- (YProximity dlldef)
     #--- (end of YProximity dlldef)
+    #--- (YProximity yapiwrapper)
+    #--- (end of YProximity yapiwrapper)
     #--- (YProximity definitions)
     SIGNALVALUE_INVALID = YAPI.INVALID_DOUBLE
     DETECTIONTHRESHOLD_INVALID = YAPI.INVALID_UINT
@@ -132,7 +134,7 @@ class YProximity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YProximity.SIGNALVALUE_INVALID
         res = round(self._signalValue * 1000) / 1000
         return res
@@ -150,7 +152,7 @@ class YProximity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YProximity.DETECTIONTHRESHOLD_INVALID
         res = self._detectionThreshold
         return res
@@ -184,7 +186,7 @@ class YProximity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YProximity.DETECTIONHYSTERESIS_INVALID
         res = self._detectionHysteresis
         return res
@@ -216,7 +218,7 @@ class YProximity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YProximity.PRESENCEMINTIME_INVALID
         res = self._presenceMinTime
         return res
@@ -246,7 +248,7 @@ class YProximity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YProximity.REMOVALMINTIME_INVALID
         res = self._removalMinTime
         return res
@@ -278,7 +280,7 @@ class YProximity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YProximity.ISPRESENT_INVALID
         res = self._isPresent
         return res
@@ -296,7 +298,7 @@ class YProximity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YProximity.LASTTIMEAPPROACHED_INVALID
         res = self._lastTimeApproached
         return res
@@ -314,7 +316,7 @@ class YProximity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YProximity.LASTTIMEREMOVED_INVALID
         res = self._lastTimeRemoved
         return res
@@ -331,7 +333,7 @@ class YProximity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YProximity.PULSECOUNTER_INVALID
         res = self._pulseCounter
         return res
@@ -350,7 +352,7 @@ class YProximity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YProximity.PULSETIMER_INVALID
         res = self._pulseTimer
         return res
@@ -368,7 +370,7 @@ class YProximity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YProximity.PROXIMITYREPORTMODE_INVALID
         res = self._proximityReportMode
         return res

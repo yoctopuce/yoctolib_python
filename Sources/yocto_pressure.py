@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pressure.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_pressure.py 31445 2018-08-08 08:01:39Z seb $
 #*
 #* Implements yFindPressure(), the high-level API for Pressure functions
 #*
@@ -57,6 +57,8 @@ class YPressure(YSensor):
     #--- (end of YPressure return codes)
     #--- (YPressure dlldef)
     #--- (end of YPressure dlldef)
+    #--- (YPressure yapiwrapper)
+    #--- (end of YPressure yapiwrapper)
     #--- (YPressure definitions)
     #--- (end of YPressure definitions)
 

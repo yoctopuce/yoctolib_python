@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_current.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_current.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindCurrent(), the high-level API for Current functions
 #*
@@ -57,6 +57,8 @@ class YCurrent(YSensor):
     #--- (end of YCurrent return codes)
     #--- (YCurrent dlldef)
     #--- (end of YCurrent dlldef)
+    #--- (YCurrent yapiwrapper)
+    #--- (end of YCurrent yapiwrapper)
     #--- (YCurrent definitions)
     ENABLED_FALSE = 0
     ENABLED_TRUE = 1
@@ -80,7 +82,7 @@ class YCurrent(YSensor):
     def get_enabled(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YCurrent.ENABLED_INVALID
         res = self._enabled
         return res

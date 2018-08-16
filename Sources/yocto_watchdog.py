@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_watchdog.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_watchdog.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindWatchdog(), the high-level API for Watchdog functions
 #*
@@ -60,6 +60,8 @@ class YWatchdog(YFunction):
     #--- (end of YWatchdog return codes)
     #--- (YWatchdog dlldef)
     #--- (end of YWatchdog dlldef)
+    #--- (YWatchdog yapiwrapper)
+    #--- (end of YWatchdog yapiwrapper)
     #--- (YWatchdog definitions)
     MAXTIMEONSTATEA_INVALID = YAPI.INVALID_LONG
     MAXTIMEONSTATEB_INVALID = YAPI.INVALID_LONG
@@ -151,7 +153,7 @@ class YWatchdog(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.STATE_INVALID
         res = self._state
         return res
@@ -183,7 +185,7 @@ class YWatchdog(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.STATEATPOWERON_INVALID
         res = self._stateAtPowerOn
         return res
@@ -215,7 +217,7 @@ class YWatchdog(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.MAXTIMEONSTATEA_INVALID
         res = self._maxTimeOnStateA
         return res
@@ -245,7 +247,7 @@ class YWatchdog(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.MAXTIMEONSTATEB_INVALID
         res = self._maxTimeOnStateB
         return res
@@ -275,7 +277,7 @@ class YWatchdog(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.OUTPUT_INVALID
         res = self._output
         return res
@@ -307,7 +309,7 @@ class YWatchdog(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.PULSETIMER_INVALID
         res = self._pulseTimer
         return res
@@ -333,7 +335,7 @@ class YWatchdog(YFunction):
     def get_delayedPulseTimer(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.DELAYEDPULSETIMER_INVALID
         res = self._delayedPulseTimer
         return res
@@ -368,7 +370,7 @@ class YWatchdog(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.COUNTDOWN_INVALID
         res = self._countdown
         return res
@@ -384,7 +386,7 @@ class YWatchdog(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.AUTOSTART_INVALID
         res = self._autoStart
         return res
@@ -414,7 +416,7 @@ class YWatchdog(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.RUNNING_INVALID
         res = self._running
         return res
@@ -457,7 +459,7 @@ class YWatchdog(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.TRIGGERDELAY_INVALID
         res = self._triggerDelay
         return res
@@ -486,7 +488,7 @@ class YWatchdog(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWatchdog.TRIGGERDURATION_INVALID
         res = self._triggerDuration
         return res

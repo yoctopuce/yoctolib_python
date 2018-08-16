@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_compass.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_compass.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindCompass(), the high-level API for Compass functions
 #*
@@ -63,6 +63,8 @@ class YCompass(YSensor):
     #--- (end of YCompass return codes)
     #--- (YCompass dlldef)
     #--- (end of YCompass dlldef)
+    #--- (YCompass yapiwrapper)
+    #--- (end of YCompass yapiwrapper)
     #--- (YCompass definitions)
     BANDWIDTH_INVALID = YAPI.INVALID_INT
     MAGNETICHEADING_INVALID = YAPI.INVALID_DOUBLE
@@ -102,7 +104,7 @@ class YCompass(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YCompass.BANDWIDTH_INVALID
         res = self._bandwidth
         return res
@@ -124,7 +126,7 @@ class YCompass(YSensor):
     def get_axis(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YCompass.AXIS_INVALID
         res = self._axis
         return res
@@ -139,7 +141,7 @@ class YCompass(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YCompass.MAGNETICHEADING_INVALID
         res = self._magneticHeading
         return res

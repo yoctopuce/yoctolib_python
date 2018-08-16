@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 29980 2018-02-20 16:27:13Z seb $
+#* $Id: yocto_refframe.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -60,6 +60,8 @@ class YRefFrame(YFunction):
     #--- (end of YRefFrame return codes)
     #--- (YRefFrame dlldef)
     #--- (end of YRefFrame dlldef)
+    #--- (YRefFrame yapiwrapper)
+    #--- (end of YRefFrame yapiwrapper)
     #--- (YRefFrame definitions)
     class MOUNTPOSITION:
         def __init__(self):
@@ -127,7 +129,7 @@ class YRefFrame(YFunction):
     def get_mountPos(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRefFrame.MOUNTPOS_INVALID
         res = self._mountPos
         return res
@@ -174,7 +176,7 @@ class YRefFrame(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRefFrame.BEARING_INVALID
         res = self._bearing
         return res
@@ -182,7 +184,7 @@ class YRefFrame(YFunction):
     def get_calibrationParam(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRefFrame.CALIBRATIONPARAM_INVALID
         res = self._calibrationParam
         return res
@@ -194,7 +196,7 @@ class YRefFrame(YFunction):
     def get_fusionMode(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRefFrame.FUSIONMODE_INVALID
         res = self._fusionMode
         return res

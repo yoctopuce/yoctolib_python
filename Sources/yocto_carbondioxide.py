@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_carbondioxide.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_carbondioxide.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
 #*
@@ -58,6 +58,8 @@ class YCarbonDioxide(YSensor):
     #--- (end of YCarbonDioxide return codes)
     #--- (YCarbonDioxide dlldef)
     #--- (end of YCarbonDioxide dlldef)
+    #--- (YCarbonDioxide yapiwrapper)
+    #--- (end of YCarbonDioxide yapiwrapper)
     #--- (YCarbonDioxide definitions)
     ABCPERIOD_INVALID = YAPI.INVALID_INT
     COMMAND_INVALID = YAPI.INVALID_STRING
@@ -91,7 +93,7 @@ class YCarbonDioxide(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YCarbonDioxide.ABCPERIOD_INVALID
         res = self._abcPeriod
         return res
@@ -116,7 +118,7 @@ class YCarbonDioxide(YSensor):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YCarbonDioxide.COMMAND_INVALID
         res = self._command
         return res

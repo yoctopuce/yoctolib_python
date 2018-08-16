@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_relay.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_relay.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindRelay(), the high-level API for Relay functions
 #*
@@ -61,6 +61,8 @@ class YRelay(YFunction):
     #--- (end of YRelay return codes)
     #--- (YRelay dlldef)
     #--- (end of YRelay dlldef)
+    #--- (YRelay yapiwrapper)
+    #--- (end of YRelay yapiwrapper)
     #--- (YRelay definitions)
     MAXTIMEONSTATEA_INVALID = YAPI.INVALID_LONG
     MAXTIMEONSTATEB_INVALID = YAPI.INVALID_LONG
@@ -132,7 +134,7 @@ class YRelay(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRelay.STATE_INVALID
         res = self._state
         return res
@@ -164,7 +166,7 @@ class YRelay(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRelay.STATEATPOWERON_INVALID
         res = self._stateAtPowerOn
         return res
@@ -196,7 +198,7 @@ class YRelay(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRelay.MAXTIMEONSTATEA_INVALID
         res = self._maxTimeOnStateA
         return res
@@ -226,7 +228,7 @@ class YRelay(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRelay.MAXTIMEONSTATEB_INVALID
         res = self._maxTimeOnStateB
         return res
@@ -256,7 +258,7 @@ class YRelay(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRelay.OUTPUT_INVALID
         res = self._output
         return res
@@ -288,7 +290,7 @@ class YRelay(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRelay.PULSETIMER_INVALID
         res = self._pulseTimer
         return res
@@ -314,7 +316,7 @@ class YRelay(YFunction):
     def get_delayedPulseTimer(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRelay.DELAYEDPULSETIMER_INVALID
         res = self._delayedPulseTimer
         return res
@@ -349,7 +351,7 @@ class YRelay(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRelay.COUNTDOWN_INVALID
         res = self._countdown
         return res

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_motor.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_motor.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindMotor(), the high-level API for Motor functions
 #*
@@ -59,6 +59,8 @@ class YMotor(YFunction):
     #--- (end of YMotor return codes)
     #--- (YMotor dlldef)
     #--- (end of YMotor dlldef)
+    #--- (YMotor yapiwrapper)
+    #--- (end of YMotor yapiwrapper)
     #--- (YMotor definitions)
     DRIVINGFORCE_INVALID = YAPI.INVALID_DOUBLE
     BRAKINGFORCE_INVALID = YAPI.INVALID_DOUBLE
@@ -140,7 +142,7 @@ class YMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMotor.MOTORSTATUS_INVALID
         res = self._motorStatus
         return res
@@ -177,7 +179,7 @@ class YMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMotor.DRIVINGFORCE_INVALID
         res = self._drivingForce
         return res
@@ -209,7 +211,7 @@ class YMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMotor.BRAKINGFORCE_INVALID
         res = self._brakingForce
         return res
@@ -247,7 +249,7 @@ class YMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMotor.CUTOFFVOLTAGE_INVALID
         res = self._cutOffVoltage
         return res
@@ -264,7 +266,7 @@ class YMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMotor.OVERCURRENTLIMIT_INVALID
         res = self._overCurrentLimit
         return res
@@ -313,7 +315,7 @@ class YMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMotor.FREQUENCY_INVALID
         res = self._frequency
         return res
@@ -331,7 +333,7 @@ class YMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMotor.STARTERTIME_INVALID
         res = self._starterTime
         return res
@@ -367,7 +369,7 @@ class YMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMotor.FAILSAFETIMEOUT_INVALID
         res = self._failSafeTimeout
         return res
@@ -393,7 +395,7 @@ class YMotor(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMotor.COMMAND_INVALID
         res = self._command
         return res

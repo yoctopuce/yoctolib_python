@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 30658 2018-04-19 12:59:51Z seb $
+#* $Id: yocto_messagebox.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -1103,7 +1103,7 @@ class YMessageBox(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMessageBox.SLOTSINUSE_INVALID
         res = self._slotsInUse
         return res
@@ -1118,7 +1118,7 @@ class YMessageBox(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMessageBox.SLOTSCOUNT_INVALID
         res = self._slotsCount
         return res
@@ -1126,7 +1126,7 @@ class YMessageBox(YFunction):
     def get_slotsBitmap(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMessageBox.SLOTSBITMAP_INVALID
         res = self._slotsBitmap
         return res
@@ -1141,7 +1141,7 @@ class YMessageBox(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMessageBox.PDUSENT_INVALID
         res = self._pduSent
         return res
@@ -1169,7 +1169,7 @@ class YMessageBox(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMessageBox.PDURECEIVED_INVALID
         res = self._pduReceived
         return res
@@ -1190,7 +1190,7 @@ class YMessageBox(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMessageBox.COMMAND_INVALID
         res = self._command
         return res

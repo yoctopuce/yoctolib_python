@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 29980 2018-02-20 16:27:13Z seb $
+#* $Id: yocto_gyro.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -241,7 +241,7 @@ class YGyro(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGyro.BANDWIDTH_INVALID
         res = self._bandwidth
         return res
@@ -271,7 +271,7 @@ class YGyro(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGyro.XVALUE_INVALID
         res = self._xValue
         return res
@@ -287,7 +287,7 @@ class YGyro(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGyro.YVALUE_INVALID
         res = self._yValue
         return res
@@ -303,7 +303,7 @@ class YGyro(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGyro.ZVALUE_INVALID
         res = self._zValue
         return res

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_quadraturedecoder.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_quadraturedecoder.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
 #*
@@ -57,6 +57,8 @@ class YQuadratureDecoder(YSensor):
     #--- (end of YQuadratureDecoder return codes)
     #--- (YQuadratureDecoder dlldef)
     #--- (end of YQuadratureDecoder dlldef)
+    #--- (YQuadratureDecoder yapiwrapper)
+    #--- (end of YQuadratureDecoder yapiwrapper)
     #--- (YQuadratureDecoder definitions)
     SPEED_INVALID = YAPI.INVALID_DOUBLE
     DECODING_OFF = 0
@@ -105,7 +107,7 @@ class YQuadratureDecoder(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YQuadratureDecoder.SPEED_INVALID
         res = self._speed
         return res
@@ -121,7 +123,7 @@ class YQuadratureDecoder(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YQuadratureDecoder.DECODING_INVALID
         res = self._decoding
         return res

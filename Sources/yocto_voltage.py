@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_voltage.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_voltage.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindVoltage(), the high-level API for Voltage functions
 #*
@@ -57,6 +57,8 @@ class YVoltage(YSensor):
     #--- (end of YVoltage return codes)
     #--- (YVoltage dlldef)
     #--- (end of YVoltage dlldef)
+    #--- (YVoltage yapiwrapper)
+    #--- (end of YVoltage yapiwrapper)
     #--- (YVoltage definitions)
     ENABLED_FALSE = 0
     ENABLED_TRUE = 1
@@ -80,7 +82,7 @@ class YVoltage(YSensor):
     def get_enabled(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YVoltage.ENABLED_INVALID
         res = self._enabled
         return res

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_voltageoutput.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_voltageoutput.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
 #*
@@ -55,6 +55,8 @@ class YVoltageOutput(YFunction):
     #--- (end of YVoltageOutput return codes)
     #--- (YVoltageOutput dlldef)
     #--- (end of YVoltageOutput dlldef)
+    #--- (YVoltageOutput yapiwrapper)
+    #--- (end of YVoltageOutput yapiwrapper)
     #--- (YVoltageOutput definitions)
     CURRENTVOLTAGE_INVALID = YAPI.INVALID_DOUBLE
     VOLTAGETRANSITION_INVALID = YAPI.INVALID_STRING
@@ -104,7 +106,7 @@ class YVoltageOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YVoltageOutput.CURRENTVOLTAGE_INVALID
         res = self._currentVoltage
         return res
@@ -112,7 +114,7 @@ class YVoltageOutput(YFunction):
     def get_voltageTransition(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YVoltageOutput.VOLTAGETRANSITION_INVALID
         res = self._voltageTransition
         return res
@@ -145,7 +147,7 @@ class YVoltageOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YVoltageOutput.VOLTAGEATSTARTUP_INVALID
         res = self._voltageAtStartUp
         return res

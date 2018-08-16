@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_buzzer.py 29980 2018-02-20 16:27:13Z seb $
+#* $Id: yocto_buzzer.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindBuzzer(), the high-level API for Buzzer functions
 #*
@@ -58,6 +58,8 @@ class YBuzzer(YFunction):
     #--- (end of YBuzzer return codes)
     #--- (YBuzzer dlldef)
     #--- (end of YBuzzer dlldef)
+    #--- (YBuzzer yapiwrapper)
+    #--- (end of YBuzzer yapiwrapper)
     #--- (YBuzzer definitions)
     FREQUENCY_INVALID = YAPI.INVALID_DOUBLE
     VOLUME_INVALID = YAPI.INVALID_UINT
@@ -119,7 +121,7 @@ class YBuzzer(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBuzzer.FREQUENCY_INVALID
         res = self._frequency
         return res
@@ -134,7 +136,7 @@ class YBuzzer(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBuzzer.VOLUME_INVALID
         res = self._volume
         return res
@@ -162,7 +164,7 @@ class YBuzzer(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBuzzer.PLAYSEQSIZE_INVALID
         res = self._playSeqSize
         return res
@@ -177,7 +179,7 @@ class YBuzzer(YFunction):
         """
         # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBuzzer.PLAYSEQMAXSIZE_INVALID
         res = self._playSeqMaxSize
         return res
@@ -195,7 +197,7 @@ class YBuzzer(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBuzzer.PLAYSEQSIGNATURE_INVALID
         res = self._playSeqSignature
         return res
@@ -203,7 +205,7 @@ class YBuzzer(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBuzzer.COMMAND_INVALID
         res = self._command
         return res

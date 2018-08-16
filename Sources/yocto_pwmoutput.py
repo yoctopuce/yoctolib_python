@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwmoutput.py 31296 2018-07-19 12:34:36Z mvuilleu $
+#* $Id: yocto_pwmoutput.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #*
@@ -55,6 +55,8 @@ class YPwmOutput(YFunction):
     #--- (end of YPwmOutput return codes)
     #--- (YPwmOutput dlldef)
     #--- (end of YPwmOutput dlldef)
+    #--- (YPwmOutput yapiwrapper)
+    #--- (end of YPwmOutput yapiwrapper)
     #--- (YPwmOutput definitions)
     FREQUENCY_INVALID = YAPI.INVALID_DOUBLE
     PERIOD_INVALID = YAPI.INVALID_DOUBLE
@@ -115,7 +117,7 @@ class YPwmOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmOutput.ENABLED_INVALID
         res = self._enabled
         return res
@@ -157,7 +159,7 @@ class YPwmOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmOutput.FREQUENCY_INVALID
         res = self._frequency
         return res
@@ -185,7 +187,7 @@ class YPwmOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmOutput.PERIOD_INVALID
         res = self._period
         return res
@@ -213,7 +215,7 @@ class YPwmOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmOutput.DUTYCYCLE_INVALID
         res = self._dutyCycle
         return res
@@ -243,7 +245,7 @@ class YPwmOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmOutput.PULSEDURATION_INVALID
         res = self._pulseDuration
         return res
@@ -251,7 +253,7 @@ class YPwmOutput(YFunction):
     def get_pwmTransition(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmOutput.PWMTRANSITION_INVALID
         res = self._pwmTransition
         return res
@@ -271,7 +273,7 @@ class YPwmOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmOutput.ENABLEDATPOWERON_INVALID
         res = self._enabledAtPowerOn
         return res
@@ -316,7 +318,7 @@ class YPwmOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmOutput.DUTYCYCLEATPOWERON_INVALID
         res = self._dutyCycleAtPowerOn
         return res

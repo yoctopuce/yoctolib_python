@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 30685 2018-04-24 13:46:18Z seb $
+#* $Id: yocto_serialport.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -182,7 +182,7 @@ class YSerialPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.RXCOUNT_INVALID
         res = self._rxCount
         return res
@@ -197,7 +197,7 @@ class YSerialPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.TXCOUNT_INVALID
         res = self._txCount
         return res
@@ -212,7 +212,7 @@ class YSerialPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.ERRCOUNT_INVALID
         res = self._errCount
         return res
@@ -227,7 +227,7 @@ class YSerialPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.RXMSGCOUNT_INVALID
         res = self._rxMsgCount
         return res
@@ -242,7 +242,7 @@ class YSerialPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.TXMSGCOUNT_INVALID
         res = self._txMsgCount
         return res
@@ -257,7 +257,7 @@ class YSerialPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.LASTMSG_INVALID
         res = self._lastMsg
         return res
@@ -272,7 +272,7 @@ class YSerialPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.CURRENTJOB_INVALID
         res = self._currentJob
         return res
@@ -302,7 +302,7 @@ class YSerialPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.STARTUPJOB_INVALID
         res = self._startupJob
         return res
@@ -325,7 +325,7 @@ class YSerialPort(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.COMMAND_INVALID
         res = self._command
         return res
@@ -347,7 +347,7 @@ class YSerialPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.VOLTAGELEVEL_INVALID
         res = self._voltageLevel
         return res
@@ -390,7 +390,7 @@ class YSerialPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.PROTOCOL_INVALID
         res = self._protocol
         return res
@@ -434,7 +434,7 @@ class YSerialPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSerialPort.SERIALMODE_INVALID
         res = self._serialMode
         return res

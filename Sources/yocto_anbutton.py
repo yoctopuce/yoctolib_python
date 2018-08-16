@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_anbutton.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_anbutton.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindAnButton(), the high-level API for AnButton functions
 #*
@@ -60,6 +60,8 @@ class YAnButton(YFunction):
     #--- (end of YAnButton return codes)
     #--- (YAnButton dlldef)
     #--- (end of YAnButton dlldef)
+    #--- (YAnButton yapiwrapper)
+    #--- (end of YAnButton yapiwrapper)
     #--- (YAnButton definitions)
     CALIBRATEDVALUE_INVALID = YAPI.INVALID_UINT
     RAWVALUE_INVALID = YAPI.INVALID_UINT
@@ -132,7 +134,7 @@ class YAnButton(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAnButton.CALIBRATEDVALUE_INVALID
         res = self._calibratedValue
         return res
@@ -147,7 +149,7 @@ class YAnButton(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAnButton.RAWVALUE_INVALID
         res = self._rawValue
         return res
@@ -162,7 +164,7 @@ class YAnButton(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAnButton.ANALOGCALIBRATION_INVALID
         res = self._analogCalibration
         return res
@@ -192,7 +194,7 @@ class YAnButton(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAnButton.CALIBRATIONMAX_INVALID
         res = self._calibrationMax
         return res
@@ -225,7 +227,7 @@ class YAnButton(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAnButton.CALIBRATIONMIN_INVALID
         res = self._calibrationMin
         return res
@@ -258,7 +260,7 @@ class YAnButton(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAnButton.SENSITIVITY_INVALID
         res = self._sensitivity
         return res
@@ -293,7 +295,7 @@ class YAnButton(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAnButton.ISPRESSED_INVALID
         res = self._isPressed
         return res
@@ -311,7 +313,7 @@ class YAnButton(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAnButton.LASTTIMEPRESSED_INVALID
         res = self._lastTimePressed
         return res
@@ -329,7 +331,7 @@ class YAnButton(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAnButton.LASTTIMERELEASED_INVALID
         res = self._lastTimeReleased
         return res
@@ -346,7 +348,7 @@ class YAnButton(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAnButton.PULSECOUNTER_INVALID
         res = self._pulseCounter
         return res
@@ -365,7 +367,7 @@ class YAnButton(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAnButton.PULSETIMER_INVALID
         res = self._pulseTimer
         return res

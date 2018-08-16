@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwmpowersource.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_pwmpowersource.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
 #*
@@ -56,6 +56,8 @@ class YPwmPowerSource(YFunction):
     #--- (end of YPwmPowerSource return codes)
     #--- (YPwmPowerSource dlldef)
     #--- (end of YPwmPowerSource dlldef)
+    #--- (YPwmPowerSource yapiwrapper)
+    #--- (end of YPwmPowerSource yapiwrapper)
     #--- (YPwmPowerSource definitions)
     POWERMODE_USB_5V = 0
     POWERMODE_USB_3V = 1
@@ -90,7 +92,7 @@ class YPwmPowerSource(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmPowerSource.POWERMODE_INVALID
         res = self._powerMode
         return res

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorled.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_colorled.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindColorLed(), the high-level API for ColorLed functions
 #*
@@ -60,6 +60,8 @@ class YColorLed(YFunction):
     #--- (end of YColorLed return codes)
     #--- (YColorLed dlldef)
     #--- (end of YColorLed dlldef)
+    #--- (YColorLed yapiwrapper)
+    #--- (end of YColorLed yapiwrapper)
     #--- (YColorLed definitions)
     RGBCOLOR_INVALID = YAPI.INVALID_UINT
     HSLCOLOR_INVALID = YAPI.INVALID_UINT
@@ -134,7 +136,7 @@ class YColorLed(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLed.RGBCOLOR_INVALID
         res = self._rgbColor
         return res
@@ -162,7 +164,7 @@ class YColorLed(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLed.HSLCOLOR_INVALID
         res = self._hslColor
         return res
@@ -183,7 +185,7 @@ class YColorLed(YFunction):
     def get_rgbMove(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLed.RGBMOVE_INVALID
         res = self._rgbMove
         return res
@@ -209,7 +211,7 @@ class YColorLed(YFunction):
     def get_hslMove(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLed.HSLMOVE_INVALID
         res = self._hslMove
         return res
@@ -242,7 +244,7 @@ class YColorLed(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLed.RGBCOLORATPOWERON_INVALID
         res = self._rgbColorAtPowerOn
         return res
@@ -271,7 +273,7 @@ class YColorLed(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLed.BLINKSEQSIZE_INVALID
         res = self._blinkSeqSize
         return res
@@ -286,7 +288,7 @@ class YColorLed(YFunction):
         """
         # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLed.BLINKSEQMAXSIZE_INVALID
         res = self._blinkSeqMaxSize
         return res
@@ -304,7 +306,7 @@ class YColorLed(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLed.BLINKSEQSIGNATURE_INVALID
         res = self._blinkSeqSignature
         return res
@@ -312,7 +314,7 @@ class YColorLed(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLed.COMMAND_INVALID
         res = self._command
         return res

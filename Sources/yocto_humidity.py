@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_humidity.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_humidity.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindHumidity(), the high-level API for Humidity functions
 #*
@@ -57,6 +57,8 @@ class YHumidity(YSensor):
     #--- (end of YHumidity return codes)
     #--- (YHumidity dlldef)
     #--- (end of YHumidity dlldef)
+    #--- (YHumidity yapiwrapper)
+    #--- (end of YHumidity yapiwrapper)
     #--- (YHumidity definitions)
     RELHUM_INVALID = YAPI.INVALID_DOUBLE
     ABSHUM_INVALID = YAPI.INVALID_DOUBLE
@@ -108,7 +110,7 @@ class YHumidity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YHumidity.RELHUM_INVALID
         res = self._relHum
         return res
@@ -123,7 +125,7 @@ class YHumidity(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YHumidity.ABSHUM_INVALID
         res = self._absHum
         return res

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_tilt.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_tilt.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindTilt(), the high-level API for Tilt functions
 #*
@@ -63,6 +63,8 @@ class YTilt(YSensor):
     #--- (end of YTilt return codes)
     #--- (YTilt dlldef)
     #--- (end of YTilt dlldef)
+    #--- (YTilt yapiwrapper)
+    #--- (end of YTilt yapiwrapper)
     #--- (YTilt definitions)
     BANDWIDTH_INVALID = YAPI.INVALID_INT
     AXIS_X = 0
@@ -98,7 +100,7 @@ class YTilt(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YTilt.BANDWIDTH_INVALID
         res = self._bandwidth
         return res
@@ -120,7 +122,7 @@ class YTilt(YSensor):
     def get_axis(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YTilt.AXIS_INVALID
         res = self._axis
         return res

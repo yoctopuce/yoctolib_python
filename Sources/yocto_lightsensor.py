@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_lightsensor.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_lightsensor.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindLightSensor(), the high-level API for LightSensor functions
 #*
@@ -61,6 +61,8 @@ class YLightSensor(YSensor):
     #--- (end of YLightSensor return codes)
     #--- (YLightSensor dlldef)
     #--- (end of YLightSensor dlldef)
+    #--- (YLightSensor yapiwrapper)
+    #--- (end of YLightSensor yapiwrapper)
     #--- (YLightSensor definitions)
     MEASURETYPE_HUMAN_EYE = 0
     MEASURETYPE_WIDE_SPECTRUM = 1
@@ -117,7 +119,7 @@ class YLightSensor(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YLightSensor.MEASURETYPE_INVALID
         res = self._measureType
         return res

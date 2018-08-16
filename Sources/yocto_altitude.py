@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_altitude.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_altitude.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindAltitude(), the high-level API for Altitude functions
 #*
@@ -59,6 +59,8 @@ class YAltitude(YSensor):
     #--- (end of YAltitude return codes)
     #--- (YAltitude dlldef)
     #--- (end of YAltitude dlldef)
+    #--- (YAltitude yapiwrapper)
+    #--- (end of YAltitude yapiwrapper)
     #--- (YAltitude definitions)
     QNH_INVALID = YAPI.INVALID_DOUBLE
     TECHNOLOGY_INVALID = YAPI.INVALID_STRING
@@ -124,7 +126,7 @@ class YAltitude(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAltitude.QNH_INVALID
         res = self._qnh
         return res
@@ -141,7 +143,7 @@ class YAltitude(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAltitude.TECHNOLOGY_INVALID
         res = self._technology
         return res

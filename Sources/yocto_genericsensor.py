@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_genericsensor.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_genericsensor.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #*
@@ -59,6 +59,8 @@ class YGenericSensor(YSensor):
     #--- (end of YGenericSensor return codes)
     #--- (YGenericSensor dlldef)
     #--- (end of YGenericSensor dlldef)
+    #--- (YGenericSensor yapiwrapper)
+    #--- (end of YGenericSensor yapiwrapper)
     #--- (YGenericSensor definitions)
     SIGNALVALUE_INVALID = YAPI.INVALID_DOUBLE
     SIGNALUNIT_INVALID = YAPI.INVALID_STRING
@@ -127,7 +129,7 @@ class YGenericSensor(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGenericSensor.SIGNALVALUE_INVALID
         res = round(self._signalValue * 1000) / 1000
         return res
@@ -142,7 +144,7 @@ class YGenericSensor(YSensor):
         """
         # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGenericSensor.SIGNALUNIT_INVALID
         res = self._signalUnit
         return res
@@ -157,7 +159,7 @@ class YGenericSensor(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGenericSensor.SIGNALRANGE_INVALID
         res = self._signalRange
         return res
@@ -185,7 +187,7 @@ class YGenericSensor(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGenericSensor.VALUERANGE_INVALID
         res = self._valueRange
         return res
@@ -231,7 +233,7 @@ class YGenericSensor(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGenericSensor.SIGNALBIAS_INVALID
         res = self._signalBias
         return res
@@ -253,7 +255,7 @@ class YGenericSensor(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGenericSensor.SIGNALSAMPLING_INVALID
         res = self._signalSampling
         return res

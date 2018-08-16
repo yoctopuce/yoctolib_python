@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_rangefinder.py 29980 2018-02-20 16:27:13Z seb $
+#* $Id: yocto_rangefinder.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindRangeFinder(), the high-level API for RangeFinder functions
 #*
@@ -59,6 +59,8 @@ class YRangeFinder(YSensor):
     #--- (end of YRangeFinder return codes)
     #--- (YRangeFinder dlldef)
     #--- (end of YRangeFinder dlldef)
+    #--- (YRangeFinder yapiwrapper)
+    #--- (end of YRangeFinder yapiwrapper)
     #--- (YRangeFinder definitions)
     HARDWARECALIBRATION_INVALID = YAPI.INVALID_STRING
     CURRENTTEMPERATURE_INVALID = YAPI.INVALID_DOUBLE
@@ -123,7 +125,7 @@ class YRangeFinder(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRangeFinder.RANGEFINDERMODE_INVALID
         res = self._rangeFinderMode
         return res
@@ -149,7 +151,7 @@ class YRangeFinder(YSensor):
     def get_hardwareCalibration(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRangeFinder.HARDWARECALIBRATION_INVALID
         res = self._hardwareCalibration
         return res
@@ -168,7 +170,7 @@ class YRangeFinder(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRangeFinder.CURRENTTEMPERATURE_INVALID
         res = self._currentTemperature
         return res
@@ -176,7 +178,7 @@ class YRangeFinder(YSensor):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YRangeFinder.COMMAND_INVALID
         res = self._command
         return res

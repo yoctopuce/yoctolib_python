@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_hubport.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_hubport.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindHubPort(), the high-level API for HubPort functions
 #*
@@ -58,6 +58,8 @@ class YHubPort(YFunction):
     #--- (end of YHubPort return codes)
     #--- (YHubPort dlldef)
     #--- (end of YHubPort dlldef)
+    #--- (YHubPort yapiwrapper)
+    #--- (end of YHubPort yapiwrapper)
     #--- (YHubPort definitions)
     BAUDRATE_INVALID = YAPI.INVALID_UINT
     ENABLED_FALSE = 0
@@ -102,7 +104,7 @@ class YHubPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YHubPort.ENABLED_INVALID
         res = self._enabled
         return res
@@ -133,7 +135,7 @@ class YHubPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YHubPort.PORTSTATE_INVALID
         res = self._portState
         return res
@@ -150,7 +152,7 @@ class YHubPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YHubPort.BAUDRATE_INVALID
         res = self._baudRate
         return res

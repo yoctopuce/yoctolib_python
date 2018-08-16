@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_powersupply.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_powersupply.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindPowerSupply(), the high-level API for PowerSupply functions
 #*
@@ -56,6 +56,8 @@ class YPowerSupply(YFunction):
     #--- (end of YPowerSupply return codes)
     #--- (YPowerSupply dlldef)
     #--- (end of YPowerSupply dlldef)
+    #--- (YPowerSupply yapiwrapper)
+    #--- (end of YPowerSupply yapiwrapper)
     #--- (YPowerSupply definitions)
     VOLTAGESETPOINT_INVALID = YAPI.INVALID_DOUBLE
     CURRENTLIMIT_INVALID = YAPI.INVALID_DOUBLE
@@ -149,7 +151,7 @@ class YPowerSupply(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.VOLTAGESETPOINT_INVALID
         res = self._voltageSetPoint
         return res
@@ -177,7 +179,7 @@ class YPowerSupply(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.CURRENTLIMIT_INVALID
         res = self._currentLimit
         return res
@@ -193,7 +195,7 @@ class YPowerSupply(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.POWEROUTPUT_INVALID
         res = self._powerOutput
         return res
@@ -223,7 +225,7 @@ class YPowerSupply(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.VOLTAGESENSE_INVALID
         res = self._voltageSense
         return res
@@ -252,7 +254,7 @@ class YPowerSupply(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.MEASUREDVOLTAGE_INVALID
         res = self._measuredVoltage
         return res
@@ -267,7 +269,7 @@ class YPowerSupply(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.MEASUREDCURRENT_INVALID
         res = self._measuredCurrent
         return res
@@ -282,7 +284,7 @@ class YPowerSupply(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.INPUTVOLTAGE_INVALID
         res = self._inputVoltage
         return res
@@ -297,7 +299,7 @@ class YPowerSupply(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.VINT_INVALID
         res = self._vInt
         return res
@@ -312,7 +314,7 @@ class YPowerSupply(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.LDOTEMPERATURE_INVALID
         res = self._ldoTemperature
         return res
@@ -320,7 +322,7 @@ class YPowerSupply(YFunction):
     def get_voltageTransition(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.VOLTAGETRANSITION_INVALID
         res = self._voltageTransition
         return res
@@ -353,7 +355,7 @@ class YPowerSupply(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.VOLTAGEATSTARTUP_INVALID
         res = self._voltageAtStartUp
         return res
@@ -382,7 +384,7 @@ class YPowerSupply(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.CURRENTATSTARTUP_INVALID
         res = self._currentAtStartUp
         return res
@@ -390,7 +392,7 @@ class YPowerSupply(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.COMMAND_INVALID
         res = self._command
         return res

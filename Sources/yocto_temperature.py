@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 29500 2017-12-27 17:36:26Z mvuilleu $
+#* $Id: yocto_temperature.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -60,6 +60,8 @@ class YTemperature(YSensor):
     #--- (end of YTemperature return codes)
     #--- (YTemperature dlldef)
     #--- (end of YTemperature dlldef)
+    #--- (YTemperature yapiwrapper)
+    #--- (end of YTemperature yapiwrapper)
     #--- (YTemperature definitions)
     SIGNALVALUE_INVALID = YAPI.INVALID_DOUBLE
     SIGNALUNIT_INVALID = YAPI.INVALID_STRING
@@ -142,7 +144,7 @@ class YTemperature(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YTemperature.SENSORTYPE_INVALID
         res = self._sensorType
         return res
@@ -181,7 +183,7 @@ class YTemperature(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YTemperature.SIGNALVALUE_INVALID
         res = round(self._signalValue * 1000) / 1000
         return res
@@ -196,7 +198,7 @@ class YTemperature(YSensor):
         """
         # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YTemperature.SIGNALUNIT_INVALID
         res = self._signalUnit
         return res
@@ -204,7 +206,7 @@ class YTemperature(YSensor):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YTemperature.COMMAND_INVALID
         res = self._command
         return res

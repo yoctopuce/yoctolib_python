@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_wireless.py 28742 2017-10-03 08:12:07Z seb $
+# * $Id: yocto_wireless.py 31688 2018-08-15 14:09:26Z seb $
 # *
 # * Implements yFindWireless(), the high-level API for Wireless functions
 # *
@@ -153,7 +153,7 @@ class YWireless(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWireless.LINKQUALITY_INVALID
         res = self._linkQuality
         return res
@@ -168,7 +168,7 @@ class YWireless(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWireless.SSID_INVALID
         res = self._ssid
         return res
@@ -184,7 +184,7 @@ class YWireless(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWireless.CHANNEL_INVALID
         res = self._channel
         return res
@@ -201,7 +201,7 @@ class YWireless(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWireless.SECURITY_INVALID
         res = self._security
         return res
@@ -216,7 +216,7 @@ class YWireless(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWireless.MESSAGE_INVALID
         res = self._message
         return res
@@ -224,7 +224,7 @@ class YWireless(YFunction):
     def get_wlanConfig(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWireless.WLANCONFIG_INVALID
         res = self._wlanConfig
         return res
@@ -258,7 +258,7 @@ class YWireless(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWireless.WLANSTATE_INVALID
         res = self._wlanState
         return res

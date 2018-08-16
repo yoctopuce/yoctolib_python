@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_multiaxiscontroller.py 30483 2018-03-29 07:43:07Z mvuilleu $
+#* $Id: yocto_multiaxiscontroller.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
 #*
@@ -55,6 +55,8 @@ class YMultiAxisController(YFunction):
     #--- (end of YMultiAxisController return codes)
     #--- (YMultiAxisController dlldef)
     #--- (end of YMultiAxisController dlldef)
+    #--- (YMultiAxisController yapiwrapper)
+    #--- (end of YMultiAxisController yapiwrapper)
     #--- (YMultiAxisController definitions)
     NAXIS_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
@@ -97,7 +99,7 @@ class YMultiAxisController(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiAxisController.NAXIS_INVALID
         res = self._nAxis
         return res
@@ -128,7 +130,7 @@ class YMultiAxisController(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiAxisController.GLOBALSTATE_INVALID
         res = self._globalState
         return res
@@ -136,7 +138,7 @@ class YMultiAxisController(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiAxisController.COMMAND_INVALID
         res = self._command
         return res

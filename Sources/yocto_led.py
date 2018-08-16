@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_led.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_led.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindLed(), the high-level API for Led functions
 #*
@@ -57,6 +57,8 @@ class YLed(YFunction):
     #--- (end of YLed return codes)
     #--- (YLed dlldef)
     #--- (end of YLed dlldef)
+    #--- (YLed yapiwrapper)
+    #--- (end of YLed yapiwrapper)
     #--- (YLed definitions)
     LUMINOSITY_INVALID = YAPI.INVALID_UINT
     POWER_OFF = 0
@@ -101,7 +103,7 @@ class YLed(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YLed.POWER_INVALID
         res = self._power
         return res
@@ -129,7 +131,7 @@ class YLed(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YLed.LUMINOSITY_INVALID
         res = self._luminosity
         return res
@@ -158,7 +160,7 @@ class YLed(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YLed.BLINKING_INVALID
         res = self._blinking
         return res

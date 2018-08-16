@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_magnetometer.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_magnetometer.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindMagnetometer(), the high-level API for Magnetometer functions
 #*
@@ -63,6 +63,8 @@ class YMagnetometer(YSensor):
     #--- (end of YMagnetometer return codes)
     #--- (YMagnetometer dlldef)
     #--- (end of YMagnetometer dlldef)
+    #--- (YMagnetometer yapiwrapper)
+    #--- (end of YMagnetometer yapiwrapper)
     #--- (YMagnetometer definitions)
     BANDWIDTH_INVALID = YAPI.INVALID_INT
     XVALUE_INVALID = YAPI.INVALID_DOUBLE
@@ -103,7 +105,7 @@ class YMagnetometer(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMagnetometer.BANDWIDTH_INVALID
         res = self._bandwidth
         return res
@@ -133,7 +135,7 @@ class YMagnetometer(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMagnetometer.XVALUE_INVALID
         res = self._xValue
         return res
@@ -149,7 +151,7 @@ class YMagnetometer(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMagnetometer.YVALUE_INVALID
         res = self._yValue
         return res
@@ -165,7 +167,7 @@ class YMagnetometer(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMagnetometer.ZVALUE_INVALID
         res = self._zValue
         return res

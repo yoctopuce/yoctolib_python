@@ -1,5 +1,6 @@
-Python v1.10.31315
+Python v1.10.31701
 
-- Add support for phaseMove in PWMOutput class
-- Add support for config change notifications
-- Improve error recovery with WebSocket connection
+- Add methods do change DeviceListValidity and CacheValidity
+- Add support for ConfigChange callbacks
+- Improve error recovery during DataSet.loadMore
+- Fix race condition with WebSocket connexion

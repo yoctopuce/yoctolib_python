@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_servo.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_servo.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindServo(), the high-level API for Servo functions
 #*
@@ -58,6 +58,8 @@ class YServo(YFunction):
     #--- (end of YServo return codes)
     #--- (YServo dlldef)
     #--- (end of YServo dlldef)
+    #--- (YServo yapiwrapper)
+    #--- (end of YServo yapiwrapper)
     #--- (YServo definitions)
     POSITION_INVALID = YAPI.INVALID_INT
     RANGE_INVALID = YAPI.INVALID_UINT
@@ -121,7 +123,7 @@ class YServo(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YServo.POSITION_INVALID
         res = self._position
         return res
@@ -149,7 +151,7 @@ class YServo(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YServo.ENABLED_INVALID
         res = self._enabled
         return res
@@ -177,7 +179,7 @@ class YServo(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YServo.RANGE_INVALID
         res = self._range
         return res
@@ -211,7 +213,7 @@ class YServo(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YServo.NEUTRAL_INVALID
         res = self._neutral
         return res
@@ -238,7 +240,7 @@ class YServo(YFunction):
     def get_move(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YServo.MOVE_INVALID
         res = self._move
         return res
@@ -271,7 +273,7 @@ class YServo(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YServo.POSITIONATPOWERON_INVALID
         res = self._positionAtPowerOn
         return res
@@ -301,7 +303,7 @@ class YServo(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YServo.ENABLEDATPOWERON_INVALID
         res = self._enabledAtPowerOn
         return res

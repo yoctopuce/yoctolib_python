@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwminput.py 29968 2018-02-19 15:12:34Z seb $
+#* $Id: yocto_pwminput.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindPwmInput(), the high-level API for PwmInput functions
 #*
@@ -59,6 +59,8 @@ class YPwmInput(YSensor):
     #--- (end of YPwmInput return codes)
     #--- (YPwmInput dlldef)
     #--- (end of YPwmInput dlldef)
+    #--- (YPwmInput yapiwrapper)
+    #--- (end of YPwmInput yapiwrapper)
     #--- (YPwmInput definitions)
     DUTYCYCLE_INVALID = YAPI.INVALID_DOUBLE
     PULSEDURATION_INVALID = YAPI.INVALID_DOUBLE
@@ -125,7 +127,7 @@ class YPwmInput(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmInput.DUTYCYCLE_INVALID
         res = self._dutyCycle
         return res
@@ -141,7 +143,7 @@ class YPwmInput(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmInput.PULSEDURATION_INVALID
         res = self._pulseDuration
         return res
@@ -156,7 +158,7 @@ class YPwmInput(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmInput.FREQUENCY_INVALID
         res = self._frequency
         return res
@@ -171,7 +173,7 @@ class YPwmInput(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmInput.PERIOD_INVALID
         res = self._period
         return res
@@ -188,7 +190,7 @@ class YPwmInput(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmInput.PULSECOUNTER_INVALID
         res = self._pulseCounter
         return res
@@ -207,7 +209,7 @@ class YPwmInput(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmInput.PULSETIMER_INVALID
         res = self._pulseTimer
         return res
@@ -229,7 +231,7 @@ class YPwmInput(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmInput.PWMREPORTMODE_INVALID
         res = self._pwmReportMode
         return res
@@ -266,7 +268,7 @@ class YPwmInput(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPwmInput.DEBOUNCEPERIOD_INVALID
         res = self._debouncePeriod
         return res

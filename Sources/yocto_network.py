@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 30462 2018-03-26 09:19:24Z mvuilleu $
+#* $Id: yocto_network.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -56,6 +56,8 @@ class YNetwork(YFunction):
     #--- (end of YNetwork return codes)
     #--- (YNetwork dlldef)
     #--- (end of YNetwork dlldef)
+    #--- (YNetwork yapiwrapper)
+    #--- (end of YNetwork yapiwrapper)
     #--- (YNetwork definitions)
     MACADDRESS_INVALID = YAPI.INVALID_STRING
     IPADDRESS_INVALID = YAPI.INVALID_STRING
@@ -213,7 +215,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.READINESS_INVALID
         res = self._readiness
         return res
@@ -229,7 +231,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.MACADDRESS_INVALID
         res = self._macAddress
         return res
@@ -245,7 +247,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.IPADDRESS_INVALID
         res = self._ipAddress
         return res
@@ -260,7 +262,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.SUBNETMASK_INVALID
         res = self._subnetMask
         return res
@@ -275,7 +277,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.ROUTER_INVALID
         res = self._router
         return res
@@ -302,7 +304,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.IPCONFIG_INVALID
         res = self._ipConfig
         return res
@@ -321,7 +323,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.PRIMARYDNS_INVALID
         res = self._primaryDNS
         return res
@@ -351,7 +353,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.SECONDARYDNS_INVALID
         res = self._secondaryDNS
         return res
@@ -381,7 +383,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.NTPSERVER_INVALID
         res = self._ntpServer
         return res
@@ -412,7 +414,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.USERPASSWORD_INVALID
         res = self._userPassword
         return res
@@ -449,7 +451,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.ADMINPASSWORD_INVALID
         res = self._adminPassword
         return res
@@ -484,7 +486,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.HTTPPORT_INVALID
         res = self._httpPort
         return res
@@ -514,7 +516,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.DEFAULTPAGE_INVALID
         res = self._defaultPage
         return res
@@ -547,7 +549,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.DISCOVERABLE_INVALID
         res = self._discoverable
         return res
@@ -582,7 +584,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.WWWWATCHDOGDELAY_INVALID
         res = self._wwwWatchdogDelay
         return res
@@ -615,7 +617,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.CALLBACKURL_INVALID
         res = self._callbackUrl
         return res
@@ -646,7 +648,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.CALLBACKMETHOD_INVALID
         res = self._callbackMethod
         return res
@@ -682,7 +684,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.CALLBACKENCODING_INVALID
         res = self._callbackEncoding
         return res
@@ -718,7 +720,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.CALLBACKCREDENTIALS_INVALID
         res = self._callbackCredentials
         return res
@@ -771,7 +773,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.CALLBACKINITIALDELAY_INVALID
         res = self._callbackInitialDelay
         return res
@@ -800,7 +802,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.CALLBACKSCHEDULE_INVALID
         res = self._callbackSchedule
         return res
@@ -828,7 +830,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.CALLBACKMINDELAY_INVALID
         res = self._callbackMinDelay
         return res
@@ -856,7 +858,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.CALLBACKMAXDELAY_INVALID
         res = self._callbackMaxDelay
         return res
@@ -888,7 +890,7 @@ class YNetwork(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.POECURRENT_INVALID
         res = self._poeCurrent
         return res

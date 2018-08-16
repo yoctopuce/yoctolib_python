@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gps.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_gps.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindGps(), the high-level API for Gps functions
 #*
@@ -59,6 +59,8 @@ class YGps(YFunction):
     #--- (end of YGps return codes)
     #--- (YGps dlldef)
     #--- (end of YGps dlldef)
+    #--- (YGps yapiwrapper)
+    #--- (end of YGps yapiwrapper)
     #--- (YGps definitions)
     SATCOUNT_INVALID = YAPI.INVALID_LONG
     LATITUDE_INVALID = YAPI.INVALID_STRING
@@ -141,7 +143,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.ISFIXED_INVALID
         res = self._isFixed
         return res
@@ -156,7 +158,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.SATCOUNT_INVALID
         res = self._satCount
         return res
@@ -172,7 +174,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.COORDSYSTEM_INVALID
         res = self._coordSystem
         return res
@@ -201,7 +203,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.LATITUDE_INVALID
         res = self._latitude
         return res
@@ -216,7 +218,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.LONGITUDE_INVALID
         res = self._longitude
         return res
@@ -233,7 +235,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.DILUTION_INVALID
         res = self._dilution
         return res
@@ -249,7 +251,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.ALTITUDE_INVALID
         res = self._altitude
         return res
@@ -264,7 +266,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.GROUNDSPEED_INVALID
         res = self._groundSpeed
         return res
@@ -281,7 +283,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.DIRECTION_INVALID
         res = self._direction
         return res
@@ -298,7 +300,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.UNIXTIME_INVALID
         res = self._unixTime
         return res
@@ -313,7 +315,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.DATETIME_INVALID
         res = self._dateTime
         return res
@@ -328,7 +330,7 @@ class YGps(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.UTCOFFSET_INVALID
         res = self._utcOffset
         return res
@@ -351,7 +353,7 @@ class YGps(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.COMMAND_INVALID
         res = self._command
         return res

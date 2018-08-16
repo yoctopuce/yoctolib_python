@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_spiport.py 30685 2018-04-24 13:46:18Z seb $
+#* $Id: yocto_spiport.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindSpiPort(), the high-level API for SpiPort functions
 #*
@@ -59,6 +59,8 @@ class YSpiPort(YFunction):
     #--- (end of YSpiPort return codes)
     #--- (YSpiPort dlldef)
     #--- (end of YSpiPort dlldef)
+    #--- (YSpiPort yapiwrapper)
+    #--- (end of YSpiPort yapiwrapper)
     #--- (YSpiPort definitions)
     RXCOUNT_INVALID = YAPI.INVALID_UINT
     TXCOUNT_INVALID = YAPI.INVALID_UINT
@@ -153,7 +155,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.RXCOUNT_INVALID
         res = self._rxCount
         return res
@@ -168,7 +170,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.TXCOUNT_INVALID
         res = self._txCount
         return res
@@ -183,7 +185,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.ERRCOUNT_INVALID
         res = self._errCount
         return res
@@ -198,7 +200,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.RXMSGCOUNT_INVALID
         res = self._rxMsgCount
         return res
@@ -213,7 +215,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.TXMSGCOUNT_INVALID
         res = self._txMsgCount
         return res
@@ -228,7 +230,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.LASTMSG_INVALID
         res = self._lastMsg
         return res
@@ -243,7 +245,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.CURRENTJOB_INVALID
         res = self._currentJob
         return res
@@ -273,7 +275,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.STARTUPJOB_INVALID
         res = self._startupJob
         return res
@@ -296,7 +298,7 @@ class YSpiPort(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.COMMAND_INVALID
         res = self._command
         return res
@@ -318,7 +320,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.VOLTAGELEVEL_INVALID
         res = self._voltageLevel
         return res
@@ -357,7 +359,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.PROTOCOL_INVALID
         res = self._protocol
         return res
@@ -394,7 +396,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.SPIMODE_INVALID
         res = self._spiMode
         return res
@@ -426,7 +428,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.SSPOLARITY_INVALID
         res = self._ssPolarity
         return res
@@ -456,7 +458,7 @@ class YSpiPort(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpiPort.SHITFTSAMPLING_INVALID
         res = self._shitftSampling
         return res

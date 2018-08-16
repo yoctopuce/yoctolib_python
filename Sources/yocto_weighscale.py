@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_weighscale.py 31016 2018-06-04 08:45:40Z mvuilleu $
+#* $Id: yocto_weighscale.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindWeighScale(), the high-level API for WeighScale functions
 #*
@@ -59,6 +59,8 @@ class YWeighScale(YSensor):
     #--- (end of YWeighScale return codes)
     #--- (YWeighScale dlldef)
     #--- (end of YWeighScale dlldef)
+    #--- (YWeighScale yapiwrapper)
+    #--- (end of YWeighScale yapiwrapper)
     #--- (YWeighScale definitions)
     TEMPAVGADAPTRATIO_INVALID = YAPI.INVALID_DOUBLE
     TEMPCHGADAPTRATIO_INVALID = YAPI.INVALID_DOUBLE
@@ -134,7 +136,7 @@ class YWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWeighScale.EXCITATION_INVALID
         res = self._excitation
         return res
@@ -184,7 +186,7 @@ class YWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWeighScale.TEMPAVGADAPTRATIO_INVALID
         res = self._tempAvgAdaptRatio
         return res
@@ -218,7 +220,7 @@ class YWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWeighScale.TEMPCHGADAPTRATIO_INVALID
         res = self._tempChgAdaptRatio
         return res
@@ -233,7 +235,7 @@ class YWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWeighScale.COMPTEMPAVG_INVALID
         res = self._compTempAvg
         return res
@@ -249,7 +251,7 @@ class YWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWeighScale.COMPTEMPCHG_INVALID
         res = self._compTempChg
         return res
@@ -264,7 +266,7 @@ class YWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWeighScale.COMPENSATION_INVALID
         res = self._compensation
         return res
@@ -296,7 +298,7 @@ class YWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWeighScale.ZEROTRACKING_INVALID
         res = self._zeroTracking
         return res
@@ -304,7 +306,7 @@ class YWeighScale(YSensor):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YWeighScale.COMMAND_INVALID
         res = self._command
         return res

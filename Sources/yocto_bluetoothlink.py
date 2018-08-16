@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_bluetoothlink.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_bluetoothlink.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
 #*
@@ -56,6 +56,8 @@ class YBluetoothLink(YFunction):
     #--- (end of YBluetoothLink return codes)
     #--- (YBluetoothLink dlldef)
     #--- (end of YBluetoothLink dlldef)
+    #--- (YBluetoothLink yapiwrapper)
+    #--- (end of YBluetoothLink yapiwrapper)
     #--- (YBluetoothLink definitions)
     OWNADDRESS_INVALID = YAPI.INVALID_STRING
     PAIRINGPIN_INVALID = YAPI.INVALID_STRING
@@ -129,7 +131,7 @@ class YBluetoothLink(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBluetoothLink.OWNADDRESS_INVALID
         res = self._ownAddress
         return res
@@ -148,7 +150,7 @@ class YBluetoothLink(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBluetoothLink.PAIRINGPIN_INVALID
         res = self._pairingPin
         return res
@@ -178,7 +180,7 @@ class YBluetoothLink(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBluetoothLink.REMOTEADDRESS_INVALID
         res = self._remoteAddress
         return res
@@ -206,7 +208,7 @@ class YBluetoothLink(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBluetoothLink.REMOTENAME_INVALID
         res = self._remoteName
         return res
@@ -222,7 +224,7 @@ class YBluetoothLink(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBluetoothLink.MUTE_INVALID
         res = self._mute
         return res
@@ -252,7 +254,7 @@ class YBluetoothLink(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBluetoothLink.PREAMPLIFIER_INVALID
         res = self._preAmplifier
         return res
@@ -280,7 +282,7 @@ class YBluetoothLink(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBluetoothLink.VOLUME_INVALID
         res = self._volume
         return res
@@ -310,7 +312,7 @@ class YBluetoothLink(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBluetoothLink.LINKSTATE_INVALID
         res = self._linkState
         return res
@@ -326,7 +328,7 @@ class YBluetoothLink(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBluetoothLink.LINKQUALITY_INVALID
         res = self._linkQuality
         return res
@@ -334,7 +336,7 @@ class YBluetoothLink(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YBluetoothLink.COMMAND_INVALID
         res = self._command
         return res

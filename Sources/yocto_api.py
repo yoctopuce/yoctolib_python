@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 31239 2018-07-17 11:33:44Z mvuilleu $
+# * $Id: yocto_api.py 31688 2018-08-15 14:09:26Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -717,6 +717,81 @@ class YJSONObject(YJSONContent):
         return self._keys[i]
 
 
+#--- (generated code: YAPIContext class start)
+#noinspection PyProtectedMember
+class YAPIContext(object):
+#--- (end of generated code: YAPIContext class start)
+    #--- (generated code: YAPIContext return codes)
+    #--- (end of generated code: YAPIContext return codes)
+    #--- (generated code: YAPIContext dlldef)
+    #--- (end of generated code: YAPIContext dlldef)
+    #--- (generated code: YAPIContext definitions)
+    #--- (end of generated code: YAPIContext definitions)
+
+    def __init__(self):
+        #--- (generated code: YAPIContext attributes)
+        self._cacheValidity = 5
+        #--- (end of generated code: YAPIContext attributes)
+
+    #--- (generated code: YAPIContext implementation)
+    def SetDeviceListValidity(self, deviceListValidity):
+        """
+        Change the time between each forced enumeration of the YoctoHub used.
+        By default, the library performs a complete enumeration every 10 seconds.
+        To reduce network traffic it is possible to increase this delay.
+        This is particularly useful when a YoctoHub is connected to a GSM network
+        where the traffic is charged. This setting does not affect modules connected by USB,
+        nor the operation of arrival/removal callbacks.
+        Note: This function must be called after yInitAPI.
+
+        @param deviceListValidity : number of seconds between each enumeration.
+        """
+        YAPI._yapiSetNetDevListValidity(deviceListValidity)
+
+    def GetDeviceListValidity(self):
+        """
+        Returns the time between each forced enumeration of the YoctoHub used.
+        Note: This function must be called after yInitAPI.
+
+        @return the number of seconds between each enumeration.
+        """
+        # res
+        res = YAPI._yapiGetNetDevListValidity()
+        return res
+
+    def SetCacheValidity(self, cacheValidityMs):
+        """
+        Change the validity period of the data loaded by the library.
+        By default, when accessing a module, all the attributes of the
+        module functions are automatically kept in cache for the standard
+        duration (5 ms). This method can be used to change this standard duration,
+        for example in order to reduce network or USB traffic. This parameter
+        does not affect value change callbacks
+        Note: This function must be called after yInitAPI.
+
+        @param cacheValidityMs : an integer corresponding to the validity attributed to the
+                loaded function parameters, in milliseconds
+        """
+        self._cacheValidity = cacheValidityMs
+
+    def GetCacheValidity(self):
+        """
+        Returns the validity period of the data loaded by the library.
+        This method returns the cache validity of all attributes
+        module functions.
+        Note: This function must be called after yInitAPI .
+
+        @return an integer corresponding to the validity attributed to the
+                loaded function parameters, in milliseconds
+        """
+        return self._cacheValidity
+
+#--- (end of generated code: YAPIContext implementation)
+
+#--- (generated code: YAPIContext functions)
+#--- (end of generated code: YAPIContext functions)
+
+
 # noinspection PyClassHasNoInit,PyProtectedMember
 # noinspection PyUnresolvedReferences
 class YAPI:
@@ -751,7 +826,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "31315"
+    YOCTO_API_BUILD_NO = "31701"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -794,6 +869,7 @@ class YAPI:
     _yApiCLibFile = ""
     _yApiCLibFileFallback = ""
     _yApiCLib = None
+    _yapiContext = YAPIContext()
 
     @staticmethod
     def SelectArchitecture(arch):
@@ -1208,6 +1284,12 @@ class YAPI:
         YAPI._yapiGetDevicePathEx = YAPI._yApiCLib.yapiGetDevicePathEx
         YAPI._yapiGetDevicePathEx.restypes = ctypes.c_int
         YAPI._yapiGetDevicePathEx.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
+        YAPI._yapiSetNetDevListValidity = YAPI._yApiCLib.yapiSetNetDevListValidity
+        YAPI._yapiSetNetDevListValidity.restypes = ctypes.c_int
+        YAPI._yapiSetNetDevListValidity.argtypes = [ctypes.c_int]
+        YAPI._yapiGetNetDevListValidity = YAPI._yApiCLib.yapiGetNetDevListValidity
+        YAPI._yapiGetNetDevListValidity.restypes = ctypes.c_int
+        YAPI._yapiGetNetDevListValidity.argtypes = []
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
@@ -1380,6 +1462,63 @@ class YAPI:
         context.res = returnval
         context.response = result
         context.errmsgRef = errmsgRef
+
+    #--- (generated code: YAPIContext yapiwrapper)
+    @staticmethod
+    def SetDeviceListValidity(deviceListValidity):
+        """
+        Change the time between each forced enumeration of the YoctoHub used.
+        By default, the library performs a complete enumeration every 10 seconds.
+        To reduce network traffic it is possible to increase this delay.
+        This is particularly useful when a YoctoHub is connected to a GSM network
+        where the traffic is charged. This setting does not affect modules connected by USB,
+        nor the operation of arrival/removal callbacks.
+        Note: This function must be called after yInitAPI.
+
+        @param deviceListValidity : number of seconds between each enumeration.
+        """
+        YAPI._yapiContext.SetDeviceListValidity(deviceListValidity)
+
+    @staticmethod
+    def GetDeviceListValidity():
+        """
+        Returns the time between each forced enumeration of the YoctoHub used.
+        Note: This function must be called after yInitAPI.
+
+        @return the number of seconds between each enumeration.
+        """
+        return YAPI._yapiContext.GetDeviceListValidity()
+
+    @staticmethod
+    def SetCacheValidity(cacheValidityMs):
+        """
+        Change the validity period of the data loaded by the library.
+        By default, when accessing a module, all the attributes of the
+        module functions are automatically kept in cache for the standard
+        duration (5 ms). This method can be used to change this standard duration,
+        for example in order to reduce network or USB traffic. This parameter
+        does not affect value change callbacks
+        Note: This function must be called after yInitAPI.
+
+        @param cacheValidityMs : an integer corresponding to the validity attributed to the
+                loaded function parameters, in milliseconds
+        """
+        YAPI._yapiContext.SetCacheValidity(cacheValidityMs)
+
+    @staticmethod
+    def GetCacheValidity():
+        """
+        Returns the validity period of the data loaded by the library.
+        This method returns the cache validity of all attributes
+        module functions.
+        Note: This function must be called after yInitAPI .
+
+        @return an integer corresponding to the validity attributed to the
+                loaded function parameters, in milliseconds
+        """
+        return YAPI._yapiContext.GetCacheValidity()
+
+    #--- (end of generated code: YAPIContext yapiwrapper)
 
     @staticmethod
     def GetTickCount():
@@ -3545,7 +3684,10 @@ class YDataSet(object):
             else:
                 stream = self._streams[self._progress]
                 url = stream._get_url()
-        return self.processMore(self._progress, self._parent._download(url))
+        try:
+            return self.processMore(self._progress, self._parent._download(url))
+        except:
+            return self.processMore(self._progress, self._parent._download(url))
 
     def get_summary(self):
         """
@@ -4315,7 +4457,7 @@ class YFunction(object):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YFunction.LOGICALNAME_INVALID
         res = self._logicalName
         return res
@@ -4349,7 +4491,7 @@ class YFunction(object):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YFunction.ADVERTISEDVALUE_INVALID
         res = self._advertisedValue
         return res
@@ -4951,7 +5093,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.PRODUCTNAME_INVALID
         res = self._productName
         return res
@@ -4966,7 +5108,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.SERIALNUMBER_INVALID
         res = self._serialNumber
         return res
@@ -4981,7 +5123,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.PRODUCTID_INVALID
         res = self._productId
         return res
@@ -4996,7 +5138,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.PRODUCTRELEASE_INVALID
         res = self._productRelease
         return res
@@ -5011,7 +5153,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.FIRMWARERELEASE_INVALID
         res = self._firmwareRelease
         return res
@@ -5027,7 +5169,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.PERSISTENTSETTINGS_INVALID
         res = self._persistentSettings
         return res
@@ -5046,7 +5188,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.LUMINOSITY_INVALID
         res = self._luminosity
         return res
@@ -5077,7 +5219,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.BEACON_INVALID
         res = self._beacon
         return res
@@ -5105,7 +5247,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.UPTIME_INVALID
         res = self._upTime
         return res
@@ -5120,7 +5262,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.USBCURRENT_INVALID
         res = self._usbCurrent
         return res
@@ -5137,7 +5279,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.REBOOTCOUNTDOWN_INVALID
         res = self._rebootCountdown
         return res
@@ -5157,7 +5299,7 @@ class YModule(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.USERVAR_INVALID
         res = self._userVar
         return res
@@ -6493,7 +6635,7 @@ class YSensor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.UNIT_INVALID
         res = self._unit
         return res
@@ -6509,7 +6651,7 @@ class YSensor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.CURRENTVALUE_INVALID
         res = self._applyCalibration(self._currentRawValue)
         if res == YSensor.CURRENTVALUE_INVALID:
@@ -6544,7 +6686,7 @@ class YSensor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.LOWESTVALUE_INVALID
         res = self._lowestValue * self._iresol
         res = round(res) / self._iresol
@@ -6576,7 +6718,7 @@ class YSensor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.HIGHESTVALUE_INVALID
         res = self._highestValue * self._iresol
         res = round(res) / self._iresol
@@ -6594,7 +6736,7 @@ class YSensor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.CURRENTRAWVALUE_INVALID
         res = self._currentRawValue
         return res
@@ -6611,7 +6753,7 @@ class YSensor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.LOGFREQUENCY_INVALID
         res = self._logFrequency
         return res
@@ -6645,7 +6787,7 @@ class YSensor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.REPORTFREQUENCY_INVALID
         res = self._reportFrequency
         return res
@@ -6679,7 +6821,7 @@ class YSensor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.ADVMODE_INVALID
         res = self._advMode
         return res
@@ -6702,7 +6844,7 @@ class YSensor(YFunction):
     def get_calibrationParam(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.CALIBRATIONPARAM_INVALID
         res = self._calibrationParam
         return res
@@ -6736,7 +6878,7 @@ class YSensor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.RESOLUTION_INVALID
         res = self._resolution
         return res
@@ -6754,7 +6896,7 @@ class YSensor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.SENSORSTATE_INVALID
         res = self._sensorState
         return res
@@ -7090,7 +7232,7 @@ class YSensor(YFunction):
         del refValues[:]
         # // Load function parameters if not yet loaded
         if self._scale == 0:
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAPI.DEVICE_NOT_FOUND
         if self._caltyp < 0:
             self._throw(YAPI.NOT_SUPPORTED, "Calibration parameters format mismatch. Please upgrade your library or firmware.")
@@ -7118,7 +7260,7 @@ class YSensor(YFunction):
             return "0"
         # // Load function parameters if not yet loaded
         if self._scale == 0:
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAPI.INVALID_STRING
         # // Detect old firmware
         if (self._caltyp < 0) or (self._scale < 0):
@@ -7433,7 +7575,7 @@ class YDataLogger(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDataLogger.CURRENTRUNINDEX_INVALID
         res = self._currentRunIndex
         return res
@@ -7448,7 +7590,7 @@ class YDataLogger(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDataLogger.TIMEUTC_INVALID
         res = self._timeUTC
         return res
@@ -7477,7 +7619,7 @@ class YDataLogger(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDataLogger.RECORDING_INVALID
         res = self._recording
         return res
@@ -7508,7 +7650,7 @@ class YDataLogger(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDataLogger.AUTOSTART_INVALID
         res = self._autoStart
         return res
@@ -7540,7 +7682,7 @@ class YDataLogger(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDataLogger.BEACONDRIVEN_INVALID
         res = self._beaconDriven
         return res
@@ -7564,7 +7706,7 @@ class YDataLogger(YFunction):
     def get_clearHistory(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDataLogger.CLEARHISTORY_INVALID
         res = self._clearHistory
         return res

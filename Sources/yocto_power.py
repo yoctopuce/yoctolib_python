@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_power.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_power.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindPower(), the high-level API for Power functions
 #*
@@ -58,6 +58,8 @@ class YPower(YSensor):
     #--- (end of YPower return codes)
     #--- (YPower dlldef)
     #--- (end of YPower dlldef)
+    #--- (YPower yapiwrapper)
+    #--- (end of YPower yapiwrapper)
     #--- (YPower definitions)
     COSPHI_INVALID = YAPI.INVALID_DOUBLE
     METER_INVALID = YAPI.INVALID_DOUBLE
@@ -96,7 +98,7 @@ class YPower(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPower.COSPHI_INVALID
         res = self._cosPhi
         return res
@@ -117,7 +119,7 @@ class YPower(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPower.METER_INVALID
         res = self._meter
         return res
@@ -132,7 +134,7 @@ class YPower(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPower.METERTIMER_INVALID
         res = self._meterTimer
         return res

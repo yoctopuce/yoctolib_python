@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_steppermotor.py 30483 2018-03-29 07:43:07Z mvuilleu $
+#* $Id: yocto_steppermotor.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #*
@@ -55,6 +55,8 @@ class YStepperMotor(YFunction):
     #--- (end of YStepperMotor return codes)
     #--- (YStepperMotor dlldef)
     #--- (end of YStepperMotor dlldef)
+    #--- (YStepperMotor yapiwrapper)
+    #--- (end of YStepperMotor yapiwrapper)
     #--- (YStepperMotor definitions)
     DIAGS_INVALID = YAPI.INVALID_UINT
     STEPPOS_INVALID = YAPI.INVALID_DOUBLE
@@ -152,7 +154,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.MOTORSTATE_INVALID
         res = self._motorState
         return res
@@ -167,7 +169,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.DIAGS_INVALID
         res = self._diags
         return res
@@ -201,7 +203,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.STEPPOS_INVALID
         res = self._stepPos
         return res
@@ -217,7 +219,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.SPEED_INVALID
         res = self._speed
         return res
@@ -247,7 +249,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.PULLINSPEED_INVALID
         res = self._pullinSpeed
         return res
@@ -276,7 +278,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.MAXACCEL_INVALID
         res = self._maxAccel
         return res
@@ -304,7 +306,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.MAXSPEED_INVALID
         res = self._maxSpeed
         return res
@@ -321,7 +323,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.STEPPING_INVALID
         res = self._stepping
         return res
@@ -352,7 +354,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.OVERCURRENT_INVALID
         res = self._overcurrent
         return res
@@ -380,7 +382,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.TCURRSTOP_INVALID
         res = self._tCurrStop
         return res
@@ -409,7 +411,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.TCURRRUN_INVALID
         res = self._tCurrRun
         return res
@@ -431,7 +433,7 @@ class YStepperMotor(YFunction):
     def get_alertMode(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.ALERTMODE_INVALID
         res = self._alertMode
         return res
@@ -443,7 +445,7 @@ class YStepperMotor(YFunction):
     def get_auxMode(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.AUXMODE_INVALID
         res = self._auxMode
         return res
@@ -462,7 +464,7 @@ class YStepperMotor(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.AUXSIGNAL_INVALID
         res = self._auxSignal
         return res
@@ -484,7 +486,7 @@ class YStepperMotor(YFunction):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YStepperMotor.COMMAND_INVALID
         res = self._command
         return res

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_latitude.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_latitude.py 31445 2018-08-08 08:01:39Z seb $
 #*
 #* Implements yFindLatitude(), the high-level API for Latitude functions
 #*
@@ -58,6 +58,8 @@ class YLatitude(YSensor):
     #--- (end of YLatitude return codes)
     #--- (YLatitude dlldef)
     #--- (end of YLatitude dlldef)
+    #--- (YLatitude yapiwrapper)
+    #--- (end of YLatitude yapiwrapper)
     #--- (YLatitude definitions)
     #--- (end of YLatitude definitions)
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_daisychain.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_daisychain.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindDaisyChain(), the high-level API for DaisyChain functions
 #*
@@ -57,6 +57,8 @@ class YDaisyChain(YFunction):
     #--- (end of YDaisyChain return codes)
     #--- (YDaisyChain dlldef)
     #--- (end of YDaisyChain dlldef)
+    #--- (YDaisyChain yapiwrapper)
+    #--- (end of YDaisyChain yapiwrapper)
     #--- (YDaisyChain definitions)
     CHILDCOUNT_INVALID = YAPI.INVALID_UINT
     REQUIREDCHILDCOUNT_INVALID = YAPI.INVALID_UINT
@@ -100,7 +102,7 @@ class YDaisyChain(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDaisyChain.DAISYSTATE_INVALID
         res = self._daisyState
         return res
@@ -115,7 +117,7 @@ class YDaisyChain(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDaisyChain.CHILDCOUNT_INVALID
         res = self._childCount
         return res
@@ -130,7 +132,7 @@ class YDaisyChain(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDaisyChain.REQUIREDCHILDCOUNT_INVALID
         res = self._requiredChildCount
         return res

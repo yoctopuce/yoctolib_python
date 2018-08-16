@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_currentloopoutput.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_currentloopoutput.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
 #*
@@ -56,6 +56,8 @@ class YCurrentLoopOutput(YFunction):
     #--- (end of YCurrentLoopOutput return codes)
     #--- (YCurrentLoopOutput dlldef)
     #--- (end of YCurrentLoopOutput dlldef)
+    #--- (YCurrentLoopOutput yapiwrapper)
+    #--- (end of YCurrentLoopOutput yapiwrapper)
     #--- (YCurrentLoopOutput definitions)
     CURRENT_INVALID = YAPI.INVALID_DOUBLE
     CURRENTTRANSITION_INVALID = YAPI.INVALID_STRING
@@ -114,7 +116,7 @@ class YCurrentLoopOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YCurrentLoopOutput.CURRENT_INVALID
         res = self._current
         return res
@@ -122,7 +124,7 @@ class YCurrentLoopOutput(YFunction):
     def get_currentTransition(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YCurrentLoopOutput.CURRENTTRANSITION_INVALID
         res = self._currentTransition
         return res
@@ -155,7 +157,7 @@ class YCurrentLoopOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YCurrentLoopOutput.CURRENTATSTARTUP_INVALID
         res = self._currentAtStartUp
         return res
@@ -173,7 +175,7 @@ class YCurrentLoopOutput(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YCurrentLoopOutput.LOOPPOWER_INVALID
         res = self._loopPower
         return res

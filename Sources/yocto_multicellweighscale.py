@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_multicellweighscale.py 31016 2018-06-04 08:45:40Z mvuilleu $
+#* $Id: yocto_multicellweighscale.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
 #*
@@ -59,6 +59,8 @@ class YMultiCellWeighScale(YSensor):
     #--- (end of YMultiCellWeighScale return codes)
     #--- (YMultiCellWeighScale dlldef)
     #--- (end of YMultiCellWeighScale dlldef)
+    #--- (YMultiCellWeighScale yapiwrapper)
+    #--- (end of YMultiCellWeighScale yapiwrapper)
     #--- (YMultiCellWeighScale definitions)
     CELLCOUNT_INVALID = YAPI.INVALID_UINT
     TEMPAVGADAPTRATIO_INVALID = YAPI.INVALID_DOUBLE
@@ -137,7 +139,7 @@ class YMultiCellWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiCellWeighScale.CELLCOUNT_INVALID
         res = self._cellCount
         return res
@@ -166,7 +168,7 @@ class YMultiCellWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiCellWeighScale.EXCITATION_INVALID
         res = self._excitation
         return res
@@ -217,7 +219,7 @@ class YMultiCellWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiCellWeighScale.TEMPAVGADAPTRATIO_INVALID
         res = self._tempAvgAdaptRatio
         return res
@@ -251,7 +253,7 @@ class YMultiCellWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiCellWeighScale.TEMPCHGADAPTRATIO_INVALID
         res = self._tempChgAdaptRatio
         return res
@@ -266,7 +268,7 @@ class YMultiCellWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiCellWeighScale.COMPTEMPAVG_INVALID
         res = self._compTempAvg
         return res
@@ -282,7 +284,7 @@ class YMultiCellWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiCellWeighScale.COMPTEMPCHG_INVALID
         res = self._compTempChg
         return res
@@ -297,7 +299,7 @@ class YMultiCellWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiCellWeighScale.COMPENSATION_INVALID
         res = self._compensation
         return res
@@ -329,7 +331,7 @@ class YMultiCellWeighScale(YSensor):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiCellWeighScale.ZEROTRACKING_INVALID
         res = self._zeroTracking
         return res
@@ -337,7 +339,7 @@ class YMultiCellWeighScale(YSensor):
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMultiCellWeighScale.COMMAND_INVALID
         res = self._command
         return res

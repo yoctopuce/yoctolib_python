@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_audioout.py 28742 2017-10-03 08:12:07Z seb $
+#* $Id: yocto_audioout.py 31688 2018-08-15 14:09:26Z seb $
 #*
 #* Implements yFindAudioOut(), the high-level API for AudioOut functions
 #*
@@ -55,6 +55,8 @@ class YAudioOut(YFunction):
     #--- (end of YAudioOut return codes)
     #--- (YAudioOut dlldef)
     #--- (end of YAudioOut dlldef)
+    #--- (YAudioOut yapiwrapper)
+    #--- (end of YAudioOut yapiwrapper)
     #--- (YAudioOut definitions)
     VOLUME_INVALID = YAPI.INVALID_UINT
     VOLUMERANGE_INVALID = YAPI.INVALID_STRING
@@ -101,7 +103,7 @@ class YAudioOut(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAudioOut.VOLUME_INVALID
         res = self._volume
         return res
@@ -129,7 +131,7 @@ class YAudioOut(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAudioOut.MUTE_INVALID
         res = self._mute
         return res
@@ -161,7 +163,7 @@ class YAudioOut(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAudioOut.VOLUMERANGE_INVALID
         res = self._volumeRange
         return res
@@ -176,7 +178,7 @@ class YAudioOut(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAudioOut.SIGNAL_INVALID
         res = self._signal
         return res
@@ -191,7 +193,7 @@ class YAudioOut(YFunction):
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI.DefaultCacheValidity) != YAPI.SUCCESS:
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAudioOut.NOSIGNALFOR_INVALID
         res = self._noSignalFor
         return res
