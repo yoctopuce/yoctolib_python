@@ -1,6 +1,3 @@
-Python v1.10.31701
+Python v1.10.31874
 
-- Add methods do change DeviceListValidity and CacheValidity
-- Add support for ConfigChange callbacks
-- Improve error recovery during DataSet.loadMore
-- Fix race condition with WebSocket connexion
+- Add Doc-GettingStarted-Yocto-Color-V2 example

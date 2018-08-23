@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 31688 2018-08-15 14:09:26Z seb $
+# * $Id: yocto_api.py 31770 2018-08-20 09:54:36Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -730,7 +730,7 @@ class YAPIContext(object):
 
     def __init__(self):
         #--- (generated code: YAPIContext attributes)
-        self._cacheValidity = 5
+        self._defaultCacheValidity = 5
         #--- (end of generated code: YAPIContext attributes)
 
     #--- (generated code: YAPIContext implementation)
@@ -745,6 +745,7 @@ class YAPIContext(object):
         Note: This function must be called after yInitAPI.
 
         @param deviceListValidity : number of seconds between each enumeration.
+        @noreturn
         """
         YAPI._yapiSetNetDevListValidity(deviceListValidity)
 
@@ -770,9 +771,10 @@ class YAPIContext(object):
         Note: This function must be called after yInitAPI.
 
         @param cacheValidityMs : an integer corresponding to the validity attributed to the
-                loaded function parameters, in milliseconds
+                loaded function parameters, in milliseconds.
+        @noreturn
         """
-        self._cacheValidity = cacheValidityMs
+        self._defaultCacheValidity = cacheValidityMs
 
     def GetCacheValidity(self):
         """
@@ -784,7 +786,7 @@ class YAPIContext(object):
         @return an integer corresponding to the validity attributed to the
                 loaded function parameters, in milliseconds
         """
-        return self._cacheValidity
+        return self._defaultCacheValidity
 
 #--- (end of generated code: YAPIContext implementation)
 
@@ -826,7 +828,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "31701"
+    YOCTO_API_BUILD_NO = "31874"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1476,6 +1478,7 @@ class YAPI:
         Note: This function must be called after yInitAPI.
 
         @param deviceListValidity : number of seconds between each enumeration.
+        @noreturn
         """
         YAPI._yapiContext.SetDeviceListValidity(deviceListValidity)
 
@@ -1501,7 +1504,8 @@ class YAPI:
         Note: This function must be called after yInitAPI.
 
         @param cacheValidityMs : an integer corresponding to the validity attributed to the
-                loaded function parameters, in milliseconds
+                loaded function parameters, in milliseconds.
+        @noreturn
         """
         YAPI._yapiContext.SetCacheValidity(cacheValidityMs)
 
