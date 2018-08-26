@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_colorledcluster.py 31894 2018-08-24 21:29:05Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -288,6 +288,25 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
+        return self.sendCommand("SC" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%x" % rgbValue))
+
+    def set_hslColorAtPowerOn(self, ledIndex, count, hslValue):
+        """
+        Changes the  color at device startup of consecutve LEDs in the cluster, using a HSL color. Encoding
+        is done as follows: 0xHHSSLL.
+        Don't forget to call saveLedsConfigAtPowerOn() to make sure the modification is saved in the device
+        flash memory.
+
+        @param ledIndex :  index of the first affected LED.
+        @param count    :  affected LED count.
+        @param hslValue :  new color.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # rgbValue
+        rgbValue = self.hsl2rgb(hslValue)
         return self.sendCommand("SC" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%x" % rgbValue))
 
     def set_hslColor(self, ledIndex, count, hslValue):
@@ -1002,6 +1021,63 @@ class YColorLedCluster(YFunction):
             res.append(started)
             idx = idx + 1
 
+        return res
+
+    def hsl2rgbInt(self, temp1, temp2, temp3):
+        if temp3 >= 170:
+            return int(((temp1 + 127)) / (255))
+        if temp3 > 42:
+            if temp3 <= 127:
+                return int(((temp2 + 127)) / (255))
+            temp3 = 170 - temp3
+        return int(((temp1*255 + (temp2-temp1) * (6 * temp3) + 32512)) / (65025))
+
+    def hsl2rgb(self, hslValue):
+        # R
+        # G
+        # B
+        # H
+        # S
+        # L
+        # temp1
+        # temp2
+        # temp3
+        # res
+        L = ((hslValue) & (0xff))
+        S = ((((hslValue) >> (8))) & (0xff))
+        H = ((((hslValue) >> (16))) & (0xff))
+        if S==0:
+            res = ((L) << (16))+((L) << (8))+L
+            return res
+        if L<=127:
+            temp2 = L * (255 + S)
+        else:
+            temp2 = (L+S) * 255 - L*S
+        temp1 = 510 * L - temp2
+        # // R
+        temp3 = (H + 85)
+        if temp3 > 255:
+            temp3 = temp3-255
+        R = self.hsl2rgbInt(temp1, temp2, temp3)
+        # // G
+        temp3 = H
+        if temp3 > 255:
+            temp3 = temp3-255
+        G = self.hsl2rgbInt(temp1, temp2, temp3)
+        # // B
+        if H >= 85:
+            temp3 = H - 85
+        else:
+            temp3 = H + 170
+        B = self.hsl2rgbInt(temp1, temp2, temp3)
+        # // just in case
+        if R>255:
+            R=255
+        if G>255:
+            G=255
+        if B>255:
+            B=255
+        res = ((R) << (16))+((G) << (8))+B
         return res
 
     def nextColorLedCluster(self):
