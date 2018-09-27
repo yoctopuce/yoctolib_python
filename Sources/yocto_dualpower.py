@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_dualpower.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_dualpower.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindDualPower(), the high-level API for DualPower functions
 #*
@@ -54,7 +54,7 @@ class YDualPower(YFunction):
     (external battery running out of power).
 
     """
-#--- (end of YDualPower class start)
+    #--- (end of YDualPower class start)
     #--- (YDualPower return codes)
     #--- (end of YDualPower return codes)
     #--- (YDualPower dlldef)

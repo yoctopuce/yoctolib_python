@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_multicellweighscale.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_multicellweighscale.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
 #*
@@ -54,7 +54,7 @@ class YMultiCellWeighScale(YSensor):
     compensate for offsets in the load cells themselves.
 
     """
-#--- (end of YMultiCellWeighScale class start)
+    #--- (end of YMultiCellWeighScale class start)
     #--- (YMultiCellWeighScale return codes)
     #--- (end of YMultiCellWeighScale return codes)
     #--- (YMultiCellWeighScale dlldef)

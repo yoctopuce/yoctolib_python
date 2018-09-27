@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_spiport.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_spiport.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindSpiPort(), the high-level API for SpiPort functions
 #*
@@ -54,7 +54,7 @@ class YSpiPort(YFunction):
     They are meant to be used in the same way as all Yoctopuce devices.
 
     """
-#--- (end of YSpiPort class start)
+    #--- (end of YSpiPort class start)
     #--- (YSpiPort return codes)
     #--- (end of YSpiPort return codes)
     #--- (YSpiPort dlldef)

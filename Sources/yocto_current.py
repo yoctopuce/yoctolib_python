@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_current.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_current.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindCurrent(), the high-level API for Current functions
 #*
@@ -52,7 +52,7 @@ class YCurrent(YSensor):
     to register callback functions, to access the autonomous datalogger.
 
     """
-#--- (end of YCurrent class start)
+    #--- (end of YCurrent class start)
     #--- (YCurrent return codes)
     #--- (end of YCurrent return codes)
     #--- (YCurrent dlldef)

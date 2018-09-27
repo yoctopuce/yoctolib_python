@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_motor.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_motor.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindMotor(), the high-level API for Motor functions
 #*
@@ -54,7 +54,7 @@ class YMotor(YFunction):
     its terminals: the motor will then act as an electromagnetic brake.
 
     """
-#--- (end of YMotor class start)
+    #--- (end of YMotor class start)
     #--- (YMotor return codes)
     #--- (end of YMotor return codes)
     #--- (YMotor dlldef)

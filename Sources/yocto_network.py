@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_network.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_network.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindNetwork(), the high-level API for Network functions
 #*
@@ -51,7 +51,7 @@ class YNetwork(YFunction):
     modules that include a built-in network interface.
 
     """
-#--- (end of YNetwork class start)
+    #--- (end of YNetwork class start)
     #--- (YNetwork return codes)
     #--- (end of YNetwork return codes)
     #--- (YNetwork dlldef)

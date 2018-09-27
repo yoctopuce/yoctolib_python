@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_wakeupmonitor.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_wakeupmonitor.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
 #*
@@ -51,7 +51,7 @@ class YWakeUpMonitor(YFunction):
     as automated sleep mode.
 
     """
-#--- (end of YWakeUpMonitor class start)
+    #--- (end of YWakeUpMonitor class start)
     #--- (YWakeUpMonitor return codes)
     #--- (end of YWakeUpMonitor return codes)
     #--- (YWakeUpMonitor dlldef)

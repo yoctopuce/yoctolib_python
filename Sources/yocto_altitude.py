@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_altitude.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_altitude.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindAltitude(), the high-level API for Altitude functions
 #*
@@ -54,7 +54,7 @@ class YAltitude(YSensor):
     sea level (QNH) for barometric sensors.
 
     """
-#--- (end of YAltitude class start)
+    #--- (end of YAltitude class start)
     #--- (YAltitude return codes)
     #--- (end of YAltitude return codes)
     #--- (YAltitude dlldef)

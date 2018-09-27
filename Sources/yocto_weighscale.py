@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_weighscale.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_weighscale.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindWeighScale(), the high-level API for WeighScale functions
 #*
@@ -54,7 +54,7 @@ class YWeighScale(YSensor):
     compensate for offsets in the load cell itself.
 
     """
-#--- (end of YWeighScale class start)
+    #--- (end of YWeighScale class start)
     #--- (YWeighScale return codes)
     #--- (end of YWeighScale return codes)
     #--- (YWeighScale dlldef)

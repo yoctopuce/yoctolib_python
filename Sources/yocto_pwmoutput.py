@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwmoutput.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_pwmoutput.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #*
@@ -50,7 +50,7 @@ class YPwmOutput(YFunction):
     The Yoctopuce application programming interface allows you to configure, start, and stop the PWM.
 
     """
-#--- (end of YPwmOutput class start)
+    #--- (end of YPwmOutput class start)
     #--- (YPwmOutput return codes)
     #--- (end of YPwmOutput return codes)
     #--- (YPwmOutput dlldef)

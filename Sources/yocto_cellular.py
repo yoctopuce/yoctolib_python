@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_cellular.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -45,7 +45,7 @@ from yocto_api import *
 #--- (generated code: YCellRecord class start)
 #noinspection PyProtectedMember
 class YCellRecord(object):
-#--- (end of generated code: YCellRecord class start)
+    #--- (end of generated code: YCellRecord class start)
     #--- (generated code: YCellRecord return codes)
     #--- (end of generated code: YCellRecord return codes)
     #--- (generated code: YCellRecord dlldef)
@@ -107,7 +107,7 @@ class YCellular(YFunction):
     and status for devices that are GSM-enabled.
 
     """
-#--- (end of generated code: YCellular class start)
+    #--- (end of generated code: YCellular class start)
     #--- (generated code: YCellular return codes)
     #--- (end of generated code: YCellular return codes)
     #--- (generated code: YCellular dlldef)

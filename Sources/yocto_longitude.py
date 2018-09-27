@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_longitude.py 31445 2018-08-08 08:01:39Z seb $
+#* $Id: yocto_longitude.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindLongitude(), the high-level API for Longitude functions
 #*
@@ -53,7 +53,7 @@ class YLongitude(YSensor):
     datalogger.
 
     """
-#--- (end of YLongitude class start)
+    #--- (end of YLongitude class start)
     #--- (YLongitude return codes)
     #--- (end of YLongitude return codes)
     #--- (YLongitude dlldef)

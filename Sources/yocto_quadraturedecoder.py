@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_quadraturedecoder.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_quadraturedecoder.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
 #*
@@ -52,7 +52,7 @@ class YQuadratureDecoder(YSensor):
     to register callback functions, to access the autonomous datalogger.
 
     """
-#--- (end of YQuadratureDecoder class start)
+    #--- (end of YQuadratureDecoder class start)
     #--- (YQuadratureDecoder return codes)
     #--- (end of YQuadratureDecoder return codes)
     #--- (YQuadratureDecoder dlldef)

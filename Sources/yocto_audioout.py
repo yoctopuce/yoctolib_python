@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_audioout.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_audioout.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindAudioOut(), the high-level API for AudioOut functions
 #*
@@ -50,7 +50,7 @@ class YAudioOut(YFunction):
     The Yoctopuce application programming interface allows you to configure the volume of the outout.
 
     """
-#--- (end of YAudioOut class start)
+    #--- (end of YAudioOut class start)
     #--- (YAudioOut return codes)
     #--- (end of YAudioOut return codes)
     #--- (YAudioOut dlldef)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_rangefinder.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_rangefinder.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindRangeFinder(), the high-level API for RangeFinder functions
 #*
@@ -54,7 +54,7 @@ class YRangeFinder(YSensor):
     to compensate the effect of a glass or filter placed in front of the sensor.
 
     """
-#--- (end of YRangeFinder class start)
+    #--- (end of YRangeFinder class start)
     #--- (YRangeFinder return codes)
     #--- (end of YRangeFinder return codes)
     #--- (YRangeFinder dlldef)

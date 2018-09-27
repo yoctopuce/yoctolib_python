@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_relay.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_relay.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindRelay(), the high-level API for Relay functions
 #*
@@ -56,7 +56,7 @@ class YRelay(YFunction):
     active state. If you prefer the alternate default state, simply switch your cables on the board.
 
     """
-#--- (end of YRelay class start)
+    #--- (end of YRelay class start)
     #--- (YRelay return codes)
     #--- (end of YRelay return codes)
     #--- (YRelay dlldef)

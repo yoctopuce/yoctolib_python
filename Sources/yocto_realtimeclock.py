@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_realtimeclock.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_realtimeclock.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #*
@@ -53,7 +53,7 @@ class YRealTimeClock(YFunction):
     will occur to account for daylight saving time.
 
     """
-#--- (end of YRealTimeClock class start)
+    #--- (end of YRealTimeClock class start)
     #--- (YRealTimeClock return codes)
     #--- (end of YRealTimeClock return codes)
     #--- (YRealTimeClock dlldef)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pwmpowersource.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_pwmpowersource.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
 #*
@@ -51,7 +51,7 @@ class YPwmPowerSource(YFunction):
     the voltage source used by all PWM on the same device.
 
     """
-#--- (end of YPwmPowerSource class start)
+    #--- (end of YPwmPowerSource class start)
     #--- (YPwmPowerSource return codes)
     #--- (end of YPwmPowerSource return codes)
     #--- (YPwmPowerSource dlldef)

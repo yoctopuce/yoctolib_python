@@ -22,10 +22,15 @@ def configChangeCallback(mod):
     print(mod.get_serialNumber() + ": configuration change")
 
 
+def beaconCallback(mod, beacon):
+    print("%s: beacon changed to %d" % (mod.get_serialNumber(), beacon))
+
+
 def deviceArrival(m):
     serial = m.get_serialNumber()
     print('Device arrival : ' + serial)
     m.registerConfigChangeCallback(configChangeCallback)
+    m.registerBeaconCallback(beaconCallback)
 
     # First solution: look for a specific type of function (eg. anButton)
     fctcount = m.functionCount()

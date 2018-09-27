@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_serialport.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -47,7 +47,7 @@ from yocto_api import *
 # --- (generated code: YSnoopingRecord class start)
 #noinspection PyProtectedMember
 class YSnoopingRecord(object):
-#--- (end of generated code: YSnoopingRecord class start)
+    #--- (end of generated code: YSnoopingRecord class start)
     # --- (generated code: YSnoopingRecord definitions)
     #--- (end of generated code: YSnoopingRecord definitions)
 
@@ -95,7 +95,7 @@ class YSerialPort(YFunction):
     They are meant to be used in the same way as all Yoctopuce devices.
 
     """
-#--- (end of generated code: YSerialPort class start)
+    #--- (end of generated code: YSerialPort class start)
     #--- (generated code: YSerialPort return codes)
     #--- (end of generated code: YSerialPort return codes)
     #--- (generated code: YSerialPort dlldef)

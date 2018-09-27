@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_voltage.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_voltage.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindVoltage(), the high-level API for Voltage functions
 #*
@@ -52,7 +52,7 @@ class YVoltage(YSensor):
     to register callback functions, to access the autonomous datalogger.
 
     """
-#--- (end of YVoltage class start)
+    #--- (end of YVoltage class start)
     #--- (YVoltage return codes)
     #--- (end of YVoltage return codes)
     #--- (YVoltage dlldef)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_hubport.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_hubport.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindHubPort(), the high-level API for HubPort functions
 #*
@@ -53,7 +53,7 @@ class YHubPort(YFunction):
     unique serial number of the Yoctopuce device connected to it.
 
     """
-#--- (end of YHubPort class start)
+    #--- (end of YHubPort class start)
     #--- (YHubPort return codes)
     #--- (end of YHubPort return codes)
     #--- (YHubPort dlldef)

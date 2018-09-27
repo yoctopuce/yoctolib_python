@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorledcluster.py 31894 2018-08-24 21:29:05Z seb $
+#* $Id: yocto_colorledcluster.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #*
@@ -57,7 +57,7 @@ class YColorLedCluster(YFunction):
     difference between RGB and HSL in the section following this one.
 
     """
-#--- (end of YColorLedCluster class start)
+    #--- (end of YColorLedCluster class start)
     #--- (YColorLedCluster return codes)
     #--- (end of YColorLedCluster return codes)
     #--- (YColorLedCluster dlldef)

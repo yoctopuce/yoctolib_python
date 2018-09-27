@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_pressure.py 31445 2018-08-08 08:01:39Z seb $
+#* $Id: yocto_pressure.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindPressure(), the high-level API for Pressure functions
 #*
@@ -52,7 +52,7 @@ class YPressure(YSensor):
     to register callback functions, to access the autonomous datalogger.
 
     """
-#--- (end of YPressure class start)
+    #--- (end of YPressure class start)
     #--- (YPressure return codes)
     #--- (end of YPressure return codes)
     #--- (YPressure dlldef)

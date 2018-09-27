@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gps.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_gps.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindGps(), the high-level API for Gps functions
 #*
@@ -54,7 +54,7 @@ class YGps(YFunction):
     should use the YLatitude et YLongitude classes.
 
     """
-#--- (end of YGps class start)
+    #--- (end of YGps class start)
     #--- (YGps return codes)
     #--- (end of YGps return codes)
     #--- (YGps dlldef)

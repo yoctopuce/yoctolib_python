@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_audioin.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_audioin.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindAudioIn(), the high-level API for AudioIn functions
 #*
@@ -50,7 +50,7 @@ class YAudioIn(YFunction):
     The Yoctopuce application programming interface allows you to configure the volume of the input channel.
 
     """
-#--- (end of YAudioIn class start)
+    #--- (end of YAudioIn class start)
     #--- (YAudioIn return codes)
     #--- (end of YAudioIn return codes)
     #--- (YAudioIn dlldef)

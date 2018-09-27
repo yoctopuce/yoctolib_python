@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_display.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -52,7 +52,7 @@ class YDisplayLayer(object):
     overlapping layers).
 
     """
-#--- (end of generated code: YDisplayLayer class start)
+    #--- (end of generated code: YDisplayLayer class start)
 
     def __init__(self, parent, layerId):
         self._display = parent
@@ -548,7 +548,7 @@ class YDisplay(YFunction):
     sequences (animations).
 
     """
-#--- (end of generated code: YDisplay class start)
+    #--- (end of generated code: YDisplay class start)
     #--- (generated code: YDisplay definitions)
     STARTUPSEQ_INVALID = YAPI.INVALID_STRING
     BRIGHTNESS_INVALID = YAPI.INVALID_UINT

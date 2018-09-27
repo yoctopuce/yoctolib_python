@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_power.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_power.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindPower(), the high-level API for Power functions
 #*
@@ -53,7 +53,7 @@ class YPower(YSensor):
     This class adds the ability to access the energy counter and the power factor.
 
     """
-#--- (end of YPower class start)
+    #--- (end of YPower class start)
     #--- (YPower return codes)
     #--- (end of YPower return codes)
     #--- (YPower dlldef)

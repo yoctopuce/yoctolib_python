@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_proximity.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_proximity.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindProximity(), the high-level API for Proximity functions
 #*
@@ -54,7 +54,7 @@ class YProximity(YSensor):
     to compensate the effect of a glass or filter placed in front of the sensor.
 
     """
-#--- (end of YProximity class start)
+    #--- (end of YProximity class start)
     #--- (YProximity return codes)
     #--- (end of YProximity return codes)
     #--- (YProximity dlldef)

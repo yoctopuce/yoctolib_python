@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_humidity.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_humidity.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindHumidity(), the high-level API for Humidity functions
 #*
@@ -52,7 +52,7 @@ class YHumidity(YSensor):
     to register callback functions, to access the autonomous datalogger.
 
     """
-#--- (end of YHumidity class start)
+    #--- (end of YHumidity class start)
     #--- (YHumidity return codes)
     #--- (end of YHumidity return codes)
     #--- (YHumidity dlldef)

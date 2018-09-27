@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_genericsensor.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_genericsensor.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #*
@@ -54,7 +54,7 @@ class YGenericSensor(YSensor):
     measured signal and the corresponding engineering unit.
 
     """
-#--- (end of YGenericSensor class start)
+    #--- (end of YGenericSensor class start)
     #--- (YGenericSensor return codes)
     #--- (end of YGenericSensor return codes)
     #--- (YGenericSensor dlldef)

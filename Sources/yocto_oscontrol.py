@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_oscontrol.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_oscontrol.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindOsControl(), the high-level API for OsControl functions
 #*
@@ -52,7 +52,7 @@ class YOsControl(YFunction):
     start up with -o option.
 
     """
-#--- (end of YOsControl class start)
+    #--- (end of YOsControl class start)
     #--- (YOsControl return codes)
     #--- (end of YOsControl return codes)
     #--- (YOsControl dlldef)

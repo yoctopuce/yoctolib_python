@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_files.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -46,7 +46,7 @@ from yocto_api import *
 #--- (generated code: YFileRecord class start)
 #noinspection PyProtectedMember
 class YFileRecord(object):
-#--- (end of generated code: YFileRecord class start)
+    #--- (end of generated code: YFileRecord class start)
     #--- (generated code: YFileRecord definitions)
     #--- (end of generated code: YFileRecord definitions)
 
@@ -88,7 +88,7 @@ class YFiles(YFunction):
     devices).
 
     """
-#--- (end of generated code: YFiles class start)
+    #--- (end of generated code: YFiles class start)
     #--- (generated code: YFiles definitions)
     FILESCOUNT_INVALID = YAPI.INVALID_UINT
     FREESPACE_INVALID = YAPI.INVALID_UINT

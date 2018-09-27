@@ -6,7 +6,7 @@
 <style type="text/css">
 /*********************************************************************
  *
- * $Id: yoctolib-python-FR.html 31887 2018-08-24 14:33:28Z seb $
+ * $Id: yoctolib-python-FR.html 32388 2018-09-27 08:27:10Z seb $
  *
  * Searchable documentation browser for Yoctopuce Library
  *
@@ -257,7 +257,7 @@ var minusimage="data:image/gif;base64,R0lGODlhEAAQAIAAAEJCQv///yH5BAAAAP8ALAAAAA
 
 var marginSize=250;
 var resizeCallBacks= new Array();
-var SVN_Id = '$Id: yoctolib-python-FR.html 31887 2018-08-24 14:33:28Z seb $';
+var SVN_Id = '$Id: yoctolib-python-FR.html 32388 2018-09-27 08:27:10Z seb $';
 var Version = (SVN_Id.split(' '))[3];
 var doc = new Array();
 
@@ -314,6 +314,7 @@ doc['Module']['load']={syn:'Met en cache les valeurs courantes du module, avec u
 doc['Module']['log']={syn:'Ajoute un message arbitraire dans les logs du module.',lib:'module.log()',pro:'def log(<span id=pn>text</span>)',cmt:'<p>Ajoute un message arbitraire dans les logs du module. Cette fonction est utile en particulier pour tracer l\x27ex\xE9cution de callbacks HTTP. Si un saut de ligne est d\xE9sir\xE9 apr\xE8s le message, il doit \xEAtre inclus dans la cha\xEEne de caract\xE8re.</p>',par:{text:'le message \xE0 ajouter aux logs du module.'},ret:'<tt>YAPI_SUCCESS</tt> si l\x27op\xE9ration se d\xE9roule sans erreur.',ext:'En cas d\x27erreur, d\xE9clenche une exception ou retourne un code d\x27erreur n\xE9gatif.'};
 doc['Module']['nextModule']={syn:'Continue l\x27\xE9num\xE9ration des modules commenc\xE9e \xE0 l\x27aide de <tt>yFirstModule()</tt>.',lib:'module.nextModule()',pro:'def nextModule()',cmt:'<p>Continue l\x27\xE9num\xE9ration des modules commenc\xE9e \xE0 l\x27aide de <tt>yFirstModule()</tt>.</p>',ret:'un pointeur sur un objet <tt>YModule</tt> accessible en ligne, ou <tt>null</tt> lorsque l\x27\xE9num\xE9ration est termin\xE9e.'};
 doc['Module']['reboot']={syn:'Agende un simple red\xE9marrage du module dans un nombre donn\xE9 de secondes.',lib:'module.reboot()',pro:'def reboot(<span id=pn>secBeforeReboot</span>)',cmt:'<p>Agende un simple red\xE9marrage du module dans un nombre donn\xE9 de secondes.</p>',par:{secBeforeReboot:'nombre de secondes avant de red\xE9marrer'},ret:'<tt>YAPI_SUCCESS</tt> si l\x27op\xE9ration se d\xE9roule sans erreur.',ext:'En cas d\x27erreur, d\xE9clenche une exception ou retourne un code d\x27erreur n\xE9gatif.'};
+doc['Module']['registerBeaconCallback']={syn:'Enregistre une fonction de callback qui sera appel\xE9e \xE0 chaque changement d\x27\xE9tat de la balise de localisation du module.',lib:'module.registerBeaconCallback()',pro:'def registerBeaconCallback(<span id=pn>callback</span>)',cmt:'<p>Enregistre une fonction de callback qui sera appel\xE9e \xE0 chaque changement d\x27\xE9tat de la balise de localisation du module. La fonction de callback doit accepter deux arguments: l\x92objet YModule dont la balise a chang\xE9, et un entier repr\xE9sentant l\x27\xE9tat de la balise de localisation.</p>',par:{callback:'la fonction de callback \xE0 rappeler, ou <tt>null</tt> pour supprimer un callback d\xE9j\xE0 enregistr\xE9.'}};
 doc['Module']['registerConfigChangeCallback']={syn:'Enregistre une fonction de callback qui sera appel\xE9e \xE0 chaque fois qu\x27un r\xE9glage persistant d\x27un module est modifi\xE9 (par exemple changement d\x27unit\xE9 de mesure, etc.) ',lib:'module.registerConfigChangeCallback()',pro:'def registerConfigChangeCallback(<span id=pn>callback</span>)',cmt:'<p>Enregistre une fonction de callback qui sera appel\xE9e \xE0 chaque fois qu\x27un r\xE9glage persistant d\x27un module est modifi\xE9 (par exemple changement d\x27unit\xE9 de mesure, etc.)</p>',par:{callback:'une proc\xE9dure qui prend un <tt>YModule</tt> en param\xE8tre, ou <tt>null</tt> pour supprimer un callback d\xE9ja enregistr\xE9.'}};
 doc['Module']['registerLogCallback']={syn:'Enregistre une fonction de callback qui sera appel\xE9e \xE0 chaque fois le module \xE9met un message de log.',lib:'module.registerLogCallback()',pro:'def registerLogCallback(<span id=pn>callback</span>)',cmt:'<p>Enregistre une fonction de callback qui sera appel\xE9e \xE0 chaque fois le module \xE9met un message de log. Utile pour d\xE9bugger le fonctionnement d\x27un module Yoctopuce.</p>',par:{callback:'la fonction de callback \xE0 rappeler, ou un pointeur nul. La fonction de callback doit accepter deux arguments: l\x27objet module qui a produit un log, un cha\xEEne de caract\xE8re qui contiens le log'}};
 doc['Module']['revertFromFlash']={syn:'Recharge les r\xE9glages stock\xE9s dans le m\xE9moire non volatile du module, comme \xE0 la mise sous tension du module.',lib:'module.revertFromFlash()',pro:'def revertFromFlash()',cmt:'<p>Recharge les r\xE9glages stock\xE9s dans le m\xE9moire non volatile du module, comme \xE0 la mise sous tension du module.</p>',ret:'<tt>YAPI_SUCCESS</tt> si l\x27op\xE9ration se d\xE9roule sans erreur.',ext:'En cas d\x27erreur, d\xE9clenche une exception ou retourne un code d\x27erreur n\xE9gatif.'};

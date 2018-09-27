@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_voc.py 31445 2018-08-08 08:01:39Z seb $
+#* $Id: yocto_voc.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindVoc(), the high-level API for Voc functions
 #*
@@ -52,7 +52,7 @@ class YVoc(YSensor):
     to register callback functions, to access the autonomous datalogger.
 
     """
-#--- (end of YVoc class start)
+    #--- (end of YVoc class start)
     #--- (YVoc return codes)
     #--- (end of YVoc return codes)
     #--- (YVoc dlldef)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_multiaxiscontroller.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_multiaxiscontroller.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
 #*
@@ -50,7 +50,7 @@ class YMultiAxisController(YFunction):
     The Yoctopuce application programming interface allows you to drive a stepper motor.
 
     """
-#--- (end of YMultiAxisController class start)
+    #--- (end of YMultiAxisController class start)
     #--- (YMultiAxisController return codes)
     #--- (end of YMultiAxisController return codes)
     #--- (YMultiAxisController dlldef)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_anbutton.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_anbutton.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindAnButton(), the high-level API for AnButton functions
 #*
@@ -55,7 +55,7 @@ class YAnButton(YFunction):
     potentiometer position, regardless of its total resistance.
 
     """
-#--- (end of YAnButton class start)
+    #--- (end of YAnButton class start)
     #--- (YAnButton return codes)
     #--- (end of YAnButton return codes)
     #--- (YAnButton dlldef)

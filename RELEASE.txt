@@ -1,3 +1,5 @@
-Python v1.10.31897
+Python v1.10.32391
 
-- Add method set_hslColorAtPowerOn in YColorLedCluster class
+- Add support for beacon change callback
+- Fix unplug detection lag when SetDeviceListValidity is used
+- Fix never ending loop during firmware update with YoctoHub when using WebSocket

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_messagebox.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -46,7 +46,7 @@ from yocto_api import *
 #--- (generated code: YSms class start)
 #noinspection PyProtectedMember
 class YSms(object):
-#--- (end of generated code: YSms class start)
+    #--- (end of generated code: YSms class start)
     #--- (generated code: YSms return codes)
     #--- (end of generated code: YSms return codes)
     #--- (generated code: YSms dlldef)
@@ -1043,7 +1043,7 @@ class YMessageBox(YFunction):
     GSM-enabled Yoctopuce devices.
 
     """
-#--- (end of generated code: YMessageBox class start)
+    #--- (end of generated code: YMessageBox class start)
     #--- (generated code: YMessageBox return codes)
     #--- (end of generated code: YMessageBox return codes)
     #--- (generated code: YMessageBox dlldef)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_segmenteddisplay.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_segmenteddisplay.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
 #*
@@ -50,7 +50,7 @@ class YSegmentedDisplay(YFunction):
     The SegmentedDisplay class allows you to drive segmented displays.
 
     """
-#--- (end of YSegmentedDisplay class start)
+    #--- (end of YSegmentedDisplay class start)
     #--- (YSegmentedDisplay return codes)
     #--- (end of YSegmentedDisplay return codes)
     #--- (YSegmentedDisplay dlldef)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_tilt.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_tilt.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindTilt(), the high-level API for Tilt functions
 #*
@@ -58,7 +58,7 @@ class YTilt(YSensor):
     from YSensor.
 
     """
-#--- (end of YTilt class start)
+    #--- (end of YTilt class start)
     #--- (YTilt return codes)
     #--- (end of YTilt return codes)
     #--- (YTilt dlldef)

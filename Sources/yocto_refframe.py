@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_refframe.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_refframe.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindRefFrame(), the high-level API for RefFrame functions
 #*
@@ -55,7 +55,7 @@ class YRefFrame(YFunction):
     of standard gravity and improve the precision of the tilt sensors.
 
     """
-#--- (end of YRefFrame class start)
+    #--- (end of YRefFrame class start)
     #--- (YRefFrame return codes)
     #--- (end of YRefFrame return codes)
     #--- (YRefFrame dlldef)

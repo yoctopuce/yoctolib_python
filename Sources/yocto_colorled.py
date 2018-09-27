@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_colorled.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_colorled.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindColorLed(), the high-level API for ColorLed functions
 #*
@@ -55,7 +55,7 @@ class YColorLed(YFunction):
     difference between RGB and HSL in the section following this one.
 
     """
-#--- (end of YColorLed class start)
+    #--- (end of YColorLed class start)
     #--- (YColorLed return codes)
     #--- (end of YColorLed return codes)
     #--- (YColorLed dlldef)

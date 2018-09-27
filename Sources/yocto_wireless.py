@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_wireless.py 31688 2018-08-15 14:09:26Z seb $
+# * $Id: yocto_wireless.py 32216 2018-09-20 09:52:58Z seb $
 # *
 # * Implements yFindWireless(), the high-level API for Wireless functions
 # *
@@ -46,7 +46,7 @@ from yocto_api import *
 # --- (generated code: YWlanRecord class start)
 #noinspection PyProtectedMember
 class YWlanRecord(object):
-#--- (end of generated code: YWlanRecord class start)
+    #--- (end of generated code: YWlanRecord class start)
     # --- (generated code: YWlanRecord definitions)
     #--- (end of generated code: YWlanRecord definitions)
 
@@ -91,7 +91,7 @@ class YWireless(YFunction):
     and status for devices that are wireless-enabled.
 
     """
-#--- (end of generated code: YWireless class start)
+    #--- (end of generated code: YWireless class start)
     # --- (generated code: YWireless definitions)
     LINKQUALITY_INVALID = YAPI.INVALID_UINT
     SSID_INVALID = YAPI.INVALID_STRING

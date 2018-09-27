@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_accelerometer.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_accelerometer.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindAccelerometer(), the high-level API for Accelerometer functions
 #*
@@ -58,7 +58,7 @@ class YAccelerometer(YSensor):
     from YSensor.
 
     """
-#--- (end of YAccelerometer class start)
+    #--- (end of YAccelerometer class start)
     #--- (YAccelerometer return codes)
     #--- (end of YAccelerometer return codes)
     #--- (YAccelerometer dlldef)

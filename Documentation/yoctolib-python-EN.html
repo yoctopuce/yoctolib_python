@@ -6,7 +6,7 @@
 <style type="text/css">
 /*********************************************************************
  *
- * $Id: yoctolib-python-EN.html 31887 2018-08-24 14:33:28Z seb $
+ * $Id: yoctolib-python-EN.html 32376 2018-09-27 07:57:07Z seb $
  *
  * Searchable documentation browser for Yoctopuce Library
  *
@@ -257,7 +257,7 @@ var minusimage="data:image/gif;base64,R0lGODlhEAAQAIAAAEJCQv///yH5BAAAAP8ALAAAAA
 
 var marginSize=250;
 var resizeCallBacks= new Array();
-var SVN_Id = '$Id: yoctolib-python-EN.html 31887 2018-08-24 14:33:28Z seb $';
+var SVN_Id = '$Id: yoctolib-python-EN.html 32376 2018-09-27 07:57:07Z seb $';
 var Version = (SVN_Id.split(' '))[3];
 var doc = new Array();
 
@@ -314,6 +314,7 @@ doc['Module']['load']={syn:'Preloads the module cache with a specified validity 
 doc['Module']['log']={syn:'Adds a text message to the device logs.',lib:'module.log()',pro:'def log(<span id=pn>text</span>)',cmt:'<p>Adds a text message to the device logs. This function is useful in particular to trace the execution of HTTP callbacks. If a newline is desired after the message, it must be included in the string.</p>',par:{text:'the string to append to the logs.'},ret:'<tt>YAPI_SUCCESS</tt> if the call succeeds.',ext:'On failure, throws an exception or returns a negative error code.'};
 doc['Module']['nextModule']={syn:'Continues the module enumeration started using <tt>yFirstModule()</tt>.',lib:'module.nextModule()',pro:'def nextModule()',cmt:'<p>Continues the module enumeration started using <tt>yFirstModule()</tt>.</p>',ret:'a pointer to a <tt>YModule</tt> object, corresponding to the next module found, or a <tt>null</tt> pointer if there are no more modules to enumerate.'};
 doc['Module']['reboot']={syn:'Schedules a simple module reboot after the given number of seconds.',lib:'module.reboot()',pro:'def reboot(<span id=pn>secBeforeReboot</span>)',cmt:'<p>Schedules a simple module reboot after the given number of seconds.</p>',par:{secBeforeReboot:'number of seconds before rebooting'},ret:'<tt>YAPI_SUCCESS</tt> when the call succeeds.',ext:'On failure, throws an exception or returns a negative error code.'};
+doc['Module']['registerBeaconCallback']={syn:'Register a callback function, to be called when the localization beacon of the module has been changed.',lib:'module.registerBeaconCallback()',pro:'def registerBeaconCallback(<span id=pn>callback</span>)',cmt:'<p>Register a callback function, to be called when the localization beacon of the module has been changed. The callback function should take two arguments: the YModule object of which the beacon has changed, and an integer describing the new beacon state.</p>',par:{callback:'The callback function to call, or <tt>null</tt> to unregister a previously registered callback.'}};
 doc['Module']['registerConfigChangeCallback']={syn:'Register a callback function, to be called when a persistent settings in a device configuration has been changed (e.g.',lib:'module.registerConfigChangeCallback()',pro:'def registerConfigChangeCallback(<span id=pn>callback</span>)',cmt:'<p>Register a callback function, to be called when a persistent settings in a device configuration has been changed (e.g. change of unit, etc).</p>',par:{callback:'a procedure taking a YModule parameter, or <tt>null</tt> to unregister a previously registered callback.'}};
 doc['Module']['registerLogCallback']={syn:'Registers a device log callback function.',lib:'module.registerLogCallback()',pro:'def registerLogCallback(<span id=pn>callback</span>)',cmt:'<p>Registers a device log callback function. This callback will be called each time that a module sends a new log message. Mostly useful to debug a Yoctopuce module.</p>',par:{callback:'the callback function to call, or a null pointer. The callback function should take two arguments: the module object that emitted the log message, and the character string containing the log.'}};
 doc['Module']['revertFromFlash']={syn:'Reloads the settings stored in the nonvolatile memory, as when the module is powered on.',lib:'module.revertFromFlash()',pro:'def revertFromFlash()',cmt:'<p>Reloads the settings stored in the nonvolatile memory, as when the module is powered on.</p>',ret:'<tt>YAPI_SUCCESS</tt> when the call succeeds.',ext:'On failure, throws an exception or returns a negative error code.'};

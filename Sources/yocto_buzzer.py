@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_buzzer.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_buzzer.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindBuzzer(), the high-level API for Buzzer functions
 #*
@@ -53,7 +53,7 @@ class YBuzzer(YFunction):
     You can also pre-program a play sequence.
 
     """
-#--- (end of YBuzzer class start)
+    #--- (end of YBuzzer class start)
     #--- (YBuzzer return codes)
     #--- (end of YBuzzer return codes)
     #--- (YBuzzer dlldef)

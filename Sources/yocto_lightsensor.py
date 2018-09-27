@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_lightsensor.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_lightsensor.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindLightSensor(), the high-level API for LightSensor functions
 #*
@@ -56,7 +56,7 @@ class YLightSensor(YSensor):
     desired working mode.
 
     """
-#--- (end of YLightSensor class start)
+    #--- (end of YLightSensor class start)
     #--- (YLightSensor return codes)
     #--- (end of YLightSensor return codes)
     #--- (YLightSensor dlldef)

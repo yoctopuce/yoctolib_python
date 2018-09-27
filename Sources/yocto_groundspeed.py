@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_groundspeed.py 31445 2018-08-08 08:01:39Z seb $
+#* $Id: yocto_groundspeed.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
 #*
@@ -53,7 +53,7 @@ class YGroundSpeed(YSensor):
     datalogger.
 
     """
-#--- (end of YGroundSpeed class start)
+    #--- (end of YGroundSpeed class start)
     #--- (YGroundSpeed return codes)
     #--- (end of YGroundSpeed return codes)
     #--- (YGroundSpeed dlldef)

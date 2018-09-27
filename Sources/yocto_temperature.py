@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_temperature.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_temperature.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindTemperature(), the high-level API for Temperature functions
 #*
@@ -55,7 +55,7 @@ class YTemperature(YSensor):
     sensors (connection type, temperature mapping table).
 
     """
-#--- (end of YTemperature class start)
+    #--- (end of YTemperature class start)
     #--- (YTemperature return codes)
     #--- (end of YTemperature return codes)
     #--- (YTemperature dlldef)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_gyro.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -52,7 +52,7 @@ class YQt(YSensor):
     YGyro class provides a more convenient higher-level interface.
 
     """
-#--- (end of generated code: YQt class start)
+    #--- (end of generated code: YQt class start)
     #--- (generated code: YQt return codes)
     #--- (end of generated code: YQt return codes)
     #--- (generated code: YQt definitions)
@@ -183,7 +183,7 @@ class YGyro(YSensor):
     from YSensor.
 
     """
-#--- (end of generated code: YGyro class start)
+    #--- (end of generated code: YGyro class start)
     #--- (generated code: YGyro return codes)
     #--- (end of generated code: YGyro return codes)
     #--- (generated code: YGyro definitions)

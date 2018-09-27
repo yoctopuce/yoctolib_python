@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_voltageoutput.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_voltageoutput.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
 #*
@@ -50,7 +50,7 @@ class YVoltageOutput(YFunction):
     The Yoctopuce application programming interface allows you to change the value of the voltage output.
 
     """
-#--- (end of YVoltageOutput class start)
+    #--- (end of YVoltageOutput class start)
     #--- (YVoltageOutput return codes)
     #--- (end of YVoltageOutput return codes)
     #--- (YVoltageOutput dlldef)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_currentloopoutput.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_currentloopoutput.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
 #*
@@ -51,7 +51,7 @@ class YCurrentLoopOutput(YFunction):
     output as well as to know the current loop state.
 
     """
-#--- (end of YCurrentLoopOutput class start)
+    #--- (end of YCurrentLoopOutput class start)
     #--- (YCurrentLoopOutput return codes)
     #--- (end of YCurrentLoopOutput return codes)
     #--- (YCurrentLoopOutput dlldef)

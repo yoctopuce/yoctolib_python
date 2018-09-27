@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_digitalio.py 31688 2018-08-15 14:09:26Z seb $
+#* $Id: yocto_digitalio.py 32216 2018-09-20 09:52:58Z seb $
 #*
 #* Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #*
@@ -53,7 +53,7 @@ class YDigitalIO(YFunction):
     of each I/O can be modified (open drain and reverse polarity).
 
     """
-#--- (end of YDigitalIO class start)
+    #--- (end of YDigitalIO class start)
     #--- (YDigitalIO return codes)
     #--- (end of YDigitalIO return codes)
     #--- (YDigitalIO dlldef)
