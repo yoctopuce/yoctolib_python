@@ -1,9 +1,23 @@
+# ********************************************************************
+#
+#  $Id: helloworld.py 32630 2018-10-10 14:11:07Z seb $
+#
+#  An example that show how to use a  Yocto-4-20mA-Tx
+#
+#  You can find more information on our web site:
+#   Yocto-4-20mA-Tx documentation:
+#      https://www.yoctopuce.com/EN/products/yocto-4-20ma-tx/doc.html
+#   Python API Reference:
+#      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
+#
+# *********************************************************************
+
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
-
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..", "..", "Sources"))
+
 from yocto_api import *
 from yocto_currentloopoutput import *
 

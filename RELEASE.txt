@@ -1,5 +1,4 @@
-Python v1.10.32391
+Python v1.10.32759
 
-- Add support for beacon change callback
-- Fix unplug detection lag when SetDeviceListValidity is used
-- Fix never ending loop during firmware update with YoctoHub when using WebSocket
+- YModule.get_hardwareId() method return last know hardwareId when the module is disconnected
+- Code clean-up in Doc-XXX examples

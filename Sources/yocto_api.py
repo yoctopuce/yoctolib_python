@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 32376 2018-09-27 07:57:07Z seb $
+# * $Id: yocto_api.py 32573 2018-10-08 09:40:07Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -830,7 +830,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "32391"
+    YOCTO_API_BUILD_NO = "32759"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -4421,8 +4421,8 @@ class YFunction(object):
     # noinspection PyMethodMayBeStatic
     def _get_json_path(self, json, path):
         errbuf = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
-        path_data = ctypes.create_string_buffer(path)
-        json_data = ctypes.create_string_buffer(json)
+        path_data = ctypes.create_string_buffer(YString2Byte(path))
+        json_data = ctypes.create_string_buffer(YString2Byte(json))
         reply_c = POINTER(ctypes.c_ubyte)()
         res = YAPI._yapiJsonGetPath(path_data, json_data, len(json), ctypes.byref(reply_c), errbuf)
         if res > 0:
@@ -6171,6 +6171,19 @@ class YModule(YFunction):
             self._download(y)
         self.clearCache()
         return YAPI.SUCCESS
+
+    def get_hardwareId(self):
+        """
+        Returns the unique hardware identifier of the module.
+        The unique hardware identifier is made of the device serial
+        number followed by string ".module".
+
+        @return a string that uniquely identifies the module
+        """
+        # serial
+
+        serial = self.get_serialNumber()
+        return serial + ".module"
 
     def download(self, pathname):
         """

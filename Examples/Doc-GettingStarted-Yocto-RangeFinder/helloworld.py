@@ -1,3 +1,17 @@
+# ********************************************************************
+#
+#  $Id: helloworld.py 32628 2018-10-10 13:37:59Z seb $
+#
+#  An example that show how to use a  Yocto-RangeFinder
+#
+#  You can find more information on our web site:
+#   Yocto-RangeFinder documentation:
+#      https://www.yoctopuce.com/EN/products/yocto-rangefinder/doc.html
+#   Python API Reference:
+#      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
+#
+# *********************************************************************
+
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys

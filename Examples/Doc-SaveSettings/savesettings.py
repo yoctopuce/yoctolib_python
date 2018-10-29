@@ -1,9 +1,21 @@
+# ********************************************************************
+#
+#  $Id: svn_id $
+#
+#  Doc-SaveSettings example
+#
+#  You can find more information on our web site:
+#   Python API Reference:
+#      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
+#
+# *********************************************************************
+
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
-
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..", "..", "Sources"))
+
 from yocto_api import *
 
 

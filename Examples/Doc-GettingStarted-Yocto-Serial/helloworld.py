@@ -1,9 +1,23 @@
+# ********************************************************************
+#
+#  $Id: helloworld.py 32628 2018-10-10 13:37:59Z seb $
+#
+#  An example that show how to use a  Yocto-Serial
+#
+#  You can find more information on our web site:
+#   Yocto-Serial documentation:
+#      https://www.yoctopuce.com/EN/products/yocto-serial/doc.html
+#   Python API Reference:
+#      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
+#
+# *********************************************************************
+
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
-
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..", "..", "Sources"))
+
 from yocto_api import *
 from yocto_serialport import *
 

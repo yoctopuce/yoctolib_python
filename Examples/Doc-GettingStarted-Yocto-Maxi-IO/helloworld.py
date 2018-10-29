@@ -1,3 +1,17 @@
+# ********************************************************************
+#
+#  $Id: helloworld.py 32630 2018-10-10 14:11:07Z seb $
+#
+#  An example that show how to use a  Yocto-Maxi-IO
+#
+#  You can find more information on our web site:
+#   Yocto-Maxi-IO documentation:
+#      https://www.yoctopuce.com/EN/products/yocto-maxi-io/doc.html
+#   Python API Reference:
+#      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
+#
+# *********************************************************************
+
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os, sys
