@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_current.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_tvoc.py 33270 2018-11-22 08:41:15Z seb $
 #
-#  Implements yFindCurrent(), the high-level API for Current functions
+#  Implements yFindTvoc(), the high-level API for Tvoc functions
 #
 #  - - - - - - - - - License information: - - - - - - - - -
 #
@@ -43,58 +43,40 @@ __docformat__ = 'restructuredtext en'
 from yocto_api import *
 
 
-#--- (YCurrent class start)
+#--- (YTvoc class start)
 #noinspection PyProtectedMember
-class YCurrent(YSensor):
+class YTvoc(YSensor):
     """
-    The Yoctopuce class YCurrent allows you to read and configure Yoctopuce current
-    sensors. It inherits from YSensor class the core functions to read measurements,
+    The Yoctopuce class YTvoc allows you to read and configure Yoctopuce Total Volatile Organic
+    Compound sensors. It inherits from YSensor class the core functions to read measurements,
     to register callback functions, to access the autonomous datalogger.
 
     """
-    #--- (end of YCurrent class start)
-    #--- (YCurrent return codes)
-    #--- (end of YCurrent return codes)
-    #--- (YCurrent dlldef)
-    #--- (end of YCurrent dlldef)
-    #--- (YCurrent yapiwrapper)
-    #--- (end of YCurrent yapiwrapper)
-    #--- (YCurrent definitions)
-    ENABLED_FALSE = 0
-    ENABLED_TRUE = 1
-    ENABLED_INVALID = -1
-    #--- (end of YCurrent definitions)
+    #--- (end of YTvoc class start)
+    #--- (YTvoc return codes)
+    #--- (end of YTvoc return codes)
+    #--- (YTvoc dlldef)
+    #--- (end of YTvoc dlldef)
+    #--- (YTvoc yapiwrapper)
+    #--- (end of YTvoc yapiwrapper)
+    #--- (YTvoc definitions)
+    #--- (end of YTvoc definitions)
 
     def __init__(self, func):
-        super(YCurrent, self).__init__(func)
-        self._className = 'Current'
-        #--- (YCurrent attributes)
+        super(YTvoc, self).__init__(func)
+        self._className = 'Tvoc'
+        #--- (YTvoc attributes)
         self._callback = None
-        self._enabled = YCurrent.ENABLED_INVALID
-        #--- (end of YCurrent attributes)
+        #--- (end of YTvoc attributes)
 
-    #--- (YCurrent implementation)
+    #--- (YTvoc implementation)
     def _parseAttr(self, json_val):
-        if json_val.has("enabled"):
-            self._enabled = (json_val.getInt("enabled") > 0 if 1 else 0)
-        super(YCurrent, self)._parseAttr(json_val)
-
-    def get_enabled(self):
-        # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YCurrent.ENABLED_INVALID
-        res = self._enabled
-        return res
-
-    def set_enabled(self, newval):
-        rest_val = "1" if newval > 0 else "0"
-        return self._setAttr("enabled", rest_val)
+        super(YTvoc, self)._parseAttr(json_val)
 
     @staticmethod
-    def FindCurrent(func):
+    def FindTvoc(func):
         """
-        Retrieves a current sensor for a given identifier.
+        Retrieves a Total  Volatile Organic Compound sensor for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -104,11 +86,11 @@ class YCurrent(YSensor):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the current sensor is online at the time
+        This function does not require that the Total  Volatile Organic Compound sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YCurrent.isOnline() to test if the current sensor is
+        Use the method YTvoc.isOnline() to test if the Total  Volatile Organic Compound sensor is
         indeed online at a given time. In case of ambiguity when looking for
-        a current sensor by logical name, no error is notified: the first instance
+        a Total  Volatile Organic Compound sensor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -116,48 +98,48 @@ class YCurrent(YSensor):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the current sensor
+        @param func : a string that uniquely characterizes the Total  Volatile Organic Compound sensor
 
-        @return a YCurrent object allowing you to drive the current sensor.
+        @return a YTvoc object allowing you to drive the Total  Volatile Organic Compound sensor.
         """
         # obj
-        obj = YFunction._FindFromCache("Current", func)
+        obj = YFunction._FindFromCache("Tvoc", func)
         if obj is None:
-            obj = YCurrent(func)
-            YFunction._AddToCache("Current", func, obj)
+            obj = YTvoc(func)
+            YFunction._AddToCache("Tvoc", func, obj)
         return obj
 
-    def nextCurrent(self):
+    def nextTvoc(self):
         """
-        Continues the enumeration of current sensors started using yFirstCurrent().
-        Caution: You can't make any assumption about the returned current sensors order.
-        If you want to find a specific a current sensor, use Current.findCurrent()
+        Continues the enumeration of Total Volatile Organic Compound sensors started using yFirstTvoc().
+        Caution: You can't make any assumption about the returned Total Volatile Organic Compound sensors order.
+        If you want to find a specific a Total  Volatile Organic Compound sensor, use Tvoc.findTvoc()
         and a hardwareID or a logical name.
 
-        @return a pointer to a YCurrent object, corresponding to
-                a current sensor currently online, or a None pointer
-                if there are no more current sensors to enumerate.
+        @return a pointer to a YTvoc object, corresponding to
+                a Total  Volatile Organic Compound sensor currently online, or a None pointer
+                if there are no more Total Volatile Organic Compound sensors to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
             return None
         if hwidRef.value == "":
             return None
-        return YCurrent.FindCurrent(hwidRef.value)
+        return YTvoc.FindTvoc(hwidRef.value)
 
-#--- (end of YCurrent implementation)
+#--- (end of YTvoc implementation)
 
-#--- (YCurrent functions)
+#--- (YTvoc functions)
 
     @staticmethod
-    def FirstCurrent():
+    def FirstTvoc():
         """
-        Starts the enumeration of current sensors currently accessible.
-        Use the method YCurrent.nextCurrent() to iterate on
-        next current sensors.
+        Starts the enumeration of Total Volatile Organic Compound sensors currently accessible.
+        Use the method YTvoc.nextTvoc() to iterate on
+        next Total Volatile Organic Compound sensors.
 
-        @return a pointer to a YCurrent object, corresponding to
-                the first current sensor currently online, or a None pointer
+        @return a pointer to a YTvoc object, corresponding to
+                the first Total Volatile Organic Compound sensor currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
@@ -170,7 +152,7 @@ class YCurrent(YSensor):
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
         p = (ctypes.c_int * 1)()
-        err = YAPI.apiGetFunctionsByClass("Current", 0, p, size, neededsizeRef, errmsgRef)
+        err = YAPI.apiGetFunctionsByClass("Tvoc", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
@@ -179,6 +161,6 @@ class YCurrent(YSensor):
                 YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
-        return YCurrent.FindCurrent(serialRef.value + "." + funcIdRef.value)
+        return YTvoc.FindTvoc(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of YCurrent functions)
+#--- (end of YTvoc functions)

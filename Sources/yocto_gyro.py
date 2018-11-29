@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 32216 2018-09-20 09:52:58Z seb $
+#* $Id: yocto_gyro.py 32907 2018-11-02 10:18:55Z seb $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -108,6 +108,9 @@ class YQt(YSensor):
     def nextQt(self):
         """
         Continues the enumeration of quaternion components started using yFirstQt().
+        Caution: You can't make any assumption about the returned quaternion components order.
+        If you want to find a specific a quaternion component, use Qt.findQt()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YQt object, corresponding to
                 a quaternion component currently online, or a None pointer
@@ -599,6 +602,9 @@ class YGyro(YSensor):
     def nextGyro(self):
         """
         Continues the enumeration of gyroscopes started using yFirstGyro().
+        Caution: You can't make any assumption about the returned gyroscopes order.
+        If you want to find a specific a gyroscope, use Gyro.findGyro()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YGyro object, corresponding to
                 a gyroscope currently online, or a None pointer

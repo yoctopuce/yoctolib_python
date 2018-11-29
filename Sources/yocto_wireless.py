@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_wireless.py 32216 2018-09-20 09:52:58Z seb $
+# * $Id: yocto_wireless.py 32907 2018-11-02 10:18:55Z seb $
 # *
 # * Implements yFindWireless(), the high-level API for Wireless functions
 # *
@@ -400,6 +400,9 @@ class YWireless(YFunction):
     def nextWireless(self):
         """
         Continues the enumeration of wireless lan interfaces started using yFirstWireless().
+        Caution: You can't make any assumption about the returned wireless lan interfaces order.
+        If you want to find a specific a wireless lan interface, use Wireless.findWireless()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YWireless object, corresponding to
                 a wireless lan interface currently online, or a None pointer

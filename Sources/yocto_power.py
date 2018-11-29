@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_power.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_power.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindPower(), the high-level API for Power functions
 #
@@ -188,6 +188,9 @@ class YPower(YSensor):
     def nextPower(self):
         """
         Continues the enumeration of electrical power sensors started using yFirstPower().
+        Caution: You can't make any assumption about the returned electrical power sensors order.
+        If you want to find a specific a electrical power sensor, use Power.findPower()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YPower object, corresponding to
                 a electrical power sensor currently online, or a None pointer

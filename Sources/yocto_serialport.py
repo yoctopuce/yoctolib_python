@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 32216 2018-09-20 09:52:58Z seb $
+#* $Id: yocto_serialport.py 32907 2018-11-02 10:18:55Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -1629,6 +1629,9 @@ class YSerialPort(YFunction):
     def nextSerialPort(self):
         """
         Continues the enumeration of serial ports started using yFirstSerialPort().
+        Caution: You can't make any assumption about the returned serial ports order.
+        If you want to find a specific a serial port, use SerialPort.findSerialPort()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YSerialPort object, corresponding to
                 a serial port currently online, or a None pointer

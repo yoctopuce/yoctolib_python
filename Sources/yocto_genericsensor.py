@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_genericsensor.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_genericsensor.py 33114 2018-11-09 21:58:19Z mvuilleu $
 #
 #  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #
@@ -71,6 +71,7 @@ class YGenericSensor(YSensor):
     SIGNALSAMPLING_HIGH_RATE_FILTERED = 1
     SIGNALSAMPLING_LOW_NOISE = 2
     SIGNALSAMPLING_LOW_NOISE_FILTERED = 3
+    SIGNALSAMPLING_HIGHEST_RATE = 4
     SIGNALSAMPLING_INVALID = -1
     #--- (end of YGenericSensor definitions)
 
@@ -248,8 +249,9 @@ class YGenericSensor(YSensor):
         to get measures as stable as possible when working on a noisy signal.
 
         @return a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
-        YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE and
-        YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric signal sampling method to use
+        YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE,
+        YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED and YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE
+        corresponding to the electric signal sampling method to use
 
         On failure, throws an exception or returns YGenericSensor.SIGNALSAMPLING_INVALID.
         """
@@ -270,8 +272,9 @@ class YGenericSensor(YSensor):
         to get measures as stable as possible when working on a noisy signal.
 
         @param newval : a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
-        YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE and
-        YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric signal sampling method to use
+        YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE,
+        YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED and YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE
+        corresponding to the electric signal sampling method to use
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -334,6 +337,9 @@ class YGenericSensor(YSensor):
     def nextGenericSensor(self):
         """
         Continues the enumeration of generic sensors started using yFirstGenericSensor().
+        Caution: You can't make any assumption about the returned generic sensors order.
+        If you want to find a specific a generic sensor, use GenericSensor.findGenericSensor()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YGenericSensor object, corresponding to
                 a generic sensor currently online, or a None pointer

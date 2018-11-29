@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 32573 2018-10-08 09:40:07Z seb $
+# * $Id: yocto_api.py 33400 2018-11-27 07:58:29Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -830,7 +830,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "32759"
+    YOCTO_API_BUILD_NO = "33423"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1247,10 +1247,6 @@ class YAPI:
         YAPI._yapiRegisterDeviceLogCallback.restypes = ctypes.c_int
         YAPI._yapiRegisterDeviceLogCallback.argtypes = [ctypes.c_void_p]
 
-        YAPI._yapiStartStopDeviceLogCallback = YAPI._yApiCLib.yapiStartStopDeviceLogCallback
-        YAPI._yapiStartStopDeviceLogCallback.restypes = ctypes.c_int
-        YAPI._yapiStartStopDeviceLogCallback.argtypes = [ctypes.c_char_p, ctypes.c_int]
-
         ##--- (generated code: YFunction dlldef)
         YAPI._yapiGetAllJsonKeys = YAPI._yApiCLib.yapiGetAllJsonKeys
         YAPI._yapiGetAllJsonKeys.restypes = ctypes.c_int
@@ -1297,6 +1293,9 @@ class YAPI:
         YAPI._yapiRegisterBeaconCallback = YAPI._yApiCLib.yapiRegisterBeaconCallback
         YAPI._yapiRegisterBeaconCallback.restypes = ctypes.c_int
         YAPI._yapiRegisterBeaconCallback.argtypes = [ctypes.c_void_p]
+        YAPI._yapiStartStopDeviceLogCallback = YAPI._yApiCLib.yapiStartStopDeviceLogCallback
+        YAPI._yapiStartStopDeviceLogCallback.restypes = ctypes.c_int
+        YAPI._yapiStartStopDeviceLogCallback.argtypes = [ctypes.c_char_p, ctypes.c_int]
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
@@ -1342,6 +1341,7 @@ class YAPI:
             self.func = None
             self.value = ""
             self.timestamp = 0.0
+            self.duration = 0.0
             self.report = None
             self.serial = None
             self.url = None
@@ -1373,10 +1373,11 @@ class YAPI:
             self.func = func
             self.value = value
 
-        def setTimedReport(self, func, timestamp, report):
+        def setTimedReport(self, func, timestamp, duration, report):
             self.ev = self.FUN_TIMEDREPORT
             self.func = func
             self.timestamp = timestamp
+            self.duration = duration
             self.report = report
 
         def setHubDiscovery(self, serial, url):
@@ -1413,7 +1414,7 @@ class YAPI:
             elif self.ev == self.FUN_TIMEDREPORT:
                 if self.report[0] <= 2:
                     sensor = self.func
-                    sensor._invokeTimedReportCallback(sensor._decodeTimedReport(self.timestamp, self.report))
+                    sensor._invokeTimedReportCallback(sensor._decodeTimedReport(self.timestamp, self.duration, self.report))
             elif self.ev == self.CONFCHANGE:
                 self.module._invokeConfigChangeCallback()
             elif self.ev == self.BEACON_CHANGE:
@@ -1453,7 +1454,7 @@ class YAPI:
 
     _yapiFunctionUpdateFunc = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p)
 
-    _yapiTimedReportFunc = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_double, POINTER(c_ubyte), ctypes.c_int)
+    _yapiTimedReportFunc = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_double, POINTER(c_ubyte), ctypes.c_int, ctypes.c_double)
 
     _yapiHubDiscoveryCallback = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_char_p)
 
@@ -2089,14 +2090,14 @@ class YAPI:
         return 0
 
     @staticmethod
-    def native_yTimedReportCallback(f, timestamp, data, dataLen):
+    def native_yTimedReportCallback(f, timestamp, data, dataLen, duration):
         for i in range(len(YFunction._TimedReportCallbackList)):
             if YFunction._TimedReportCallbackList[i].get_functionDescriptor() == f:
                 report = []
                 for d in range(dataLen):
                     report.append(int(data[d]))
                 ev = YAPI._Event()
-                ev.setTimedReport(YFunction._TimedReportCallbackList[i], timestamp, report)
+                ev.setTimedReport(YFunction._TimedReportCallbackList[i], timestamp, duration, report)
                 YAPI._DataEvents.append(ev)
                 return
         return 0
@@ -2884,21 +2885,17 @@ class YDataStream(object):
         self._utcStamp = 0
         self._nCols = 0
         self._nRows = 0
+        self._startTime = 0
         self._duration = 0
+        self._dataSamplesInterval = 0
+        self._firstMeasureDuration = 0
         self._columnNames = []
         self._functionId = ''
         self._isClosed = 0
         self._isAvg = 0
-        self._isScal = 0
-        self._isScal32 = 0
-        self._decimals = 0
-        self._offset = 0
-        self._scale = 0
-        self._samplesPerHour = 0
         self._minVal = 0
         self._avgVal = 0
         self._maxVal = 0
-        self._decexp = 0
         self._caltyp = 0
         self._calpar = []
         self._calraw = []
@@ -2915,45 +2912,40 @@ class YDataStream(object):
         # val
         # i
         # maxpos
-        # iRaw
-        # iRef
+        # ms_offset
+        # samplesPerHour
         # fRaw
         # fRef
-        # duration_float
         iCalib = []
         # // decode sequence header to extract data
         self._runNo = encoded[0] + (((encoded[1]) << (16)))
         self._utcStamp = encoded[2] + (((encoded[3]) << (16)))
         val = encoded[4]
         self._isAvg = (((val) & (0x100)) == 0)
-        self._samplesPerHour = ((val) & (0xff))
+        samplesPerHour = ((val) & (0xff))
         if ((val) & (0x100)) != 0:
-            self._samplesPerHour = self._samplesPerHour * 3600
+            samplesPerHour = samplesPerHour * 3600
         else:
             if ((val) & (0x200)) != 0:
-                self._samplesPerHour = self._samplesPerHour * 60
-        val = encoded[5]
-        if val > 32767:
-            val = val - 65536
-        self._decimals = val
-        self._offset = val
-        self._scale = encoded[6]
-        self._isScal = (self._scale != 0)
-        self._isScal32 = (len(encoded) >= 14)
+                samplesPerHour = samplesPerHour * 60
+        self._dataSamplesInterval = 3600.0 / samplesPerHour
+        ms_offset = encoded[6]
+        if ms_offset < 1000:
+            # // new encoding . add the ms to the UTC timestamp
+            self._startTime = self._utcStamp + (ms_offset / 1000.0)
+        else:
+            # // legacy encoding subtract the measure interval form the UTC timestamp
+            self._startTime = self._utcStamp -  self._dataSamplesInterval
+        self._firstMeasureDuration = encoded[5]
+        if not (self._isAvg):
+            self._firstMeasureDuration = self._firstMeasureDuration / 1000.0
         val = encoded[7]
         self._isClosed = (val != 0xffff)
         if val == 0xffff:
             val = 0
         self._nRows = val
-        duration_float = self._nRows * 3600 / self._samplesPerHour
-        self._duration = int(round(duration_float))
+        self._duration = self._nRows * self._dataSamplesInterval
         # // precompute decoding parameters
-        self._decexp = 1.0
-        if self._scale == 0:
-            i = 0
-            while i < self._decimals:
-                self._decexp = self._decexp * 10.0
-                i = i + 1
         iCalib = dataset._get_calibration()
         self._caltyp = iCalib[0]
         if self._caltyp != 0:
@@ -2962,38 +2954,19 @@ class YDataStream(object):
             del self._calpar[:]
             del self._calraw[:]
             del self._calref[:]
-            if self._isScal32:
-                i = 1
-                while i < maxpos:
-                    self._calpar.append(iCalib[i])
-                    i = i + 1
-                i = 1
-                while i + 1 < maxpos:
-                    fRaw = iCalib[i]
-                    fRaw = fRaw / 1000.0
-                    fRef = iCalib[i + 1]
-                    fRef = fRef / 1000.0
-                    self._calraw.append(fRaw)
-                    self._calref.append(fRef)
-                    i = i + 2
-            else:
-                i = 1
-                while i + 1 < maxpos:
-                    iRaw = iCalib[i]
-                    iRef = iCalib[i + 1]
-                    self._calpar.append(iRaw)
-                    self._calpar.append(iRef)
-                    if self._isScal:
-                        fRaw = iRaw
-                        fRaw = (fRaw - self._offset) / self._scale
-                        fRef = iRef
-                        fRef = (fRef - self._offset) / self._scale
-                        self._calraw.append(fRaw)
-                        self._calref.append(fRef)
-                    else:
-                        self._calraw.append(YAPI._decimalToDouble(iRaw))
-                        self._calref.append(YAPI._decimalToDouble(iRef))
-                    i = i + 2
+            i = 1
+            while i < maxpos:
+                self._calpar.append(iCalib[i])
+                i = i + 1
+            i = 1
+            while i + 1 < maxpos:
+                fRaw = iCalib[i]
+                fRaw = fRaw / 1000.0
+                fRef = iCalib[i + 1]
+                fRef = fRef / 1000.0
+                self._calraw.append(fRaw)
+                self._calref.append(fRef)
+                i = i + 2
         # // preload column names for backward-compatibility
         self._functionId = dataset.get_functionId()
         if self._isAvg:
@@ -3008,14 +2981,9 @@ class YDataStream(object):
             self._nCols = 1
         # // decode min/avg/max values for the sequence
         if self._nRows > 0:
-            if self._isScal32:
-                self._avgVal = self._decodeAvg(encoded[8] + (((((encoded[9]) ^ (0x8000))) << (16))), 1)
-                self._minVal = self._decodeVal(encoded[10] + (((encoded[11]) << (16))))
-                self._maxVal = self._decodeVal(encoded[12] + (((encoded[13]) << (16))))
-            else:
-                self._minVal = self._decodeVal(encoded[8])
-                self._maxVal = self._decodeVal(encoded[9])
-                self._avgVal = self._decodeAvg(encoded[10] + (((encoded[11]) << (16))), self._nRows)
+            self._avgVal = self._decodeAvg(encoded[8] + (((((encoded[9]) ^ (0x8000))) << (16))), 1)
+            self._minVal = self._decodeVal(encoded[10] + (((encoded[11]) << (16))))
+            self._maxVal = self._decodeVal(encoded[12] + (((encoded[13]) << (16))))
         return 0
 
     def _parseStream(self, sdata):
@@ -3032,30 +3000,17 @@ class YDataStream(object):
         if self._isAvg:
             while idx + 3 < len(udat):
                 del dat[:]
-                if self._isScal32:
-                    dat.append(self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))))
-                    dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
-                    dat.append(self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))))
-                    idx = idx + 6
-                else:
-                    dat.append(self._decodeVal(udat[idx]))
-                    dat.append(self._decodeAvg(udat[idx + 2] + (((udat[idx + 3]) << (16))), 1))
-                    dat.append(self._decodeVal(udat[idx + 1]))
-                    idx = idx + 4
+                dat.append(self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))))
+                dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
+                dat.append(self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))))
+                idx = idx + 6
                 self._values.append(dat[:])
         else:
-            if self._isScal and not (self._isScal32):
-                while idx < len(udat):
-                    del dat[:]
-                    dat.append(self._decodeVal(udat[idx]))
-                    self._values.append(dat[:])
-                    idx = idx + 1
-            else:
-                while idx + 1 < len(udat):
-                    del dat[:]
-                    dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
-                    self._values.append(dat[:])
-                    idx = idx + 2
+            while idx + 1 < len(udat):
+                del dat[:]
+                dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
+                self._values.append(dat[:])
+                idx = idx + 2
 
         self._nRows = len(self._values)
         return YAPI.SUCCESS
@@ -3071,13 +3026,7 @@ class YDataStream(object):
     def _decodeVal(self, w):
         # val
         val = w if w <= 0x7fffffff else -0x100000000 + w
-        if self._isScal32:
-            val = val / 1000.0
-        else:
-            if self._isScal:
-                val = (val - self._offset) / self._scale
-            else:
-                val = YAPI._decimalToDouble(w)
+        val = val / 1000.0
         if self._caltyp != 0:
             if self._calhdl is not None:
                 val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
@@ -3086,13 +3035,7 @@ class YDataStream(object):
     def _decodeAvg(self, dw, count):
         # val
         val = dw if dw <= 0x7fffffff else -0x100000000 + dw
-        if self._isScal32:
-            val = val / 1000.0
-        else:
-            if self._isScal:
-                val = (val / (100 * count) - self._offset) / self._scale
-            else:
-                val = val / (count * self._decexp)
+        val = val / 1000.0
         if self._caltyp != 0:
             if self._calhdl is not None:
                 val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
@@ -3118,7 +3061,9 @@ class YDataStream(object):
         If the device uses a firmware older than version 13000, value is
         relative to the start of the time the device was powered on, and
         is always positive.
-        If you need an absolute UTC timestamp, use get_startTimeUTC().
+        If you need an absolute UTC timestamp, use get_realStartTimeUTC().
+
+        <b>DEPRECATED</b>: This method has been replaced by get_realStartTimeUTC().
 
         @return an unsigned number corresponding to the number of seconds
                 between the start of the run and the beginning of this data
@@ -3132,11 +3077,25 @@ class YDataStream(object):
         If the UTC time was not set in the datalogger at the time of the recording
         of this data stream, this method returns 0.
 
+        <b>DEPRECATED</b>: This method has been replaced by get_realStartTimeUTC().
+
         @return an unsigned number corresponding to the number of seconds
                 between the Jan 1, 1970 and the beginning of this data
                 stream (i.e. Unix time representation of the absolute time).
         """
-        return self._utcStamp
+        return int(round(self._startTime))
+
+    def get_realStartTimeUTC(self):
+        """
+        Returns the start time of the data stream, relative to the Jan 1, 1970.
+        If the UTC time was not set in the datalogger at the time of the recording
+        of this data stream, this method returns 0.
+
+        @return a floating-point number  corresponding to the number of seconds
+                between the Jan 1, 1970 and the beginning of this data
+                stream (i.e. Unix time representation of the absolute time).
+        """
+        return self._startTime
 
     def get_dataSamplesIntervalMs(self):
         """
@@ -3147,10 +3106,13 @@ class YDataStream(object):
 
         @return an unsigned number corresponding to a number of milliseconds.
         """
-        return int((3600000) / (self._samplesPerHour))
+        return int(round(self._dataSamplesInterval*1000))
 
     def get_dataSamplesInterval(self):
-        return 3600.0 / self._samplesPerHour
+        return self._dataSamplesInterval
+
+    def get_firstDataSamplesInterval(self):
+        return self._firstMeasureDuration
 
     def get_rowCount(self):
         """
@@ -3250,17 +3212,10 @@ class YDataStream(object):
         """
         return self._maxVal
 
-    def get_duration(self):
-        """
-        Returns the approximate duration of this stream, in seconds.
-
-        @return the number of seconds covered by this stream.
-
-        On failure, throws an exception or returns YDataStream.DURATION_INVALID.
-        """
+    def get_realDuration(self):
         if self._isClosed:
             return self._duration
-        return int(time.time()) - self._utcStamp
+        return int(int(time.time()) - self._utcStamp)
 
     def get_dataRows(self):
         """
@@ -3499,12 +3454,12 @@ class YDataSet(object):
         self._measures = []
         for i in range(0, arr.length()):
             stream = self._parent._findDataStream(self, arr.getString(i))
-            streamStartTime = stream.get_startTimeUTC() - stream.get_dataSamplesIntervalMs() / 1000
-            streamEndTime = stream.get_startTimeUTC() + stream.get_duration()
+            streamStartTime = stream.get_realStartTimeUTC()
+            streamEndTime = streamStartTime + stream.get_realDuration()
             if self._startTime > 0 and streamEndTime <= self._startTime:
                 # this stream is too early, drop it
                 pass
-            elif 0 < self._endTime < stream.get_startTimeUTC():
+            elif self._endTime > 0 and streamStartTime >= self._endTime:
                 # this stream is too late, drop it
                 pass
             else:
@@ -3512,17 +3467,17 @@ class YDataSet(object):
                 if startTime > streamStartTime:
                     startTime = streamStartTime
                 if endTime < streamEndTime:
-                    endtime = streamEndTime
-                if stream.isClosed() and stream.get_startTimeUTC() >= self._startTime \
+                    endTime = streamEndTime
+                if stream.isClosed() and streamStartTime >= self._startTime \
                         and (self._endTime == 0 or streamEndTime <= self._endTime):
                     if summaryMinVal > stream.get_minValue():
                         summaryMinVal = stream.get_minValue()
                     if summaryMaxVal < stream.get_maxValue():
                         summaryMaxVal = stream.get_maxValue()
-                    summaryTotalAvg += stream.get_averageValue() * stream.get_duration()
-                    summaryTotalTime += stream.get_duration()
+                    summaryTotalAvg += stream.get_averageValue() * stream.get_realDuration()
+                    summaryTotalTime += stream.get_realDuration()
 
-                    rec = YMeasure(stream.get_startTimeUTC(),
+                    rec = YMeasure(streamStartTime,
                                    streamEndTime,
                                    stream.get_minValue(),
                                    stream.get_averageValue(),
@@ -3549,10 +3504,13 @@ class YDataSet(object):
         # strdata
         # tim
         # itv
+        # fitv
+        # end_
         # nCols
         # minCol
         # avgCol
         # maxCol
+        # firstMeasure
 
         if progress != self._progress:
             return self._progress
@@ -3568,8 +3526,11 @@ class YDataSet(object):
         self._progress = self._progress + 1
         if len(dataRows) == 0:
             return self.get_progress()
-        tim = int(stream.get_startTimeUTC())
+        tim = stream.get_realStartTimeUTC()
+        fitv = stream.get_firstDataSamplesInterval()
         itv = stream.get_dataSamplesInterval()
+        if fitv == 0:
+            fitv = itv
         if tim < itv:
             tim = itv
         nCols = len(dataRows[0])
@@ -3583,11 +3544,16 @@ class YDataSet(object):
         else:
             maxCol = 0
 
+        firstMeasure = True
         for y in dataRows:
-            if (tim >= self._startTime) and ((self._endTime == 0) or (tim <= self._endTime)):
-                self._measures.append(YMeasure(tim - itv, tim, y[minCol], y[avgCol], y[maxCol]))
-            tim = tim + itv
-            tim = round(tim * 1000) / 1000.0
+            if firstMeasure:
+                end_ = tim + fitv
+                firstMeasure = False
+            else:
+                end_ = tim + itv
+            if (tim >= self._startTime) and ((self._endTime == 0) or (end_ <= self._endTime)):
+                self._measures.append(YMeasure(tim, end_, y[minCol], y[avgCol], y[maxCol]))
+            tim = end_
 
         return self.get_progress()
 
@@ -3640,11 +3606,17 @@ class YDataSet(object):
         to reflect the timestamp of the first measure actually found in the
         dataLogger within the specified range.
 
+        <b>DEPRECATED</b>: This method has been replaced by get_summary()
+        which contain more precise informations on the YDataSet.
+
         @return an unsigned number corresponding to the number of seconds
                 between the Jan 1, 1970 and the beginning of this data
                 set (i.e. Unix time representation of the absolute time).
         """
-        return self._startTime
+        return self.imm_get_startTimeUTC()
+
+    def imm_get_startTimeUTC(self):
+        return int(self._startTime)
 
     def get_endTimeUTC(self):
         """
@@ -3655,11 +3627,18 @@ class YDataSet(object):
         to reflect the timestamp of the last measure actually found in the
         dataLogger within the specified range.
 
+        <b>DEPRECATED</b>: This method has been replaced by get_summary()
+        which contain more precise informations on the YDataSet.
+
+
         @return an unsigned number corresponding to the number of seconds
                 between the Jan 1, 1970 and the end of this data
                 set (i.e. Unix time representation of the absolute time).
         """
-        return self._endTime
+        return self.imm_get_endTimeUTC()
+
+    def imm_get_endTimeUTC(self):
+        return int(round(self._endTime))
 
     def get_progress(self):
         """
@@ -3692,9 +3671,9 @@ class YDataSet(object):
         if self._progress < 0:
             url = "logger.json?id=" + self._functionId
             if self._startTime != 0:
-                url = "" + url + "&from=" + str(int(self._startTime))
+                url = "" + url + "&from=" + str(int(self.imm_get_startTimeUTC()))
             if self._endTime != 0:
-                url = "" + url + "&to=" + str(int(self._endTime))
+                url = "" + url + "&to=" + str(int(self.imm_get_endTimeUTC()+1))
         else:
             if self._progress >= len(self._streams):
                 return 100
@@ -3764,22 +3743,23 @@ class YDataSet(object):
         measures = []
         # tim
         # itv
+        # end_
         # nCols
         # minCol
         # avgCol
         # maxCol
 
-        startUtc = int(round(measure.get_startTimeUTC()))
+        startUtc = measure.get_startTimeUTC()
         stream = None
         for y in self._streams:
-            if y.get_startTimeUTC() == startUtc:
+            if y.get_realStartTimeUTC() == startUtc:
                 stream = y
         if stream is None:
             return measures
         dataRows = stream.get_dataRows()
         if len(dataRows) == 0:
             return measures
-        tim = int(stream.get_startTimeUTC())
+        tim = stream.get_realStartTimeUTC()
         itv = stream.get_dataSamplesInterval()
         if tim < itv:
             tim = itv
@@ -3795,9 +3775,10 @@ class YDataSet(object):
             maxCol = 0
 
         for y in dataRows:
-            if (tim >= self._startTime) and ((self._endTime == 0) or (tim <= self._endTime)):
-                measures.append(YMeasure(tim - itv, tim, y[minCol], y[avgCol], y[maxCol]))
-            tim = tim + itv
+            end_ = tim + itv
+            if (tim >= self._startTime) and ((self._endTime == 0) or (end_ <= self._endTime)):
+                measures.append(YMeasure(tim, end_, y[minCol], y[avgCol], y[maxCol]))
+            tim = end_
 
         return measures
 
@@ -4446,8 +4427,11 @@ class YFunction(object):
     def _findDataStream(self, dataset, definition):
         key = dataset.get_functionId() + ":" + definition
         if key in self._dataStreams:
-            return self._dataStreams[definition]
-        newDataStream = YDataStream(self, dataset, YAPI._decodeWords(definition))
+            return self._dataStreams[key]
+        words = YAPI._decodeWords(definition)
+        if len(words) < 14:
+            return self._throw(YAPI.VERSION_MISMATCH, "device firmware is too old")
+        newDataStream = YDataStream(self, dataset, words)
         self._dataStreams[key] = newDataStream
         return newDataStream
 
@@ -5364,6 +5348,7 @@ class YModule(YFunction):
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
+
         If a call to this object's is_online() method returns FALSE although
         you are certain that the device is plugged, make sure that you did
         call registerHub() at application initialization time.
@@ -5427,6 +5412,36 @@ class YModule(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_rebootCountdown(-secBeforeReboot)
+
+    def _startStopDevLog(self, serial, start):
+        # i_start
+        if start:
+            i_start = 1
+        else:
+            i_start = 0
+
+        YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(YString2Byte(serial)), i_start)
+
+    def registerLogCallback(self, callback):
+        """
+        Registers a device log callback function. This callback will be called each time
+        that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
+
+        @param callback : the callback function to call, or a None pointer. The callback function should take two
+                arguments: the module object that emitted the log message, and the character string containing the log.
+                On failure, throws an exception or returns a negative error code.
+        """
+        # serial
+
+        serial = self.get_serialNumber()
+        if serial == YAPI.INVALID_STRING:
+            return YAPI.DEVICE_NOT_FOUND
+        self._logCallback = callback
+        self._startStopDevLog(serial, callback is not None)
+        return 0
+
+    def get_logCallback(self):
+        return self._logCallback
 
     def registerConfigChangeCallback(self, callback):
         """
@@ -5679,6 +5694,8 @@ class YModule(YFunction):
                 data = self._get_json_path(y, "data")
                 data = self._decode_json_string(data)
                 self._upload(name, YAPI._hexStrToBin(data))
+        # // Apply settings a second time for file-dependent settings and dynamic sensor nodes
+        self.set_allSettings(YString2Byte(json_api))
         return YAPI.SUCCESS
 
     def hasFunction(self, funcId):
@@ -6319,6 +6336,9 @@ class YModule(YFunction):
     def nextModule(self):
         """
         Continues the module enumeration started using yFirstModule().
+        Caution: You can't make any assumption about the returned modules order.
+        If you want to find a specific module, use Module.findModule()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YModule object, corresponding to
                 the next module found, or a None pointer
@@ -6547,24 +6567,6 @@ class YModule(YFunction):
 
         return funcValRef.value
 
-    def registerLogCallback(self, callback):
-        """
-        Registers a device log callback function. This callback will be called each time
-        that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
-
-        @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the module object that emitted the log message, and the character string containing the log.
-        @noreturn
-        """
-        self._logCallback = callback
-        if self._logCallback is None:
-            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serialNumber.encode("ASCII")), 0)
-        else:
-            YAPI._yapiStartStopDeviceLogCallback(ctypes.create_string_buffer(self._serialNumber.encode("ASCII")), 1)
-
-    def get_logCallback(self):
-        return self._logCallback
-
     # --- (generated code: YModule functions)
 
     @staticmethod
@@ -6660,8 +6662,6 @@ class YSensor(YFunction):
         self._offset = 0
         self._scale = 0
         self._decexp = 0
-        self._isScal = 0
-        self._isScal32 = 0
         self._caltyp = 0
         self._calpar = []
         self._calraw = []
@@ -7017,7 +7017,6 @@ class YSensor(YFunction):
         # fRef
         self._caltyp = -1
         self._scale = -1
-        self._isScal32 = False
         del self._calpar[:]
         del self._calraw[:]
         del self._calref[:]
@@ -7046,8 +7045,6 @@ class YSensor(YFunction):
                     self._caltyp = -1
                     return 0
             # // New 32bit text format
-            self._isScal = True
-            self._isScal32 = True
             self._offset = 0
             self._scale = 1000
             maxpos = len(iCalib)
@@ -7075,21 +7072,13 @@ class YSensor(YFunction):
                 self._caltyp = -1
                 return 0
             # // Save variable format (scale for scalar, or decimal exponent)
-            self._isScal = (iCalib[1] > 0)
-            if self._isScal:
-                self._offset = iCalib[0]
-                if self._offset > 32767:
-                    self._offset = self._offset - 65536
-                self._scale = iCalib[1]
-                self._decexp = 0
-            else:
-                self._offset = 0
-                self._scale = 1
-                self._decexp = 1.0
-                position = iCalib[0]
-                while position > 0:
-                    self._decexp = self._decexp * 10
-                    position = position - 1
+            self._offset = 0
+            self._scale = 1
+            self._decexp = 1.0
+            position = iCalib[0]
+            while position > 0:
+                self._decexp = self._decexp * 10
+                position = position - 1
             # // Shortcut when there is no calibration parameter
             if len(iCalib) == 2:
                 self._caltyp = 0
@@ -7116,16 +7105,8 @@ class YSensor(YFunction):
                 iRef = iCalib[position + 1]
                 self._calpar.append(iRaw)
                 self._calpar.append(iRef)
-                if self._isScal:
-                    fRaw = iRaw
-                    fRaw = (fRaw - self._offset) / self._scale
-                    fRef = iRef
-                    fRef = (fRef - self._offset) / self._scale
-                    self._calraw.append(fRaw)
-                    self._calref.append(fRef)
-                else:
-                    self._calraw.append(YAPI._decimalToDouble(iRaw))
-                    self._calref.append(YAPI._decimalToDouble(iRef))
+                self._calraw.append(YAPI._decimalToDouble(iRaw))
+                self._calref.append(YAPI._decimalToDouble(iRef))
                 position = position + 2
         return 0
 
@@ -7319,8 +7300,6 @@ class YSensor(YFunction):
         # res
         # npt
         # idx
-        # iRaw
-        # iRef
         npt = len(rawValues)
         if npt != len(refValues):
             self._throw(YAPI.INVALID_ARGUMENT, "Invalid calibration parameters (size mismatch)")
@@ -7336,32 +7315,12 @@ class YSensor(YFunction):
         if (self._caltyp < 0) or (self._scale < 0):
             self._throw(YAPI.NOT_SUPPORTED, "Calibration parameters format mismatch. Please upgrade your library or firmware.")
             return "0"
-        if self._isScal32:
-            # // 32-bit fixed-point encoding
-            res = "" + str(int(YAPI.YOCTO_CALIB_TYPE_OFS))
-            idx = 0
-            while idx < npt:
-                res = "" + res + "," + str(rawValues[idx]) + "," + str(refValues[idx])
-                idx = idx + 1
-        else:
-            if self._isScal:
-                # // 16-bit fixed-point encoding
-                res = "" + str(int(npt))
-                idx = 0
-                while idx < npt:
-                    iRaw = int(round(rawValues[idx] * self._scale + self._offset))
-                    iRef = int(round(refValues[idx] * self._scale + self._offset))
-                    res = "" + res + "," + str(int(iRaw)) + "," + str(int(iRef))
-                    idx = idx + 1
-            else:
-                # // 16-bit floating-point decimal encoding
-                res = "" + str(int(10 + npt))
-                idx = 0
-                while idx < npt:
-                    iRaw = int(YAPI._doubleToDecimal(rawValues[idx]))
-                    iRef = int(YAPI._doubleToDecimal(refValues[idx]))
-                    res = "" + res + "," + str(int(iRaw)) + "," + str(int(iRef))
-                    idx = idx + 1
+        # // 32-bit fixed-point encoding
+        res = "" + str(int(YAPI.YOCTO_CALIB_TYPE_OFS))
+        idx = 0
+        while idx < npt:
+            res = "" + res + "," + str(rawValues[idx]) + "," + str(refValues[idx])
+            idx = idx + 1
         return res
 
     def _applyCalibration(self, rawValue):
@@ -7375,7 +7334,7 @@ class YSensor(YFunction):
             return YSensor.CURRENTVALUE_INVALID
         return self._calhdl(rawValue, self._caltyp, self._calpar, self._calraw, self._calref)
 
-    def _decodeTimedReport(self, timestamp, report):
+    def _decodeTimedReport(self, timestamp, duration, report):
         # i
         # byteVal
         # poww
@@ -7389,118 +7348,82 @@ class YSensor(YFunction):
         # minVal
         # avgVal
         # maxVal
-        startTime = self._prevTimedReport
+        if duration > 0:
+            startTime = timestamp - duration
+        else:
+            startTime = self._prevTimedReport
         endTime = timestamp
         self._prevTimedReport = endTime
         if startTime == 0:
             startTime = endTime
-        if report[0] == 2:
-            # // 32bit timed report format
-            if len(report) <= 5:
-                # // sub-second report, 1-4 bytes
-                poww = 1
-                avgRaw = 0
-                byteVal = 0
-                i = 1
-                while i < len(report):
-                    byteVal = report[i]
-                    avgRaw = avgRaw + poww * byteVal
-                    poww = poww * 0x100
-                    i = i + 1
-                if ((byteVal) & (0x80)) != 0:
-                    avgRaw = avgRaw - poww
-                avgVal = avgRaw / 1000.0
-                if self._caltyp != 0:
-                    if self._calhdl is not None:
-                        avgVal = self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref)
-                minVal = avgVal
-                maxVal = avgVal
-            else:
-                # // averaged report: avg,avg-min,max-avg
-                sublen = 1 + ((report[1]) & (3))
-                poww = 1
-                avgRaw = 0
-                byteVal = 0
-                i = 2
-                while (sublen > 0) and (i < len(report)):
-                    byteVal = report[i]
-                    avgRaw = avgRaw + poww * byteVal
-                    poww = poww * 0x100
-                    i = i + 1
-                    sublen = sublen - 1
-                if ((byteVal) & (0x80)) != 0:
-                    avgRaw = avgRaw - poww
-                sublen = 1 + ((((report[1]) >> (2))) & (3))
-                poww = 1
-                difRaw = 0
-                while (sublen > 0) and (i < len(report)):
-                    byteVal = report[i]
-                    difRaw = difRaw + poww * byteVal
-                    poww = poww * 0x100
-                    i = i + 1
-                    sublen = sublen - 1
-                minRaw = avgRaw - difRaw
-                sublen = 1 + ((((report[1]) >> (4))) & (3))
-                poww = 1
-                difRaw = 0
-                while (sublen > 0) and (i < len(report)):
-                    byteVal = report[i]
-                    difRaw = difRaw + poww * byteVal
-                    poww = poww * 0x100
-                    i = i + 1
-                    sublen = sublen - 1
-                maxRaw = avgRaw + difRaw
-                avgVal = avgRaw / 1000.0
-                minVal = minRaw / 1000.0
-                maxVal = maxRaw / 1000.0
-                if self._caltyp != 0:
-                    if self._calhdl is not None:
-                        avgVal = self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref)
-                        minVal = self._calhdl(minVal, self._caltyp, self._calpar, self._calraw, self._calref)
-                        maxVal = self._calhdl(maxVal, self._caltyp, self._calpar, self._calraw, self._calref)
+        # // 32bit timed report format
+        if len(report) <= 5:
+            # // sub-second report, 1-4 bytes
+            poww = 1
+            avgRaw = 0
+            byteVal = 0
+            i = 1
+            while i < len(report):
+                byteVal = report[i]
+                avgRaw = avgRaw + poww * byteVal
+                poww = poww * 0x100
+                i = i + 1
+            if ((byteVal) & (0x80)) != 0:
+                avgRaw = avgRaw - poww
+            avgVal = avgRaw / 1000.0
+            if self._caltyp != 0:
+                if self._calhdl is not None:
+                    avgVal = self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref)
+            minVal = avgVal
+            maxVal = avgVal
         else:
-            # // 16bit timed report format
-            if report[0] == 0:
-                # // sub-second report, 1-4 bytes
-                poww = 1
-                avgRaw = 0
-                byteVal = 0
-                i = 1
-                while i < len(report):
-                    byteVal = report[i]
-                    avgRaw = avgRaw + poww * byteVal
-                    poww = poww * 0x100
-                    i = i + 1
-                if self._isScal:
-                    avgVal = self._decodeVal(avgRaw)
-                else:
-                    if ((byteVal) & (0x80)) != 0:
-                        avgRaw = avgRaw - poww
-                    avgVal = self._decodeAvg(avgRaw)
-                minVal = avgVal
-                maxVal = avgVal
-            else:
-                # // averaged report 2+4+2 bytes
-                minRaw = report[1] + 0x100 * report[2]
-                maxRaw = report[3] + 0x100 * report[4]
-                avgRaw = report[5] + 0x100 * report[6] + 0x10000 * report[7]
-                byteVal = report[8]
-                if ((byteVal) & (0x80)) == 0:
-                    avgRaw = avgRaw + 0x1000000 * byteVal
-                else:
-                    avgRaw = avgRaw - 0x1000000 * (0x100 - byteVal)
-                minVal = self._decodeVal(minRaw)
-                avgVal = self._decodeAvg(avgRaw)
-                maxVal = self._decodeVal(maxRaw)
+            # // averaged report: avg,avg-min,max-avg
+            sublen = 1 + ((report[1]) & (3))
+            poww = 1
+            avgRaw = 0
+            byteVal = 0
+            i = 2
+            while (sublen > 0) and (i < len(report)):
+                byteVal = report[i]
+                avgRaw = avgRaw + poww * byteVal
+                poww = poww * 0x100
+                i = i + 1
+                sublen = sublen - 1
+            if ((byteVal) & (0x80)) != 0:
+                avgRaw = avgRaw - poww
+            sublen = 1 + ((((report[1]) >> (2))) & (3))
+            poww = 1
+            difRaw = 0
+            while (sublen > 0) and (i < len(report)):
+                byteVal = report[i]
+                difRaw = difRaw + poww * byteVal
+                poww = poww * 0x100
+                i = i + 1
+                sublen = sublen - 1
+            minRaw = avgRaw - difRaw
+            sublen = 1 + ((((report[1]) >> (4))) & (3))
+            poww = 1
+            difRaw = 0
+            while (sublen > 0) and (i < len(report)):
+                byteVal = report[i]
+                difRaw = difRaw + poww * byteVal
+                poww = poww * 0x100
+                i = i + 1
+                sublen = sublen - 1
+            maxRaw = avgRaw + difRaw
+            avgVal = avgRaw / 1000.0
+            minVal = minRaw / 1000.0
+            maxVal = maxRaw / 1000.0
+            if self._caltyp != 0:
+                if self._calhdl is not None:
+                    avgVal = self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref)
+                    minVal = self._calhdl(minVal, self._caltyp, self._calpar, self._calraw, self._calref)
+                    maxVal = self._calhdl(maxVal, self._caltyp, self._calpar, self._calraw, self._calref)
         return YMeasure(startTime, endTime, minVal, avgVal, maxVal)
 
     def _decodeVal(self, w):
         # val
         val = w if w <= 0x7fffffff else -0x100000000 + w
-        if self._isScal:
-            val = (val - self._offset) / self._scale
-        else:
-            val = YAPI._decimalToDouble(w)
         if self._caltyp != 0:
             if self._calhdl is not None:
                 val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
@@ -7509,10 +7432,6 @@ class YSensor(YFunction):
     def _decodeAvg(self, dw):
         # val
         val = dw if dw <= 0x7fffffff else -0x100000000 + dw
-        if self._isScal:
-            val = (val / 100 - self._offset) / self._scale
-        else:
-            val = val / self._decexp
         if self._caltyp != 0:
             if self._calhdl is not None:
                 val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
@@ -7521,6 +7440,9 @@ class YSensor(YFunction):
     def nextSensor(self):
         """
         Continues the enumeration of sensors started using yFirstSensor().
+        Caution: You can't make any assumption about the returned sensors order.
+        If you want to find a specific a sensor, use Sensor.findSensor()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YSensor object, corresponding to
                 a sensor currently online, or a None pointer
@@ -7864,6 +7786,9 @@ class YDataLogger(YFunction):
     def nextDataLogger(self):
         """
         Continues the enumeration of data loggers started using yFirstDataLogger().
+        Caution: You can't make any assumption about the returned data loggers order.
+        If you want to find a specific a data logger, use DataLogger.findDataLogger()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YDataLogger object, corresponding to
                 a data logger currently online, or a None pointer
@@ -7914,50 +7839,6 @@ class YDataLogger(YFunction):
         jsondataRef.value = buffer[http_headerlen:]
         return YAPI.SUCCESS
 
-    def get_dataStreams(self, v):
-        """
-        Builds a list of all data streams hold by the data logger (legacy method).
-        The caller must pass by reference an empty array to hold YDataStream
-        objects, and the function fills it with objects describing available
-        data sequences.
-
-        This is the old way to retrieve data from the DataLogger.
-        For new applications, you should rather use get_dataSets()
-        method, or call directly get_recordedData() on the
-        sensor object.
-
-        @param v : an array of YDataStream objects to be filled in
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        jRef = YRefParam()
-        v.value = []
-        res = self.getData(0, 0, jRef)
-        if res != YAPI.SUCCESS:
-            return res
-
-        jsonAllStreams = YJSONArray(jRef.value, 0, len(jRef.value))
-        jsonAllStreams.parse()
-        if jsonAllStreams.length() == 0:
-            return YAPI.SUCCESS
-        if jsonAllStreams.get(0).getJSONType() == YJSONType.ARRAY:
-            for i in range(0, jsonAllStreams.length()):
-                # old datalogger format: [runIdx, timerel, utc, interval]
-                arr = jsonAllStreams.getYJSONArray(i)
-                stream = YOldDataStream(self, arr.getInt(0), arr.getInt(1), arr.getLong(2), arr.getInt(3))
-                v.value.append(stream)
-        else:
-            # new datalogger format: {"id": "...", "unit": "...", "streams": ["...", ...]}
-            sets = self.parse_dataSets(YString2Byte(jsonAllStreams.toJSON()))
-            for curset in sets:
-                ds = curset.get_privateDataStreams()
-                for si in ds:
-                    # return a user-owned copy
-                    v.value.append(si)
-        return YAPI.SUCCESS
-
     # --- (generated code: YDataLogger functions)
 
     @staticmethod
@@ -7993,179 +7874,3 @@ class YDataLogger(YFunction):
         return YDataLogger.FindDataLogger(serialRef.value + "." + funcIdRef.value)
 
 #--- (end of generated code: YDataLogger functions)
-
-
-class YOldDataStream(YDataStream):
-    def __init__(self, parent, run, stamp, utc, itv):
-        super(YOldDataStream, self).__init__(parent)
-        self._dataLogger = parent
-        self._runNo = run
-        self._timeStamp = stamp
-        self._utcStamp = utc
-        self._interval = itv
-        self._samplesPerHour = 3600 / self._interval
-        self._isClosed = 1
-        self._minVal = self.DATA_INVALID
-        self._avgVal = self.DATA_INVALID
-        self._maxVal = self.DATA_INVALID
-
-    def get_startTime(self):
-        """
-        Returns the relative start time of the data stream, measured in seconds.
-        For recent firmwares, the value is relative to the present time,
-        which means the value is always negative.
-        If the device uses a firmware older than version 13000, value is
-        relative to the start of the time the device was powered on, and
-        is always positive.
-        If you need an absolute UTC timestamp, use get_startTimeUTC().
-
-        @return an unsigned number corresponding to the number of seconds
-                between the start of the run and the beginning of this data
-                stream.
-        """
-        return self._timeStamp
-
-    def get_dataSamplesInterval(self):
-        """
-        Returns the number of seconds elapsed between  two consecutive
-        rows of this data stream. By default, the data logger records one row
-        per second, but there might be alternative streams at lower resolution
-        created by summarizing the original stream for archiving purposes.
-
-        This method does not cause any access to the device, as the value
-        is preloaded in the object at instantiation time.
-
-        @return an unsigned number corresponding to a number of seconds.
-        """
-        return self._interval
-
-    def loadStream(self):
-        jsonRef = YRefParam()
-        coldiv = []
-        coltype = []
-        udat = []
-        colscl = []
-        colofs = []
-        c = 0
-        x = 0
-        y = 0
-        res = self._dataLogger.getData(self._runNo, self._timeStamp, jsonRef)
-        if res != YAPI.SUCCESS:
-            return res
-        jsonObj = YJSONObject(jsonRef.value, 0, len(jsonRef.value))
-        jsonObj.parse()
-        self._nRows = 0
-        self._nCols = 0
-        del self._columnNames[:]
-        self._values = [[]]
-        if jsonObj.has("time"):
-            self._timeStamp = jsonObj.getInt("time")
-        if jsonObj.has("UTC"):
-            self._utcStamp = jsonObj.getLong("UTC")
-        if jsonObj.has("interval"):
-            self._interval = jsonObj.getInt("interval")
-        if jsonObj.has("nRows"):
-            self._nRows = jsonObj.getInt("nRows")
-        if jsonObj.has("keys"):
-            jsonKeys = jsonObj.getYJSONArray("keys")
-            if self._nCols == 0:
-                self._nCols = jsonKeys.length()
-            elif self._nCols != jsonKeys.length():
-                self._nCols = 0
-                raise YAPI_Exception(YAPI.IO_ERROR, "DataStream corrupted")
-            for j in range(0, self._nCols):
-                self._columnNames.append(jsonKeys.getString(j))
-        if jsonObj.has("div"):
-            coldiv = jsonObj.getYJSONArray("div")
-            if self._nCols == 0:
-                self._nCols = coldiv.length()
-            elif self._nCols != coldiv.length():
-                self._nCols = 0
-                raise YAPI_Exception(YAPI.IO_ERROR, "DataStream corrupted")
-            for j in range(self._nCols):
-                coldiv.append(coldiv.getInt(j))
-        if jsonObj.has("type"):
-            types = jsonObj.getYJSONArray("type")
-            if self._nCols == 0:
-                self._nCols = types.length()
-            elif self._nCols != types.length():
-                self._nCols = 0
-                raise YAPI_Exception(YAPI.IO_ERROR, "DataStream corrupted")
-            for j in range(self._nCols):
-                coltype.append(types.getInt(j))
-        if jsonObj.has("scal"):
-            scal = jsonObj.getYJSONArray("scal")
-            if self._nCols == 0:
-                self._nCols = scal.length()
-            elif self._nCols != scal.length():
-                self._nCols = 0
-                raise YAPI_Exception(YAPI.IO_ERROR, "DataStream corrupted")
-            for j in range(self._nCols):
-                colscl.append(scal.getInt(j) / 65536.0)
-                if coltype[j]:
-                    colofs.append(-32767)
-                else:
-                    colofs.append(0)
-
-        if jsonObj.has("data"):
-            if self._nCols == 0 or len(coldiv) == 0 or len(coltype) == 0:
-                raise YAPI_Exception(YAPI.IO_ERROR, "DataStream corrupted")
-
-            if len(colscl) <= 0:
-                for j in range(self._nCols):
-                    colscl.append(1.0 / coldiv[j])
-                    if coltype[j]:
-                        colofs[j] = -32767
-                    else:
-                        colofs[j] = 0
-
-            del udat[:]
-            dat = jsonObj.get("data")
-            if dat.getYJSONType() == YJSONType.STRING:
-                sdat = jsonObj.getString("data")
-                p = 0
-                while p < len(sdat):
-                    c = sdat[p]
-                    p += 1
-                    if c >= 'a':
-                        srcpos = int(len(udat) - 1 - (ord(c) - ord('a')))
-                        if srcpos < 0:
-                            # noinspection PyProtectedMember
-                            self._dataLogger._throw(YAPI.IO_ERROR, "Unexpected JSON reply format")
-                            return YAPI.IO_ERROR
-                        val = udat[srcpos]
-                    else:
-                        if p + 2 > len(sdat):
-                            # noinspection PyProtectedMember
-                            self._dataLogger._throw(YAPI.IO_ERROR, "Unexpected JSON reply format")
-                            return YAPI.IO_ERROR
-
-                        val = (ord(c) - ord('0'))
-                        c = sdat[p]
-                        p += 1
-                        val += (ord(c) - ord('0')) << 5
-                        c = sdat[p]
-                        p += 1
-                        if c == 'z':
-                            c = "\\"
-                        val += (ord(c) - ord('0')) << 10
-                    udat.append(val)
-            else:
-                arr = jsonObj.getYJSONArray("data")
-                count = arr.length()
-                for j in range(count):
-                    tmp = arr.getInt(j)
-                    udat.append(tmp)
-            self._values = [[0] * self._nCols] * self._nRows
-            for uval in udat:
-                if coltype[x] < 2:
-                    value = (uval + colofs[x]) * colscl[x]
-                else:
-                    # noinspection PyProtectedMember
-                    value = YAPI._decimalToDouble(uval - 32767)
-                self._values[y][x] = value
-                x += 1
-                if x == self._nCols:
-                    x = 0
-                    y += 1
-        return YAPI.SUCCESS

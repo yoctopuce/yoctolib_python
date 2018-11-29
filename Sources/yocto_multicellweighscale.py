@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multicellweighscale.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_multicellweighscale.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
 #
@@ -412,6 +412,10 @@ class YMultiCellWeighScale(YSensor):
     def nextMultiCellWeighScale(self):
         """
         Continues the enumeration of multi-cell weighing scale sensors started using yFirstMultiCellWeighScale().
+        Caution: You can't make any assumption about the returned multi-cell weighing scale sensors order.
+        If you want to find a specific a multi-cell weighing scale sensor, use
+        MultiCellWeighScale.findMultiCellWeighScale()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YMultiCellWeighScale object, corresponding to
                 a multi-cell weighing scale sensor currently online, or a None pointer

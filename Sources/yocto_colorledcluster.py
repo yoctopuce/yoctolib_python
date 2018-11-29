@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorledcluster.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_colorledcluster.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #
@@ -1083,6 +1083,9 @@ class YColorLedCluster(YFunction):
     def nextColorLedCluster(self):
         """
         Continues the enumeration of RGB LED clusters started using yFirstColorLedCluster().
+        Caution: You can't make any assumption about the returned RGB LED clusters order.
+        If you want to find a specific a RGB LED cluster, use ColorLedCluster.findColorLedCluster()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YColorLedCluster object, corresponding to
                 a RGB LED cluster currently online, or a None pointer

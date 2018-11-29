@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_buzzer.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_buzzer.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindBuzzer(), the high-level API for Buzzer functions
 #
@@ -529,6 +529,9 @@ class YBuzzer(YFunction):
     def nextBuzzer(self):
         """
         Continues the enumeration of buzzers started using yFirstBuzzer().
+        Caution: You can't make any assumption about the returned buzzers order.
+        If you want to find a specific a buzzer, use Buzzer.findBuzzer()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YBuzzer object, corresponding to
                 a buzzer currently online, or a None pointer

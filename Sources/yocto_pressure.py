@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_pressure.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_pressure.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindPressure(), the high-level API for Pressure functions
 #
@@ -112,6 +112,9 @@ class YPressure(YSensor):
     def nextPressure(self):
         """
         Continues the enumeration of pressure sensors started using yFirstPressure().
+        Caution: You can't make any assumption about the returned pressure sensors order.
+        If you want to find a specific a pressure sensor, use Pressure.findPressure()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YPressure object, corresponding to
                 a pressure sensor currently online, or a None pointer

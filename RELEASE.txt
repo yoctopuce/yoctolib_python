@@ -1,4 +1,10 @@
-Python v1.10.32759
+Python v1.10.33423
 
-- YModule.get_hardwareId() method return last know hardwareId when the module is disconnected
-- Code clean-up in Doc-XXX examples
+- Improve precision of dataLogger retrieval boundaries
+- Improve error recovery on USB
+- Add TVoc and MultiSensController class
+- Add support for devices with dynamic functions activation (ex: Yocto-Temperature-IR)
+- Remove old dataLogger API (deprecated since 2014)
+- Fix restart of serial scripts after settings restoration
+- Fix timed notifications with wrong start time
+- Fix occasional wrong logical name returned by YModule

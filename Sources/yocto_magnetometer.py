@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_magnetometer.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_magnetometer.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindMagnetometer(), the high-level API for Magnetometer functions
 #
@@ -211,6 +211,9 @@ class YMagnetometer(YSensor):
     def nextMagnetometer(self):
         """
         Continues the enumeration of magnetometers started using yFirstMagnetometer().
+        Caution: You can't make any assumption about the returned magnetometers order.
+        If you want to find a specific a magnetometer, use Magnetometer.findMagnetometer()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YMagnetometer object, corresponding to
                 a magnetometer currently online, or a None pointer

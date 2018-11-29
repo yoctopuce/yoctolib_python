@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_voc.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_voc.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindVoc(), the high-level API for Voc functions
 #
@@ -112,6 +112,9 @@ class YVoc(YSensor):
     def nextVoc(self):
         """
         Continues the enumeration of Volatile Organic Compound sensors started using yFirstVoc().
+        Caution: You can't make any assumption about the returned Volatile Organic Compound sensors order.
+        If you want to find a specific a Volatile Organic Compound sensor, use Voc.findVoc()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YVoc object, corresponding to
                 a Volatile Organic Compound sensor currently online, or a None pointer

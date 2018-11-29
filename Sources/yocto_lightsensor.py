@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_lightsensor.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_lightsensor.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindLightSensor(), the high-level API for LightSensor functions
 #
@@ -183,6 +183,9 @@ class YLightSensor(YSensor):
     def nextLightSensor(self):
         """
         Continues the enumeration of light sensors started using yFirstLightSensor().
+        Caution: You can't make any assumption about the returned light sensors order.
+        If you want to find a specific a light sensor, use LightSensor.findLightSensor()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YLightSensor object, corresponding to
                 a light sensor currently online, or a None pointer

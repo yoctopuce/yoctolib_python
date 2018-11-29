@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_groundspeed.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_groundspeed.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
 #
@@ -113,6 +113,9 @@ class YGroundSpeed(YSensor):
     def nextGroundSpeed(self):
         """
         Continues the enumeration of ground speed sensors started using yFirstGroundSpeed().
+        Caution: You can't make any assumption about the returned ground speed sensors order.
+        If you want to find a specific a ground speed sensor, use GroundSpeed.findGroundSpeed()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YGroundSpeed object, corresponding to
                 a ground speed sensor currently online, or a None pointer

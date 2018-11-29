@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_compass.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_compass.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindCompass(), the high-level API for Compass functions
 #
@@ -185,6 +185,9 @@ class YCompass(YSensor):
     def nextCompass(self):
         """
         Continues the enumeration of compasses started using yFirstCompass().
+        Caution: You can't make any assumption about the returned compasses order.
+        If you want to find a specific a compass, use Compass.findCompass()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YCompass object, corresponding to
                 a compass currently online, or a None pointer

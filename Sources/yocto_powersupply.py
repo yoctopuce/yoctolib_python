@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_powersupply.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_powersupply.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
 #
@@ -458,6 +458,9 @@ class YPowerSupply(YFunction):
     def nextPowerSupply(self):
         """
         Continues the enumeration of regulated power supplies started using yFirstPowerSupply().
+        Caution: You can't make any assumption about the returned regulated power supplies order.
+        If you want to find a specific a regulated power supply, use PowerSupply.findPowerSupply()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YPowerSupply object, corresponding to
                 a regulated power supply currently online, or a None pointer

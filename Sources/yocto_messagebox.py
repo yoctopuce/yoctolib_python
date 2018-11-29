@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 32216 2018-09-20 09:52:58Z seb $
+#* $Id: yocto_messagebox.py 32907 2018-11-02 10:18:55Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -1736,6 +1736,9 @@ class YMessageBox(YFunction):
     def nextMessageBox(self):
         """
         Continues the enumeration of MessageBox interfaces started using yFirstMessageBox().
+        Caution: You can't make any assumption about the returned MessageBox interfaces order.
+        If you want to find a specific a MessageBox interface, use MessageBox.findMessageBox()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YMessageBox object, corresponding to
                 a MessageBox interface currently online, or a None pointer

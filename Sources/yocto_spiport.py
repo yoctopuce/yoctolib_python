@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 32610 2018-10-10 06:52:20Z seb $
+#  $Id: yocto_spiport.py 32907 2018-11-02 10:18:55Z seb $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -1081,6 +1081,9 @@ class YSpiPort(YFunction):
     def nextSpiPort(self):
         """
         Continues the enumeration of SPI ports started using yFirstSpiPort().
+        Caution: You can't make any assumption about the returned SPI ports order.
+        If you want to find a specific a SPI port, use SpiPort.findSpiPort()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YSpiPort object, corresponding to
                 a SPI port currently online, or a None pointer

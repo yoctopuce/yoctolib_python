@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 32216 2018-09-20 09:52:58Z seb $
+#* $Id: yocto_cellular.py 32907 2018-11-02 10:18:55Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -843,6 +843,9 @@ class YCellular(YFunction):
     def nextCellular(self):
         """
         Continues the enumeration of cellular interfaces started using yFirstCellular().
+        Caution: You can't make any assumption about the returned cellular interfaces order.
+        If you want to find a specific a cellular interface, use Cellular.findCellular()
+        and a hardwareID or a logical name.
 
         @return a pointer to a YCellular object, corresponding to
                 a cellular interface currently online, or a None pointer
