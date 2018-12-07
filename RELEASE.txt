@@ -1,10 +1,4 @@
-Python v1.10.33423
+Python v1.10.33576
 
-- Improve precision of dataLogger retrieval boundaries
-- Improve error recovery on USB
-- Add TVoc and MultiSensController class
-- Add support for devices with dynamic functions activation (ex: Yocto-Temperature-IR)
-- Remove old dataLogger API (deprecated since 2014)
-- Fix restart of serial scripts after settings restoration
-- Fix timed notifications with wrong start time
-- Fix occasional wrong logical name returned by YModule
+- Fix missing measure in YDataSet
+- Improve disconnection detection of YoctoHubs/VirtualHub.

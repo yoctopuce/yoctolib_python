@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 33400 2018-11-27 07:58:29Z seb $
+# * $Id: yocto_api.py 33505 2018-12-05 14:45:46Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -815,6 +815,8 @@ class YAPI:
     DefaultCacheValidity = datetime.timedelta(milliseconds=5)
     INVALID_STRING = "!INVALID!"
     INVALID_DOUBLE = -1.79769313486231E+308
+    MIN_DOUBLE = float('-inf')
+    MAX_DOUBLE = float('inf')
     INVALID_INT = -2147483648
     INVALID_UINT = -1
     INVALID_LONG = -9223372036854775807
@@ -830,7 +832,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "33423"
+    YOCTO_API_BUILD_NO = "33576"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -3395,14 +3397,18 @@ class YDataSet(object):
         self._hardwareId = ''
         self._functionId = ''
         self._unit = ''
-        self._startTime = 0
-        self._endTime = 0
+        self._startTimeMs = 0
+        self._endTimeMs = 0
         self._progress = 0
         self._calib = []
         self._streams = []
         self._summary = None
         self._preview = []
         self._measures = []
+        self._summaryMinVal = 0
+        self._summaryMaxVal = 0
+        self._summaryTotalAvg = 0
+        self._summaryTotalTime = 0
         #--- (end of generated code: YDataSet attributes)
         self._summary = YMeasure(0, 0, 0, 0, 0)
         if unit is None:
@@ -3414,14 +3420,14 @@ class YDataSet(object):
         self._parent = parent
         self._functionId = functionId
         self._unit = unit
-        self._startTime = startTime
-        self._endTime = endTime
+        self._startTimeMs = startTime * 1000
+        self._endTimeMs = endTime * 1000
         self._progress = -1
 
     def _initFromJson(self, parent):
         self._parent = parent
-        self._startTime = 0
-        self._endTime = 0
+        self._startTimeMs = 0
+        self._endTimeMs = 0
 
     def _parse(self, json):
         p = YJSONObject(json, 0, len(json))
@@ -3433,14 +3439,8 @@ class YDataSet(object):
             except Exception:
                 return YAPI.IO_ERROR
 
-        summaryMinVal = float('inf')
-        summaryMaxVal = float('-inf')
-        summaryTotalTime = 0
-        summaryTotalAvg = 0
         streamStartTime = 0x7fffffff
         streamEndTime = 0
-        startTime = 0x7fffffff
-        endTime = 0
         self._functionId = p.getString("id")
         self._unit = p.getString("unit")
         if p.has("calib"):
@@ -3454,43 +3454,16 @@ class YDataSet(object):
         self._measures = []
         for i in range(0, arr.length()):
             stream = self._parent._findDataStream(self, arr.getString(i))
-            streamStartTime = stream.get_realStartTimeUTC()
-            streamEndTime = streamStartTime + stream.get_realDuration()
-            if self._startTime > 0 and streamEndTime <= self._startTime:
+            streamStartTime = stream.get_realStartTimeUTC() * 1000
+            streamEndTime = streamStartTime + stream.get_realDuration() * 1000
+            if self._startTimeMs > 0 and streamEndTime <= self._startTimeMs:
                 # this stream is too early, drop it
                 pass
-            elif self._endTime > 0 and streamStartTime >= self._endTime:
+            elif self._endTimeMs > 0 and streamStartTime >= self._endTimeMs:
                 # this stream is too late, drop it
                 pass
             else:
                 self._streams.append(stream)
-                if startTime > streamStartTime:
-                    startTime = streamStartTime
-                if endTime < streamEndTime:
-                    endTime = streamEndTime
-                if stream.isClosed() and streamStartTime >= self._startTime \
-                        and (self._endTime == 0 or streamEndTime <= self._endTime):
-                    if summaryMinVal > stream.get_minValue():
-                        summaryMinVal = stream.get_minValue()
-                    if summaryMaxVal < stream.get_maxValue():
-                        summaryMaxVal = stream.get_maxValue()
-                    summaryTotalAvg += stream.get_averageValue() * stream.get_realDuration()
-                    summaryTotalTime += stream.get_realDuration()
-
-                    rec = YMeasure(streamStartTime,
-                                   streamEndTime,
-                                   stream.get_minValue(),
-                                   stream.get_averageValue(),
-                                   stream.get_maxValue())
-                    self._preview.append(rec)
-        if (len(self._streams) > 0) and (summaryTotalTime > 0):
-            # update time boundaries with actual data
-            if self._startTime < startTime:
-                self._startTime = startTime
-            if self._endTime == 0 or self._endTime > endTime:
-                self._endTime = endTime
-            self._summary = YMeasure(self._startTime, self._endTime,
-                                     summaryMinVal, summaryTotalAvg / summaryTotalTime, summaryMaxVal)
         self._progress = 0
         return self.get_progress()
 
@@ -3498,10 +3471,153 @@ class YDataSet(object):
     def _get_calibration(self):
         return self._calib
 
+    def loadSummary(self, data):
+        dataRows = []
+        # tim
+        # mitv
+        # itv
+        # fitv
+        # end_
+        # nCols
+        # minCol
+        # avgCol
+        # maxCol
+        # res
+        # m_pos
+        # previewTotalTime
+        # previewTotalAvg
+        # previewMinVal
+        # previewMaxVal
+        # previewAvgVal
+        # previewStartMs
+        # previewStopMs
+        # previewDuration
+        # streamStartTimeMs
+        # streamDuration
+        # streamEndTimeMs
+        # minVal
+        # avgVal
+        # maxVal
+        # summaryStartMs
+        # summaryStopMs
+        # summaryTotalTime
+        # summaryTotalAvg
+        # summaryMinVal
+        # summaryMaxVal
+        # url
+        # strdata
+        measure_data = []
+
+        if self._progress < 0:
+            strdata = YByte2String(data)
+            if strdata == "{}":
+                self._parent._throw(YAPI.VERSION_MISMATCH, "device firmware is too old")
+                return YAPI.VERSION_MISMATCH
+            res = self._parse(strdata)
+            if res < 0:
+                return res
+        summaryTotalTime = 0
+        summaryTotalAvg = 0
+        summaryMinVal = YAPI.MAX_DOUBLE
+        summaryMaxVal = YAPI.MIN_DOUBLE
+        summaryStartMs = YAPI.MAX_DOUBLE
+        summaryStopMs = YAPI.MIN_DOUBLE
+
+        # // Parse comlete streams
+        for y in self._streams:
+            streamStartTimeMs = round(y.get_realStartTimeUTC() *1000)
+            streamDuration = y.get_realDuration()
+            streamEndTimeMs = streamStartTimeMs + round(streamDuration * 1000)
+            if (streamStartTimeMs >= self._startTimeMs) and ((self._endTimeMs == 0) or (streamEndTimeMs <= self._endTimeMs)):
+                # // stream that are completely inside the dataset
+                previewMinVal = y.get_minValue()
+                previewAvgVal = y.get_averageValue()
+                previewMaxVal = y.get_maxValue()
+                previewStartMs = streamStartTimeMs
+                previewStopMs = streamEndTimeMs
+                previewDuration = streamDuration
+            else:
+                # // stream that are partially in the dataset
+                # // we need to parse data to filter value outide the dataset
+                url = y._get_url()
+                data = self._parent._download(url)
+                y._parseStream(data)
+                dataRows = y.get_dataRows()
+                if len(dataRows) == 0:
+                    return self.get_progress()
+                tim = streamStartTimeMs
+                fitv = round(y.get_firstDataSamplesInterval() * 1000)
+                itv = round(y.get_dataSamplesInterval() * 1000)
+                nCols = len(dataRows[0])
+                minCol = 0
+                if nCols > 2:
+                    avgCol = 1
+                else:
+                    avgCol = 0
+                if nCols > 2:
+                    maxCol = 2
+                else:
+                    maxCol = 0
+                previewTotalTime = 0
+                previewTotalAvg = 0
+                previewStartMs = streamEndTimeMs
+                previewStopMs = streamStartTimeMs
+                previewMinVal = YAPI.MAX_DOUBLE
+                previewMaxVal = YAPI.MIN_DOUBLE
+                m_pos = 0
+                while m_pos < len(dataRows):
+                    measure_data  = dataRows[m_pos]
+                    if m_pos == 0:
+                        mitv = fitv
+                    else:
+                        mitv = itv
+                    end_ = tim + mitv
+                    if (end_ > self._startTimeMs) and ((self._endTimeMs == 0) or (tim < self._endTimeMs)):
+                        minVal = measure_data[minCol]
+                        avgVal = measure_data[avgCol]
+                        maxVal = measure_data[maxCol]
+                        if previewStartMs > tim:
+                            previewStartMs = tim
+                        if previewStopMs < end_:
+                            previewStopMs = end_
+                        if previewMinVal > minVal:
+                            previewMinVal = minVal
+                        if previewMaxVal < maxVal:
+                            previewMaxVal = maxVal
+                        previewTotalAvg = previewTotalAvg + (avgVal * mitv)
+                        previewTotalTime = previewTotalTime + mitv
+                    tim = end_
+                    m_pos = m_pos + 1
+                if previewTotalTime > 0:
+                    previewAvgVal = previewTotalAvg / previewTotalTime
+                    previewDuration = (previewStopMs - previewStartMs) / 1000.0
+                else:
+                    previewAvgVal = 0.0
+                    previewDuration = 0.0
+            self._preview.append(YMeasure(previewStartMs / 1000.0, previewStopMs / 1000.0, previewMinVal, previewAvgVal, previewMaxVal))
+            if summaryMinVal > previewMinVal:
+                summaryMinVal = previewMinVal
+            if summaryMaxVal < previewMaxVal:
+                summaryMaxVal = previewMaxVal
+            if summaryStartMs > previewStartMs:
+                summaryStartMs = previewStartMs
+            if summaryStopMs < previewStopMs:
+                summaryStopMs = previewStopMs
+            summaryTotalAvg = summaryTotalAvg + (previewAvgVal * previewDuration)
+            summaryTotalTime = summaryTotalTime + previewDuration
+        if (self._startTimeMs == 0) or (self._startTimeMs > summaryStartMs):
+            self._startTimeMs = summaryStartMs
+        if (self._endTimeMs == 0) or (self._endTimeMs < summaryStopMs):
+            self._endTimeMs = summaryStopMs
+        if summaryTotalTime > 0:
+            self._summary = YMeasure(summaryStartMs / 1000.0, summaryStopMs / 1000.0, summaryMinVal, summaryTotalAvg / summaryTotalTime, summaryMaxVal)
+        else:
+            self._summary = YMeasure(0.0, 0.0, YAPI.INVALID_DOUBLE, YAPI.INVALID_DOUBLE, YAPI.INVALID_DOUBLE)
+        return self.get_progress()
+
     def processMore(self, progress, data):
         # stream
         dataRows = []
-        # strdata
         # tim
         # itv
         # fitv
@@ -3515,20 +3631,16 @@ class YDataSet(object):
         if progress != self._progress:
             return self._progress
         if self._progress < 0:
-            strdata = YByte2String(data)
-            if strdata == "{}":
-                self._parent._throw(YAPI.VERSION_MISMATCH, "device firmware is too old")
-                return YAPI.VERSION_MISMATCH
-            return self._parse(strdata)
+            return self.loadSummary(data)
         stream = self._streams[self._progress]
         stream._parseStream(data)
         dataRows = stream.get_dataRows()
         self._progress = self._progress + 1
         if len(dataRows) == 0:
             return self.get_progress()
-        tim = stream.get_realStartTimeUTC()
-        fitv = stream.get_firstDataSamplesInterval()
-        itv = stream.get_dataSamplesInterval()
+        tim = round(stream.get_realStartTimeUTC() * 1000)
+        fitv = round(stream.get_firstDataSamplesInterval() * 1000)
+        itv = round(stream.get_dataSamplesInterval() * 1000)
         if fitv == 0:
             fitv = itv
         if tim < itv:
@@ -3551,8 +3663,8 @@ class YDataSet(object):
                 firstMeasure = False
             else:
                 end_ = tim + itv
-            if (tim >= self._startTime) and ((self._endTime == 0) or (end_ <= self._endTime)):
-                self._measures.append(YMeasure(tim, end_, y[minCol], y[avgCol], y[maxCol]))
+            if (end_ > self._startTimeMs) and ((self._endTimeMs == 0) or (tim < self._endTimeMs)):
+                self._measures.append(YMeasure(tim / 1000, end_ / 1000, y[minCol], y[avgCol], y[maxCol]))
             tim = end_
 
         return self.get_progress()
@@ -3616,7 +3728,7 @@ class YDataSet(object):
         return self.imm_get_startTimeUTC()
 
     def imm_get_startTimeUTC(self):
-        return int(self._startTime)
+        return int((self._startTimeMs / 1000.0))
 
     def get_endTimeUTC(self):
         """
@@ -3638,7 +3750,7 @@ class YDataSet(object):
         return self.imm_get_endTimeUTC()
 
     def imm_get_endTimeUTC(self):
-        return int(round(self._endTime))
+        return int(round(self._endTimeMs / 1000.0))
 
     def get_progress(self):
         """
@@ -3670,9 +3782,9 @@ class YDataSet(object):
         # stream
         if self._progress < 0:
             url = "logger.json?id=" + self._functionId
-            if self._startTime != 0:
+            if self._startTimeMs != 0:
                 url = "" + url + "&from=" + str(int(self.imm_get_startTimeUTC()))
-            if self._endTime != 0:
+            if self._endTimeMs != 0:
                 url = "" + url + "&to=" + str(int(self.imm_get_endTimeUTC()+1))
         else:
             if self._progress >= len(self._streams):
@@ -3737,7 +3849,7 @@ class YDataSet(object):
 
         On failure, throws an exception or returns an empty array.
         """
-        # startUtc
+        # startUtcMs
         # stream
         dataRows = []
         measures = []
@@ -3749,18 +3861,18 @@ class YDataSet(object):
         # avgCol
         # maxCol
 
-        startUtc = measure.get_startTimeUTC()
+        startUtcMs = measure.get_startTimeUTC() * 1000
         stream = None
         for y in self._streams:
-            if y.get_realStartTimeUTC() == startUtc:
+            if round(y.get_realStartTimeUTC() *1000) == startUtcMs:
                 stream = y
         if stream is None:
             return measures
         dataRows = stream.get_dataRows()
         if len(dataRows) == 0:
             return measures
-        tim = stream.get_realStartTimeUTC()
-        itv = stream.get_dataSamplesInterval()
+        tim = round(stream.get_realStartTimeUTC() * 1000)
+        itv = round(stream.get_dataSamplesInterval() * 1000)
         if tim < itv:
             tim = itv
         nCols = len(dataRows[0])
@@ -3776,8 +3888,8 @@ class YDataSet(object):
 
         for y in dataRows:
             end_ = tim + itv
-            if (tim >= self._startTime) and ((self._endTime == 0) or (end_ <= self._endTime)):
-                measures.append(YMeasure(tim, end_, y[minCol], y[avgCol], y[maxCol]))
+            if (end_ > self._startTimeMs) and ((self._endTimeMs == 0) or (tim < self._endTimeMs)):
+                measures.append(YMeasure(tim / 1000.0, end_ / 1000.0, y[minCol], y[avgCol], y[maxCol]))
             tim = end_
 
         return measures
