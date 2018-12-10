@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 33505 2018-12-05 14:45:46Z seb $
+# * $Id: yocto_api.py 33601 2018-12-09 14:30:31Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -832,7 +832,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "33576"
+    YOCTO_API_BUILD_NO = "33636"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -7623,6 +7623,7 @@ class YDataLogger(YFunction):
     # --- (generated code: YDataLogger definitions)
     CURRENTRUNINDEX_INVALID = YAPI.INVALID_UINT
     TIMEUTC_INVALID = YAPI.INVALID_LONG
+    USAGE_INVALID = YAPI.INVALID_UINT
     RECORDING_OFF = 0
     RECORDING_ON = 1
     RECORDING_PENDING = 2
@@ -7648,6 +7649,7 @@ class YDataLogger(YFunction):
         self._recording = YDataLogger.RECORDING_INVALID
         self._autoStart = YDataLogger.AUTOSTART_INVALID
         self._beaconDriven = YDataLogger.BEACONDRIVEN_INVALID
+        self._usage = YDataLogger.USAGE_INVALID
         self._clearHistory = YDataLogger.CLEARHISTORY_INVALID
         #--- (end of generated code: YDataLogger attributes)
         self._dataLoggerURL = ""
@@ -7664,6 +7666,8 @@ class YDataLogger(YFunction):
             self._autoStart = (json_val.getInt("autoStart") > 0 if 1 else 0)
         if json_val.has("beaconDriven"):
             self._beaconDriven = (json_val.getInt("beaconDriven") > 0 if 1 else 0)
+        if json_val.has("usage"):
+            self._usage = json_val.getInt("usage")
         if json_val.has("clearHistory"):
             self._clearHistory = (json_val.getInt("clearHistory") > 0 if 1 else 0)
         super(YDataLogger, self)._parseAttr(json_val)
@@ -7807,6 +7811,21 @@ class YDataLogger(YFunction):
         """
         rest_val = "1" if newval > 0 else "0"
         return self._setAttr("beaconDriven", rest_val)
+
+    def get_usage(self):
+        """
+        Returns the percentage of datalogger memory in use.
+
+        @return an integer corresponding to the percentage of datalogger memory in use
+
+        On failure, throws an exception or returns YDataLogger.USAGE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YDataLogger.USAGE_INVALID
+        res = self._usage
+        return res
 
     def get_clearHistory(self):
         # res
