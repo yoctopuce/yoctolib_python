@@ -1,4 +1,5 @@
-Python v1.10.33657
+Python v1.10.33736
 
-- Fix crash after 8192 YAPI.FreeAPI
-- Fix race condition that can lead to deadlock
+- Fix some typos in error messages
+- Fix crash after 8192 YAPI.InitAPI et YAPI.Free
+- Improve error recovery with WebSocket connection

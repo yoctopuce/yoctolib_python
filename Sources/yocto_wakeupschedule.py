@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_wakeupschedule.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_wakeupschedule.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #
@@ -131,9 +131,9 @@ class YWakeUpSchedule(YFunction):
 
     def get_minutesB(self):
         """
-        Returns the minutes in the 30-59 intervalof each hour scheduled for wake up.
+        Returns the minutes in the 30-59 interval of each hour scheduled for wake up.
 
-        @return an integer corresponding to the minutes in the 30-59 intervalof each hour scheduled for wake up
+        @return an integer corresponding to the minutes in the 30-59 interval of each hour scheduled for wake up
 
         On failure, throws an exception or returns YWakeUpSchedule.MINUTESB_INVALID.
         """
@@ -271,9 +271,9 @@ class YWakeUpSchedule(YFunction):
 
     def get_nextOccurence(self):
         """
-        Returns the date/time (seconds) of the next wake up occurence.
+        Returns the date/time (seconds) of the next wake up occurrence.
 
-        @return an integer corresponding to the date/time (seconds) of the next wake up occurence
+        @return an integer corresponding to the date/time (seconds) of the next wake up occurrence
 
         On failure, throws an exception or returns YWakeUpSchedule.NEXTOCCURENCE_INVALID.
         """

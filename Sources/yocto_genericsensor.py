@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_genericsensor.py 33114 2018-11-09 21:58:19Z mvuilleu $
+#  $Id: yocto_genericsensor.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #
@@ -210,7 +210,7 @@ class YGenericSensor(YSensor):
     def set_signalBias(self, newval):
         """
         Changes the electric signal bias for zero shift adjustment.
-        If your electric signal reads positif when it should be zero, setup
+        If your electric signal reads positive when it should be zero, setup
         a positive signalBias of the same value to fix the zero shift.
 
         @param newval : a floating point number corresponding to the electric signal bias for zero shift adjustment
@@ -226,7 +226,7 @@ class YGenericSensor(YSensor):
         """
         Returns the electric signal bias for zero shift adjustment.
         A positive bias means that the signal is over-reporting the measure,
-        while a negative bias means that the signal is underreporting the measure.
+        while a negative bias means that the signal is under-reporting the measure.
 
         @return a floating point number corresponding to the electric signal bias for zero shift adjustment
 

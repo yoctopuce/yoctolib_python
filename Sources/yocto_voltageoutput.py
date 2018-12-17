@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_voltageoutput.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_voltageoutput.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
 #
@@ -190,7 +190,7 @@ class YVoltageOutput(YFunction):
 
     def voltageMove(self, V_target, ms_duration):
         """
-        Performs a smooth transistion of output voltage. Any explicit voltage
+        Performs a smooth transition of output voltage. Any explicit voltage
         change cancels any ongoing transition process.
 
         @param V_target   : new output voltage value at the end of the transition

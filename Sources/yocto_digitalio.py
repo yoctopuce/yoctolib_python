@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_digitalio.py 33135 2018-11-12 15:32:32Z mvuilleu $
+#  $Id: yocto_digitalio.py 33722 2018-12-14 15:04:43Z seb $
 #
 #  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #
@@ -49,7 +49,7 @@ class YDigitalIO(YFunction):
     """
     The Yoctopuce application programming interface allows you to switch the state of each
     channel of the I/O port. You can switch all channels at once, or one by one. Most functions
-    use a binary represention for channels where bit 0 matches channel #0 , bit 1 matches channel
+    use a binary representation for channels where bit 0 matches channel #0 , bit 1 matches channel
     #1 and so on.... If you are not familiar with numbers binary representation, you will find more
     information here: en.wikipedia.org/wiki/Binary_number#Representation . The library
     can also automatically generate short pulses of a determined duration. Electrical behavior
@@ -382,10 +382,10 @@ class YDigitalIO(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         if not (bitstate >= 0):
-            self._throw(YAPI.INVALID_ARGUMENT, "invalid bitstate")
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid bit state")
             return YAPI.INVALID_ARGUMENT
         if not (bitstate <= 1):
-            self._throw(YAPI.INVALID_ARGUMENT, "invalid bitstate")
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid bit state")
             return YAPI.INVALID_ARGUMENT
         return self.set_command("" + str(chr(82+bitstate)) + "" + str(int(bitno)))
 
@@ -464,10 +464,10 @@ class YDigitalIO(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         if not (bitpolarity >= 0):
-            self._throw(YAPI.INVALID_ARGUMENT, "invalid bitpolarity")
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid bit polarity")
             return YAPI.INVALID_ARGUMENT
         if not (bitpolarity <= 1):
-            self._throw(YAPI.INVALID_ARGUMENT, "invalid bitpolarity")
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid bit polarity")
             return YAPI.INVALID_ARGUMENT
         return self.set_command("" + str(chr(110+4*bitpolarity)) + "" + str(int(bitno)))
 

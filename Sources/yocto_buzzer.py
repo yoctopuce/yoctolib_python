@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_buzzer.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_buzzer.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindBuzzer(), the high-level API for Buzzer functions
 #
@@ -474,7 +474,7 @@ class YBuzzer(YFunction):
         Activates the buzzer for a short duration.
 
         @param frequency : pulse frequency, in hertz
-        @param duration : pulse duration in millseconds
+        @param duration : pulse duration in milliseconds
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -487,7 +487,7 @@ class YBuzzer(YFunction):
         Makes the buzzer frequency change over a period of time.
 
         @param frequency : frequency to reach, in hertz. A frequency under 25Hz stops the buzzer.
-        @param duration :  pulse duration in millseconds
+        @param duration :  pulse duration in milliseconds
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -500,7 +500,7 @@ class YBuzzer(YFunction):
         Makes the buzzer volume change over a period of time, frequency  stays untouched.
 
         @param volume : volume to reach in %
-        @param duration : change duration in millseconds
+        @param duration : change duration in milliseconds
 
         @return YAPI.SUCCESS if the call succeeds.
 

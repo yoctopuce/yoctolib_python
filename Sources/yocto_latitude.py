@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_latitude.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_latitude.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindLatitude(), the high-level API for Latitude functions
 #
@@ -48,7 +48,7 @@ from yocto_api import *
 class YLatitude(YSensor):
     """
     The Yoctopuce class YLatitude allows you to read the latitude from Yoctopuce
-    geolocalization sensors. It inherits from the YSensor class the core functions to
+    geolocation sensors. It inherits from the YSensor class the core functions to
     read measurements, to register callback functions, to access the autonomous
     datalogger.
 

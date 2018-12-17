@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 33601 2018-12-09 14:30:31Z mvuilleu $
+# * $Id: yocto_api.py 33717 2018-12-14 14:22:04Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -832,7 +832,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "33657"
+    YOCTO_API_BUILD_NO = "33736"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -921,6 +921,8 @@ class YAPI:
                 YAPI._yApiCLibFile = libpath + "/cdll/libyapi-i386.so"
             elif arch == 'x86_64':
                 YAPI._yApiCLibFile = libpath + "/cdll/libyapi-amd64.so"
+            elif arch == 'aarch64':
+                YAPI._yApiCLibFile = libpath + "/cdll/libyapi-aarch64.so"
             else:
                 raise NotImplementedError(
                     "unsupported linux architecture (" + arch + "), contact support@yoctopuce.com.")
@@ -963,7 +965,10 @@ class YAPI:
             #  LINUX (INTEL + ARM)
             #
             elif platform.system() == 'Linux':
-                if machine.find("arm") >= 0:
+                if machine.find("aarch64") >= 0:
+                    YAPI._yApiCLibFile = libpath + "/cdll/libyapi-aarch64.so"
+                    YAPI._yApiCLibFileFallback = libpath + "/cdll/libyapi-aarch64.so"
+                elif machine.find("arm") >= 0:
                     YAPI._yApiCLibFile = libpath + "/cdll/libyapi-armhf.so"
                     YAPI._yApiCLibFileFallback = libpath + "/cdll/libyapi-armel.so"
                 elif machine.find("mips") >= 0:
@@ -2319,7 +2324,7 @@ class YAPI:
         parameter will determine how the API will work. Use the following values:
 
         <b>usb</b>: When the usb keyword is used, the API will work with
-        devices connected directly to the USB bus. Some programming languages such a Javascript,
+        devices connected directly to the USB bus. Some programming languages such a JavaScript,
         PHP, and Java don't provide direct access to USB hardware, so usb will
         not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
 
@@ -3523,7 +3528,7 @@ class YDataSet(object):
         summaryStartMs = YAPI.MAX_DOUBLE
         summaryStopMs = YAPI.MIN_DOUBLE
 
-        # // Parse comlete streams
+        # // Parse complete streams
         for y in self._streams:
             streamStartTimeMs = round(y.get_realStartTimeUTC() *1000)
             streamDuration = y.get_realDuration()
@@ -3538,7 +3543,7 @@ class YDataSet(object):
                 previewDuration = streamDuration
             else:
                 # // stream that are partially in the dataset
-                # // we need to parse data to filter value outide the dataset
+                # // we need to parse data to filter value outside the dataset
                 url = y._get_url()
                 data = self._parent._download(url)
                 y._parseStream(data)
@@ -5308,9 +5313,9 @@ class YModule(YFunction):
 
     def get_luminosity(self):
         """
-        Returns the luminosity of the  module informative leds (from 0 to 100).
+        Returns the luminosity of the  module informative LEDs (from 0 to 100).
 
-        @return an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+        @return an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
 
         On failure, throws an exception or returns YModule.LUMINOSITY_INVALID.
         """
@@ -6979,7 +6984,7 @@ class YSensor(YFunction):
         Changes the timed value notification frequency for this function.
         The frequency can be specified as samples per second,
         as sample per minute (for instance "15/m") or in samples per
-        hour (eg. "4/h"). To disable timed value notifications for this
+        hour (e.g. "4/h"). To disable timed value notifications for this
         function, use the value "OFF".
 
         @param newval : a string corresponding to the timed value notification frequency for this function
@@ -7156,7 +7161,7 @@ class YSensor(YFunction):
                     # // Unknown calibration type: calibrated value will be provided by the device
                     self._caltyp = -1
                     return 0
-            # // New 32bit text format
+            # // New 32 bits text format
             self._offset = 0
             self._scale = 1000
             maxpos = len(iCalib)
@@ -7305,11 +7310,11 @@ class YSensor(YFunction):
         @param startTime : the start of the desired measure time interval,
                 as a Unix timestamp, i.e. the number of seconds since
                 January 1, 1970 UTC. The special value 0 can be used
-                to include any meaasure, without initial limit.
+                to include any measure, without initial limit.
         @param endTime : the end of the desired measure time interval,
                 as a Unix timestamp, i.e. the number of seconds since
                 January 1, 1970 UTC. The special value 0 can be used
-                to include any meaasure, without ending limit.
+                to include any measure, without ending limit.
 
         @return an instance of YDataSet, providing access to historical
                 data. Past measures can be loaded progressively
@@ -7468,7 +7473,7 @@ class YSensor(YFunction):
         self._prevTimedReport = endTime
         if startTime == 0:
             startTime = endTime
-        # // 32bit timed report format
+        # // 32 bits timed report format
         if len(report) <= 5:
             # // sub-second report, 1-4 bytes
             poww = 1

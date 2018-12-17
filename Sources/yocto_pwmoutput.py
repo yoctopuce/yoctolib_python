@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_pwmoutput.py 33313 2018-11-22 16:11:56Z seb $
+#  $Id: yocto_pwmoutput.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #
@@ -368,7 +368,7 @@ class YPwmOutput(YFunction):
 
     def pulseDurationMove(self, ms_target, ms_duration):
         """
-        Performs a smooth transistion of the pulse duration toward a given value.
+        Performs a smooth transition of the pulse duration toward a given value.
         Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
 
         @param ms_target   : new pulse duration at the end of the transition
@@ -411,7 +411,7 @@ class YPwmOutput(YFunction):
         Performs a smooth frequency change toward a given value.
         Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
 
-        @param target      : new freuency at the end of the transition (floating-point number)
+        @param target      : new frequency at the end of the transition (floating-point number)
         @param ms_duration : total duration of the transition, in milliseconds
 
         @return YAPI.SUCCESS when the call succeeds.

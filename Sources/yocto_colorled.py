@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorled.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_colorled.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindColorLed(), the high-level API for ColorLed functions
 #
@@ -367,7 +367,7 @@ class YColorLed(YFunction):
         Add a new transition to the blinking sequence, the move will
         be performed in the HSL space.
 
-        @param HSLcolor : desired HSL color when the traisntion is completed
+        @param HSLcolor : desired HSL color when the transition is completed
         @param msDelay : duration of the color transition, in milliseconds.
 
         @return YAPI.SUCCESS if the call succeeds.

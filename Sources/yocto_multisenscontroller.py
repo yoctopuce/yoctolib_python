@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multisenscontroller.py 33270 2018-11-22 08:41:15Z seb $
+#  $Id: yocto_multisenscontroller.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
 #
@@ -108,8 +108,8 @@ class YMultiSensController(YFunction):
         """
         Changes the number of sensors to poll. Remember to call the
         saveToFlash() method of the module if the
-        modification must be kept. Il is recommended to restart the
-        device with  module->reboot() after modifing
+        modification must be kept. It's recommended to restart the
+        device with  module->reboot() after modifying
         (and saving) this settings
 
         @param newval : an integer corresponding to the number of sensors to poll
@@ -220,10 +220,10 @@ class YMultiSensController(YFunction):
     def setupAddress(self, addr):
         """
         Configure the I2C address of the only sensor connected to the device.
-        It is recommanded to put the the device in maintenance mode before
+        It is recommended to put the the device in maintenance mode before
         changing Sensors addresses.  This method is only intended to work with a single
         sensor connected to the device, if several sensors are connected, result
-        is unpredictible.
+        is unpredictable.
         Note that the device is probably expecting to find a string of sensors with specific
         addresses. Check the device documentation to find out which addresses should be used.
 

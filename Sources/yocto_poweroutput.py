@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_poweroutput.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_poweroutput.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindPowerOutput(), the high-level API for PowerOutput functions
 #
@@ -48,7 +48,7 @@ from yocto_api import *
 class YPowerOutput(YFunction):
     """
     Yoctopuce application programming interface allows you to control
-    the power ouput featured on some devices such as the Yocto-Serial.
+    the power output featured on some devices such as the Yocto-Serial.
 
     """
     #--- (end of YPowerOutput class start)
@@ -115,7 +115,7 @@ class YPowerOutput(YFunction):
     @staticmethod
     def FindPowerOutput(func):
         """
-        Retrieves a dual power  ouput control for a given identifier.
+        Retrieves a dual power  output control for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -125,11 +125,11 @@ class YPowerOutput(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the power ouput control is online at the time
+        This function does not require that the power output control is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YPowerOutput.isOnline() to test if the power ouput control is
+        Use the method YPowerOutput.isOnline() to test if the power output control is
         indeed online at a given time. In case of ambiguity when looking for
-        a dual power  ouput control by logical name, no error is notified: the first instance
+        a dual power  output control by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -137,9 +137,9 @@ class YPowerOutput(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the power ouput control
+        @param func : a string that uniquely characterizes the power output control
 
-        @return a YPowerOutput object allowing you to drive the power ouput control.
+        @return a YPowerOutput object allowing you to drive the power output control.
         """
         # obj
         obj = YFunction._FindFromCache("PowerOutput", func)
@@ -150,14 +150,14 @@ class YPowerOutput(YFunction):
 
     def nextPowerOutput(self):
         """
-        Continues the enumeration of dual power ouput controls started using yFirstPowerOutput().
-        Caution: You can't make any assumption about the returned dual power ouput controls order.
-        If you want to find a specific a dual power  ouput control, use PowerOutput.findPowerOutput()
+        Continues the enumeration of dual power output controls started using yFirstPowerOutput().
+        Caution: You can't make any assumption about the returned dual power output controls order.
+        If you want to find a specific a dual power  output control, use PowerOutput.findPowerOutput()
         and a hardwareID or a logical name.
 
         @return a pointer to a YPowerOutput object, corresponding to
-                a dual power  ouput control currently online, or a None pointer
-                if there are no more dual power ouput controls to enumerate.
+                a dual power  output control currently online, or a None pointer
+                if there are no more dual power output controls to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -173,12 +173,12 @@ class YPowerOutput(YFunction):
     @staticmethod
     def FirstPowerOutput():
         """
-        Starts the enumeration of dual power ouput controls currently accessible.
+        Starts the enumeration of dual power output controls currently accessible.
         Use the method YPowerOutput.nextPowerOutput() to iterate on
-        next dual power ouput controls.
+        next dual power output controls.
 
         @return a pointer to a YPowerOutput object, corresponding to
-                the first dual power ouput control currently online, or a None pointer
+                the first dual power output control currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_longitude.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_longitude.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindLongitude(), the high-level API for Longitude functions
 #
@@ -48,7 +48,7 @@ from yocto_api import *
 class YLongitude(YSensor):
     """
     The Yoctopuce class YLongitude allows you to read the longitude from Yoctopuce
-    geolocalization sensors. It inherits from the YSensor class the core functions to
+    geolocation sensors. It inherits from the YSensor class the core functions to
     read measurements, register callback functions, access the autonomous
     datalogger.
 

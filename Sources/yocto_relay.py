@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_relay.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_relay.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindRelay(), the high-level API for Relay functions
 #
@@ -304,7 +304,7 @@ class YRelay(YFunction):
         Sets the relay to output B (active) for a specified duration, then brings it
         automatically back to output A (idle state).
 
-        @param ms_duration : pulse duration, in millisecondes
+        @param ms_duration : pulse duration, in milliseconds
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -329,8 +329,8 @@ class YRelay(YFunction):
         """
         Schedules a pulse.
 
-        @param ms_delay : waiting time before the pulse, in millisecondes
-        @param ms_duration : pulse duration, in millisecondes
+        @param ms_delay : waiting time before the pulse, in milliseconds
+        @param ms_duration : pulse duration, in milliseconds
 
         @return YAPI.SUCCESS if the call succeeds.
 

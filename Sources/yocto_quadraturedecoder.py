@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_quadraturedecoder.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_quadraturedecoder.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
 #
@@ -86,7 +86,7 @@ class YQuadratureDecoder(YSensor):
     def set_currentValue(self, newval):
         """
         Changes the current expected position of the quadrature decoder.
-        Invoking this function implicitely activates the quadrature decoder.
+        Invoking this function implicitly activates the quadrature decoder.
 
         @param newval : a floating point number corresponding to the current expected position of the quadrature decoder
 

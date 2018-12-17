@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 32907 2018-11-02 10:18:55Z seb $
+#* $Id: yocto_cellular.py 33717 2018-12-14 14:22:04Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -629,7 +629,7 @@ class YCellular(YFunction):
     def sendPUK(self, puk, newPin):
         """
         Sends a PUK code to unlock the SIM card after three failed PIN code attempts, and
-        setup a new PIN into the SIM card. Only ten consecutives tentatives are permitted:
+        setup a new PIN into the SIM card. Only ten consecutive tentatives are permitted:
         after that, the SIM card will be blocked permanently without any mean of recovery
         to use it again. Note that after calling this method, you have usually to invoke
         method set_pin() to tell the YoctoHub which PIN to use in the future.
@@ -780,7 +780,7 @@ class YCellular(YFunction):
         """
         Returns a list of nearby cellular antennas, as required for quick
         geolocation of the device. The first cell listed is the serving
-        cell, and the next ones are the neighboor cells reported by the
+        cell, and the next ones are the neighbor cells reported by the
         serving cell.
 
         @return a list of YCellRecords.

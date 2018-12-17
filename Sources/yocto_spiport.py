@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_spiport.py 33722 2018-12-14 15:04:43Z seb $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -84,9 +84,9 @@ class YSpiPort(YFunction):
     SSPOLARITY_ACTIVE_LOW = 0
     SSPOLARITY_ACTIVE_HIGH = 1
     SSPOLARITY_INVALID = -1
-    SHITFTSAMPLING_OFF = 0
-    SHITFTSAMPLING_ON = 1
-    SHITFTSAMPLING_INVALID = -1
+    SHIFTSAMPLING_OFF = 0
+    SHIFTSAMPLING_ON = 1
+    SHIFTSAMPLING_INVALID = -1
     #--- (end of YSpiPort definitions)
 
     def __init__(self, func):
@@ -107,7 +107,7 @@ class YSpiPort(YFunction):
         self._protocol = YSpiPort.PROTOCOL_INVALID
         self._spiMode = YSpiPort.SPIMODE_INVALID
         self._ssPolarity = YSpiPort.SSPOLARITY_INVALID
-        self._shitftSampling = YSpiPort.SHITFTSAMPLING_INVALID
+        self._shiftSampling = YSpiPort.SHIFTSAMPLING_INVALID
         self._rxptr = 0
         self._rxbuff = ''
         self._rxbuffptr = 0
@@ -141,8 +141,8 @@ class YSpiPort(YFunction):
             self._spiMode = json_val.getString("spiMode")
         if json_val.has("ssPolarity"):
             self._ssPolarity = (json_val.getInt("ssPolarity") > 0 if 1 else 0)
-        if json_val.has("shitftSampling"):
-            self._shitftSampling = (json_val.getInt("shitftSampling") > 0 if 1 else 0)
+        if json_val.has("shiftSampling"):
+            self._shiftSampling = (json_val.getInt("shiftSampling") > 0 if 1 else 0)
         super(YSpiPort, self)._parseAttr(json_val)
 
     def get_rxCount(self):
@@ -447,29 +447,29 @@ class YSpiPort(YFunction):
         rest_val = "1" if newval > 0 else "0"
         return self._setAttr("ssPolarity", rest_val)
 
-    def get_shitftSampling(self):
+    def get_shiftSampling(self):
         """
         Returns true when the SDI line phase is shifted with regards to the SDO line.
 
-        @return either YSpiPort.SHITFTSAMPLING_OFF or YSpiPort.SHITFTSAMPLING_ON, according to true when
-        the SDI line phase is shifted with regards to the SDO line
+        @return either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to true when the
+        SDI line phase is shifted with regards to the SDO line
 
-        On failure, throws an exception or returns YSpiPort.SHITFTSAMPLING_INVALID.
+        On failure, throws an exception or returns YSpiPort.SHIFTSAMPLING_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.SHITFTSAMPLING_INVALID
-        res = self._shitftSampling
+                return YSpiPort.SHIFTSAMPLING_INVALID
+        res = self._shiftSampling
         return res
 
-    def set_shitftSampling(self, newval):
+    def set_shiftSampling(self, newval):
         """
         Changes the SDI line sampling shift. When disabled, SDI line is
         sampled in the middle of data output time. When enabled, SDI line is
         samples at the end of data output time.
 
-        @param newval : either YSpiPort.SHITFTSAMPLING_OFF or YSpiPort.SHITFTSAMPLING_ON, according to the
+        @param newval : either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to the
         SDI line sampling shift
 
         @return YAPI.SUCCESS if the call succeeds.
@@ -477,7 +477,7 @@ class YSpiPort(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = "1" if newval > 0 else "0"
-        return self._setAttr("shitftSampling", rest_val)
+        return self._setAttr("shiftSampling", rest_val)
 
     @staticmethod
     def FindSpiPort(func):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_steppermotor.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_steppermotor.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #
@@ -648,7 +648,7 @@ class YStepperMotor(YFunction):
     def alertStepOut(self):
         """
         Move one step in the direction opposite the direction set when the most recent alert was raised.
-        The move occures even if the system is still in alert mode (end switch depressed). Caution.
+        The move occurs even if the system is still in alert mode (end switch depressed). Caution.
         use this function with great care as it may cause mechanical damages !
 
         @return YAPI.SUCCESS if the call succeeds.
@@ -659,10 +659,10 @@ class YStepperMotor(YFunction):
     def alertStepDir(self, dir):
         """
         Move one single step in the selected direction without regards to end switches.
-        The move occures even if the system is still in alert mode (end switch depressed). Caution.
+        The move occurs even if the system is still in alert mode (end switch depressed). Caution.
         use this function with great care as it may cause mechanical damages !
 
-        @param dir : Value +1 ou -1, according to the desired direction of the move
+        @param dir : Value +1 or -1, according to the desired direction of the move
 
         @return YAPI.SUCCESS if the call succeeds.
                 On failure, throws an exception or returns a negative error code.

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_proximity.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_proximity.py 33717 2018-12-14 14:22:04Z seb $
 #
 #  Implements yFindProximity(), the high-level API for Proximity functions
 #
@@ -209,10 +209,10 @@ class YProximity(YSensor):
 
     def get_presenceMinTime(self):
         """
-        Returns the minimal detection duration before signaling a presence event. Any shorter detection is
+        Returns the minimal detection duration before signalling a presence event. Any shorter detection is
         considered as noise or bounce (false positive) and filtered out.
 
-        @return an integer corresponding to the minimal detection duration before signaling a presence event
+        @return an integer corresponding to the minimal detection duration before signalling a presence event
 
         On failure, throws an exception or returns YProximity.PRESENCEMINTIME_INVALID.
         """
@@ -225,10 +225,10 @@ class YProximity(YSensor):
 
     def set_presenceMinTime(self, newval):
         """
-        Changes the minimal detection duration before signaling a presence event. Any shorter detection is
+        Changes the minimal detection duration before signalling a presence event. Any shorter detection is
         considered as noise or bounce (false positive) and filtered out.
 
-        @param newval : an integer corresponding to the minimal detection duration before signaling a presence event
+        @param newval : an integer corresponding to the minimal detection duration before signalling a presence event
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -239,10 +239,10 @@ class YProximity(YSensor):
 
     def get_removalMinTime(self):
         """
-        Returns the minimal detection duration before signaling a removal event. Any shorter detection is
+        Returns the minimal detection duration before signalling a removal event. Any shorter detection is
         considered as noise or bounce (false positive) and filtered out.
 
-        @return an integer corresponding to the minimal detection duration before signaling a removal event
+        @return an integer corresponding to the minimal detection duration before signalling a removal event
 
         On failure, throws an exception or returns YProximity.REMOVALMINTIME_INVALID.
         """
@@ -255,10 +255,10 @@ class YProximity(YSensor):
 
     def set_removalMinTime(self, newval):
         """
-        Changes the minimal detection duration before signaling a removal event. Any shorter detection is
+        Changes the minimal detection duration before signalling a removal event. Any shorter detection is
         considered as noise or bounce (false positive) and filtered out.
 
-        @param newval : an integer corresponding to the minimal detection duration before signaling a removal event
+        @param newval : an integer corresponding to the minimal detection duration before signalling a removal event
 
         @return YAPI.SUCCESS if the call succeeds.
 
