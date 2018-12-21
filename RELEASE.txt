@@ -1,5 +1,4 @@
-Python v1.10.33736
+Python v1.10.33831
 
-- Fix some typos in error messages
-- Fix crash after 8192 YAPI.InitAPI et YAPI.Free
-- Improve error recovery with WebSocket connection
+- Fix isOnline function that was throwing exception
+- Add support for aarch64 dynamic library

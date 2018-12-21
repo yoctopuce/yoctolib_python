@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 33717 2018-12-14 14:22:04Z seb $
+# * $Id: yocto_api.py 33818 2018-12-21 13:42:59Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -832,7 +832,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "33736"
+    YOCTO_API_BUILD_NO = "33831"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2458,7 +2458,9 @@ class YAPI:
         in case a change in the list of connected devices is detected.
 
         This function can be called as frequently as desired to refresh the device list
-        and to make the application aware of hot-plug events.
+        and to make the application aware of hot-plug events. However, since device
+        detection is quite a heavy process, UpdateDeviceList shouldn't be called more
+        than once every two seconds.
 
         @param errmsg : a string passed by reference to receive any error message.
 
@@ -4929,12 +4931,13 @@ class YFunction(object):
         # Check that the function is available, without throwing exceptions
         if YAPI.YISERR(self._getDevice(devRef, errmsgRef)):
             return False
-
-        # Try to execute a function request to be positively sure that the device is ready
-        if YAPI.YISERR(devRef.value.requestAPI(apiresRef, errmsgRef)):
+        try:
+            # Try to execute a function request to be positively sure that the device is ready
+            if YAPI.YISERR(devRef.value.requestAPI(apiresRef, errmsgRef)):
+                return False
+            self.load(YAPI.DefaultCacheValidity)
+        except YAPI_Exception:
             return False
-
-        self.load(YAPI.DefaultCacheValidity)
         return True
 
     def load(self, msValidity):
@@ -6951,7 +6954,9 @@ class YSensor(YFunction):
         The frequency can be specified as samples per second,
         as sample per minute (for instance "15/m") or in samples per
         hour (eg. "4/h"). To disable recording for this function, use
-        the value "OFF".
+        the value "OFF". Note that setting the  datalogger recording frequency
+        to a greater value than the sensor native sampling frequency is unless,
+        and even counterproductive: those two frequencies are not related.
 
         @param newval : a string corresponding to the datalogger recording frequency for this function
 
@@ -6985,7 +6990,10 @@ class YSensor(YFunction):
         The frequency can be specified as samples per second,
         as sample per minute (for instance "15/m") or in samples per
         hour (e.g. "4/h"). To disable timed value notifications for this
-        function, use the value "OFF".
+        function, use the value "OFF". Note that setting the  timed value
+        notification frequency to a greater value than the sensor native
+        sampling frequency is unless, and even counterproductive: those two
+        frequencies are not related.
 
         @param newval : a string corresponding to the timed value notification frequency for this function
 
@@ -7618,7 +7626,8 @@ class YDataLogger(YFunction):
     Yoctopuce sensors include a non-volatile memory capable of storing ongoing measured
     data automatically, without requiring a permanent connection to a computer.
     The DataLogger function controls the global parameters of the internal data
-    logger.
+    logger. Recording control (start/stop) as well as data retreival is done at
+    sensor objects level.
 
     """
     #--- (end of generated code: YDataLogger class start)
@@ -7772,8 +7781,10 @@ class YDataLogger(YFunction):
     def set_autoStart(self, newval):
         """
         Changes the default activation state of the data logger on power up.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
+        Do not forget to call the saveToFlash() method of the module to save the
+        configuration change.  Note: if the device doesn't have any time source at his disposal when
+        starting up, it will wait for ~8 seconds before automatically starting to record  with
+        an arbitrary timestamp
 
         @param newval : either YDataLogger.AUTOSTART_OFF or YDataLogger.AUTOSTART_ON, according to the
         default activation state of the data logger on power up
