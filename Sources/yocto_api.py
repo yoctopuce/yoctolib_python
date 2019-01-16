@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 33818 2018-12-21 13:42:59Z seb $
+# * $Id: yocto_api.py 33903 2018-12-28 08:49:26Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -832,7 +832,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "33831"
+    YOCTO_API_BUILD_NO = "34022"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -4729,6 +4729,18 @@ class YFunction(object):
         attrVal = self._download(url)
         return YByte2String(attrVal)
 
+    def get_serialNumber(self):
+        """
+        Returns the serial number of the module, as set by the factory.
+
+        @return a string corresponding to the serial number of the module, as set by the factory.
+
+        On failure, throws an exception or returns YModule.SERIALNUMBER_INVALID.
+        """
+        # m
+        m = self.get_module()
+        return m.get_serialNumber()
+
     def _parserHelper(self):
         return 0
 
@@ -6833,6 +6845,13 @@ class YSensor(YFunction):
     def get_currentValue(self):
         """
         Returns the current value of the measure, in the specified unit, as a floating point number.
+        Note that a get_currentValue() call will *not* start a measure in the device, it
+        will just return the last measure that occurred in the device. Indeed, internally, each Yoctopuce
+        devices is continuously making measurements at a hardware specific frequency.
+
+        If continuously calling  get_currentValue() leads you to performances issues, then
+        you might consider to switch to callback programming model. Check the "advanced
+        programming" chapter in in your device user manual for more information.
 
         @return a floating point number corresponding to the current value of the measure, in the specified
         unit, as a floating point number
@@ -6955,7 +6974,7 @@ class YSensor(YFunction):
         as sample per minute (for instance "15/m") or in samples per
         hour (eg. "4/h"). To disable recording for this function, use
         the value "OFF". Note that setting the  datalogger recording frequency
-        to a greater value than the sensor native sampling frequency is unless,
+        to a greater value than the sensor native sampling frequency is useless,
         and even counterproductive: those two frequencies are not related.
 
         @param newval : a string corresponding to the datalogger recording frequency for this function

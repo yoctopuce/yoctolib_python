@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 33717 2018-12-14 14:22:04Z seb $
+#* $Id: yocto_display.py 33877 2018-12-26 12:19:48Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -264,7 +264,8 @@ class YDisplayLayer(object):
         file, check the device logs for any error message such as missing font file or bad font
         file format.
 
-        @param fontname : the font file name
+        @param fontname : the font file name, embedded fonts are 8x8.yfm, Small.yfm, Medium.yfm, Large.yfm
+        (not available on Yocto-MiniDisplay).
 
         @return YAPI.SUCCESS if the call succeeds.
 

@@ -1,4 +1,4 @@
-Python v1.10.33831
+Python v1.10.34022
 
-- Fix isOnline function that was throwing exception
-- Add support for aarch64 dynamic library
+- Add get_serialNumber() to YFunctions class
+- Fix crash on device unplug when multiples thread are still using the device.
