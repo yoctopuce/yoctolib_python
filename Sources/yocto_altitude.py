@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_altitude.py 32953 2018-11-05 17:50:55Z seb $
+#  $Id: yocto_altitude.py 34115 2019-01-23 14:23:54Z seb $
 #
 #  Implements yFindAltitude(), the high-level API for Altitude functions
 #
@@ -85,7 +85,7 @@ class YAltitude(YSensor):
 
     def set_currentValue(self, newval):
         """
-        Changes the current estimated altitude. This allows to compensate for
+        Changes the current estimated altitude. This allows one to compensate for
         ambient pressure variations and to work in relative mode.
 
         @param newval : a floating point number corresponding to the current estimated altitude

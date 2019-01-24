@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_powersupply.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_powersupply.py 34115 2019-01-23 14:23:54Z seb $
 #
 #  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
 #
@@ -439,7 +439,7 @@ class YPowerSupply(YFunction):
 
     def voltageMove(self, V_target, ms_duration):
         """
-        Performs a smooth transistion of output voltage. Any explicit voltage
+        Performs a smooth transition of output voltage. Any explicit voltage
         change cancels any ongoing transition process.
 
         @param V_target   : new output voltage value at the end of the transition

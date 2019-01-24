@@ -1,4 +1,4 @@
-Python v1.10.34022
+Python v1.10.34131
 
-- Add get_serialNumber() to YFunctions class
-- Fix crash on device unplug when multiples thread are still using the device.
+- Fixed some typos
+- Improve network discovery of YoctoHubs
