@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_buzzer.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_buzzer.py 34289 2019-02-03 21:12:49Z mvuilleu $
 #
 #  Implements yFindBuzzer(), the high-level API for Buzzer functions
 #
@@ -468,6 +468,24 @@ class YBuzzer(YFunction):
                 On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("s")
+
+    def savePlaySeq(self):
+        """
+        Saves the preprogrammed playing sequence to flash memory.
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("W")
+
+    def reloadPlaySeq(self):
+        """
+        Reloads the preprogrammed playing sequence from the flash memory.
+
+        @return YAPI.SUCCESS if the call succeeds.
+                On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("R")
 
     def pulse(self, frequency, duration):
         """
