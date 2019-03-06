@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 33903 2018-12-28 08:49:26Z seb $
+# * $Id: yocto_api.py 34551 2019-03-06 09:32:33Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -216,7 +216,7 @@ class YJSONString(YJSONContent):
         value = ""
         cur_pos = YJSONContent.SkipGarbage(self._data, self._data_start, self._data_boundary)
 
-        if self._data[cur_pos] != '"':
+        if cur_pos >= self._data_boundary or self._data[cur_pos] != '"':
             raise YAPI.YAPI_Exception(YAPI.INVALID_ARGUMENT, self.formatError("double quote was expected", cur_pos))
         cur_pos += 1
         str_start = cur_pos
@@ -294,7 +294,7 @@ class YJSONNumber(YJSONContent):
     def parse(self):
         neg = False
         cur_pos = YJSONContent.SkipGarbage(self._data, self._data_start, self._data_boundary)
-        if self._data is None:
+        if cur_pos >= self._data_boundary or self._data is None:
             raise YAPI.YAPI_Exception(YAPI.INVALID_ARGUMENT, "no data")
         sti = self._data[cur_pos]
         if sti == '-':
@@ -363,7 +363,7 @@ class YJSONArray(YJSONContent):
 
     def parse(self):
         cur_pos = YJSONContent.SkipGarbage(self._data, self._data_start, self._data_boundary)
-        if self._data[cur_pos] != '[':
+        if cur_pos >= self._data_boundary or self._data[cur_pos] != '[':
             raise YAPI.YAPI_Exception(YAPI.INVALID_ARGUMENT, self.formatError("Opening braces was expected", cur_pos))
         cur_pos += 1
         state = Tjstate.JWAITFORDATA
@@ -505,7 +505,7 @@ class YJSONObject(YJSONContent):
         current_name = ""
         name_start = self._data_start
         cur_pos = YJSONContent.SkipGarbage(self._data, self._data_start, self._data_boundary)
-        if len(self._data) <= cur_pos or self._data[cur_pos] != '{':
+        if len(self._data) <= cur_pos or cur_pos >= self._data_boundary or self._data[cur_pos] != '{':
             raise YAPI.YAPI_Exception(YAPI.INVALID_ARGUMENT, self.formatError("Opening braces was expected", cur_pos))
 
         cur_pos += 1
@@ -832,7 +832,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "34302"
+    YOCTO_API_BUILD_NO = "34560"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
