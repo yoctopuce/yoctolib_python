@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multisenscontroller.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_multisenscontroller.py 34975 2019-04-04 17:01:43Z seb $
 #
 #  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
 #
@@ -47,7 +47,8 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YMultiSensController(YFunction):
     """
-    The Yoctopuce application programming interface allows you to drive a stepper motor.
+    The Yoctopuce application programming interface allows you to setup a customized
+    sensor chain.
 
     """
     #--- (end of YMultiSensController class start)
@@ -108,7 +109,7 @@ class YMultiSensController(YFunction):
         """
         Changes the number of sensors to poll. Remember to call the
         saveToFlash() method of the module if the
-        modification must be kept. It's recommended to restart the
+        modification must be kept. It is recommended to restart the
         device with  module->reboot() after modifying
         (and saving) this settings
 
@@ -154,13 +155,13 @@ class YMultiSensController(YFunction):
 
     def set_maintenanceMode(self, newval):
         """
-        Changes the device mode to enable maintenance and stop sensors polling.
-        This way, the device will not restart automatically in case it cannot
+        Changes the device mode to enable maintenance and to stop sensor polling.
+        This way, the device does not automatically restart when it cannot
         communicate with one of the sensors.
 
         @param newval : either YMultiSensController.MAINTENANCEMODE_FALSE or
         YMultiSensController.MAINTENANCEMODE_TRUE, according to the device mode to enable maintenance and
-        stop sensors polling
+        to stop sensor polling
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -219,10 +220,10 @@ class YMultiSensController(YFunction):
 
     def setupAddress(self, addr):
         """
-        Configure the I2C address of the only sensor connected to the device.
+        Configures the I2C address of the only sensor connected to the device.
         It is recommended to put the the device in maintenance mode before
-        changing Sensors addresses.  This method is only intended to work with a single
-        sensor connected to the device, if several sensors are connected, result
+        changing sensor addresses.  This method is only intended to work with a single
+        sensor connected to the device, if several sensors are connected, the result
         is unpredictable.
         Note that the device is probably expecting to find a string of sensors with specific
         addresses. Check the device documentation to find out which addresses should be used.

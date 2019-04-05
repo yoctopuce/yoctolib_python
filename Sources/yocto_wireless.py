@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_wireless.py 33717 2018-12-14 14:22:04Z seb $
+# * $Id: yocto_wireless.py 34651 2019-03-15 17:21:54Z seb $
 # *
 # * Implements yFindWireless(), the high-level API for Wireless functions
 # *
@@ -46,6 +46,12 @@ from yocto_api import *
 # --- (generated code: YWlanRecord class start)
 #noinspection PyProtectedMember
 class YWlanRecord(object):
+    """
+    YWlanRecord objects are used to describe a wireless network.
+    These objects are  used in particular in conjunction with the
+    YWireless class.
+
+    """
     #--- (end of generated code: YWlanRecord class start)
     # --- (generated code: YWlanRecord definitions)
     #--- (end of generated code: YWlanRecord definitions)
@@ -66,15 +72,35 @@ class YWlanRecord(object):
 
     # --- (generated code: YWlanRecord implementation)
     def get_ssid(self):
+        """
+        Returns the name of the wireless network (SSID).
+
+        @return a string with the name of the wireless network (SSID).
+        """
         return self._ssid
 
     def get_channel(self):
+        """
+        Returns the 802.11 channel.
+
+        @return the 802.11 channel.
+        """
         return self._channel
 
     def get_security(self):
+        """
+        Returns the security algorithm used by the wireless network.
+
+        @return a string with the security algorithm.
+        """
         return self._sec
 
     def get_linkQuality(self):
+        """
+        Returns the quality of the wireless network link, in per cents.
+
+        @return the quality of the wireless network link, in per cents.
+        """
         return self._rssi
 
 #--- (end of generated code: YWlanRecord implementation)

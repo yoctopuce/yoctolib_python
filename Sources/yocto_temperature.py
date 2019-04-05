@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_temperature.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_temperature.py 34584 2019-03-08 09:36:55Z mvuilleu $
 #
 #  Implements yFindTemperature(), the high-level API for Temperature functions
 #
@@ -377,6 +377,8 @@ class YTemperature(YSensor):
 
         id = self.get_functionId()
         id = (id)[11: 11 + len(id) - 11]
+        if id == "":
+            id = "1"
         bin_json = self._download("extra.json?page=" + id)
         paramlist = self._json_get_array(bin_json)
         # // first convert all temperatures to float

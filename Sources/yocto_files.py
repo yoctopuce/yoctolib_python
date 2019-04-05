@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 33717 2018-12-14 14:22:04Z seb $
+#* $Id: yocto_files.py 34651 2019-03-15 17:21:54Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -46,6 +46,11 @@ from yocto_api import *
 #--- (generated code: YFileRecord class start)
 #noinspection PyProtectedMember
 class YFileRecord(object):
+    """
+    YFileRecord objects are used to describe a file that is stored on a Yoctopuce device.
+    These objects are used in particular in conjunction with the YFiles class.
+
+    """
     #--- (end of generated code: YFileRecord class start)
     #--- (generated code: YFileRecord definitions)
     #--- (end of generated code: YFileRecord definitions)
@@ -64,12 +69,27 @@ class YFileRecord(object):
 
     #--- (generated code: YFileRecord implementation)
     def get_name(self):
+        """
+        Returns the name of the file.
+
+        @return a string with the name of the file.
+        """
         return self._name
 
     def get_size(self):
+        """
+        Returns the size of the file in bytes.
+
+        @return the size of the file.
+        """
         return self._size
 
     def get_crc(self):
+        """
+        Returns the 32-bit CRC of the file content.
+
+        @return the 32-bit CRC of the file content.
+        """
         return self._crc
 
 #--- (end of generated code: YFileRecord implementation)

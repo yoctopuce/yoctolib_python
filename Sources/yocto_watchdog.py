@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_watchdog.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_watchdog.py 34976 2019-04-05 06:47:49Z seb $
 #
 #  Implements yFindWatchdog(), the high-level API for Watchdog functions
 #
@@ -105,6 +105,7 @@ class YWatchdog(YFunction):
         self._running = YWatchdog.RUNNING_INVALID
         self._triggerDelay = YWatchdog.TRIGGERDELAY_INVALID
         self._triggerDuration = YWatchdog.TRIGGERDURATION_INVALID
+        self._firm = 0
         #--- (end of YWatchdog attributes)
 
     #--- (YWatchdog implementation)
@@ -541,6 +542,35 @@ class YWatchdog(YFunction):
             obj = YWatchdog(func)
             YFunction._AddToCache("Watchdog", func, obj)
         return obj
+
+    def toggle(self):
+        """
+        Switch the relay to the opposite state.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # sta
+        # fw
+        # mo
+        if self._firm == 0:
+            mo = self.get_module()
+            fw = mo.get_firmwareRelease()
+            if fw == YModule.FIRMWARERELEASE_INVALID:
+                return YWatchdog.STATE_INVALID
+            self._firm = YAPI._atoi(fw)
+        if self._firm < 34921:
+            sta = self.get_state()
+            if sta == YWatchdog.STATE_INVALID:
+                return YWatchdog.STATE_INVALID
+            if sta == YWatchdog.STATE_B:
+                self.set_state(YWatchdog.STATE_A)
+            else:
+                self.set_state(YWatchdog.STATE_B)
+            return YAPI.SUCCESS
+        else:
+            return self._setAttr("state","X")
 
     def nextWatchdog(self):
         """

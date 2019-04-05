@@ -1,3 +1,5 @@
-Python v1.10.34560
+Python v1.10.34990
 
-- Fix in Json parser.
+- Fix loadThermistorResponseTable() method of YTemperature
+- Add documentation for YFileRecord and YWlanRecord class
+- Add toggle() method in YRelay class

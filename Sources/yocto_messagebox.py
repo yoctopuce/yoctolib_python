@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 32907 2018-11-02 10:18:55Z seb $
+#* $Id: yocto_messagebox.py 34661 2019-03-18 11:02:50Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -46,6 +46,11 @@ from yocto_api import *
 #--- (generated code: YSms class start)
 #noinspection PyProtectedMember
 class YSms(object):
+    """
+    YSms objects are used to describe a SMS.
+    These objects are used in particular in conjunction with the YMessageBox class.
+
+    """
     #--- (end of generated code: YSms class start)
     #--- (generated code: YSms return codes)
     #--- (end of generated code: YSms return codes)
@@ -121,6 +126,11 @@ class YSms(object):
         return self._udata
 
     def get_textData(self):
+        """
+        Returns the content of the message.
+
+        @return  a string with the content of the message.
+        """
         # isolatin
         # isosize
         # i
@@ -288,6 +298,16 @@ class YSms(object):
         return YAPI.SUCCESS
 
     def addText(self, val):
+        """
+        Add a regular text to the SMS. This function support messages
+        of more than 160 characters. ISO-latin accented characters
+        are supported. For messages with special unicode characters such as asian
+        characters and emoticons, use the  addUnicodeData method.
+
+        @param val : the text to be sent in the message
+
+        @return YAPI.SUCCESS when the call succeeds.
+        """
         # udata
         # udatalen
         # newdata
@@ -335,6 +355,14 @@ class YSms(object):
         return self.set_userData(udata)
 
     def addUnicodeData(self, val):
+        """
+        Add a unicode text to the SMS. This function support messages
+        of more than 160 characters, using SMS concatenation.
+
+        @param val : an array of special unicode characters
+
+        @return YAPI.SUCCESS when the call succeeds.
+        """
         # arrlen
         # newdatalen
         # i
@@ -998,6 +1026,14 @@ class YSms(object):
         return YAPI.SUCCESS
 
     def send(self):
+        """
+        Sends the SMS to the recipient. Messages of more than 160 characters are supported
+        using SMS concatenation.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
         # i
         # retcode
         # pdu

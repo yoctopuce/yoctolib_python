@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_relay.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_relay.py 34976 2019-04-05 06:47:49Z seb $
 #
 #  Implements yFindRelay(), the high-level API for Relay functions
 #
@@ -94,6 +94,7 @@ class YRelay(YFunction):
         self._pulseTimer = YRelay.PULSETIMER_INVALID
         self._delayedPulseTimer = YRelay.DELAYEDPULSETIMER_INVALID
         self._countdown = YRelay.COUNTDOWN_INVALID
+        self._firm = 0
         #--- (end of YRelay attributes)
 
     #--- (YRelay implementation)
@@ -391,6 +392,35 @@ class YRelay(YFunction):
             obj = YRelay(func)
             YFunction._AddToCache("Relay", func, obj)
         return obj
+
+    def toggle(self):
+        """
+        Switch the relay to the opposite state.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # sta
+        # fw
+        # mo
+        if self._firm == 0:
+            mo = self.get_module()
+            fw = mo.get_firmwareRelease()
+            if fw == YModule.FIRMWARERELEASE_INVALID:
+                return YRelay.STATE_INVALID
+            self._firm = YAPI._atoi(fw)
+        if self._firm < 34921:
+            sta = self.get_state()
+            if sta == YRelay.STATE_INVALID:
+                return YRelay.STATE_INVALID
+            if sta == YRelay.STATE_B:
+                self.set_state(YRelay.STATE_A)
+            else:
+                self.set_state(YRelay.STATE_B)
+            return YAPI.SUCCESS
+        else:
+            return self._setAttr("state","X")
 
     def nextRelay(self):
         """

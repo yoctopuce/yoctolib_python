@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 34551 2019-03-06 09:32:33Z seb $
+# * $Id: yocto_api.py 34786 2019-03-25 08:31:21Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -826,13 +826,18 @@ class YAPI:
     Y_DETECT_USB = 1
     Y_DETECT_NET = 2
     Y_RESEND_MISSING_PKT = 4
-
     Y_DETECT_ALL = Y_DETECT_USB | Y_DETECT_NET
+
+    DETECT_NONE = 0
+    DETECT_USB = 1
+    DETECT_NET = 2
+    RESEND_MISSING_PKT = 4
+    DETECT_ALL = DETECT_USB | DETECT_NET
 
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "34560"
+    YOCTO_API_BUILD_NO = "34990"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1033,228 +1038,125 @@ class YAPI:
                 "Unable to import YAPI shared library (" + YAPI._yApiCLibFile +
                 "), make sure it is available and accessible.")
 
-        # private extern static int _yapiInitAPI(int mode, StringBuilder errmsgRef);
+
+        ##--- (generated code: YFunction dlldef)
         YAPI._yapiInitAPI = YAPI._yApiCLib.yapiInitAPI
         YAPI._yapiInitAPI.restypes = ctypes.c_int
         YAPI._yapiInitAPI.argtypes = [ctypes.c_int, ctypes.c_char_p]
-
-        #  private extern static void _yapiFreeAPI();
         YAPI._yapiFreeAPI = YAPI._yApiCLib.yapiFreeAPI
-        YAPI._yapiFreeAPI.restypes = ctypes.c_int
+        YAPI._yapiFreeAPI.restypes = None
         YAPI._yapiFreeAPI.argtypes = []
-
         YAPI._yapiSetTraceFile = YAPI._yApiCLib.yapiSetTraceFile
-        YAPI._yapiSetTraceFile.restypes = ctypes.c_int
+        YAPI._yapiSetTraceFile.restypes = None
         YAPI._yapiSetTraceFile.argtypes = [ctypes.c_char_p]
-
-        #  private extern static void _yapiRegisterLogFunction(IntPtr fct);
         YAPI._yapiRegisterLogFunction = YAPI._yApiCLib.yapiRegisterLogFunction
-        YAPI._yapiRegisterLogFunction.restypes = ctypes.c_int
+        YAPI._yapiRegisterLogFunction.restypes = None
         YAPI._yapiRegisterLogFunction.argtypes = [ctypes.c_void_p]
-
-        #  private extern static void _yapiRegisterDeviceArrivalCallback(IntPtr fct);
         YAPI._yapiRegisterDeviceArrivalCallback = YAPI._yApiCLib.yapiRegisterDeviceArrivalCallback
-        YAPI._yapiRegisterDeviceArrivalCallback.restypes = ctypes.c_int
+        YAPI._yapiRegisterDeviceArrivalCallback.restypes = None
         YAPI._yapiRegisterDeviceArrivalCallback.argtypes = [ctypes.c_void_p]
-
-        #  private extern static void _yapiRegisterDeviceRemovalCallback(IntPtr fct);
         YAPI._yapiRegisterDeviceRemovalCallback = YAPI._yApiCLib.yapiRegisterDeviceRemovalCallback
-        YAPI._yapiRegisterDeviceRemovalCallback.restypes = ctypes.c_int
+        YAPI._yapiRegisterDeviceRemovalCallback.restypes = None
         YAPI._yapiRegisterDeviceRemovalCallback.argtypes = [ctypes.c_void_p]
-
-        #  private extern static void _yapiRegisterDeviceChangeCallback(IntPtr fct);
         YAPI._yapiRegisterDeviceChangeCallback = YAPI._yApiCLib.yapiRegisterDeviceChangeCallback
-        YAPI._yapiRegisterDeviceChangeCallback.restypes = ctypes.c_int
+        YAPI._yapiRegisterDeviceChangeCallback.restypes = None
         YAPI._yapiRegisterDeviceChangeCallback.argtypes = [ctypes.c_void_p]
-
-        #  private extern static void _yapiRegisterDeviceConfigChangeCallback(IntPtr fct);
         YAPI._yapiRegisterDeviceConfigChangeCallback = YAPI._yApiCLib.yapiRegisterDeviceConfigChangeCallback
-        YAPI._yapiRegisterDeviceConfigChangeCallback.restypes = ctypes.c_int
+        YAPI._yapiRegisterDeviceConfigChangeCallback.restypes = None
         YAPI._yapiRegisterDeviceConfigChangeCallback.argtypes = [ctypes.c_void_p]
-
-        #  private extern static void _yapiRegisterFunctionUpdateCallback(IntPtr fct);
         YAPI._yapiRegisterFunctionUpdateCallback = YAPI._yApiCLib.yapiRegisterFunctionUpdateCallback
-        YAPI._yapiRegisterFunctionUpdateCallback.restypes = ctypes.c_int
+        YAPI._yapiRegisterFunctionUpdateCallback.restypes = None
         YAPI._yapiRegisterFunctionUpdateCallback.argtypes = [ctypes.c_void_p]
-
-        #  private extern static void _yapiRegisterTimedReportCallback(IntPtr fct);
         YAPI._yapiRegisterTimedReportCallback = YAPI._yApiCLib.yapiRegisterTimedReportCallback
-        YAPI._yapiRegisterTimedReportCallback.restypes = ctypes.c_int
+        YAPI._yapiRegisterTimedReportCallback.restypes = None
         YAPI._yapiRegisterTimedReportCallback.argtypes = [ctypes.c_void_p]
-
-        #  private extern static int _yapiLockDeviceCallBack(StringBuilder errmsgRef);
         YAPI._yapiLockDeviceCallBack = YAPI._yApiCLib.yapiLockDeviceCallBack
         YAPI._yapiLockDeviceCallBack.restypes = ctypes.c_int
         YAPI._yapiLockDeviceCallBack.argtypes = [ctypes.c_char_p]
-
-        #  private extern static int _yapiUnlockDeviceCallBack(StringBuilder errmsgRef);
         YAPI._yapiUnlockDeviceCallBack = YAPI._yApiCLib.yapiUnlockDeviceCallBack
         YAPI._yapiUnlockDeviceCallBack.restypes = ctypes.c_int
         YAPI._yapiUnlockDeviceCallBack.argtypes = [ctypes.c_char_p]
-
-        #  private extern static int _yapiLockFunctionCallBack(StringBuilder errmsgRef);
         YAPI._yapiLockFunctionCallBack = YAPI._yApiCLib.yapiLockFunctionCallBack
         YAPI._yapiLockFunctionCallBack.restypes = ctypes.c_int
         YAPI._yapiLockFunctionCallBack.argtypes = [ctypes.c_char_p]
-
-        #  private extern static int _yapiUnlockFunctionCallBack(StringBuilder errmsgRef);
         YAPI._yapiUnlockFunctionCallBack = YAPI._yApiCLib.yapiUnlockFunctionCallBack
         YAPI._yapiUnlockFunctionCallBack.restypes = ctypes.c_int
         YAPI._yapiUnlockFunctionCallBack.argtypes = [ctypes.c_char_p]
-
-        #  private extern static int _yapiRegisterHub(StringBuilder rootUrl, StringBuilder errmsgRef);
         YAPI._yapiRegisterHub = YAPI._yApiCLib.yapiRegisterHub
         YAPI._yapiRegisterHub.restypes = ctypes.c_int
         YAPI._yapiRegisterHub.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-
-        #  private extern static int _yapiPreregisterHub(StringBuilder rootUrl, StringBuilder errmsgRef);
         YAPI._yapiPreregisterHub = YAPI._yApiCLib.yapiPreregisterHub
         YAPI._yapiPreregisterHub.restypes = ctypes.c_int
         YAPI._yapiPreregisterHub.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-
-        #  private extern static void _yapiUnregisterHub(StringBuilder rootUrl);
         YAPI._yapiUnregisterHub = YAPI._yApiCLib.yapiUnregisterHub
-        YAPI._yapiUnregisterHub.restypes = ctypes.c_int
+        YAPI._yapiUnregisterHub.restypes = None
         YAPI._yapiUnregisterHub.argtypes = [ctypes.c_char_p]
-
-        #  private extern static int _yapiUpdateDeviceList(uint force, StringBuilder errmsgRef);
         YAPI._yapiUpdateDeviceList = YAPI._yApiCLib.yapiUpdateDeviceList
         YAPI._yapiUpdateDeviceList.restypes = ctypes.c_int
         YAPI._yapiUpdateDeviceList.argtypes = [ctypes.c_uint, ctypes.c_char_p]
-
-        #  private extern static int _yapiHandleEvents(StringBuilder errmsgRef);
         YAPI._yapiHandleEvents = YAPI._yApiCLib.yapiHandleEvents
         YAPI._yapiHandleEvents.restypes = ctypes.c_int
         YAPI._yapiHandleEvents.argtypes = [ctypes.c_char_p]
-
-        #  private extern static u64 _yapiGetTickCount();
         YAPI._yapiGetTickCount = YAPI._yApiCLib.yapiGetTickCount
         YAPI._yapiGetTickCount.restypes = ctypes.c_ulonglong
         YAPI._yapiGetTickCount.argtypes = []
-
-        #  private extern static int _yapiCheckLogicalName(StringBuilder name);
         YAPI._yapiCheckLogicalName = YAPI._yApiCLib.yapiCheckLogicalName
         YAPI._yapiCheckLogicalName.restypes = ctypes.c_int
         YAPI._yapiCheckLogicalName.argtypes = [ctypes.c_char_p]
-
-        #  private extern static u16 _yapiGetAPIVersion(ref IntPtr version, ref IntPtr date);
         YAPI._yapiGetAPIVersion = YAPI._yApiCLib.yapiGetAPIVersion
         YAPI._yapiGetAPIVersion.restypes = ctypes.c_ushort
         YAPI._yapiGetAPIVersion.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
-
-        #  private extern static YDEV_DESCR _yapiGetDevice(StringBuilder device_str, StringBuilder errmsgRef);
         YAPI._yapiGetDevice = YAPI._yApiCLib.yapiGetDevice
         YAPI._yapiGetDevice.restypes = ctypes.c_int
         YAPI._yapiGetDevice.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-
-        #  private extern static int _yapiGetAllDevices(IntPtr buffer,
-        #                                               int maxsize, ref int neededsize,
-        #                                               StringBuilder errmsgRef);
-        YAPI._yapiGetAllDevices = YAPI._yApiCLib.yapiGetAllDevices
-        YAPI._yapiGetAllDevices.restypes = ctypes.c_int
-        YAPI._yapiGetAllDevices.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
-
-        #  private extern static int _yapiGetDeviceInfo(YDEV_DESCR d, ref yDeviceSt infos, StringBuilder errmsgRef);
         YAPI._yapiGetDeviceInfo = YAPI._yApiCLib.yapiGetDeviceInfo
         YAPI._yapiGetDeviceInfo.restypes = ctypes.c_int
         YAPI._yapiGetDeviceInfo.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
-
-        #  private extern static YFUN_DESCR _yapiGetFunction(StringBuilder class_str,
-        #                                                    StringBuilder function_str,
-        #                                                    StringBuilder errmsgRef);
         YAPI._yapiGetFunction = YAPI._yApiCLib.yapiGetFunction
         YAPI._yapiGetFunction.restypes = ctypes.c_int
         YAPI._yapiGetFunction.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
-
-        #  private extern static int _yapiGetFunctionsByClass(StringBuilder class_str,
-        #                                                     YFUN_DESCR precFuncDesc,
-        #                                                     IntPtr buffer,
-        #                                                     int maxsize,
-        #                                                     ref int neededsize, StringBuilder errmsgRef);
         YAPI._yapiGetFunctionsByClass = YAPI._yApiCLib.yapiGetFunctionsByClass
         YAPI._yapiGetFunctionsByClass.restypes = ctypes.c_int
-        YAPI._yapiGetFunctionsByClass.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int,
-                                                  ctypes.c_void_p, ctypes.c_char_p]
-
-        #  private extern static int _yapiGetFunctionsByDevice(YDEV_DESCR device, YFUN_DESCR precFuncDesc,
-        # IntPtr buffer, int maxsize, ref int neededsize, StringBuilder errmsgRef);
+        YAPI._yapiGetFunctionsByClass.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiGetFunctionsByDevice = YAPI._yApiCLib.yapiGetFunctionsByDevice
         YAPI._yapiGetFunctionsByDevice.restypes = ctypes.c_int
-        YAPI._yapiGetFunctionsByDevice.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_int,
-                                                   ctypes.c_void_p, ctypes.c_char_p]
-
-        #  internal extern static int _yapiGetFunctionInfoEx(YFUN_DESCR fundesc, ref YDEV_DESCR devdesc,
-        # StringBuilder serial, StringBuilder funcId, StringBuilder baseType, StringBuilder funcName,
-        # StringBuilder funcVal, StringBuilder errmsgRef);
+        YAPI._yapiGetFunctionsByDevice.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiGetFunctionInfoEx = YAPI._yApiCLib.yapiGetFunctionInfoEx
         YAPI._yapiGetFunctionInfoEx.restypes = ctypes.c_int
-        YAPI._yapiGetFunctionInfoEx.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p,
-                                                ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
-
-        #  private extern static int _yapiGetErrorString(int errorcode, StringBuilder buffer,
-        # int maxsize, StringBuilder errmsgRef);
-        # YAPI._yapiGetErrorString = YAPI._yApiCLib.yapiGetErrorString
-        # YAPI._yapiGetErrorString.restypes = ctypes.c_int
-        # YAPI._yapiGetErrorString.argtypes = [ctypes.c_int , ctypes.c_char_p , ctypes.c_int , ctypes.c_char_p]
-
-        # YRETCODE YAPI_FUNCTION_EXPORT yapiHTTPRequestSyncStart(YIOHDL *iohdl, const char *device,
-        # const char *request, char **reply, int *replysize, char *errmsg);
+        YAPI._yapiGetFunctionInfoEx.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
         YAPI._yapiHTTPRequestSyncStart = YAPI._yApiCLib.yapiHTTPRequestSyncStart
         YAPI._yapiHTTPRequestSyncStart.restypes = ctypes.c_int
-        YAPI._yapiHTTPRequestSyncStart.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p,
-                                                   POINTER(POINTER(ctypes.c_ubyte)), ctypes.c_void_p, ctypes.c_char_p]
-
-        # YRETCODE YAPI_FUNCTION_EXPORT yapiHTTPRequestSyncStartEx(YIOHDL *iohdl, const char *device,
-        # const char *request, int requestsize, char **reply, int *replysize, char *errmsg);
+        YAPI._yapiHTTPRequestSyncStart.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p, POINTER(POINTER(ctypes.c_ubyte)), ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiHTTPRequestSyncStartEx = YAPI._yApiCLib.yapiHTTPRequestSyncStartEx
         YAPI._yapiHTTPRequestSyncStartEx.restypes = ctypes.c_int
-        YAPI._yapiHTTPRequestSyncStartEx.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int,
-                                                     POINTER(POINTER(ctypes.c_ubyte)), ctypes.c_void_p, ctypes.c_char_p]
-
-        # YRETCODE YAPI_FUNCTION_EXPORT yapiHTTPRequestSyncDone(YIOHDL *iohdl, char *errmsg);
+        YAPI._yapiHTTPRequestSyncStartEx.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, POINTER(POINTER(ctypes.c_ubyte)), ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiHTTPRequestSyncDone = YAPI._yApiCLib.yapiHTTPRequestSyncDone
         YAPI._yapiHTTPRequestSyncDone.restypes = ctypes.c_int
         YAPI._yapiHTTPRequestSyncDone.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-
-        # YRETCODE YAPI_FUNCTION_EXPORT yapiHTTPRequestAsync(const char *device, const char *request,
-        # yapiRequestAsyncCallback callback, void *context, char *errmsg);
         YAPI._yapiHTTPRequestAsync = YAPI._yApiCLib.yapiHTTPRequestAsync
         YAPI._yapiHTTPRequestAsync.restypes = ctypes.c_int
-        YAPI._yapiHTTPRequestAsync.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p, ctypes.c_void_p,
-                                               ctypes.c_char_p]
-
-        #  private extern static int _yapiHTTPRequest(StringBuilder device, StringBuilder url,
-        # StringBuilder buffer, int buffsize, ref int fullsize, StringBuilder errmsgRef);
+        YAPI._yapiHTTPRequestAsync.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_char_p]
+        YAPI._yapiHTTPRequestAsyncEx = YAPI._yApiCLib.yapiHTTPRequestAsyncEx
+        YAPI._yapiHTTPRequestAsyncEx.restypes = ctypes.c_int
+        YAPI._yapiHTTPRequestAsyncEx.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiHTTPRequest = YAPI._yApiCLib.yapiHTTPRequest
         YAPI._yapiHTTPRequest.restypes = ctypes.c_int
-        YAPI._yapiHTTPRequest.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int,
-                                          ctypes.c_void_p, ctypes.c_char_p]
-
-        #  private extern static int _yapiGetDevicePath(int devdesc, StringBuilder rootdevice, StringBuilder path,
-        # int pathsize, ref int neededsize, StringBuilder errmsgRef);
+        YAPI._yapiHTTPRequest.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiGetDevicePath = YAPI._yApiCLib.yapiGetDevicePath
         YAPI._yapiGetDevicePath.restypes = ctypes.c_int
-        YAPI._yapiGetDevicePath.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int,
-                                            ctypes.c_void_p, ctypes.c_char_p]
-
-        #  private extern static int _yapiSleep(int duration_ms, StringBuilder errmsgRef);
+        YAPI._yapiGetDevicePath.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiSleep = YAPI._yApiCLib.yapiSleep
         YAPI._yapiSleep.restypes = ctypes.c_int
         YAPI._yapiSleep.argtypes = [ctypes.c_int, ctypes.c_char_p]
-
         YAPI._yapiRegisterHubDiscoveryCallback = YAPI._yApiCLib.yapiRegisterHubDiscoveryCallback
-        YAPI._yapiRegisterHubDiscoveryCallback.restypes = ctypes.c_int
+        YAPI._yapiRegisterHubDiscoveryCallback.restypes = None
         YAPI._yapiRegisterHubDiscoveryCallback.argtypes = [ctypes.c_void_p]
-
         YAPI._yapiTriggerHubDiscovery = YAPI._yApiCLib.yapiTriggerHubDiscovery
         YAPI._yapiTriggerHubDiscovery.restypes = ctypes.c_int
         YAPI._yapiTriggerHubDiscovery.argtypes = [ctypes.c_char_p]
-
         YAPI._yapiRegisterDeviceLogCallback = YAPI._yApiCLib.yapiRegisterDeviceLogCallback
-        YAPI._yapiRegisterDeviceLogCallback.restypes = ctypes.c_int
+        YAPI._yapiRegisterDeviceLogCallback.restypes = None
         YAPI._yapiRegisterDeviceLogCallback.argtypes = [ctypes.c_void_p]
-
-        ##--- (generated code: YFunction dlldef)
         YAPI._yapiGetAllJsonKeys = YAPI._yApiCLib.yapiGetAllJsonKeys
         YAPI._yapiGetAllJsonKeys.restypes = ctypes.c_int
         YAPI._yapiGetAllJsonKeys.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
@@ -1269,7 +1171,7 @@ class YAPI:
         YAPI._yapiUpdateFirmwareEx.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
         YAPI._yapiHTTPRequestSyncStartOutOfBand = YAPI._yApiCLib.yapiHTTPRequestSyncStartOutOfBand
         YAPI._yapiHTTPRequestSyncStartOutOfBand.restypes = ctypes.c_int
-        YAPI._yapiHTTPRequestSyncStartOutOfBand.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, POINTER(POINTER(ctypes.c_ubyte)), ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_char_p]
+        YAPI._yapiHTTPRequestSyncStartOutOfBand.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiHTTPRequestAsyncOutOfBand = YAPI._yApiCLib.yapiHTTPRequestAsyncOutOfBand
         YAPI._yapiHTTPRequestAsyncOutOfBand.restypes = ctypes.c_int
         YAPI._yapiHTTPRequestAsyncOutOfBand.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_char_p]
@@ -1278,7 +1180,7 @@ class YAPI:
         YAPI._yapiTestHub.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
         YAPI._yapiJsonGetPath = YAPI._yApiCLib.yapiJsonGetPath
         YAPI._yapiJsonGetPath.restypes = ctypes.c_int
-        YAPI._yapiJsonGetPath.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, POINTER(POINTER(ctypes.c_ubyte)), ctypes.c_char_p]
+        YAPI._yapiJsonGetPath.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiJsonDecodeString = YAPI._yApiCLib.yapiJsonDecodeString
         YAPI._yapiJsonDecodeString.restypes = ctypes.c_int
         YAPI._yapiJsonDecodeString.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -1286,22 +1188,22 @@ class YAPI:
         YAPI._yapiGetSubdevices.restypes = ctypes.c_int
         YAPI._yapiGetSubdevices.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiFreeMem = YAPI._yApiCLib.yapiFreeMem
-        YAPI._yapiFreeMem.restypes = ctypes.c_int
+        YAPI._yapiFreeMem.restypes = None
         YAPI._yapiFreeMem.argtypes = [ctypes.c_void_p]
         YAPI._yapiGetDevicePathEx = YAPI._yApiCLib.yapiGetDevicePathEx
         YAPI._yapiGetDevicePathEx.restypes = ctypes.c_int
         YAPI._yapiGetDevicePathEx.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiSetNetDevListValidity = YAPI._yApiCLib.yapiSetNetDevListValidity
-        YAPI._yapiSetNetDevListValidity.restypes = ctypes.c_int
+        YAPI._yapiSetNetDevListValidity.restypes = None
         YAPI._yapiSetNetDevListValidity.argtypes = [ctypes.c_int]
         YAPI._yapiGetNetDevListValidity = YAPI._yApiCLib.yapiGetNetDevListValidity
         YAPI._yapiGetNetDevListValidity.restypes = ctypes.c_int
         YAPI._yapiGetNetDevListValidity.argtypes = []
         YAPI._yapiRegisterBeaconCallback = YAPI._yApiCLib.yapiRegisterBeaconCallback
-        YAPI._yapiRegisterBeaconCallback.restypes = ctypes.c_int
+        YAPI._yapiRegisterBeaconCallback.restypes = None
         YAPI._yapiRegisterBeaconCallback.argtypes = [ctypes.c_void_p]
         YAPI._yapiStartStopDeviceLogCallback = YAPI._yApiCLib.yapiStartStopDeviceLogCallback
-        YAPI._yapiStartStopDeviceLogCallback.restypes = ctypes.c_int
+        YAPI._yapiStartStopDeviceLogCallback.restypes = None
         YAPI._yapiStartStopDeviceLogCallback.argtypes = [ctypes.c_char_p, ctypes.c_int]
     #--- (end of generated code: YFunction dlldef)
 
