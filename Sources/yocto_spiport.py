@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 33722 2018-12-14 15:04:43Z seb $
+#  $Id: yocto_spiport.py 35124 2019-04-12 09:03:41Z seb $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -1022,7 +1022,7 @@ class YSpiPort(YFunction):
         # msglen
         # res
 
-        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + query
+        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + self._escapeAttr(query)
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
         msglen = len(msgarr)

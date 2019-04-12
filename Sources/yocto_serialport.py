@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 32907 2018-11-02 10:18:55Z seb $
+#* $Id: yocto_serialport.py 35124 2019-04-12 09:03:41Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -1001,7 +1001,7 @@ class YSerialPort(YFunction):
         # msglen
         # res
 
-        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + query
+        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + self._escapeAttr(query)
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
         msglen = len(msgarr)
