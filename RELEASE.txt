@@ -1,3 +1,3 @@
-Python v1.10.35124
+Python v1.10.35153
 
-- Fix handling of '=' character in parameters for the queryLine() method
+- Fix handling of '=' characters in queryLine() method
