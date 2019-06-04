@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 34786 2019-03-25 08:31:21Z seb $
+# * $Id: yocto_api.py 35620 2019-06-04 08:29:58Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -837,7 +837,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "35153"
+    YOCTO_API_BUILD_NO = "35622"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1205,6 +1205,9 @@ class YAPI:
         YAPI._yapiStartStopDeviceLogCallback = YAPI._yApiCLib.yapiStartStopDeviceLogCallback
         YAPI._yapiStartStopDeviceLogCallback.restypes = None
         YAPI._yapiStartStopDeviceLogCallback.argtypes = [ctypes.c_char_p, ctypes.c_int]
+        YAPI._yapiIsModuleWritable = YAPI._yApiCLib.yapiIsModuleWritable
+        YAPI._yapiIsModuleWritable.restypes = ctypes.c_int
+        YAPI._yapiIsModuleWritable.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
@@ -1962,7 +1965,7 @@ class YAPI:
         if YAPI.yapiGetDeviceInfo(d, infos, errmsgRef) != YAPI.SUCCESS:
             return
         modul = YModule.FindModule(YByte2String(infos.serial) + ".module")
-        if modul in YModule._moduleCallbackList and YModule._moduleCallbackList[modul] > 1:
+        if modul in YModule._moduleCallbackList and YModule._moduleCallbackList[modul] > 0:
             ev = YAPI._Event()
             ev.setConfigChange(modul)
             YAPI._DataEvents.append(ev)
@@ -1975,7 +1978,7 @@ class YAPI:
         if YAPI.yapiGetDeviceInfo(d, infos, errmsgRef) != YAPI.SUCCESS:
             return
         modul = YModule.FindModule(YByte2String(infos.serial) + ".module")
-        if modul in YModule._moduleCallbackList and YModule._moduleCallbackList[modul] > 1:
+        if modul in YModule._moduleCallbackList and YModule._moduleCallbackList[modul] > 0:
             ev = YAPI._Event()
             ev.setBeaconChange(modul, beacon)
             YAPI._DataEvents.append(ev)
@@ -4631,6 +4634,25 @@ class YFunction(object):
         attrVal = self._download(url)
         return YByte2String(attrVal)
 
+    def isReadOnly(self):
+        """
+        Test if the function is readOnly. Return true if the function is write protected
+        or that the function is not available.
+
+        @return true if the function is readOnly or not online.
+        """
+        # serial
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        # res
+        try:
+            serial = self.get_serialNumber()
+        except:
+            return True
+        res = YAPI._yapiIsModuleWritable(ctypes.create_string_buffer(YString2Byte(serial)), errmsg)
+        if res > 0:
+            return False
+        return True
+
     def get_serialNumber(self):
         """
         Returns the serial number of the module, as set by the factory.
@@ -5394,10 +5416,16 @@ class YModule(YFunction):
                 or get additional information on the module.
         """
         # obj
-        obj = YFunction._FindFromCache("Module", func)
+        # cleanHwId
+        # modpos
+        cleanHwId = func
+        modpos = func.find(".module")
+        if modpos != (len(func) - 7):
+            cleanHwId = func + ".module"
+        obj = YFunction._FindFromCache("Module", cleanHwId)
         if obj is None:
-            obj = YModule(func)
-            YFunction._AddToCache("Module", func, obj)
+            obj = YModule(cleanHwId)
+            YFunction._AddToCache("Module", cleanHwId, obj)
         return obj
 
     def saveToFlash(self):
@@ -5621,14 +5649,15 @@ class YModule(YFunction):
             if YAPI._atoi(self.get_firmwareRelease()) > 9000:
                 url = "api/" + y + "/sensorType"
                 t_type = YByte2String(self._download(url))
-                if t_type == "RES_NTC":
+                if t_type == "RES_NTC" or t_type == "RES_LINEAR":
                     id = (y)[11: 11 + len(y) - 11]
+                    if id == "":
+                        id = "1"
                     temp_data_bin = self._download("extra.json?page=" + id)
-                    if len(temp_data_bin) == 0:
-                        return temp_data_bin
-                    item = "" + sep + "{\"fid\":\"" + y + "\", \"json\":" + YByte2String(temp_data_bin) + "}\n"
-                    ext_settings = ext_settings + item
-                    sep = ","
+                    if len(temp_data_bin) > 0:
+                        item = "" + sep + "{\"fid\":\"" + y + "\", \"json\":" + YByte2String(temp_data_bin) + "}\n"
+                        ext_settings = ext_settings + item
+                        sep = ","
         ext_settings = ext_settings + "],\n\"files\":["
         if self.hasFunction("files"):
             json = self._download("files.json?a=dir&f=")
@@ -5664,7 +5693,7 @@ class YModule(YFunction):
         while ofs + 1 < size:
             curr = values[ofs]
             currTemp = values[ofs + 1]
-            url = "api/" + funcId + "/.json?command=m" + curr + ":" + currTemp
+            url = "api/" + funcId + ".json?command=m" + curr + ":" + currTemp
             self._download(url)
             ofs = ofs + 2
         return YAPI.SUCCESS

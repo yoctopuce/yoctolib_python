@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_poweroutput.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_poweroutput.py 35465 2019-05-16 14:40:41Z seb $
 #
 #  Implements yFindPowerOutput(), the high-level API for PowerOutput functions
 #
@@ -62,6 +62,8 @@ class YPowerOutput(YFunction):
     VOLTAGE_OFF = 0
     VOLTAGE_OUT3V3 = 1
     VOLTAGE_OUT5V = 2
+    VOLTAGE_OUT4V7 = 3
+    VOLTAGE_OUT1V8 = 4
     VOLTAGE_INVALID = -1
     #--- (end of YPowerOutput definitions)
 
@@ -83,8 +85,9 @@ class YPowerOutput(YFunction):
         """
         Returns the voltage on the power output featured by the module.
 
-        @return a value among YPowerOutput.VOLTAGE_OFF, YPowerOutput.VOLTAGE_OUT3V3 and
-        YPowerOutput.VOLTAGE_OUT5V corresponding to the voltage on the power output featured by the module
+        @return a value among YPowerOutput.VOLTAGE_OFF, YPowerOutput.VOLTAGE_OUT3V3,
+        YPowerOutput.VOLTAGE_OUT5V, YPowerOutput.VOLTAGE_OUT4V7 and YPowerOutput.VOLTAGE_OUT1V8
+        corresponding to the voltage on the power output featured by the module
 
         On failure, throws an exception or returns YPowerOutput.VOLTAGE_INVALID.
         """
@@ -101,8 +104,9 @@ class YPowerOutput(YFunction):
         module. Remember to call the saveToFlash() method of the module if the
         modification must be kept.
 
-        @param newval : a value among YPowerOutput.VOLTAGE_OFF, YPowerOutput.VOLTAGE_OUT3V3 and
-        YPowerOutput.VOLTAGE_OUT5V corresponding to the voltage on the power output provided by the
+        @param newval : a value among YPowerOutput.VOLTAGE_OFF, YPowerOutput.VOLTAGE_OUT3V3,
+        YPowerOutput.VOLTAGE_OUT5V, YPowerOutput.VOLTAGE_OUT4V7 and YPowerOutput.VOLTAGE_OUT1V8
+        corresponding to the voltage on the power output provided by the
                 module
 
         @return YAPI.SUCCESS if the call succeeds.

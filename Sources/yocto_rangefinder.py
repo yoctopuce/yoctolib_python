@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_rangefinder.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_rangefinder.py 35185 2019-04-16 19:43:18Z mvuilleu $
 #
 #  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
 #
@@ -62,6 +62,8 @@ class YRangeFinder(YSensor):
     #--- (YRangeFinder yapiwrapper)
     #--- (end of YRangeFinder yapiwrapper)
     #--- (YRangeFinder definitions)
+    TIMEFRAME_INVALID = YAPI.INVALID_LONG
+    QUALITY_INVALID = YAPI.INVALID_UINT
     HARDWARECALIBRATION_INVALID = YAPI.INVALID_STRING
     CURRENTTEMPERATURE_INVALID = YAPI.INVALID_DOUBLE
     COMMAND_INVALID = YAPI.INVALID_STRING
@@ -78,6 +80,8 @@ class YRangeFinder(YSensor):
         #--- (YRangeFinder attributes)
         self._callback = None
         self._rangeFinderMode = YRangeFinder.RANGEFINDERMODE_INVALID
+        self._timeFrame = YRangeFinder.TIMEFRAME_INVALID
+        self._quality = YRangeFinder.QUALITY_INVALID
         self._hardwareCalibration = YRangeFinder.HARDWARECALIBRATION_INVALID
         self._currentTemperature = YRangeFinder.CURRENTTEMPERATURE_INVALID
         self._command = YRangeFinder.COMMAND_INVALID
@@ -87,6 +91,10 @@ class YRangeFinder(YSensor):
     def _parseAttr(self, json_val):
         if json_val.has("rangeFinderMode"):
             self._rangeFinderMode = json_val.getInt("rangeFinderMode")
+        if json_val.has("timeFrame"):
+            self._timeFrame = json_val.getLong("timeFrame")
+        if json_val.has("quality"):
+            self._quality = json_val.getInt("quality")
         if json_val.has("hardwareCalibration"):
             self._hardwareCalibration = json_val.getString("hardwareCalibration")
         if json_val.has("currentTemperature"):
@@ -147,6 +155,55 @@ class YRangeFinder(YSensor):
         """
         rest_val = str(newval)
         return self._setAttr("rangeFinderMode", rest_val)
+
+    def get_timeFrame(self):
+        """
+        Returns the time frame used to measure the distance and estimate the measure
+        reliability. The time frame is expressed in milliseconds.
+
+        @return an integer corresponding to the time frame used to measure the distance and estimate the measure
+                reliability
+
+        On failure, throws an exception or returns YRangeFinder.TIMEFRAME_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YRangeFinder.TIMEFRAME_INVALID
+        res = self._timeFrame
+        return res
+
+    def set_timeFrame(self, newval):
+        """
+        Changes the time frame used to measure the distance and estimate the measure
+        reliability. The time frame is expressed in milliseconds. A larger timeframe
+        improves stability and reliability, at the cost of higher latency, but prevents
+        the detection of events shorter than the time frame.
+
+        @param newval : an integer corresponding to the time frame used to measure the distance and estimate the measure
+                reliability
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("timeFrame", rest_val)
+
+    def get_quality(self):
+        """
+        Returns a measure quality estimate, based on measured dispersion.
+
+        @return an integer corresponding to a measure quality estimate, based on measured dispersion
+
+        On failure, throws an exception or returns YRangeFinder.QUALITY_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YRangeFinder.QUALITY_INVALID
+        res = self._quality
+        return res
 
     def get_hardwareCalibration(self):
         # res

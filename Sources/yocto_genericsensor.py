@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_genericsensor.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_genericsensor.py 35360 2019-05-09 09:02:29Z mvuilleu $
 #
 #  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #
@@ -73,6 +73,9 @@ class YGenericSensor(YSensor):
     SIGNALSAMPLING_LOW_NOISE_FILTERED = 3
     SIGNALSAMPLING_HIGHEST_RATE = 4
     SIGNALSAMPLING_INVALID = -1
+    ENABLED_FALSE = 0
+    ENABLED_TRUE = 1
+    ENABLED_INVALID = -1
     #--- (end of YGenericSensor definitions)
 
     def __init__(self, func):
@@ -86,6 +89,7 @@ class YGenericSensor(YSensor):
         self._valueRange = YGenericSensor.VALUERANGE_INVALID
         self._signalBias = YGenericSensor.SIGNALBIAS_INVALID
         self._signalSampling = YGenericSensor.SIGNALSAMPLING_INVALID
+        self._enabled = YGenericSensor.ENABLED_INVALID
         #--- (end of YGenericSensor attributes)
 
     #--- (YGenericSensor implementation)
@@ -102,6 +106,8 @@ class YGenericSensor(YSensor):
             self._signalBias = round(json_val.getDouble("signalBias") * 1000.0 / 65536.0) / 1000.0
         if json_val.has("signalSampling"):
             self._signalSampling = json_val.getInt("signalSampling")
+        if json_val.has("enabled"):
+            self._enabled = (json_val.getInt("enabled") > 0 if 1 else 0)
         super(YGenericSensor, self)._parseAttr(json_val)
 
     def set_unit(self, newval):
@@ -282,6 +288,38 @@ class YGenericSensor(YSensor):
         """
         rest_val = str(newval)
         return self._setAttr("signalSampling", rest_val)
+
+    def get_enabled(self):
+        """
+        Returns the activation state of this input.
+
+        @return either YGenericSensor.ENABLED_FALSE or YGenericSensor.ENABLED_TRUE, according to the
+        activation state of this input
+
+        On failure, throws an exception or returns YGenericSensor.ENABLED_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YGenericSensor.ENABLED_INVALID
+        res = self._enabled
+        return res
+
+    def set_enabled(self, newval):
+        """
+        Changes the activation state of this input. When an input is disabled,
+        its value is no more updated. On some devices, disabling an input can
+        improve the refresh rate of the other active inputs.
+
+        @param newval : either YGenericSensor.ENABLED_FALSE or YGenericSensor.ENABLED_TRUE, according to
+        the activation state of this input
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("enabled", rest_val)
 
     @staticmethod
     def FindGenericSensor(func):

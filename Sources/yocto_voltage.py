@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_voltage.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_voltage.py 35360 2019-05-09 09:02:29Z mvuilleu $
 #
 #  Implements yFindVoltage(), the high-level API for Voltage functions
 #
@@ -80,6 +80,13 @@ class YVoltage(YSensor):
         super(YVoltage, self)._parseAttr(json_val)
 
     def get_enabled(self):
+        """
+        Returns the activation state of this input.
+
+        @return either YVoltage.ENABLED_FALSE or YVoltage.ENABLED_TRUE, according to the activation state of this input
+
+        On failure, throws an exception or returns YVoltage.ENABLED_INVALID.
+        """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
@@ -88,6 +95,18 @@ class YVoltage(YSensor):
         return res
 
     def set_enabled(self, newval):
+        """
+        Changes the activation state of this input. When an input is disabled,
+        its value is no more updated. On some devices, disabling an input can
+        improve the refresh rate of the other active inputs.
+
+        @param newval : either YVoltage.ENABLED_FALSE or YVoltage.ENABLED_TRUE, according to the activation
+        state of this input
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
         rest_val = "1" if newval > 0 else "0"
         return self._setAttr("enabled", rest_val)
 

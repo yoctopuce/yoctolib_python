@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 35124 2019-04-12 09:03:41Z seb $
+#  $Id: yocto_spiport.py 35465 2019-05-16 14:40:41Z seb $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -80,6 +80,7 @@ class YSpiPort(YFunction):
     VOLTAGELEVEL_TTL5VR = 4
     VOLTAGELEVEL_RS232 = 5
     VOLTAGELEVEL_RS485 = 6
+    VOLTAGELEVEL_TTL1V8 = 7
     VOLTAGELEVEL_INVALID = -1
     SSPOLARITY_ACTIVE_LOW = 0
     SSPOLARITY_ACTIVE_HIGH = 1
@@ -313,8 +314,8 @@ class YSpiPort(YFunction):
 
         @return a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
         YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
-        YSpiPort.VOLTAGELEVEL_RS232 and YSpiPort.VOLTAGELEVEL_RS485 corresponding to the voltage level used
-        on the serial line
+        YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
+        corresponding to the voltage level used on the serial line
 
         On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
         """
@@ -335,8 +336,8 @@ class YSpiPort(YFunction):
 
         @param newval : a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
         YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
-        YSpiPort.VOLTAGELEVEL_RS232 and YSpiPort.VOLTAGELEVEL_RS485 corresponding to the voltage type used
-        on the serial line
+        YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
+        corresponding to the voltage type used on the serial line
 
         @return YAPI.SUCCESS if the call succeeds.
 
