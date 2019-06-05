@@ -1,4 +1,4 @@
-Python v1.10.35635
+Python v1.10.35652
 
 - Programming library use WebSocket by default
 - Add support for RangeFinder timeframe and quality
