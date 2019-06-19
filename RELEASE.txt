@@ -1,10 +1,56 @@
-Python v1.10.35652
+Python v1.10.35838
 
-- Programming library use WebSocket by default
-- Add support for RangeFinder timeframe and quality
-- Add getting started example for Yocto-Pressure
-- Add isReadOnly() method to all YFunctions
-- Improve error recovery on very slow TCP lines
-- Fix save/restore of thermistor settings
-- Fix registerConfigChangeCallback() and registerBeaconCallback() methods of YModule
-- Fix "WebSocket close without ACK" message
+(Libs)- fix loadThermistorResponseTable for bridge devices
+(Libs)- Document YFileRecord and YWlanRecord class
+(Libs)- Fix handling of '=' character query parameter of queryLine() method
+(Libs)- Library now use WebSocket by default
+(Libs)- Add support for RangeFinder timeframe and quality
+(Libs)- Add getting started example for Yocto-Pressure
+(Libs)- commit newly generated files
+(Libs)- Add isReadOnly() method to all YFunctions
+(Libs)- Add isReadOnly and sensortype Pt1000 to the documentation
+(Libs)- Add YArithmeticSensor class
+(Libs)- fix detail
+(Libs)- fix save/restore of thermistor settings
+(Misc)- vub:Minor fix in VirtualHub Control / Show a messsage in the notification bar when the VirtualHub is started or stoped
+(Misc)- Misc:[prod] work on yocto-brige calibration
+(Misc)- docs:commit generated files
+(Misc)- Misc:[prod] work on yocto-brige calibration, added last missing panels
+(Misc)- Misc:[prod] work on yocto-brige calibration, added NET3.5 compatibility
+(Misc)- Misc:[prod] work on yocto-brige calibration, fixed typo in filename
+(Misc)- bridgecalibration:fix filtering
+(Misc)- Misc:[prod] work on yocto-brige calibration, some UI polish
+(Misc)- Misc:[prod] Yocto-visualization, fixed "reset dataview command", add more option to data tracker
+(Misc)- Misc:[prod] Yocto-visualization, fixed  window resizing messing with font sizes
+(Misc)- Misc:[prod] Yocto-visualization, added support for updates availability checks
+(Misc)- Misc:[prod] Yocto-Visualization, improved updates availability checks
+(Misc)- Misc:[prod] Yocto-Discovery, added support for updates availability checks
+(Misc)- Misc:[prod] Yocto-Discovery, added support settings saving
+(Misc)- Misc:[prod] Yocto-Discovery, removed extra class file
+(Misc)- Misc:[prod] Yocto-Discovery, major version number  fix
+(Misc)- Misc:[prod] Yocto-BridgeCalibration, added support for updates availability checks
+(Misc)- Misc:[prod] Yocto-Discovery, fixed csprog glitch
+(Misc)- Misc:[prod] Yocto-Discovery, check update library is now compatible with .NET 3.5
+(Misc)- relays:add support for toggle apifunction
+(Misc)- Misc:[prod] Yocto-Visualization, fixed graphs crash on Linux
+(Misc)- bridgecalib:proj cleanup
+(Misc)- [prod] yicto-bridgecalibration:setup images
+(Misc)- apps:Fix MSI .NET detection
+(Misc)- wifi-n:work on infrastructure connexion
+(Misc)- Misc:[prod] Yocto-Visualization, improved behavior when sensors are read only
+(Misc)- ecmascript generator:fix log messages to use custom function
+(Misc)- delphi example:events based demo can be compiled in FPC
+(Misc)- delphi example:devices tree demo can be compiled in FPC
+(Misc)- delphi example:demo with cal backs can be compiled in FPC
+(Misc)- arithmericsensor:fix return value of defineExpression
+(Misc)- wifi-n:integrate Texas SimpleLink wifi driver properly in project generation
+(Misc)- maximicrovolt:enable file uploads and strings in YFS memory
+(Misc)- bootloader:add support for alternate flash port pic24fj256da206_flash
+(Misc)- serial devices:add support for arithmetic expressions in job files
+(python)- Fix error in internal json parser.
+(python)- Fix registerConfigChangeCallback() and registerBeaconCallback() methods of YModule
+(yapi)- Library now use WebSocket by default
+(yapi)- Fix some Thread Sanatiser errors
+(yapi)- Improve error recovery on very slow TCP lines
+(yapi)- fix websocket close without ack message
+(yapi)- Fix thread sanitzer error

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 35620 2019-06-04 08:29:58Z seb $
+# * $Id: yocto_api.py 35679 2019-06-05 09:47:05Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -837,7 +837,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "35652"
+    YOCTO_API_BUILD_NO = "35838"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -4355,6 +4355,12 @@ class YFunction(object):
         return b""
 
     def _upload(self, path, content):
+        tmpbuffer = self._uploadEx(path, content)
+        if len(tmpbuffer) == 0:
+            return YAPI.IO_ERROR
+        return YAPI.SUCCESS
+
+    def _uploadEx(self, path, content):
         body = "Content-Disposition: form-data; name=\"" + path + "\"; filename=\"api\"\r\n"
         body += "Content-Type: application/octet-stream\r\n"
         body += "Content-Transfer-Encoding: binary\r\n\r\n"
@@ -4372,14 +4378,14 @@ class YFunction(object):
         request += "\r\n--" + boundary + "\r\n"
         request = request.encode("ASCII") + body + str("\r\n--" + boundary + "--\r\n").encode("ASCII")
         tmpbuffer = self._request(request)
-        if len(tmpbuffer) == 0:
-            self._throw(YAPI.IO_ERROR, "http request failed")
-            return YAPI.IO_ERROR
-        return YAPI.SUCCESS
+        return self._strip_http_header(tmpbuffer)
 
     def _download(self, url):
         request = "GET /" + url + " HTTP/1.1\r\n\r\n"
         result_buffer = self._request(request)
+        return self._strip_http_header(result_buffer)
+
+    def _strip_http_header(self, result_buffer):
         found = 0
         while found <= len(result_buffer) - 4:
             if YGetByte(result_buffer, found) == 13 \
