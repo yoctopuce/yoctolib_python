@@ -1,4 +1,4 @@
-Python v1.10.35838
+Python v1.10.35871
 
 (Libs)- fix loadThermistorResponseTable for bridge devices
 (Libs)- Document YFileRecord and YWlanRecord class
@@ -47,6 +47,7 @@ Python v1.10.35838
 (Misc)- maximicrovolt:enable file uploads and strings in YFS memory
 (Misc)- bootloader:add support for alternate flash port pic24fj256da206_flash
 (Misc)- serial devices:add support for arithmetic expressions in job files
+(Misc)- datalogger:add recovery code in case of flash memory corruption (Fwerr)
 (python)- Fix error in internal json parser.
 (python)- Fix registerConfigChangeCallback() and registerBeaconCallback() methods of YModule
 (yapi)- Library now use WebSocket by default
