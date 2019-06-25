@@ -1,4 +1,4 @@
-Python v1.10.35889
+Python v1.10.35900
 
 (Libs)- fix loadThermistorResponseTable for bridge devices
 (Libs)- Document YFileRecord and YWlanRecord class
