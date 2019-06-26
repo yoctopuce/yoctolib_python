@@ -1,3 +1,6 @@
-Python v1.10.35931
+Python v1.10.35944
 
--test
+(Libs)- Add YArithmeticSensor class
+(Misc)- arithmericsensor:fix return value of defineExpression
+(Misc)- serial devices:add support for arithmetic expressions in job files
+(Misc)- datalogger:add recovery code in case of flash memory corruption (Fwerr)
