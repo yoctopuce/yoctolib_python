@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 35679 2019-06-05 09:47:05Z seb $
+# * $Id: yocto_api.py 35918 2019-06-25 13:19:24Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -837,7 +837,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "35900"
+    YOCTO_API_BUILD_NO = "35931"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -895,7 +895,8 @@ class YAPI:
 
         @param arch : A string containing the architecture to use.
                 Possibles value are: "armhf","armel",
-                "i386","x86_64","32bit", "64bit"
+                "aarch64","i386","x86_64",
+                "32bit", "64bit"
 
         @return nothing.
 
