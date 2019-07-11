@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 35918 2019-06-25 13:19:24Z seb $
+# * $Id: yocto_api.py 36141 2019-07-08 17:51:33Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -837,7 +837,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "35983"
+    YOCTO_API_BUILD_NO = "36218"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -3841,6 +3841,142 @@ class YDataSet(object):
 #--- (end of generated code: YDataSet functions)
 
 
+# --- (generated code: YConsolidatedDataSet class start)
+#noinspection PyProtectedMember
+class YConsolidatedDataSet(object):
+    """
+    YConsolidatedDataSet objects make it possible to retrieve a set of
+    recorded measures from multiple sensors, for a specified time interval.
+    They can be used to load data points progressively, and to receive
+    data records by timestamp, one by one..
+
+    """
+    #--- (end of generated code: YConsolidatedDataSet class start)
+    # --- (generated code: YConsolidatedDataSet definitions)
+    #--- (end of generated code: YConsolidatedDataSet definitions)
+
+    def __init__(self, start, end, sensorList):
+        # --- (generated code: YConsolidatedDataSet attributes)
+        self._start = 0
+        self._end = 0
+        self._nsensors = 0
+        self._sensors = []
+        self._datasets = []
+        self._progresss = []
+        self._nextidx = []
+        self._nexttim = []
+        #--- (end of generated code: YConsolidatedDataSet attributes)
+        self._init(start, end, sensorList)
+
+    # --- (generated code: YConsolidatedDataSet implementation)
+    def _init(self, startt, endt, sensorList):
+        self._start = startt
+        self._end = endt
+        self._sensors = sensorList
+        self._nsensors = -1
+        return YAPI.SUCCESS
+
+    def nextRecord(self, datarec):
+        """
+        Extracts the next data record from the dataLogger of all sensors linked to this
+        object.
+
+        @param datarec : array of floating point numbers, that will be filled by the
+                function with the timestamp of the measure in first position,
+                followed by the measured value in next positions.
+
+        @return an integer in the range 0 to 100 (percentage of completion),
+                or a negative error code in case of failure.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # s
+        # idx
+        # sensor
+        # newdataset
+        # globprogress
+        # currprogress
+        # currnexttim
+        # newvalue
+        measures = []
+        # nexttime
+        # //
+        # // Ensure the dataset have been retrieved
+        # //
+        if self._nsensors == -1:
+            self._nsensors = len(self._sensors)
+            del self._datasets[:]
+            del self._progresss[:]
+            del self._nextidx[:]
+            del self._nexttim[:]
+            s = 0
+            while s < self._nsensors:
+                sensor = self._sensors[s]
+                newdataset = sensor.get_recordedData(self._start, self._end)
+                self._datasets.append(newdataset)
+                self._progresss.append(0)
+                self._nextidx.append(0)
+                self._nexttim.append(0.0)
+                s = s + 1
+        del datarec[:]
+        # //
+        # // Find next timestamp to process
+        # //
+        nexttime = 0
+        s = 0
+        while s < self._nsensors:
+            currnexttim = self._nexttim[s]
+            if currnexttim == 0:
+                idx = self._nextidx[s]
+                measures = self._datasets[s].get_measures()
+                currprogress = self._progresss[s]
+                while (idx >= len(measures)) and (currprogress < 100):
+                    currprogress = self._datasets[s].loadMore()
+                    if currprogress < 0:
+                        currprogress = 100
+                    self._progresss[s] = currprogress
+                    measures = self._datasets[s].get_measures()
+                if idx < len(measures):
+                    currnexttim = measures[idx].get_endTimeUTC()
+                    self._nexttim[s] = currnexttim
+            if currnexttim > 0:
+                if (nexttime == 0) or (nexttime > currnexttim):
+                    nexttime = currnexttim
+            s = s + 1
+        if nexttime == 0:
+            return 100
+        # //
+        # // Extract data for this timestamp
+        # //
+        del datarec[:]
+        datarec.append(nexttime)
+        globprogress = 0
+        s = 0
+        while s < self._nsensors:
+            if self._nexttim[s] == nexttime:
+                idx = self._nextidx[s]
+                measures = self._datasets[s].get_measures()
+                newvalue = measures[idx].get_averageValue()
+                datarec.append(newvalue)
+                self._nexttim[s] = 0.0
+                self._nextidx[s] = idx+1
+            else:
+                datarec.append(float('nan'))
+            currprogress = self._progresss[s]
+            globprogress = globprogress + currprogress
+            s = s + 1
+        if globprogress > 0:
+            globprogress = int((globprogress) / (self._nsensors))
+            if globprogress > 99:
+                globprogress = 99
+
+        return globprogress
+
+#--- (end of generated code: YConsolidatedDataSet implementation)
+
+# --- (generated code: YConsolidatedDataSet functions)
+#--- (end of generated code: YConsolidatedDataSet functions)
+
 # ------------------------------------------------------------------------------------
 # YDevice
 # ------------------------------------------------------------------------------------
@@ -6555,11 +6691,9 @@ class YModule(YFunction):
             return YAPI.INVALID_STRING
 
         funid = funcIdRef.value
-        i = 0
-        for c in funid:
-            if '0' <= c <= '9':
-                break
-            i += 1
+        i = len(funid)
+        while i > 0 and '0' <= funid[i-1] <= '9':
+            i -= 1
         res = funid[1:i]
         return funid[0].upper() + res
 
@@ -6873,11 +7007,11 @@ class YSensor(YFunction):
 
     def get_currentRawValue(self):
         """
-        Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a
-        floating point number.
+        Returns the uncalibrated, unrounded raw value returned by the
+        sensor, in the specified unit, as a floating point number.
 
-        @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by
-        the sensor, in the specified unit, as a floating point number
+        @return a floating point number corresponding to the uncalibrated, unrounded raw value returned by the
+                sensor, in the specified unit, as a floating point number
 
         On failure, throws an exception or returns YSensor.CURRENTRAWVALUE_INVALID.
         """

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 36048 2019-06-28 17:43:51Z mvuilleu $
+#  $Id: yocto_i2cport.py 36207 2019-07-10 20:46:18Z mvuilleu $
 #
-#  Implements yFindSpiPort(), the high-level API for SpiPort functions
+#  Implements yFindI2cPort(), the high-level API for I2cPort functions
 #
 #  - - - - - - - - - License information: - - - - - - - - -
 #
@@ -43,25 +43,25 @@ __docformat__ = 'restructuredtext en'
 from yocto_api import *
 
 
-#--- (YSpiPort class start)
+#--- (YI2cPort class start)
 #noinspection PyProtectedMember
-class YSpiPort(YFunction):
+class YI2cPort(YFunction):
     """
-    The SpiPort function interface allows you to fully drive a Yoctopuce
-    SPI port, to send and receive data, and to configure communication
-    parameters (baud rate, bit count, parity, flow control and protocol).
-    Note that Yoctopuce SPI ports are not exposed as virtual COM ports.
+    The I2cPort function interface allows you to fully drive a Yoctopuce
+    I2C port, to send and receive data, and to configure communication
+    parameters (baud rate, etc).
+    Note that Yoctopuce I2C ports are not exposed as virtual COM ports.
     They are meant to be used in the same way as all Yoctopuce devices.
 
     """
-    #--- (end of YSpiPort class start)
-    #--- (YSpiPort return codes)
-    #--- (end of YSpiPort return codes)
-    #--- (YSpiPort dlldef)
-    #--- (end of YSpiPort dlldef)
-    #--- (YSpiPort yapiwrapper)
-    #--- (end of YSpiPort yapiwrapper)
-    #--- (YSpiPort definitions)
+    #--- (end of YI2cPort class start)
+    #--- (YI2cPort return codes)
+    #--- (end of YI2cPort return codes)
+    #--- (YI2cPort dlldef)
+    #--- (end of YI2cPort dlldef)
+    #--- (YI2cPort yapiwrapper)
+    #--- (end of YI2cPort yapiwrapper)
+    #--- (YI2cPort definitions)
     RXCOUNT_INVALID = YAPI.INVALID_UINT
     TXCOUNT_INVALID = YAPI.INVALID_UINT
     ERRCOUNT_INVALID = YAPI.INVALID_UINT
@@ -72,7 +72,7 @@ class YSpiPort(YFunction):
     STARTUPJOB_INVALID = YAPI.INVALID_STRING
     COMMAND_INVALID = YAPI.INVALID_STRING
     PROTOCOL_INVALID = YAPI.INVALID_STRING
-    SPIMODE_INVALID = YAPI.INVALID_STRING
+    I2CMODE_INVALID = YAPI.INVALID_STRING
     VOLTAGELEVEL_OFF = 0
     VOLTAGELEVEL_TTL3V = 1
     VOLTAGELEVEL_TTL3VR = 2
@@ -82,39 +82,31 @@ class YSpiPort(YFunction):
     VOLTAGELEVEL_RS485 = 6
     VOLTAGELEVEL_TTL1V8 = 7
     VOLTAGELEVEL_INVALID = -1
-    SSPOLARITY_ACTIVE_LOW = 0
-    SSPOLARITY_ACTIVE_HIGH = 1
-    SSPOLARITY_INVALID = -1
-    SHIFTSAMPLING_OFF = 0
-    SHIFTSAMPLING_ON = 1
-    SHIFTSAMPLING_INVALID = -1
-    #--- (end of YSpiPort definitions)
+    #--- (end of YI2cPort definitions)
 
     def __init__(self, func):
-        super(YSpiPort, self).__init__(func)
-        self._className = 'SpiPort'
-        #--- (YSpiPort attributes)
+        super(YI2cPort, self).__init__(func)
+        self._className = 'I2cPort'
+        #--- (YI2cPort attributes)
         self._callback = None
-        self._rxCount = YSpiPort.RXCOUNT_INVALID
-        self._txCount = YSpiPort.TXCOUNT_INVALID
-        self._errCount = YSpiPort.ERRCOUNT_INVALID
-        self._rxMsgCount = YSpiPort.RXMSGCOUNT_INVALID
-        self._txMsgCount = YSpiPort.TXMSGCOUNT_INVALID
-        self._lastMsg = YSpiPort.LASTMSG_INVALID
-        self._currentJob = YSpiPort.CURRENTJOB_INVALID
-        self._startupJob = YSpiPort.STARTUPJOB_INVALID
-        self._command = YSpiPort.COMMAND_INVALID
-        self._voltageLevel = YSpiPort.VOLTAGELEVEL_INVALID
-        self._protocol = YSpiPort.PROTOCOL_INVALID
-        self._spiMode = YSpiPort.SPIMODE_INVALID
-        self._ssPolarity = YSpiPort.SSPOLARITY_INVALID
-        self._shiftSampling = YSpiPort.SHIFTSAMPLING_INVALID
+        self._rxCount = YI2cPort.RXCOUNT_INVALID
+        self._txCount = YI2cPort.TXCOUNT_INVALID
+        self._errCount = YI2cPort.ERRCOUNT_INVALID
+        self._rxMsgCount = YI2cPort.RXMSGCOUNT_INVALID
+        self._txMsgCount = YI2cPort.TXMSGCOUNT_INVALID
+        self._lastMsg = YI2cPort.LASTMSG_INVALID
+        self._currentJob = YI2cPort.CURRENTJOB_INVALID
+        self._startupJob = YI2cPort.STARTUPJOB_INVALID
+        self._command = YI2cPort.COMMAND_INVALID
+        self._voltageLevel = YI2cPort.VOLTAGELEVEL_INVALID
+        self._protocol = YI2cPort.PROTOCOL_INVALID
+        self._i2cMode = YI2cPort.I2CMODE_INVALID
         self._rxptr = 0
         self._rxbuff = ''
         self._rxbuffptr = 0
-        #--- (end of YSpiPort attributes)
+        #--- (end of YI2cPort attributes)
 
-    #--- (YSpiPort implementation)
+    #--- (YI2cPort implementation)
     def _parseAttr(self, json_val):
         if json_val.has("rxCount"):
             self._rxCount = json_val.getInt("rxCount")
@@ -138,13 +130,9 @@ class YSpiPort(YFunction):
             self._voltageLevel = json_val.getInt("voltageLevel")
         if json_val.has("protocol"):
             self._protocol = json_val.getString("protocol")
-        if json_val.has("spiMode"):
-            self._spiMode = json_val.getString("spiMode")
-        if json_val.has("ssPolarity"):
-            self._ssPolarity = (json_val.getInt("ssPolarity") > 0 if 1 else 0)
-        if json_val.has("shiftSampling"):
-            self._shiftSampling = (json_val.getInt("shiftSampling") > 0 if 1 else 0)
-        super(YSpiPort, self)._parseAttr(json_val)
+        if json_val.has("i2cMode"):
+            self._i2cMode = json_val.getString("i2cMode")
+        super(YI2cPort, self)._parseAttr(json_val)
 
     def get_rxCount(self):
         """
@@ -152,12 +140,12 @@ class YSpiPort(YFunction):
 
         @return an integer corresponding to the total number of bytes received since last reset
 
-        On failure, throws an exception or returns YSpiPort.RXCOUNT_INVALID.
+        On failure, throws an exception or returns YI2cPort.RXCOUNT_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.RXCOUNT_INVALID
+                return YI2cPort.RXCOUNT_INVALID
         res = self._rxCount
         return res
 
@@ -167,12 +155,12 @@ class YSpiPort(YFunction):
 
         @return an integer corresponding to the total number of bytes transmitted since last reset
 
-        On failure, throws an exception or returns YSpiPort.TXCOUNT_INVALID.
+        On failure, throws an exception or returns YI2cPort.TXCOUNT_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.TXCOUNT_INVALID
+                return YI2cPort.TXCOUNT_INVALID
         res = self._txCount
         return res
 
@@ -182,12 +170,12 @@ class YSpiPort(YFunction):
 
         @return an integer corresponding to the total number of communication errors detected since last reset
 
-        On failure, throws an exception or returns YSpiPort.ERRCOUNT_INVALID.
+        On failure, throws an exception or returns YI2cPort.ERRCOUNT_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.ERRCOUNT_INVALID
+                return YI2cPort.ERRCOUNT_INVALID
         res = self._errCount
         return res
 
@@ -197,12 +185,12 @@ class YSpiPort(YFunction):
 
         @return an integer corresponding to the total number of messages received since last reset
 
-        On failure, throws an exception or returns YSpiPort.RXMSGCOUNT_INVALID.
+        On failure, throws an exception or returns YI2cPort.RXMSGCOUNT_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.RXMSGCOUNT_INVALID
+                return YI2cPort.RXMSGCOUNT_INVALID
         res = self._rxMsgCount
         return res
 
@@ -212,12 +200,12 @@ class YSpiPort(YFunction):
 
         @return an integer corresponding to the total number of messages send since last reset
 
-        On failure, throws an exception or returns YSpiPort.TXMSGCOUNT_INVALID.
+        On failure, throws an exception or returns YI2cPort.TXMSGCOUNT_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.TXMSGCOUNT_INVALID
+                return YI2cPort.TXMSGCOUNT_INVALID
         res = self._txMsgCount
         return res
 
@@ -227,12 +215,12 @@ class YSpiPort(YFunction):
 
         @return a string corresponding to the latest message fully received (for Line and Frame protocols)
 
-        On failure, throws an exception or returns YSpiPort.LASTMSG_INVALID.
+        On failure, throws an exception or returns YI2cPort.LASTMSG_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.LASTMSG_INVALID
+                return YI2cPort.LASTMSG_INVALID
         res = self._lastMsg
         return res
 
@@ -242,12 +230,12 @@ class YSpiPort(YFunction):
 
         @return a string corresponding to the name of the job file currently in use
 
-        On failure, throws an exception or returns YSpiPort.CURRENTJOB_INVALID.
+        On failure, throws an exception or returns YI2cPort.CURRENTJOB_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.CURRENTJOB_INVALID
+                return YI2cPort.CURRENTJOB_INVALID
         res = self._currentJob
         return res
 
@@ -272,12 +260,12 @@ class YSpiPort(YFunction):
 
         @return a string corresponding to the job file to use when the device is powered on
 
-        On failure, throws an exception or returns YSpiPort.STARTUPJOB_INVALID.
+        On failure, throws an exception or returns YI2cPort.STARTUPJOB_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.STARTUPJOB_INVALID
+                return YI2cPort.STARTUPJOB_INVALID
         res = self._startupJob
         return res
 
@@ -300,7 +288,7 @@ class YSpiPort(YFunction):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.COMMAND_INVALID
+                return YI2cPort.COMMAND_INVALID
         res = self._command
         return res
 
@@ -312,17 +300,17 @@ class YSpiPort(YFunction):
         """
         Returns the voltage level used on the serial line.
 
-        @return a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
-        YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
-        YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
+        @return a value among YI2cPort.VOLTAGELEVEL_OFF, YI2cPort.VOLTAGELEVEL_TTL3V,
+        YI2cPort.VOLTAGELEVEL_TTL3VR, YI2cPort.VOLTAGELEVEL_TTL5V, YI2cPort.VOLTAGELEVEL_TTL5VR,
+        YI2cPort.VOLTAGELEVEL_RS232, YI2cPort.VOLTAGELEVEL_RS485 and YI2cPort.VOLTAGELEVEL_TTL1V8
         corresponding to the voltage level used on the serial line
 
-        On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
+        On failure, throws an exception or returns YI2cPort.VOLTAGELEVEL_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.VOLTAGELEVEL_INVALID
+                return YI2cPort.VOLTAGELEVEL_INVALID
         res = self._voltageLevel
         return res
 
@@ -334,9 +322,9 @@ class YSpiPort(YFunction):
         to find out which values are valid for that specific model.
         Trying to set an invalid value will have no effect.
 
-        @param newval : a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
-        YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
-        YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
+        @param newval : a value among YI2cPort.VOLTAGELEVEL_OFF, YI2cPort.VOLTAGELEVEL_TTL3V,
+        YI2cPort.VOLTAGELEVEL_TTL3VR, YI2cPort.VOLTAGELEVEL_TTL5V, YI2cPort.VOLTAGELEVEL_TTL5VR,
+        YI2cPort.VOLTAGELEVEL_RS232, YI2cPort.VOLTAGELEVEL_RS485 and YI2cPort.VOLTAGELEVEL_TTL1V8
         corresponding to the voltage type used on the serial line
 
         @return YAPI.SUCCESS if the call succeeds.
@@ -349,31 +337,29 @@ class YSpiPort(YFunction):
     def get_protocol(self):
         """
         Returns the type of protocol used over the serial line, as a string.
-        Possible values are "Line" for ASCII messages separated by CR and/or LF,
-        "Frame:[timeout]ms" for binary messages separated by a delay time,
-        "Char" for a continuous ASCII stream or
-        "Byte" for a continuous binary stream.
+        Possible values are
+        "Line" for messages separated by LF or
+        "Char" for continuous stream of codes.
 
         @return a string corresponding to the type of protocol used over the serial line, as a string
 
-        On failure, throws an exception or returns YSpiPort.PROTOCOL_INVALID.
+        On failure, throws an exception or returns YI2cPort.PROTOCOL_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.PROTOCOL_INVALID
+                return YI2cPort.PROTOCOL_INVALID
         res = self._protocol
         return res
 
     def set_protocol(self, newval):
         """
         Changes the type of protocol used over the serial line.
-        Possible values are "Line" for ASCII messages separated by CR and/or LF,
-        "Frame:[timeout]ms" for binary messages separated by a delay time,
-        "Char" for a continuous ASCII stream or
-        "Byte" for a continuous binary stream.
+        Possible values are
+        "Line" for messages separated by LF or
+        "Char" for continuous stream of codes.
         The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
-        is always at lest the specified number of milliseconds between each bytes sent.
+        is always at lest the specified number of milliseconds between each message sent.
 
         @param newval : a string corresponding to the type of protocol used over the serial line
 
@@ -384,106 +370,44 @@ class YSpiPort(YFunction):
         rest_val = newval
         return self._setAttr("protocol", rest_val)
 
-    def get_spiMode(self):
+    def get_i2cMode(self):
         """
         Returns the SPI port communication parameters, as a string such as
-        "125000,0,msb". The string includes the baud rate, the SPI mode (between
-        0 and 3) and the bit order.
+        "400kbps,2000ms". The string includes the baud rate and  th  e recovery delay
+        after communications errors.
 
         @return a string corresponding to the SPI port communication parameters, as a string such as
-                "125000,0,msb"
+                "400kbps,2000ms"
 
-        On failure, throws an exception or returns YSpiPort.SPIMODE_INVALID.
+        On failure, throws an exception or returns YI2cPort.I2CMODE_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.SPIMODE_INVALID
-        res = self._spiMode
+                return YI2cPort.I2CMODE_INVALID
+        res = self._i2cMode
         return res
 
-    def set_spiMode(self, newval):
+    def set_i2cMode(self, newval):
         """
         Changes the SPI port communication parameters, with a string such as
-        "125000,0,msb". The string includes the baud rate, the SPI mode (between
-        0 and 3) and the bit order.
+        "400kbps,2000ms". The string includes the baud rate and the recovery delay
+        after communications errors.
 
         @param newval : a string corresponding to the SPI port communication parameters, with a string such as
-                "125000,0,msb"
+                "400kbps,2000ms"
 
         @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
-        return self._setAttr("spiMode", rest_val)
-
-    def get_ssPolarity(self):
-        """
-        Returns the SS line polarity.
-
-        @return either YSpiPort.SSPOLARITY_ACTIVE_LOW or YSpiPort.SSPOLARITY_ACTIVE_HIGH, according to the
-        SS line polarity
-
-        On failure, throws an exception or returns YSpiPort.SSPOLARITY_INVALID.
-        """
-        # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.SSPOLARITY_INVALID
-        res = self._ssPolarity
-        return res
-
-    def set_ssPolarity(self, newval):
-        """
-        Changes the SS line polarity.
-
-        @param newval : either YSpiPort.SSPOLARITY_ACTIVE_LOW or YSpiPort.SSPOLARITY_ACTIVE_HIGH, according
-        to the SS line polarity
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = "1" if newval > 0 else "0"
-        return self._setAttr("ssPolarity", rest_val)
-
-    def get_shiftSampling(self):
-        """
-        Returns true when the SDI line phase is shifted with regards to the SDO line.
-
-        @return either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to true when the
-        SDI line phase is shifted with regards to the SDO line
-
-        On failure, throws an exception or returns YSpiPort.SHIFTSAMPLING_INVALID.
-        """
-        # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.SHIFTSAMPLING_INVALID
-        res = self._shiftSampling
-        return res
-
-    def set_shiftSampling(self, newval):
-        """
-        Changes the SDI line sampling shift. When disabled, SDI line is
-        sampled in the middle of data output time. When enabled, SDI line is
-        samples at the end of data output time.
-
-        @param newval : either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to the
-        SDI line sampling shift
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = "1" if newval > 0 else "0"
-        return self._setAttr("shiftSampling", rest_val)
+        return self._setAttr("i2cMode", rest_val)
 
     @staticmethod
-    def FindSpiPort(func):
+    def FindI2cPort(func):
         """
-        Retrieves a SPI port for a given identifier.
+        Retrieves an I2C port for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -493,11 +417,11 @@ class YSpiPort(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the SPI port is online at the time
+        This function does not require that the I2C port is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YSpiPort.isOnline() to test if the SPI port is
+        Use the method YI2cPort.isOnline() to test if the I2C port is
         indeed online at a given time. In case of ambiguity when looking for
-        a SPI port by logical name, no error is notified: the first instance
+        an I2C port by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -505,15 +429,15 @@ class YSpiPort(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the SPI port
+        @param func : a string that uniquely characterizes the I2C port
 
-        @return a YSpiPort object allowing you to drive the SPI port.
+        @return a YI2cPort object allowing you to drive the I2C port.
         """
         # obj
-        obj = YFunction._FindFromCache("SpiPort", func)
+        obj = YFunction._FindFromCache("I2cPort", func)
         if obj is None:
-            obj = YSpiPort(func)
-            YFunction._AddToCache("SpiPort", func, obj)
+            obj = YI2cPort(func)
+            YFunction._AddToCache("I2cPort", func, obj)
         return obj
 
     def sendCommand(self, text):
@@ -679,7 +603,7 @@ class YSpiPort(YFunction):
         @param jobfile : name of the job file to save on the device filesystem
         @param jsonDef : a string containing a JSON definition of the job
 
-        @return YAPI.SUCCESS if the call succeeds.
+        @return YAPI_SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -694,7 +618,7 @@ class YSpiPort(YFunction):
 
         @param jobfile : name of the job file (on the device filesystem)
 
-        @return YAPI.SUCCESS if the call succeeds.
+        @return YAPI_SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -704,7 +628,7 @@ class YSpiPort(YFunction):
         """
         Clears the serial port buffer and resets counters to zero.
 
-        @return YAPI.SUCCESS if the call succeeds.
+        @return YAPI_SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -714,33 +638,215 @@ class YSpiPort(YFunction):
 
         return self.sendCommand("Z")
 
-    def writeByte(self, code):
+    def i2cSendBin(self, slaveAddr, buff):
         """
-        Sends a single byte to the serial port.
+        Sends a one-way message (provided as a a binary buffer) to a device on the I2C bus.
+        This function checks and reports communication errors on the I2C bus.
 
-        @param code : the byte to send
+        @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+        @param buff : the binary buffer to be sent
 
-        @return YAPI.SUCCESS if the call succeeds.
+        @return YAPI_SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("$" + ("%02X" % code))
+        # nBytes
+        # idx
+        # val
+        # msg
+        # reply
+        msg = "@" + ("%02x" % slaveAddr) + ":"
+        nBytes = len(buff)
+        idx = 0
+        while idx < nBytes:
+            val = YGetByte(buff, idx)
+            msg = "" + msg + "" + ("%02x" % val)
+            idx = idx + 1
 
-    def writeStr(self, text):
+        reply = self.queryLine(msg,1000)
+        if not (len(reply) > 0):
+            self._throw(YAPI.IO_ERROR, "no response from device")
+            return YAPI.IO_ERROR
+        idx = reply.find("[N]!")
+        if not (idx < 0):
+            self._throw(YAPI.IO_ERROR, "No ACK received")
+            return YAPI.IO_ERROR
+        idx = reply.find("!")
+        if not (idx < 0):
+            self._throw(YAPI.IO_ERROR, "Protocol error")
+            return YAPI.IO_ERROR
+        return YAPI.SUCCESS
+
+    def i2cSendArray(self, slaveAddr, values):
         """
-        Sends an ASCII string to the serial port, as is.
+        Sends a one-way message (provided as a list of integer) to a device on the I2C bus.
+        This function checks and reports communication errors on the I2C bus.
 
-        @param text : the text string to send
+        @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+        @param values : a list of data bytes to be sent
 
-        @return YAPI.SUCCESS if the call succeeds.
+        @return YAPI_SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
-        # buff
+        # nBytes
+        # idx
+        # val
+        # msg
+        # reply
+        msg = "@" + ("%02x" % slaveAddr) + ":"
+        nBytes = len(values)
+        idx = 0
+        while idx < nBytes:
+            val = values[idx]
+            msg = "" + msg + "" + ("%02x" % val)
+            idx = idx + 1
+
+        reply = self.queryLine(msg,1000)
+        if not (len(reply) > 0):
+            self._throw(YAPI.IO_ERROR, "no response from device")
+            return YAPI.IO_ERROR
+        idx = reply.find("[N]!")
+        if not (idx < 0):
+            self._throw(YAPI.IO_ERROR, "No ACK received")
+            return YAPI.IO_ERROR
+        idx = reply.find("!")
+        if not (idx < 0):
+            self._throw(YAPI.IO_ERROR, "Protocol error")
+            return YAPI.IO_ERROR
+        return YAPI.SUCCESS
+
+    def i2cSendAndReceiveBin(self, slaveAddr, buff, rcvCount):
+        """
+        Sends a one-way message (provided as a a binary buffer) to a device on the I2C bus,
+        then read back the specified number of bytes from device.
+        This function checks and reports communication errors on the I2C bus.
+
+        @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+        @param buff : the binary buffer to be sent
+        @param rcvCount : the number of bytes to receive once the data bytes are sent
+
+        @return a list of bytes with the data received from slave device.
+
+        On failure, throws an exception or returns an empty binary buffer.
+        """
+        # nBytes
+        # idx
+        # val
+        # msg
+        # reply
+        # rcvbytes
+        msg = "@" + ("%02x" % slaveAddr) + ":"
+        nBytes = len(buff)
+        idx = 0
+        while idx < nBytes:
+            val = YGetByte(buff, idx)
+            msg = "" + msg + "" + ("%02x" % val)
+            idx = idx + 1
+        idx = 0
+        while idx < rcvCount:
+            msg = "" + msg + "xx"
+            idx = idx + 1
+
+        reply = self.queryLine(msg,1000)
+        rcvbytes = bytearray(0)
+        if not (len(reply) > 0):
+            self._throw(YAPI.IO_ERROR, "no response from device")
+            return rcvbytes
+        idx = reply.find("[N]!")
+        if not (idx < 0):
+            self._throw(YAPI.IO_ERROR, "No ACK received")
+            return rcvbytes
+        idx = reply.find("!")
+        if not (idx < 0):
+            self._throw(YAPI.IO_ERROR, "Protocol error")
+            return rcvbytes
+        reply = (reply)[len(reply)-2*rcvCount: len(reply)-2*rcvCount + 2*rcvCount]
+        rcvbytes = YAPI._hexStrToBin(reply)
+        return rcvbytes
+
+    def i2cSendAndReceiveArray(self, slaveAddr, values, rcvCount):
+        """
+        Sends a one-way message (provided as a list of integer) to a device on the I2C bus,
+        then read back the specified number of bytes from device.
+        This function checks and reports communication errors on the I2C bus.
+
+        @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+        @param values : a list of data bytes to be sent
+        @param rcvCount : the number of bytes to receive once the data bytes are sent
+
+        @return a list of bytes with the data received from slave device.
+
+        On failure, throws an exception or returns an empty array.
+        """
+        # nBytes
+        # idx
+        # val
+        # msg
+        # reply
+        # rcvbytes
+        res = []
+        msg = "@" + ("%02x" % slaveAddr) + ":"
+        nBytes = len(values)
+        idx = 0
+        while idx < nBytes:
+            val = values[idx]
+            msg = "" + msg + "" + ("%02x" % val)
+            idx = idx + 1
+        idx = 0
+        while idx < rcvCount:
+            msg = "" + msg + "xx"
+            idx = idx + 1
+
+        reply = self.queryLine(msg,1000)
+        if not (len(reply) > 0):
+            self._throw(YAPI.IO_ERROR, "no response from device")
+            return res
+        idx = reply.find("[N]!")
+        if not (idx < 0):
+            self._throw(YAPI.IO_ERROR, "No ACK received")
+            return res
+        idx = reply.find("!")
+        if not (idx < 0):
+            self._throw(YAPI.IO_ERROR, "Protocol error")
+            return res
+        reply = (reply)[len(reply)-2*rcvCount: len(reply)-2*rcvCount + 2*rcvCount]
+        rcvbytes = YAPI._hexStrToBin(reply)
+        del res[:]
+        idx = 0
+        while idx < rcvCount:
+            val = YGetByte(rcvbytes, idx)
+            res.append(val)
+            idx = idx + 1
+
+        return res
+
+    def writeStr(self, codes):
+        """
+        Sends a text-encoded I2C code stream to the I2C bus, as is.
+        An I2C code stream is a string made of hexadecimal data bytes,
+        but that may also include the I2C state transitions code:
+        "{S}" to emit a start condition,
+        "{R}" for a repeated start condition,
+        "{P}" for a stop condition,
+        "xx" for receiving a data byte,
+        "{A}" to ack a data byte received and
+        "{N}" to nack a data byte received.
+        If a newline ("\n") is included in the stream, the message
+        will be terminated and a newline will also be added to the
+        receive stream.
+
+        @param codes : the code stream to send
+
+        @return YAPI_SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
         # bufflen
+        # buff
         # idx
         # ch
-        buff = YString2Byte(text)
+        buff = YString2Byte(codes)
         bufflen = len(buff)
         if bufflen < 100:
             # // if string is pure text, we can send it as a simple command (faster)
@@ -753,363 +859,157 @@ class YSpiPort(YFunction):
                 else:
                     ch = 0
             if idx >= bufflen:
-                return self.sendCommand("+" + text)
+                return self.sendCommand("+" + codes)
         # // send string using file upload
+        return self._upload("txdata", buff)
+
+    def writeLine(self, codes):
+        """
+        Sends a text-encoded I2C code stream to the I2C bus, and terminate
+        the message en relâchant le bus.
+        An I2C code stream is a string made of hexadecimal data bytes,
+        but that may also include the I2C state transitions code:
+        "{S}" to emit a start condition,
+        "{R}" for a repeated start condition,
+        "{P}" for a stop condition,
+        "xx" for receiving a data byte,
+        "{A}" to ack a data byte received and
+        "{N}" to nack a data byte received.
+        At the end of the stream, a stop condition is added if missing
+        and a newline is added to the receive buffer as well.
+
+        @param codes : the code stream to send
+
+        @return YAPI_SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # bufflen
+        # buff
+        bufflen = len(codes)
+        if bufflen < 100:
+            return self.sendCommand("!" + codes)
+        # // send string using file upload
+        buff = YString2Byte("" + codes + "\n")
+        return self._upload("txdata", buff)
+
+    def writeByte(self, code):
+        """
+        Sends a single byte to the I2C bus. Depending on the I2C bus state, the byte
+        will be interpreted as an address byte or a data byte.
+
+        @param code : the byte to send
+
+        @return YAPI_SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("+" + ("%02X" % code))
+
+    def writeHex(self, hexString):
+        """
+        Sends a byte sequence (provided as a hexadecimal string) to the I2C bus.
+        Depending on the I2C bus state, the first byte will be interpreted as an
+        address byte or a data byte.
+
+        @param hexString : a string of hexadecimal byte codes
+
+        @return YAPI_SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # bufflen
+        # buff
+        bufflen = len(hexString)
+        if bufflen < 100:
+            return self.sendCommand("+" + hexString)
+        buff = YString2Byte(hexString)
+
         return self._upload("txdata", buff)
 
     def writeBin(self, buff):
         """
-        Sends a binary buffer to the serial port, as is.
+        Sends a binary buffer to the I2C bus, as is.
+        Depending on the I2C bus state, the first byte will be interpreted
+        as an address byte or a data byte.
 
         @param buff : the binary buffer to send
 
-        @return YAPI.SUCCESS if the call succeeds.
+        @return YAPI_SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self._upload("txdata", buff)
+        # nBytes
+        # idx
+        # val
+        # msg
+        msg = ""
+        nBytes = len(buff)
+        idx = 0
+        while idx < nBytes:
+            val = YGetByte(buff, idx)
+            msg = "" + msg + "" + ("%02x" % val)
+            idx = idx + 1
+
+        return self.writeHex(msg)
 
     def writeArray(self, byteList):
         """
-        Sends a byte sequence (provided as a list of bytes) to the serial port.
+        Sends a byte sequence (provided as a list of bytes) to the I2C bus.
+        Depending on the I2C bus state, the first byte will be interpreted as an
+        address byte or a data byte.
 
         @param byteList : a list of byte codes
 
-        @return YAPI.SUCCESS if the call succeeds.
+        @return YAPI_SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
-        # buff
-        # bufflen
+        # nBytes
         # idx
-        # hexb
-        # res
-        bufflen = len(byteList)
-        buff = bytearray(bufflen)
+        # val
+        # msg
+        msg = ""
+        nBytes = len(byteList)
         idx = 0
-        while idx < bufflen:
-            hexb = byteList[idx]
-            buff[idx] = hexb
+        while idx < nBytes:
+            val = byteList[idx]
+            msg = "" + msg + "" + ("%02x" % val)
             idx = idx + 1
 
-        res = self._upload("txdata", buff)
-        return res
+        return self.writeHex(msg)
 
-    def writeHex(self, hexString):
+    def nextI2cPort(self):
         """
-        Sends a byte sequence (provided as a hexadecimal string) to the serial port.
-
-        @param hexString : a string of hexadecimal byte codes
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        # buff
-        # bufflen
-        # idx
-        # hexb
-        # res
-        bufflen = len(hexString)
-        if bufflen < 100:
-            return self.sendCommand("$" + hexString)
-        bufflen = ((bufflen) >> (1))
-        buff = bytearray(bufflen)
-        idx = 0
-        while idx < bufflen:
-            hexb = int((hexString)[2 * idx: 2 * idx + 2], 16)
-            buff[idx] = hexb
-            idx = idx + 1
-
-        res = self._upload("txdata", buff)
-        return res
-
-    def writeLine(self, text):
-        """
-        Sends an ASCII string to the serial port, followed by a line break (CR LF).
-
-        @param text : the text string to send
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        # buff
-        # bufflen
-        # idx
-        # ch
-        buff = YString2Byte("" + text + "\r\n")
-        bufflen = len(buff)-2
-        if bufflen < 100:
-            # // if string is pure text, we can send it as a simple command (faster)
-            ch = 0x20
-            idx = 0
-            while (idx < bufflen) and (ch != 0):
-                ch = YGetByte(buff, idx)
-                if (ch >= 0x20) and (ch < 0x7f):
-                    idx = idx + 1
-                else:
-                    ch = 0
-            if idx >= bufflen:
-                return self.sendCommand("!" + text)
-        # // send string using file upload
-        return self._upload("txdata", buff)
-
-    def readByte(self):
-        """
-        Reads one byte from the receive buffer, starting at current stream position.
-        If data at current stream position is not available anymore in the receive buffer,
-        or if there is no data available yet, the function returns YAPI.NO_MORE_DATA.
-
-        @return the next byte
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        # currpos
-        # reqlen
-        # buff
-        # bufflen
-        # mult
-        # endpos
-        # res
-        # // first check if we have the requested character in the look-ahead buffer
-        bufflen = len(self._rxbuff)
-        if (self._rxptr >= self._rxbuffptr) and (self._rxptr < self._rxbuffptr+bufflen):
-            res = YGetByte(self._rxbuff, self._rxptr-self._rxbuffptr)
-            self._rxptr = self._rxptr + 1
-            return res
-        # // try to preload more than one byte to speed-up byte-per-byte access
-        currpos = self._rxptr
-        reqlen = 1024
-        buff = self.readBin(reqlen)
-        bufflen = len(buff)
-        if self._rxptr == currpos+bufflen:
-            res = YGetByte(buff, 0)
-            self._rxptr = currpos+1
-            self._rxbuffptr = currpos
-            self._rxbuff = buff
-            return res
-        # // mixed bidirectional data, retry with a smaller block
-        self._rxptr = currpos
-        reqlen = 16
-        buff = self.readBin(reqlen)
-        bufflen = len(buff)
-        if self._rxptr == currpos+bufflen:
-            res = YGetByte(buff, 0)
-            self._rxptr = currpos+1
-            self._rxbuffptr = currpos
-            self._rxbuff = buff
-            return res
-        # // still mixed, need to process character by character
-        self._rxptr = currpos
-
-        buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=1")
-        bufflen = len(buff) - 1
-        endpos = 0
-        mult = 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            endpos = endpos + mult * (YGetByte(buff, bufflen) - 48)
-            mult = mult * 10
-            bufflen = bufflen - 1
-        self._rxptr = endpos
-        if bufflen == 0:
-            return YAPI.NO_MORE_DATA
-        res = YGetByte(buff, 0)
-        return res
-
-    def readStr(self, nChars):
-        """
-        Reads data from the receive buffer as a string, starting at current stream position.
-        If data at current stream position is not available anymore in the receive buffer, the
-        function performs a short read.
-
-        @param nChars : the maximum number of characters to read
-
-        @return a string with receive buffer contents
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        # buff
-        # bufflen
-        # mult
-        # endpos
-        # res
-        if nChars > 65535:
-            nChars = 65535
-
-        buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
-        bufflen = len(buff) - 1
-        endpos = 0
-        mult = 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            endpos = endpos + mult * (YGetByte(buff, bufflen) - 48)
-            mult = mult * 10
-            bufflen = bufflen - 1
-        self._rxptr = endpos
-        res = (YByte2String(buff))[0: 0 + bufflen]
-        return res
-
-    def readBin(self, nChars):
-        """
-        Reads data from the receive buffer as a binary buffer, starting at current stream position.
-        If data at current stream position is not available anymore in the receive buffer, the
-        function performs a short read.
-
-        @param nChars : the maximum number of bytes to read
-
-        @return a binary object with receive buffer contents
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        # buff
-        # bufflen
-        # mult
-        # endpos
-        # idx
-        # res
-        if nChars > 65535:
-            nChars = 65535
-
-        buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
-        bufflen = len(buff) - 1
-        endpos = 0
-        mult = 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            endpos = endpos + mult * (YGetByte(buff, bufflen) - 48)
-            mult = mult * 10
-            bufflen = bufflen - 1
-        self._rxptr = endpos
-        res = bytearray(bufflen)
-        idx = 0
-        while idx < bufflen:
-            res[idx] = YGetByte(buff, idx)
-            idx = idx + 1
-        return res
-
-    def readArray(self, nChars):
-        """
-        Reads data from the receive buffer as a list of bytes, starting at current stream position.
-        If data at current stream position is not available anymore in the receive buffer, the
-        function performs a short read.
-
-        @param nChars : the maximum number of bytes to read
-
-        @return a sequence of bytes with receive buffer contents
-
-        On failure, throws an exception or returns an empty array.
-        """
-        # buff
-        # bufflen
-        # mult
-        # endpos
-        # idx
-        # b
-        res = []
-        if nChars > 65535:
-            nChars = 65535
-
-        buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nChars)))
-        bufflen = len(buff) - 1
-        endpos = 0
-        mult = 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            endpos = endpos + mult * (YGetByte(buff, bufflen) - 48)
-            mult = mult * 10
-            bufflen = bufflen - 1
-        self._rxptr = endpos
-        del res[:]
-        idx = 0
-        while idx < bufflen:
-            b = YGetByte(buff, idx)
-            res.append(b)
-            idx = idx + 1
-
-        return res
-
-    def readHex(self, nBytes):
-        """
-        Reads data from the receive buffer as a hexadecimal string, starting at current stream position.
-        If data at current stream position is not available anymore in the receive buffer, the
-        function performs a short read.
-
-        @param nBytes : the maximum number of bytes to read
-
-        @return a string with receive buffer contents, encoded in hexadecimal
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        # buff
-        # bufflen
-        # mult
-        # endpos
-        # ofs
-        # res
-        if nBytes > 65535:
-            nBytes = 65535
-
-        buff = self._download("rxdata.bin?pos=" + str(int(self._rxptr)) + "&len=" + str(int(nBytes)))
-        bufflen = len(buff) - 1
-        endpos = 0
-        mult = 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            endpos = endpos + mult * (YGetByte(buff, bufflen) - 48)
-            mult = mult * 10
-            bufflen = bufflen - 1
-        self._rxptr = endpos
-        res = ""
-        ofs = 0
-        while ofs + 3 < bufflen:
-            res = "" + res + "" + ("%02X" % YGetByte(buff, ofs)) + "" + ("%02X" % YGetByte(buff, ofs + 1)) + "" + ("%02X" % YGetByte(buff, ofs + 2)) + "" + ("%02X" % YGetByte(buff, ofs + 3))
-            ofs = ofs + 4
-        while ofs < bufflen:
-            res = "" + res + "" + ("%02X" % YGetByte(buff, ofs))
-            ofs = ofs + 1
-        return res
-
-    def set_SS(self, val):
-        """
-        Manually sets the state of the SS line. This function has no effect when
-        the SS line is handled automatically.
-
-        @param val : 1 to turn SS active, 0 to release SS.
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        return self.sendCommand("S" + str(int(val)))
-
-    def nextSpiPort(self):
-        """
-        Continues the enumeration of SPI ports started using yFirstSpiPort().
-        Caution: You can't make any assumption about the returned SPI ports order.
-        If you want to find a specific a SPI port, use SpiPort.findSpiPort()
+        Continues the enumeration of I2C ports started using yFirstI2cPort().
+        Caution: You can't make any assumption about the returned I2C ports order.
+        If you want to find a specific an I2C port, use I2cPort.findI2cPort()
         and a hardwareID or a logical name.
 
-        @return a pointer to a YSpiPort object, corresponding to
-                a SPI port currently online, or a None pointer
-                if there are no more SPI ports to enumerate.
+        @return a pointer to a YI2cPort object, corresponding to
+                an I2C port currently online, or a None pointer
+                if there are no more I2C ports to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
             return None
         if hwidRef.value == "":
             return None
-        return YSpiPort.FindSpiPort(hwidRef.value)
+        return YI2cPort.FindI2cPort(hwidRef.value)
 
-#--- (end of YSpiPort implementation)
+#--- (end of YI2cPort implementation)
 
-#--- (YSpiPort functions)
+#--- (YI2cPort functions)
 
     @staticmethod
-    def FirstSpiPort():
+    def FirstI2cPort():
         """
-        Starts the enumeration of SPI ports currently accessible.
-        Use the method YSpiPort.nextSpiPort() to iterate on
-        next SPI ports.
+        Starts the enumeration of I2C ports currently accessible.
+        Use the method YI2cPort.nextI2cPort() to iterate on
+        next I2C ports.
 
-        @return a pointer to a YSpiPort object, corresponding to
-                the first SPI port currently online, or a None pointer
+        @return a pointer to a YI2cPort object, corresponding to
+                the first I2C port currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
@@ -1122,7 +1022,7 @@ class YSpiPort(YFunction):
         size = YAPI.C_INTSIZE
         #noinspection PyTypeChecker,PyCallingNonCallable
         p = (ctypes.c_int * 1)()
-        err = YAPI.apiGetFunctionsByClass("SpiPort", 0, p, size, neededsizeRef, errmsgRef)
+        err = YAPI.apiGetFunctionsByClass("I2cPort", 0, p, size, neededsizeRef, errmsgRef)
 
         if YAPI.YISERR(err) or not neededsizeRef.value:
             return None
@@ -1131,6 +1031,6 @@ class YSpiPort(YFunction):
                 YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
             return None
 
-        return YSpiPort.FindSpiPort(serialRef.value + "." + funcIdRef.value)
+        return YI2cPort.FindI2cPort(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of YSpiPort functions)
+#--- (end of YI2cPort functions)

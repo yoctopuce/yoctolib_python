@@ -1,3 +1,5 @@
-Python v1.10.35983
+Python v1.10.36218
 
-- Add YArithmeticSensor class
+- Add ConsolidatedDataSet class and Prog-ExportCSV
+- Add support for Yocto-I2c
+- Improve handling of network disconnect in Websocket mode

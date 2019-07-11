@@ -1,6 +1,6 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 32630 2018-10-10 14:11:07Z seb $
+#  $Id: helloworld.py 36033 2019-06-28 14:42:17Z seb $
 #
 #  An example that show how to use a  Yocto-Relay
 #

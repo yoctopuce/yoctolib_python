@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 35465 2019-05-16 14:40:41Z seb $
+#* $Id: yocto_serialport.py 36048 2019-06-28 17:43:51Z mvuilleu $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -498,6 +498,187 @@ class YSerialPort(YFunction):
     def sendCommand(self, text):
         return self.set_command(text)
 
+    def readLine(self):
+        """
+        Reads a single line (or message) from the receive buffer, starting at current stream position.
+        This function is intended to be used when the serial port is configured for a message protocol,
+        such as 'Line' mode or frame protocols.
+
+        If data at current stream position is not available anymore in the receive buffer,
+        the function returns the oldest available line and moves the stream position just after.
+        If no new full line is received, the function returns an empty line.
+
+        @return a string with a single line of text
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # url
+        # msgbin
+        msgarr = []
+        # msglen
+        # res
+
+        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&len=1&maxw=1"
+        msgbin = self._download(url)
+        msgarr = self._json_get_array(msgbin)
+        msglen = len(msgarr)
+        if msglen == 0:
+            return ""
+        # // last element of array is the new position
+        msglen = msglen - 1
+        self._rxptr = YAPI._atoi(msgarr[msglen])
+        if msglen == 0:
+            return ""
+        res = self._json_get_string(YString2Byte(msgarr[0]))
+        return res
+
+    def readMessages(self, pattern, maxWait):
+        """
+        Searches for incoming messages in the serial port receive buffer matching a given pattern,
+        starting at current position. This function will only compare and return printable characters
+        in the message strings. Binary protocols are handled as hexadecimal strings.
+
+        The search returns all messages matching the expression provided as argument in the buffer.
+        If no matching message is found, the search waits for one up to the specified maximum timeout
+        (in milliseconds).
+
+        @param pattern : a limited regular expression describing the expected message format,
+                or an empty string if all messages should be returned (no filtering).
+                When using binary protocols, the format applies to the hexadecimal
+                representation of the message.
+        @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+                in the receive buffer.
+
+        @return an array of strings containing the messages found, if any.
+                Binary messages are converted to hexadecimal representation.
+
+        On failure, throws an exception or returns an empty array.
+        """
+        # url
+        # msgbin
+        msgarr = []
+        # msglen
+        res = []
+        # idx
+
+        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&pat=" + pattern
+        msgbin = self._download(url)
+        msgarr = self._json_get_array(msgbin)
+        msglen = len(msgarr)
+        if msglen == 0:
+            return res
+        # // last element of array is the new position
+        msglen = msglen - 1
+        self._rxptr = YAPI._atoi(msgarr[msglen])
+        idx = 0
+
+        while idx < msglen:
+            res.append(self._json_get_string(YString2Byte(msgarr[idx])))
+            idx = idx + 1
+
+        return res
+
+    def read_seek(self, absPos):
+        """
+        Changes the current internal stream position to the specified value. This function
+        does not affect the device, it only changes the value stored in the API object
+        for the next read operations.
+
+        @param absPos : the absolute position index for next read operations.
+
+        @return nothing.
+        """
+        self._rxptr = absPos
+        return YAPI.SUCCESS
+
+    def read_tell(self):
+        """
+        Returns the current absolute stream position pointer of the API object.
+
+        @return the absolute position index for next read operations.
+        """
+        return self._rxptr
+
+    def read_avail(self):
+        """
+        Returns the number of bytes available to read in the input buffer starting from the
+        current absolute stream position pointer of the API object.
+
+        @return the number of bytes available to read
+        """
+        # buff
+        # bufflen
+        # res
+
+        buff = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
+        bufflen = len(buff) - 1
+        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
+            bufflen = bufflen - 1
+        res = YAPI._atoi((YByte2String(buff))[0: 0 + bufflen])
+        return res
+
+    def queryLine(self, query, maxWait):
+        """
+        Sends a text line query to the serial port, and reads the reply, if any.
+        This function is intended to be used when the serial port is configured for 'Line' protocol.
+
+        @param query : the line query to send (without CR/LF)
+        @param maxWait : the maximum number of milliseconds to wait for a reply.
+
+        @return the next text line received after sending the text query, as a string.
+                Additional lines can be obtained by calling readLine or readMessages.
+
+        On failure, throws an exception or returns an empty string.
+        """
+        # url
+        # msgbin
+        msgarr = []
+        # msglen
+        # res
+
+        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + self._escapeAttr(query)
+        msgbin = self._download(url)
+        msgarr = self._json_get_array(msgbin)
+        msglen = len(msgarr)
+        if msglen == 0:
+            return ""
+        # // last element of array is the new position
+        msglen = msglen - 1
+        self._rxptr = YAPI._atoi(msgarr[msglen])
+        if msglen == 0:
+            return ""
+        res = self._json_get_string(YString2Byte(msgarr[0]))
+        return res
+
+    def uploadJob(self, jobfile, jsonDef):
+        """
+        Saves the job definition string (JSON data) into a job file.
+        The job file can be later enabled using selectJob().
+
+        @param jobfile : name of the job file to save on the device filesystem
+        @param jsonDef : a string containing a JSON definition of the job
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        self._upload(jobfile, YString2Byte(jsonDef))
+        return YAPI.SUCCESS
+
+    def selectJob(self, jobfile):
+        """
+        Load and start processing the specified job file. The file must have
+        been previously created using the user interface or uploaded on the
+        device filesystem using the uploadJob() function.
+
+        @param jobfile : name of the job file (on the device filesystem)
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_currentJob(jobfile)
+
     def reset(self):
         """
         Clears the serial port buffer and resets counters to zero.
@@ -794,7 +975,7 @@ class YSerialPort(YFunction):
 
         @return a sequence of bytes with receive buffer contents
 
-        On failure, throws an exception or returns a negative error code.
+        On failure, throws an exception or returns an empty array.
         """
         # buff
         # bufflen
@@ -863,187 +1044,6 @@ class YSerialPort(YFunction):
             res = "" + res + "" + ("%02X" % YGetByte(buff, ofs))
             ofs = ofs + 1
         return res
-
-    def readLine(self):
-        """
-        Reads a single line (or message) from the receive buffer, starting at current stream position.
-        This function is intended to be used when the serial port is configured for a message protocol,
-        such as 'Line' mode or frame protocols.
-
-        If data at current stream position is not available anymore in the receive buffer,
-        the function returns the oldest available line and moves the stream position just after.
-        If no new full line is received, the function returns an empty line.
-
-        @return a string with a single line of text
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        # url
-        # msgbin
-        msgarr = []
-        # msglen
-        # res
-
-        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&len=1&maxw=1"
-        msgbin = self._download(url)
-        msgarr = self._json_get_array(msgbin)
-        msglen = len(msgarr)
-        if msglen == 0:
-            return ""
-        # // last element of array is the new position
-        msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
-        if msglen == 0:
-            return ""
-        res = self._json_get_string(YString2Byte(msgarr[0]))
-        return res
-
-    def readMessages(self, pattern, maxWait):
-        """
-        Searches for incoming messages in the serial port receive buffer matching a given pattern,
-        starting at current position. This function will only compare and return printable characters
-        in the message strings. Binary protocols are handled as hexadecimal strings.
-
-        The search returns all messages matching the expression provided as argument in the buffer.
-        If no matching message is found, the search waits for one up to the specified maximum timeout
-        (in milliseconds).
-
-        @param pattern : a limited regular expression describing the expected message format,
-                or an empty string if all messages should be returned (no filtering).
-                When using binary protocols, the format applies to the hexadecimal
-                representation of the message.
-        @param maxWait : the maximum number of milliseconds to wait for a message if none is found
-                in the receive buffer.
-
-        @return an array of strings containing the messages found, if any.
-                Binary messages are converted to hexadecimal representation.
-
-        On failure, throws an exception or returns an empty array.
-        """
-        # url
-        # msgbin
-        msgarr = []
-        # msglen
-        res = []
-        # idx
-
-        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&pat=" + pattern
-        msgbin = self._download(url)
-        msgarr = self._json_get_array(msgbin)
-        msglen = len(msgarr)
-        if msglen == 0:
-            return res
-        # // last element of array is the new position
-        msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
-        idx = 0
-
-        while idx < msglen:
-            res.append(self._json_get_string(YString2Byte(msgarr[idx])))
-            idx = idx + 1
-
-        return res
-
-    def read_seek(self, absPos):
-        """
-        Changes the current internal stream position to the specified value. This function
-        does not affect the device, it only changes the value stored in the API object
-        for the next read operations.
-
-        @param absPos : the absolute position index for next read operations.
-
-        @return nothing.
-        """
-        self._rxptr = absPos
-        return YAPI.SUCCESS
-
-    def read_tell(self):
-        """
-        Returns the current absolute stream position pointer of the API object.
-
-        @return the absolute position index for next read operations.
-        """
-        return self._rxptr
-
-    def read_avail(self):
-        """
-        Returns the number of bytes available to read in the input buffer starting from the
-        current absolute stream position pointer of the API object.
-
-        @return the number of bytes available to read
-        """
-        # buff
-        # bufflen
-        # res
-
-        buff = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
-        bufflen = len(buff) - 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            bufflen = bufflen - 1
-        res = YAPI._atoi((YByte2String(buff))[0: 0 + bufflen])
-        return res
-
-    def queryLine(self, query, maxWait):
-        """
-        Sends a text line query to the serial port, and reads the reply, if any.
-        This function is intended to be used when the serial port is configured for 'Line' protocol.
-
-        @param query : the line query to send (without CR/LF)
-        @param maxWait : the maximum number of milliseconds to wait for a reply.
-
-        @return the next text line received after sending the text query, as a string.
-                Additional lines can be obtained by calling readLine or readMessages.
-
-        On failure, throws an exception or returns an empty array.
-        """
-        # url
-        # msgbin
-        msgarr = []
-        # msglen
-        # res
-
-        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + self._escapeAttr(query)
-        msgbin = self._download(url)
-        msgarr = self._json_get_array(msgbin)
-        msglen = len(msgarr)
-        if msglen == 0:
-            return ""
-        # // last element of array is the new position
-        msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
-        if msglen == 0:
-            return ""
-        res = self._json_get_string(YString2Byte(msgarr[0]))
-        return res
-
-    def uploadJob(self, jobfile, jsonDef):
-        """
-        Saves the job definition string (JSON data) into a job file.
-        The job file can be later enabled using selectJob().
-
-        @param jobfile : name of the job file to save on the device filesystem
-        @param jsonDef : a string containing a JSON definition of the job
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        self._upload(jobfile, YString2Byte(jsonDef))
-        return YAPI.SUCCESS
-
-    def selectJob(self, jobfile):
-        """
-        Load and start processing the specified job file. The file must have
-        been previously created using the user interface or uploaded on the
-        device filesystem using the uploadJob() function.
-
-        @param jobfile : name of the job file (on the device filesystem)
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        return self.set_currentJob(jobfile)
 
     def set_RTS(self, val):
         """
