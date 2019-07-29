@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os, sys
+import os
+import sys
 
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..", "..", "Sources"))
-from yocto_api import *
 from yocto_anbutton import *
 
 
@@ -58,11 +58,15 @@ def deviceRemoval(m):
     print('Device removal : ' + m.get_serialNumber())
 
 
+def logfun(line):
+    print('LOG : ' + line.rstrip())
+
+
 errmsg = YRefParam()
 
 # No exception please
 YAPI.DisableExceptions()
-
+YAPI.RegisterLogFunction(logfun)
 # Setup the API to use local USB devices
 if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
     sys.exit("init error" + errmsg.value)

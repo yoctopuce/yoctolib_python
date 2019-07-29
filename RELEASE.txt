@@ -1,5 +1,4 @@
-Python v1.10.36218
+Python v1.10.36518
 
-- Add ConsolidatedDataSet class and Prog-ExportCSV
-- Add support for Yocto-I2c
-- Improve handling of network disconnect in Websocket mode
+- Remove unreliable code that returned the process name of the application that was locking the USB port
+- Improve network error recovery
