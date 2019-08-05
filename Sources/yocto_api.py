@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 36141 2019-07-08 17:51:33Z mvuilleu $
+# * $Id: yocto_api.py 36629 2019-07-31 13:03:53Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -837,7 +837,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "36518"
+    YOCTO_API_BUILD_NO = "36692"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2859,7 +2859,13 @@ class YDataStream(object):
         if val == 0xffff:
             val = 0
         self._nRows = val
-        self._duration = self._nRows * self._dataSamplesInterval
+        if self._nRows > 0:
+            if self._firstMeasureDuration > 0:
+                self._duration = self._firstMeasureDuration + (self._nRows - 1) * self._dataSamplesInterval
+            else:
+                self._duration = self._nRows * self._dataSamplesInterval
+        else:
+            self._duration = 0
         # // precompute decoding parameters
         iCalib = dataset._get_calibration()
         self._caltyp = iCalib[0]
@@ -5345,14 +5351,15 @@ class YModule(YFunction):
 
     def get_productRelease(self):
         """
-        Returns the hardware release version of the module.
+        Returns the release number of the module hardware, preprogrammed at the factory.
+        The original hardware release returns value 1, revision B returns value 2, etc.
 
-        @return an integer corresponding to the hardware release version of the module
+        @return an integer corresponding to the release number of the module hardware, preprogrammed at the factory
 
         On failure, throws an exception or returns YModule.PRODUCTRELEASE_INVALID.
         """
         # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YModule.PRODUCTRELEASE_INVALID
         res = self._productRelease
@@ -5570,6 +5577,19 @@ class YModule(YFunction):
             obj = YModule(cleanHwId)
             YFunction._AddToCache("Module", cleanHwId, obj)
         return obj
+
+    def get_productNameAndRevision(self):
+        # prodname
+        # prodrel
+        # fullname
+
+        prodname = self.get_productName()
+        prodrel = self.get_productRelease()
+        if prodrel > 1:
+            fullname = "" + prodname + " rev. " + str(chr(64+prodrel))
+        else:
+            fullname = prodname
+        return fullname
 
     def saveToFlash(self):
         """

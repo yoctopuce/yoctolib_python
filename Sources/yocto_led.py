@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_led.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_led.py 36554 2019-07-29 12:21:31Z mvuilleu $
 #
 #  Implements yFindLed(), the high-level API for Led functions
 #
@@ -138,7 +138,8 @@ class YLed(YFunction):
 
     def set_luminosity(self, newval):
         """
-        Changes the current LED intensity (in per cent).
+        Changes the current LED intensity (in per cent). Remember to call the
+        saveToFlash() method of the module if the modification must be kept.
 
         @param newval : an integer corresponding to the current LED intensity (in per cent)
 
