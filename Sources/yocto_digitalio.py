@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_digitalio.py 33722 2018-12-14 15:04:43Z seb $
+#  $Id: yocto_digitalio.py 37149 2019-09-12 21:24:53Z mvuilleu $
 #
 #  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #
@@ -285,7 +285,7 @@ class YDigitalIO(YFunction):
         On failure, throws an exception or returns YDigitalIO.PORTSIZE_INVALID.
         """
         # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDigitalIO.PORTSIZE_INVALID
         res = self._portSize

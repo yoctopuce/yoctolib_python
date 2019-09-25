@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 36629 2019-07-31 13:03:53Z seb $
+# * $Id: yocto_api.py 37230 2019-09-20 08:43:51Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -738,28 +738,55 @@ class YAPIContext(object):
     #--- (generated code: YAPIContext implementation)
     def SetDeviceListValidity(self, deviceListValidity):
         """
-        Change the time between each forced enumeration of the YoctoHub used.
-        By default, the library performs a complete enumeration every 10 seconds.
-        To reduce network traffic it is possible to increase this delay.
-        This is particularly useful when a YoctoHub is connected to a GSM network
-        where the traffic is charged. This setting does not affect modules connected by USB,
-        nor the operation of arrival/removal callbacks.
-        Note: This function must be called after yInitAPI.
+        Modifies the delay between each forced enumeration of the used YoctoHubs.
+        By default, the library performs a full enumeration every 10 seconds.
+        To reduce network traffic, you can increase this delay.
+        It's particularly useful when a YoctoHub is connected to the GSM network
+        where traffic is billed. This parameter doesn't impact modules connected by USB,
+        nor the working of module arrival/removal callbacks.
+        Note: you must call this function after yInitAPI.
 
-        @param deviceListValidity : number of seconds between each enumeration.
+        @param deviceListValidity : nubmer of seconds between each enumeration.
         @noreturn
         """
         YAPI._yapiSetNetDevListValidity(deviceListValidity)
 
     def GetDeviceListValidity(self):
         """
-        Returns the time between each forced enumeration of the YoctoHub used.
-        Note: This function must be called after yInitAPI.
+        Returns the delay between each forced enumeration of the used YoctoHubs.
+        Note: you must call this function after yInitAPI.
 
         @return the number of seconds between each enumeration.
         """
         # res
         res = YAPI._yapiGetNetDevListValidity()
+        return res
+
+    def SetNetworkTimeout(self, networkMsTimeout):
+        """
+        Modifies the network connection delay for YAPI.RegisterHub() and
+        YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+        which are accessible through the network. By default, this delay is of 20000 milliseconds,
+        but depending or you network you may want to change this delay.
+        For example if your network infrastructure uses a GSM connection.
+
+        @param networkMsTimeout : the network connection delay in milliseconds.
+        @noreturn
+        """
+        YAPI._yapiSetNetworkTimeout(networkMsTimeout)
+
+    def GetNetworkTimeout(self):
+        """
+        Returns the network connection delay for YAPI.RegisterHub() and
+        YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+        which are accessible through the network. By default, this delay is of 20000 milliseconds,
+        but depending or you network you may want to change this delay.
+        For example if your network infrastructure uses a GSM connection.
+
+        @return the network connection delay in milliseconds.
+        """
+        # res
+        res = YAPI._yapiGetNetworkTimeout()
         return res
 
     def SetCacheValidity(self, cacheValidityMs):
@@ -837,7 +864,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "36692"
+    YOCTO_API_BUILD_NO = "37304"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1209,6 +1236,15 @@ class YAPI:
         YAPI._yapiIsModuleWritable = YAPI._yApiCLib.yapiIsModuleWritable
         YAPI._yapiIsModuleWritable.restypes = ctypes.c_int
         YAPI._yapiIsModuleWritable.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+        YAPI._yapiGetDLLPath = YAPI._yApiCLib.yapiGetDLLPath
+        YAPI._yapiGetDLLPath.restypes = ctypes.c_int
+        YAPI._yapiGetDLLPath.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
+        YAPI._yapiSetNetworkTimeout = YAPI._yApiCLib.yapiSetNetworkTimeout
+        YAPI._yapiSetNetworkTimeout.restypes = None
+        YAPI._yapiSetNetworkTimeout.argtypes = [ctypes.c_int]
+        YAPI._yapiGetNetworkTimeout = YAPI._yApiCLib.yapiGetNetworkTimeout
+        YAPI._yapiGetNetworkTimeout.restypes = ctypes.c_int
+        YAPI._yapiGetNetworkTimeout.argtypes = []
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
@@ -1396,15 +1432,15 @@ class YAPI:
     @staticmethod
     def SetDeviceListValidity(deviceListValidity):
         """
-        Change the time between each forced enumeration of the YoctoHub used.
-        By default, the library performs a complete enumeration every 10 seconds.
-        To reduce network traffic it is possible to increase this delay.
-        This is particularly useful when a YoctoHub is connected to a GSM network
-        where the traffic is charged. This setting does not affect modules connected by USB,
-        nor the operation of arrival/removal callbacks.
-        Note: This function must be called after yInitAPI.
+        Modifies the delay between each forced enumeration of the used YoctoHubs.
+        By default, the library performs a full enumeration every 10 seconds.
+        To reduce network traffic, you can increase this delay.
+        It's particularly useful when a YoctoHub is connected to the GSM network
+        where traffic is billed. This parameter doesn't impact modules connected by USB,
+        nor the working of module arrival/removal callbacks.
+        Note: you must call this function after yInitAPI.
 
-        @param deviceListValidity : number of seconds between each enumeration.
+        @param deviceListValidity : nubmer of seconds between each enumeration.
         @noreturn
         """
         YAPI._yapiContext.SetDeviceListValidity(deviceListValidity)
@@ -1412,12 +1448,39 @@ class YAPI:
     @staticmethod
     def GetDeviceListValidity():
         """
-        Returns the time between each forced enumeration of the YoctoHub used.
-        Note: This function must be called after yInitAPI.
+        Returns the delay between each forced enumeration of the used YoctoHubs.
+        Note: you must call this function after yInitAPI.
 
         @return the number of seconds between each enumeration.
         """
         return YAPI._yapiContext.GetDeviceListValidity()
+
+    @staticmethod
+    def SetNetworkTimeout(networkMsTimeout):
+        """
+        Modifies the network connection delay for YAPI.RegisterHub() and
+        YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+        which are accessible through the network. By default, this delay is of 20000 milliseconds,
+        but depending or you network you may want to change this delay.
+        For example if your network infrastructure uses a GSM connection.
+
+        @param networkMsTimeout : the network connection delay in milliseconds.
+        @noreturn
+        """
+        YAPI._yapiContext.SetNetworkTimeout(networkMsTimeout)
+
+    @staticmethod
+    def GetNetworkTimeout():
+        """
+        Returns the network connection delay for YAPI.RegisterHub() and
+        YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+        which are accessible through the network. By default, this delay is of 20000 milliseconds,
+        but depending or you network you may want to change this delay.
+        For example if your network infrastructure uses a GSM connection.
+
+        @return the network connection delay in milliseconds.
+        """
+        return YAPI._yapiContext.GetNetworkTimeout()
 
     @staticmethod
     def SetCacheValidity(cacheValidityMs):
@@ -5921,8 +5984,7 @@ class YModule(YFunction):
                 data = self._decode_json_string(data)
                 self._upload(name, YAPI._hexStrToBin(data))
         # // Apply settings a second time for file-dependent settings and dynamic sensor nodes
-        self.set_allSettings(YString2Byte(json_api))
-        return YAPI.SUCCESS
+        return self.set_allSettings(YString2Byte(json_api))
 
     def hasFunction(self, funcId):
         """
@@ -6175,6 +6237,25 @@ class YModule(YFunction):
                     param = str(round(1000 * (calibData[3] - calibData[1]) / calibData[2] - calibData[0]))
         return param
 
+    def _tryExec(self, url):
+        # res
+        # done
+        res = YAPI.SUCCESS
+        done = 1
+        try:
+            self._download(url)
+        except:
+            done = 0
+        if done == 0:
+            # // retry silently after a short wait
+            try:
+                YAPI.Sleep(500)
+                self._download(url)
+            except:
+                # // second failure, return error code
+                res = self.get_errorType()
+        return res
+
     def set_allSettings(self, settings):
         """
         Restores all the settings of the device. Useful to restore all the logical names and calibrations parameters
@@ -6203,6 +6284,8 @@ class YModule(YFunction):
         # leng
         # i
         # j
+        # subres
+        # res
         # njpath
         # jpath
         # fun
@@ -6219,6 +6302,7 @@ class YModule(YFunction):
         # each_str
         # do_update
         # found
+        res = YAPI.SUCCESS
         tmp = YByte2String(settings)
         tmp = self._get_json_path(tmp, "api")
         if not (tmp == ""):
@@ -6248,7 +6332,12 @@ class YModule(YFunction):
 
 
 
-        actualSettings = self._download("api.json")
+        try:
+            actualSettings = self._download("api.json")
+        except:
+            # // retry silently after a short wait
+            YAPI.Sleep(500)
+            actualSettings = self._download("api.json")
         actualSettings = self._flattenJsonStruct(actualSettings)
         new_dslist = self._json_get_array(actualSettings)
 
@@ -6322,6 +6411,8 @@ class YModule(YFunction):
                 do_update = False
             if (do_update) and (attr == "message"):
                 do_update = False
+            if (do_update) and (attr == "signalValue"):
+                do_update = False
             if (do_update) and (attr == "currentValue"):
                 do_update = False
             if (do_update) and (attr == "currentRawValue"):
@@ -6357,6 +6448,10 @@ class YModule(YFunction):
             if (do_update) and (attr == "txCount"):
                 do_update = False
             if (do_update) and (attr == "msgCount"):
+                do_update = False
+            if (do_update) and (attr == "rxMsgCount"):
+                do_update = False
+            if (do_update) and (attr == "txMsgCount"):
                 do_update = False
             if do_update:
                 do_update = False
@@ -6401,19 +6496,25 @@ class YModule(YFunction):
                         j = j + 1
                     newval = self.calibConvert(old_calib, new_val_arr[i], unit_name, sensorType)
                     url = "api/" + fun + ".json?" + attr + "=" + self._escapeAttr(newval)
-                    self._download(url)
+                    subres = self._tryExec(url)
+                    if (res == YAPI.SUCCESS) and (subres != YAPI.SUCCESS):
+                        res = subres
                 else:
                     url = "api/" + fun + ".json?" + attr + "=" + self._escapeAttr(oldval)
                     if attr == "resolution":
                         restoreLast.append(url)
                     else:
-                        self._download(url)
+                        subres = self._tryExec(url)
+                        if (res == YAPI.SUCCESS) and (subres != YAPI.SUCCESS):
+                            res = subres
             i = i + 1
 
         for y in restoreLast:
-            self._download(y)
+            subres = self._tryExec(y)
+            if (res == YAPI.SUCCESS) and (subres != YAPI.SUCCESS):
+                res = subres
         self.clearCache()
-        return YAPI.SUCCESS
+        return res
 
     def get_hardwareId(self):
         """
@@ -7068,6 +7169,7 @@ class YSensor(YFunction):
         the value "OFF". Note that setting the  datalogger recording frequency
         to a greater value than the sensor native sampling frequency is useless,
         and even counterproductive: those two frequencies are not related.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : a string corresponding to the datalogger recording frequency for this function
 
@@ -7105,6 +7207,7 @@ class YSensor(YFunction):
         notification frequency to a greater value than the sensor native
         sampling frequency is unless, and even counterproductive: those two
         frequencies are not related.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : a string corresponding to the timed value notification frequency for this function
 
@@ -7135,6 +7238,7 @@ class YSensor(YFunction):
     def set_advMode(self, newval):
         """
         Changes the measuring mode used for the advertised value pushed to the parent hub.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : a value among YSensor.ADVMODE_IMMEDIATE, YSensor.ADVMODE_PERIOD_AVG,
         YSensor.ADVMODE_PERIOD_MIN and YSensor.ADVMODE_PERIOD_MAX corresponding to the measuring mode used
@@ -7163,6 +7267,7 @@ class YSensor(YFunction):
         """
         Changes the resolution of the measured physical values. The resolution corresponds to the numerical precision
         when displaying value. It does not change the precision of the measure itself.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : a floating point number corresponding to the resolution of the measured physical values
 
@@ -7177,6 +7282,7 @@ class YSensor(YFunction):
         """
         Returns the resolution of the measured values. The resolution corresponds to the numerical precision
         of the measures, which is not always the same as the actual precision of the sensor.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @return a floating point number corresponding to the resolution of the measured values
 

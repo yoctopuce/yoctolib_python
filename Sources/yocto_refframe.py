@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_refframe.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_refframe.py 37000 2019-09-03 06:40:17Z mvuilleu $
 #
 #  Implements yFindRefFrame(), the high-level API for RefFrame functions
 #
@@ -194,6 +194,15 @@ class YRefFrame(YFunction):
         return self._setAttr("calibrationParam", rest_val)
 
     def get_fusionMode(self):
+        """
+        Returns the BNO055 fusion mode. Note this feature is only availabe on Yocto-3D-V2.
+
+        @return a value among YRefFrame.FUSIONMODE_NDOF, YRefFrame.FUSIONMODE_NDOF_FMC_OFF,
+        YRefFrame.FUSIONMODE_M4G, YRefFrame.FUSIONMODE_COMPASS and YRefFrame.FUSIONMODE_IMU corresponding
+        to the BNO055 fusion mode
+
+        On failure, throws an exception or returns YRefFrame.FUSIONMODE_INVALID.
+        """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
@@ -202,6 +211,17 @@ class YRefFrame(YFunction):
         return res
 
     def set_fusionMode(self, newval):
+        """
+        Change the BNO055 fusion mode. Note: this feature is only availabe on Yocto-3D-V2.
+        Remember to call the matching module saveToFlash() method to save the setting permanently.
+
+        @param newval : a value among YRefFrame.FUSIONMODE_NDOF, YRefFrame.FUSIONMODE_NDOF_FMC_OFF,
+        YRefFrame.FUSIONMODE_M4G, YRefFrame.FUSIONMODE_COMPASS and YRefFrame.FUSIONMODE_IMU
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
         rest_val = str(newval)
         return self._setAttr("fusionMode", rest_val)
 

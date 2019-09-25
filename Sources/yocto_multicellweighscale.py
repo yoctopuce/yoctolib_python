@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multicellweighscale.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_multicellweighscale.py 37165 2019-09-13 16:57:27Z mvuilleu $
 #
 #  Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
 #
@@ -146,7 +146,8 @@ class YMultiCellWeighScale(YSensor):
 
     def set_cellCount(self, newval):
         """
-        Changes the number of load cells in use.
+        Changes the number of load cells in use. Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
         @param newval : an integer corresponding to the number of load cells in use
 
@@ -176,6 +177,8 @@ class YMultiCellWeighScale(YSensor):
     def set_excitation(self, newval):
         """
         Changes the current load cell bridge excitation method.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : a value among YMultiCellWeighScale.EXCITATION_OFF,
         YMultiCellWeighScale.EXCITATION_DC and YMultiCellWeighScale.EXCITATION_AC corresponding to the
@@ -195,6 +198,8 @@ class YMultiCellWeighScale(YSensor):
         The averaged temperature is updated every 10 seconds, by applying this adaptation rate
         to the difference between the measures ambient temperature and the current compensation
         temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : a floating point number corresponding to the averaged temperature update rate, in per mille
 
@@ -229,7 +234,9 @@ class YMultiCellWeighScale(YSensor):
         Changes the temperature change update rate, in per mille.
         The temperature change is updated every 10 seconds, by applying this adaptation rate
         to the difference between the measures ambient temperature and the current temperature used for
-        change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+        change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 per mille.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : a floating point number corresponding to the temperature change update rate, in per mille
 
@@ -245,7 +252,7 @@ class YMultiCellWeighScale(YSensor):
         Returns the temperature change update rate, in per mille.
         The temperature change is updated every 10 seconds, by applying this adaptation rate
         to the difference between the measures ambient temperature and the current temperature used for
-        change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+        change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 per mille.
 
         @return a floating point number corresponding to the temperature change update rate, in per mille
 
@@ -309,6 +316,8 @@ class YMultiCellWeighScale(YSensor):
         Changes the zero tracking threshold value. When this threshold is larger than
         zero, any measure under the threshold will automatically be ignored and the
         zero compensation will be updated.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : a floating point number corresponding to the zero tracking threshold value
 

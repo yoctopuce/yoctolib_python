@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 36048 2019-06-28 17:43:51Z mvuilleu $
+#  $Id: yocto_spiport.py 37141 2019-09-12 12:37:10Z mvuilleu $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -104,8 +104,8 @@ class YSpiPort(YFunction):
         self._currentJob = YSpiPort.CURRENTJOB_INVALID
         self._startupJob = YSpiPort.STARTUPJOB_INVALID
         self._command = YSpiPort.COMMAND_INVALID
-        self._voltageLevel = YSpiPort.VOLTAGELEVEL_INVALID
         self._protocol = YSpiPort.PROTOCOL_INVALID
+        self._voltageLevel = YSpiPort.VOLTAGELEVEL_INVALID
         self._spiMode = YSpiPort.SPIMODE_INVALID
         self._ssPolarity = YSpiPort.SSPOLARITY_INVALID
         self._shiftSampling = YSpiPort.SHIFTSAMPLING_INVALID
@@ -134,10 +134,10 @@ class YSpiPort(YFunction):
             self._startupJob = json_val.getString("startupJob")
         if json_val.has("command"):
             self._command = json_val.getString("command")
-        if json_val.has("voltageLevel"):
-            self._voltageLevel = json_val.getInt("voltageLevel")
         if json_val.has("protocol"):
             self._protocol = json_val.getString("protocol")
+        if json_val.has("voltageLevel"):
+            self._voltageLevel = json_val.getInt("voltageLevel")
         if json_val.has("spiMode"):
             self._spiMode = json_val.getString("spiMode")
         if json_val.has("ssPolarity"):
@@ -253,11 +253,10 @@ class YSpiPort(YFunction):
 
     def set_currentJob(self, newval):
         """
-        Changes the job to use when the device is powered on.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
+        Selects a job file to run immediately. If an empty string is
+        given as argument, stops running current job file.
 
-        @param newval : a string corresponding to the job to use when the device is powered on
+        @param newval : a string
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -308,44 +307,6 @@ class YSpiPort(YFunction):
         rest_val = newval
         return self._setAttr("command", rest_val)
 
-    def get_voltageLevel(self):
-        """
-        Returns the voltage level used on the serial line.
-
-        @return a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
-        YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
-        YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
-        corresponding to the voltage level used on the serial line
-
-        On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
-        """
-        # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSpiPort.VOLTAGELEVEL_INVALID
-        res = self._voltageLevel
-        return res
-
-    def set_voltageLevel(self, newval):
-        """
-        Changes the voltage type used on the serial line. Valid
-        values  will depend on the Yoctopuce device model featuring
-        the serial port feature.  Check your device documentation
-        to find out which values are valid for that specific model.
-        Trying to set an invalid value will have no effect.
-
-        @param newval : a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
-        YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
-        YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
-        corresponding to the voltage type used on the serial line
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = str(newval)
-        return self._setAttr("voltageLevel", rest_val)
-
     def get_protocol(self):
         """
         Returns the type of protocol used over the serial line, as a string.
@@ -374,6 +335,8 @@ class YSpiPort(YFunction):
         "Byte" for a continuous binary stream.
         The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
         is always at lest the specified number of milliseconds between each bytes sent.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : a string corresponding to the type of protocol used over the serial line
 
@@ -383,6 +346,46 @@ class YSpiPort(YFunction):
         """
         rest_val = newval
         return self._setAttr("protocol", rest_val)
+
+    def get_voltageLevel(self):
+        """
+        Returns the voltage level used on the serial line.
+
+        @return a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
+        YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
+        YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
+        corresponding to the voltage level used on the serial line
+
+        On failure, throws an exception or returns YSpiPort.VOLTAGELEVEL_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpiPort.VOLTAGELEVEL_INVALID
+        res = self._voltageLevel
+        return res
+
+    def set_voltageLevel(self, newval):
+        """
+        Changes the voltage type used on the serial line. Valid
+        values  will depend on the Yoctopuce device model featuring
+        the serial port feature.  Check your device documentation
+        to find out which values are valid for that specific model.
+        Trying to set an invalid value will have no effect.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+
+        @param newval : a value among YSpiPort.VOLTAGELEVEL_OFF, YSpiPort.VOLTAGELEVEL_TTL3V,
+        YSpiPort.VOLTAGELEVEL_TTL3VR, YSpiPort.VOLTAGELEVEL_TTL5V, YSpiPort.VOLTAGELEVEL_TTL5VR,
+        YSpiPort.VOLTAGELEVEL_RS232, YSpiPort.VOLTAGELEVEL_RS485 and YSpiPort.VOLTAGELEVEL_TTL1V8
+        corresponding to the voltage type used on the serial line
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("voltageLevel", rest_val)
 
     def get_spiMode(self):
         """
@@ -407,6 +410,8 @@ class YSpiPort(YFunction):
         Changes the SPI port communication parameters, with a string such as
         "125000,0,msb". The string includes the baud rate, the SPI mode (between
         0 and 3) and the bit order.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : a string corresponding to the SPI port communication parameters, with a string such as
                 "125000,0,msb"
@@ -437,6 +442,8 @@ class YSpiPort(YFunction):
     def set_ssPolarity(self, newval):
         """
         Changes the SS line polarity.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : either YSpiPort.SSPOLARITY_ACTIVE_LOW or YSpiPort.SSPOLARITY_ACTIVE_HIGH, according
         to the SS line polarity
@@ -469,6 +476,8 @@ class YSpiPort(YFunction):
         Changes the SDI line sampling shift. When disabled, SDI line is
         sampled in the middle of data output time. When enabled, SDI line is
         samples at the end of data output time.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : either YSpiPort.SHIFTSAMPLING_OFF or YSpiPort.SHIFTSAMPLING_ON, according to the
         SDI line sampling shift

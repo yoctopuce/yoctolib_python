@@ -1,12 +1,12 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 32630 2018-10-10 14:11:07Z seb $
+#  $Id: svn_id $
 #
-#  An example that show how to use a  Yocto-SPI
+#  An example that show how to use a  Yocto-I2C
 #
 #  You can find more information on our web site:
-#   Yocto-SPI documentation:
-#      https://www.yoctopuce.com/EN/products/yocto-spi/doc.html
+#   Yocto-I2C documentation:
+#      https://www.yoctopuce.com/EN/products/yocto-i2c/doc.html
 #   Python API Reference:
 #      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
 #
@@ -57,7 +57,7 @@ else:
 
 # sample code reading MCP9804 temperature sensor
 i2cPort.set_i2cMode("400kbps")
-i2cPort.set_voltageLevel(YI2cPort.VOLTAGELEVEL_TTL3V)
+i2cPort.set_i2cVoltageLevel(YI2cPort.I2CVOLTAGELEVEL_3V3)
 i2cPort.reset()
 # do not forget to configure the powerOutput and
 # of the Yocto-I2C as well if used

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_proximity.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_proximity.py 37149 2019-09-12 21:24:53Z mvuilleu $
 #
 #  Implements yFindProximity(), the high-level API for Proximity functions
 #
@@ -161,6 +161,7 @@ class YProximity(YSensor):
         """
         Changes the threshold used to determine the logical state of the proximity sensor, when considered
         as a binary input (on/off).
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : an integer corresponding to the threshold used to determine the logical state of
         the proximity sensor, when considered
@@ -195,6 +196,7 @@ class YProximity(YSensor):
         """
         Changes the hysteresis used to determine the logical state of the proximity sensor, when considered
         as a binary input (on/off).
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : an integer corresponding to the hysteresis used to determine the logical state of
         the proximity sensor, when considered
@@ -227,6 +229,7 @@ class YProximity(YSensor):
         """
         Changes the minimal detection duration before signalling a presence event. Any shorter detection is
         considered as noise or bounce (false positive) and filtered out.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : an integer corresponding to the minimal detection duration before signalling a presence event
 
@@ -257,6 +260,7 @@ class YProximity(YSensor):
         """
         Changes the minimal detection duration before signalling a removal event. Any shorter detection is
         considered as noise or bounce (false positive) and filtered out.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : an integer corresponding to the minimal detection duration before signalling a removal event
 
@@ -381,6 +385,7 @@ class YProximity(YSensor):
         get_currentValue function and callbacks.
         The edge count value is limited to the 6 lowest digits. For values greater than one million, use
         get_pulseCounter().
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : a value among YProximity.PROXIMITYREPORTMODE_NUMERIC,
         YProximity.PROXIMITYREPORTMODE_PRESENCE and YProximity.PROXIMITYREPORTMODE_PULSECOUNT corresponding

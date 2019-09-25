@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 33877 2018-12-26 12:19:48Z seb $
+#* $Id: yocto_display.py 37000 2019-09-03 06:40:17Z mvuilleu $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -751,7 +751,7 @@ class YDisplay(YFunction):
         On failure, throws an exception or returns YDisplay.DISPLAYWIDTH_INVALID.
         """
         # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDisplay.DISPLAYWIDTH_INVALID
         res = self._displayWidth
@@ -766,7 +766,7 @@ class YDisplay(YFunction):
         On failure, throws an exception or returns YDisplay.DISPLAYHEIGHT_INVALID.
         """
         # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YDisplay.DISPLAYHEIGHT_INVALID
         res = self._displayHeight

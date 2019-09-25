@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_wakeupschedule.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_wakeupschedule.py 37000 2019-09-03 06:40:17Z mvuilleu $
 #
 #  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #
@@ -119,6 +119,8 @@ class YWakeUpSchedule(YFunction):
     def set_minutesA(self, newval):
         """
         Changes the minutes in the 00-29 interval when a wake up must take place.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : an integer corresponding to the minutes in the 00-29 interval when a wake up must take place
 
@@ -147,6 +149,8 @@ class YWakeUpSchedule(YFunction):
     def set_minutesB(self, newval):
         """
         Changes the minutes in the 30-59 interval when a wake up must take place.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : an integer corresponding to the minutes in the 30-59 interval when a wake up must take place
 
@@ -175,6 +179,8 @@ class YWakeUpSchedule(YFunction):
     def set_hours(self, newval):
         """
         Changes the hours when a wake up must take place.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : an integer corresponding to the hours when a wake up must take place
 
@@ -203,6 +209,8 @@ class YWakeUpSchedule(YFunction):
     def set_weekDays(self, newval):
         """
         Changes the days of the week when a wake up must take place.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : an integer corresponding to the days of the week when a wake up must take place
 
@@ -231,6 +239,8 @@ class YWakeUpSchedule(YFunction):
     def set_monthDays(self, newval):
         """
         Changes the days of the month when a wake up must take place.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : an integer corresponding to the days of the month when a wake up must take place
 
@@ -259,6 +269,8 @@ class YWakeUpSchedule(YFunction):
     def set_months(self, newval):
         """
         Changes the months when a wake up must take place.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : an integer corresponding to the months when a wake up must take place
 

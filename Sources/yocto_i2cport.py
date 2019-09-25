@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_i2cport.py 36207 2019-07-10 20:46:18Z mvuilleu $
+#  $Id: yocto_i2cport.py 37168 2019-09-13 17:25:10Z mvuilleu $
 #
 #  Implements yFindI2cPort(), the high-level API for I2cPort functions
 #
@@ -73,15 +73,10 @@ class YI2cPort(YFunction):
     COMMAND_INVALID = YAPI.INVALID_STRING
     PROTOCOL_INVALID = YAPI.INVALID_STRING
     I2CMODE_INVALID = YAPI.INVALID_STRING
-    VOLTAGELEVEL_OFF = 0
-    VOLTAGELEVEL_TTL3V = 1
-    VOLTAGELEVEL_TTL3VR = 2
-    VOLTAGELEVEL_TTL5V = 3
-    VOLTAGELEVEL_TTL5VR = 4
-    VOLTAGELEVEL_RS232 = 5
-    VOLTAGELEVEL_RS485 = 6
-    VOLTAGELEVEL_TTL1V8 = 7
-    VOLTAGELEVEL_INVALID = -1
+    I2CVOLTAGELEVEL_OFF = 0
+    I2CVOLTAGELEVEL_3V3 = 1
+    I2CVOLTAGELEVEL_1V8 = 2
+    I2CVOLTAGELEVEL_INVALID = -1
     #--- (end of YI2cPort definitions)
 
     def __init__(self, func):
@@ -98,8 +93,8 @@ class YI2cPort(YFunction):
         self._currentJob = YI2cPort.CURRENTJOB_INVALID
         self._startupJob = YI2cPort.STARTUPJOB_INVALID
         self._command = YI2cPort.COMMAND_INVALID
-        self._voltageLevel = YI2cPort.VOLTAGELEVEL_INVALID
         self._protocol = YI2cPort.PROTOCOL_INVALID
+        self._i2cVoltageLevel = YI2cPort.I2CVOLTAGELEVEL_INVALID
         self._i2cMode = YI2cPort.I2CMODE_INVALID
         self._rxptr = 0
         self._rxbuff = ''
@@ -126,10 +121,10 @@ class YI2cPort(YFunction):
             self._startupJob = json_val.getString("startupJob")
         if json_val.has("command"):
             self._command = json_val.getString("command")
-        if json_val.has("voltageLevel"):
-            self._voltageLevel = json_val.getInt("voltageLevel")
         if json_val.has("protocol"):
             self._protocol = json_val.getString("protocol")
+        if json_val.has("i2cVoltageLevel"):
+            self._i2cVoltageLevel = json_val.getInt("i2cVoltageLevel")
         if json_val.has("i2cMode"):
             self._i2cMode = json_val.getString("i2cMode")
         super(YI2cPort, self)._parseAttr(json_val)
@@ -241,11 +236,10 @@ class YI2cPort(YFunction):
 
     def set_currentJob(self, newval):
         """
-        Changes the job to use when the device is powered on.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
+        Selects a job file to run immediately. If an empty string is
+        given as argument, stops running current job file.
 
-        @param newval : a string corresponding to the job to use when the device is powered on
+        @param newval : a string
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -296,52 +290,14 @@ class YI2cPort(YFunction):
         rest_val = newval
         return self._setAttr("command", rest_val)
 
-    def get_voltageLevel(self):
-        """
-        Returns the voltage level used on the serial line.
-
-        @return a value among YI2cPort.VOLTAGELEVEL_OFF, YI2cPort.VOLTAGELEVEL_TTL3V,
-        YI2cPort.VOLTAGELEVEL_TTL3VR, YI2cPort.VOLTAGELEVEL_TTL5V, YI2cPort.VOLTAGELEVEL_TTL5VR,
-        YI2cPort.VOLTAGELEVEL_RS232, YI2cPort.VOLTAGELEVEL_RS485 and YI2cPort.VOLTAGELEVEL_TTL1V8
-        corresponding to the voltage level used on the serial line
-
-        On failure, throws an exception or returns YI2cPort.VOLTAGELEVEL_INVALID.
-        """
-        # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YI2cPort.VOLTAGELEVEL_INVALID
-        res = self._voltageLevel
-        return res
-
-    def set_voltageLevel(self, newval):
-        """
-        Changes the voltage type used on the serial line. Valid
-        values  will depend on the Yoctopuce device model featuring
-        the serial port feature.  Check your device documentation
-        to find out which values are valid for that specific model.
-        Trying to set an invalid value will have no effect.
-
-        @param newval : a value among YI2cPort.VOLTAGELEVEL_OFF, YI2cPort.VOLTAGELEVEL_TTL3V,
-        YI2cPort.VOLTAGELEVEL_TTL3VR, YI2cPort.VOLTAGELEVEL_TTL5V, YI2cPort.VOLTAGELEVEL_TTL5VR,
-        YI2cPort.VOLTAGELEVEL_RS232, YI2cPort.VOLTAGELEVEL_RS485 and YI2cPort.VOLTAGELEVEL_TTL1V8
-        corresponding to the voltage type used on the serial line
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = str(newval)
-        return self._setAttr("voltageLevel", rest_val)
-
     def get_protocol(self):
         """
-        Returns the type of protocol used over the serial line, as a string.
+        Returns the type of protocol used to send I2C messages, as a string.
         Possible values are
         "Line" for messages separated by LF or
         "Char" for continuous stream of codes.
 
-        @return a string corresponding to the type of protocol used over the serial line, as a string
+        @return a string corresponding to the type of protocol used to send I2C messages, as a string
 
         On failure, throws an exception or returns YI2cPort.PROTOCOL_INVALID.
         """
@@ -354,14 +310,16 @@ class YI2cPort(YFunction):
 
     def set_protocol(self, newval):
         """
-        Changes the type of protocol used over the serial line.
+        Changes the type of protocol used to send I2C messages.
         Possible values are
         "Line" for messages separated by LF or
         "Char" for continuous stream of codes.
         The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
         is always at lest the specified number of milliseconds between each message sent.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
-        @param newval : a string corresponding to the type of protocol used over the serial line
+        @param newval : a string corresponding to the type of protocol used to send I2C messages
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -370,14 +328,48 @@ class YI2cPort(YFunction):
         rest_val = newval
         return self._setAttr("protocol", rest_val)
 
+    def get_i2cVoltageLevel(self):
+        """
+        Returns the voltage level used on the I2C bus.
+
+        @return a value among YI2cPort.I2CVOLTAGELEVEL_OFF, YI2cPort.I2CVOLTAGELEVEL_3V3 and
+        YI2cPort.I2CVOLTAGELEVEL_1V8 corresponding to the voltage level used on the I2C bus
+
+        On failure, throws an exception or returns YI2cPort.I2CVOLTAGELEVEL_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YI2cPort.I2CVOLTAGELEVEL_INVALID
+        res = self._i2cVoltageLevel
+        return res
+
+    def set_i2cVoltageLevel(self, newval):
+        """
+        Changes the voltage level used on the I2C bus.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+
+        @param newval : a value among YI2cPort.I2CVOLTAGELEVEL_OFF, YI2cPort.I2CVOLTAGELEVEL_3V3 and
+        YI2cPort.I2CVOLTAGELEVEL_1V8 corresponding to the voltage level used on the I2C bus
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("i2cVoltageLevel", rest_val)
+
     def get_i2cMode(self):
         """
         Returns the SPI port communication parameters, as a string such as
-        "400kbps,2000ms". The string includes the baud rate and  th  e recovery delay
-        after communications errors.
+        "400kbps,2000ms,NoRestart". The string includes the baud rate, the
+        recovery delay after communications errors, and if needed the option
+        NoRestart to use a Stop/Start sequence instead of the
+        Restart state when performing read on the I2C bus.
 
         @return a string corresponding to the SPI port communication parameters, as a string such as
-                "400kbps,2000ms"
+                "400kbps,2000ms,NoRestart"
 
         On failure, throws an exception or returns YI2cPort.I2CMODE_INVALID.
         """
@@ -391,8 +383,12 @@ class YI2cPort(YFunction):
     def set_i2cMode(self, newval):
         """
         Changes the SPI port communication parameters, with a string such as
-        "400kbps,2000ms". The string includes the baud rate and the recovery delay
-        after communications errors.
+        "400kbps,2000ms". The string includes the baud rate, the
+        recovery delay after communications errors, and if needed the option
+        NoRestart to use a Stop/Start sequence instead of the
+        Restart state when performing read on the I2C bus.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : a string corresponding to the SPI port communication parameters, with a string such as
                 "400kbps,2000ms"
@@ -628,7 +624,7 @@ class YI2cPort(YFunction):
         """
         Clears the serial port buffer and resets counters to zero.
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -646,7 +642,7 @@ class YI2cPort(YFunction):
         @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
         @param buff : the binary buffer to be sent
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -665,15 +661,15 @@ class YI2cPort(YFunction):
 
         reply = self.queryLine(msg,1000)
         if not (len(reply) > 0):
-            self._throw(YAPI.IO_ERROR, "no response from device")
+            self._throw(YAPI.IO_ERROR, "No response from I2C device")
             return YAPI.IO_ERROR
         idx = reply.find("[N]!")
         if not (idx < 0):
-            self._throw(YAPI.IO_ERROR, "No ACK received")
+            self._throw(YAPI.IO_ERROR, "No I2C ACK received")
             return YAPI.IO_ERROR
         idx = reply.find("!")
         if not (idx < 0):
-            self._throw(YAPI.IO_ERROR, "Protocol error")
+            self._throw(YAPI.IO_ERROR, "I2C protocol error")
             return YAPI.IO_ERROR
         return YAPI.SUCCESS
 
@@ -685,7 +681,7 @@ class YI2cPort(YFunction):
         @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
         @param values : a list of data bytes to be sent
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -704,15 +700,15 @@ class YI2cPort(YFunction):
 
         reply = self.queryLine(msg,1000)
         if not (len(reply) > 0):
-            self._throw(YAPI.IO_ERROR, "no response from device")
+            self._throw(YAPI.IO_ERROR, "No response from I2C device")
             return YAPI.IO_ERROR
         idx = reply.find("[N]!")
         if not (idx < 0):
-            self._throw(YAPI.IO_ERROR, "No ACK received")
+            self._throw(YAPI.IO_ERROR, "No I2C ACK received")
             return YAPI.IO_ERROR
         idx = reply.find("!")
         if not (idx < 0):
-            self._throw(YAPI.IO_ERROR, "Protocol error")
+            self._throw(YAPI.IO_ERROR, "I2C protocol error")
             return YAPI.IO_ERROR
         return YAPI.SUCCESS
 
@@ -751,15 +747,15 @@ class YI2cPort(YFunction):
         reply = self.queryLine(msg,1000)
         rcvbytes = bytearray(0)
         if not (len(reply) > 0):
-            self._throw(YAPI.IO_ERROR, "no response from device")
+            self._throw(YAPI.IO_ERROR, "No response from I2C device")
             return rcvbytes
         idx = reply.find("[N]!")
         if not (idx < 0):
-            self._throw(YAPI.IO_ERROR, "No ACK received")
+            self._throw(YAPI.IO_ERROR, "No I2C ACK received")
             return rcvbytes
         idx = reply.find("!")
         if not (idx < 0):
-            self._throw(YAPI.IO_ERROR, "Protocol error")
+            self._throw(YAPI.IO_ERROR, "I2C protocol error")
             return rcvbytes
         reply = (reply)[len(reply)-2*rcvCount: len(reply)-2*rcvCount + 2*rcvCount]
         rcvbytes = YAPI._hexStrToBin(reply)
@@ -800,15 +796,15 @@ class YI2cPort(YFunction):
 
         reply = self.queryLine(msg,1000)
         if not (len(reply) > 0):
-            self._throw(YAPI.IO_ERROR, "no response from device")
+            self._throw(YAPI.IO_ERROR, "No response from I2C device")
             return res
         idx = reply.find("[N]!")
         if not (idx < 0):
-            self._throw(YAPI.IO_ERROR, "No ACK received")
+            self._throw(YAPI.IO_ERROR, "No I2C ACK received")
             return res
         idx = reply.find("!")
         if not (idx < 0):
-            self._throw(YAPI.IO_ERROR, "Protocol error")
+            self._throw(YAPI.IO_ERROR, "I2C protocol error")
             return res
         reply = (reply)[len(reply)-2*rcvCount: len(reply)-2*rcvCount + 2*rcvCount]
         rcvbytes = YAPI._hexStrToBin(reply)
@@ -838,7 +834,7 @@ class YI2cPort(YFunction):
 
         @param codes : the code stream to send
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -880,7 +876,7 @@ class YI2cPort(YFunction):
 
         @param codes : the code stream to send
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -900,7 +896,7 @@ class YI2cPort(YFunction):
 
         @param code : the byte to send
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -914,7 +910,7 @@ class YI2cPort(YFunction):
 
         @param hexString : a string of hexadecimal byte codes
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -935,7 +931,7 @@ class YI2cPort(YFunction):
 
         @param buff : the binary buffer to send
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -961,7 +957,7 @@ class YI2cPort(YFunction):
 
         @param byteList : a list of byte codes
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """

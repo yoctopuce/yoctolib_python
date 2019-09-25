@@ -1,7 +1,7 @@
-Python v1.10.36692
+Python v1.10.37304
 
-- Add method to get product name and revision
-- Improve network error recovery
-- Fix Invalid end time in datalogger preview.
-- Fix set_xxx() methods that may be dropped if executed just before YAPI::UnregisterHub()
-- Remove unreliable code that find the process name of the application that was locking the USB port (Windows only)
+- Add YAPI.SetNetworkTimeout() and YAPI.GetNetworkTimeout() methods
+- Add missing YI2cPort methods
+- Add robustness to firmware update in case of failure when setting one attribute
+- Fix some comments
+- Fix potential 20s wait in YAPI.UnregisterHub()

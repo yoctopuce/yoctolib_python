@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 36048 2019-06-28 17:43:51Z mvuilleu $
+#* $Id: yocto_serialport.py 37168 2019-09-13 17:25:10Z mvuilleu $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -137,8 +137,8 @@ class YSerialPort(YFunction):
         self._currentJob = YSerialPort.CURRENTJOB_INVALID
         self._startupJob = YSerialPort.STARTUPJOB_INVALID
         self._command = YSerialPort.COMMAND_INVALID
-        self._voltageLevel = YSerialPort.VOLTAGELEVEL_INVALID
         self._protocol = YSerialPort.PROTOCOL_INVALID
+        self._voltageLevel = YSerialPort.VOLTAGELEVEL_INVALID
         self._serialMode = YSerialPort.SERIALMODE_INVALID
         self._rxptr = 0
         self._rxbuff = ''
@@ -165,10 +165,10 @@ class YSerialPort(YFunction):
             self._startupJob = json_val.getString("startupJob")
         if json_val.has("command"):
             self._command = json_val.getString("command")
-        if json_val.has("voltageLevel"):
-            self._voltageLevel = json_val.getInt("voltageLevel")
         if json_val.has("protocol"):
             self._protocol = json_val.getString("protocol")
+        if json_val.has("voltageLevel"):
+            self._voltageLevel = json_val.getInt("voltageLevel")
         if json_val.has("serialMode"):
             self._serialMode = json_val.getString("serialMode")
         super(YSerialPort, self)._parseAttr(json_val)
@@ -280,11 +280,10 @@ class YSerialPort(YFunction):
 
     def set_currentJob(self, newval):
         """
-        Changes the job to use when the device is powered on.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
+        Selects a job file to run immediately. If an empty string is
+        given as argument, stops running current job file.
 
-        @param newval : a string corresponding to the job to use when the device is powered on
+        @param newval : a string
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -335,44 +334,6 @@ class YSerialPort(YFunction):
         rest_val = newval
         return self._setAttr("command", rest_val)
 
-    def get_voltageLevel(self):
-        """
-        Returns the voltage level used on the serial line.
-
-        @return a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
-        YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
-        YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
-        corresponding to the voltage level used on the serial line
-
-        On failure, throws an exception or returns YSerialPort.VOLTAGELEVEL_INVALID.
-        """
-        # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YSerialPort.VOLTAGELEVEL_INVALID
-        res = self._voltageLevel
-        return res
-
-    def set_voltageLevel(self, newval):
-        """
-        Changes the voltage type used on the serial line. Valid
-        values  will depend on the Yoctopuce device model featuring
-        the serial port feature.  Check your device documentation
-        to find out which values are valid for that specific model.
-        Trying to set an invalid value will have no effect.
-
-        @param newval : a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
-        YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
-        YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
-        corresponding to the voltage type used on the serial line
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = str(newval)
-        return self._setAttr("voltageLevel", rest_val)
-
     def get_protocol(self):
         """
         Returns the type of protocol used over the serial line, as a string.
@@ -409,6 +370,8 @@ class YSerialPort(YFunction):
         "Byte" for a continuous binary stream.
         The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
         is always at lest the specified number of milliseconds between each bytes sent.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : a string corresponding to the type of protocol used over the serial line
 
@@ -418,6 +381,46 @@ class YSerialPort(YFunction):
         """
         rest_val = newval
         return self._setAttr("protocol", rest_val)
+
+    def get_voltageLevel(self):
+        """
+        Returns the voltage level used on the serial line.
+
+        @return a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
+        YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
+        YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
+        corresponding to the voltage level used on the serial line
+
+        On failure, throws an exception or returns YSerialPort.VOLTAGELEVEL_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSerialPort.VOLTAGELEVEL_INVALID
+        res = self._voltageLevel
+        return res
+
+    def set_voltageLevel(self, newval):
+        """
+        Changes the voltage type used on the serial line. Valid
+        values  will depend on the Yoctopuce device model featuring
+        the serial port feature.  Check your device documentation
+        to find out which values are valid for that specific model.
+        Trying to set an invalid value will have no effect.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+
+        @param newval : a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
+        YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
+        YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
+        corresponding to the voltage type used on the serial line
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("voltageLevel", rest_val)
 
     def get_serialMode(self):
         """
@@ -448,6 +451,8 @@ class YSerialPort(YFunction):
         to enable flow control: "CtsRts" for hardware handshake, "XOnXOff"
         for logical flow control and "Simplex" for acquiring a shared bus using
         the RTS line (as used by some RS485 adapters for instance).
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : a string corresponding to the serial port communication parameters, with a string such as
                 "9600,8N1"
@@ -1170,7 +1175,7 @@ class YSerialPort(YFunction):
         msgs = self._download(url)
         reps = self._json_get_array(msgs)
         if not (len(reps) > 1):
-            self._throw(YAPI.IO_ERROR, "no reply from slave")
+            self._throw(YAPI.IO_ERROR, "no reply from MODBUS slave")
             return res
         if len(reps) > 1:
             rep = self._json_get_string(YString2Byte(reps[0]))

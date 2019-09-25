@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorledcluster.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_colorledcluster.py 37000 2019-09-03 06:40:17Z mvuilleu $
 #
 #  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #
@@ -122,6 +122,8 @@ class YColorLedCluster(YFunction):
     def set_activeLedCount(self, newval):
         """
         Changes the number of LEDs currently handled by the device.
+        Remember to call the matching module
+        saveToFlash() method to save the setting permanently.
 
         @param newval : an integer corresponding to the number of LEDs currently handled by the device
 
@@ -151,6 +153,8 @@ class YColorLedCluster(YFunction):
     def set_ledType(self, newval):
         """
         Changes the RGB LED type currently handled by the device.
+        Remember to call the matching module
+        saveToFlash() method to save the setting permanently.
 
         @param newval : either YColorLedCluster.LEDTYPE_RGB or YColorLedCluster.LEDTYPE_RGBW, according to
         the RGB LED type currently handled by the device

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_gps.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_gps.py 37165 2019-09-13 16:57:27Z mvuilleu $
 #
 #  Implements yFindGps(), the high-level API for Gps functions
 #
@@ -80,6 +80,14 @@ class YGps(YFunction):
     COORDSYSTEM_GPS_DM = 1
     COORDSYSTEM_GPS_D = 2
     COORDSYSTEM_INVALID = -1
+    CONSTELLATION_GPS = 0
+    CONSTELLATION_GLONASS = 1
+    CONSTELLATION_GALLILEO = 2
+    CONSTELLATION_GNSS = 3
+    CONSTELLATION_GPS_GLONASS = 4
+    CONSTELLATION_GPS_GALLILEO = 5
+    CONSTELLATION_GLONASS_GALLELIO = 6
+    CONSTELLATION_INVALID = -1
     #--- (end of YGps definitions)
 
     def __init__(self, func):
@@ -90,6 +98,7 @@ class YGps(YFunction):
         self._isFixed = YGps.ISFIXED_INVALID
         self._satCount = YGps.SATCOUNT_INVALID
         self._coordSystem = YGps.COORDSYSTEM_INVALID
+        self._constellation = YGps.CONSTELLATION_INVALID
         self._latitude = YGps.LATITUDE_INVALID
         self._longitude = YGps.LONGITUDE_INVALID
         self._dilution = YGps.DILUTION_INVALID
@@ -110,6 +119,8 @@ class YGps(YFunction):
             self._satCount = json_val.getLong("satCount")
         if json_val.has("coordSystem"):
             self._coordSystem = json_val.getInt("coordSystem")
+        if json_val.has("constellation"):
+            self._constellation = json_val.getInt("constellation")
         if json_val.has("latitude"):
             self._latitude = json_val.getString("latitude")
         if json_val.has("longitude"):
@@ -182,6 +193,8 @@ class YGps(YFunction):
     def set_coordSystem(self, newval):
         """
         Changes the representation system used for positioning data.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : a value among YGps.COORDSYSTEM_GPS_DMS, YGps.COORDSYSTEM_GPS_DM and
         YGps.COORDSYSTEM_GPS_D corresponding to the representation system used for positioning data
@@ -192,6 +205,45 @@ class YGps(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("coordSystem", rest_val)
+
+    def get_constellation(self):
+        """
+        Returns the the satellites constellation used to compute
+        positioning data.
+
+        @return a value among YGps.CONSTELLATION_GPS, YGps.CONSTELLATION_GLONASS,
+        YGps.CONSTELLATION_GALLILEO, YGps.CONSTELLATION_GNSS, YGps.CONSTELLATION_GPS_GLONASS,
+        YGps.CONSTELLATION_GPS_GALLILEO and YGps.CONSTELLATION_GLONASS_GALLELIO corresponding to the the
+        satellites constellation used to compute
+                positioning data
+
+        On failure, throws an exception or returns YGps.CONSTELLATION_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YGps.CONSTELLATION_INVALID
+        res = self._constellation
+        return res
+
+    def set_constellation(self, newval):
+        """
+        Changes the satellites constellation used to compute
+        positioning data. Possible  constellations are GPS, Glonass, Galileo ,
+        GNSS ( = GPS + Glonass + Galileo) and the 3 possible pairs. This seeting has effect on Yocto-GPS rev A.
+
+        @param newval : a value among YGps.CONSTELLATION_GPS, YGps.CONSTELLATION_GLONASS,
+        YGps.CONSTELLATION_GALLILEO, YGps.CONSTELLATION_GNSS, YGps.CONSTELLATION_GPS_GLONASS,
+        YGps.CONSTELLATION_GPS_GALLILEO and YGps.CONSTELLATION_GLONASS_GALLELIO corresponding to the
+        satellites constellation used to compute
+                positioning data
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("constellation", rest_val)
 
     def get_latitude(self):
         """
@@ -340,6 +392,8 @@ class YGps(YFunction):
         Changes the number of seconds between current time and UTC time (time zone).
         The timezone is automatically rounded to the nearest multiple of 15 minutes.
         If current UTC time is known, the current time is automatically be updated according to the selected time zone.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
 
         @param newval : an integer corresponding to the number of seconds between current time and UTC time (time zone)
 
