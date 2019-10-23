@@ -1,7 +1,6 @@
-Python v1.10.37304
+Python v1.10.37780
 
-- Add YAPI.SetNetworkTimeout() and YAPI.GetNetworkTimeout() methods
-- Add missing YI2cPort methods
-- Add robustness to firmware update in case of failure when setting one attribute
-- Fix some comments
-- Fix potential 20s wait in YAPI.UnregisterHub()
+- Add missing "saveToFlash" hints
+- Add workaround USB bug of Raspberry Pi 4
+- Fix Yocto-3D-V2 mount position handling
+- Fix lake of precision of get_startTimeUTC_asDatetime() and get_endTimeUTC_asDatetime() methods for YMeasure objects

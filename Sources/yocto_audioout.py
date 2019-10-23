@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_audioout.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_audioout.py 37619 2019-10-11 11:52:42Z mvuilleu $
 #
 #  Implements yFindAudioOut(), the high-level API for AudioOut functions
 #
@@ -111,6 +111,8 @@ class YAudioOut(YFunction):
     def set_volume(self, newval):
         """
         Changes audio output volume, in per cents.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
         @param newval : an integer corresponding to audio output volume, in per cents
 

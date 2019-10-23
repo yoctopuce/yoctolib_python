@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_altitude.py 34115 2019-01-23 14:23:54Z seb $
+#  $Id: yocto_altitude.py 37619 2019-10-11 11:52:42Z mvuilleu $
 #
 #  Implements yFindAltitude(), the high-level API for Altitude functions
 #
@@ -87,6 +87,8 @@ class YAltitude(YSensor):
         """
         Changes the current estimated altitude. This allows one to compensate for
         ambient pressure variations and to work in relative mode.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
         @param newval : a floating point number corresponding to the current estimated altitude
 
@@ -102,6 +104,8 @@ class YAltitude(YSensor):
         Changes the barometric pressure adjusted to sea level used to compute
         the altitude (QNH). This enables you to compensate for atmospheric pressure
         changes due to weather conditions. Applicable to barometric altimeters only.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
         @param newval : a floating point number corresponding to the barometric pressure adjusted to sea
         level used to compute

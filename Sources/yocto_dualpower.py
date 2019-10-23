@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_dualpower.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_dualpower.py 37609 2019-10-09 16:59:35Z mvuilleu $
 #
 #  Implements yFindDualPower(), the high-level API for DualPower functions
 #
@@ -131,6 +131,7 @@ class YDualPower(YFunction):
     def set_powerControl(self, newval):
         """
         Changes the selected power source for module functions that require lots of current.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : a value among YDualPower.POWERCONTROL_AUTO, YDualPower.POWERCONTROL_FROM_USB,
         YDualPower.POWERCONTROL_FROM_EXT and YDualPower.POWERCONTROL_OFF corresponding to the selected

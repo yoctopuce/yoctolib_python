@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_bluetoothlink.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_bluetoothlink.py 37619 2019-10-11 11:52:42Z mvuilleu $
 #
 #  Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
 #
@@ -188,6 +188,8 @@ class YBluetoothLink(YFunction):
     def set_remoteAddress(self, newval):
         """
         Changes the MAC-48 address defining which remote device to connect to.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
         @param newval : a string corresponding to the MAC-48 address defining which remote device to connect to
 
@@ -262,6 +264,8 @@ class YBluetoothLink(YFunction):
     def set_preAmplifier(self, newval):
         """
         Changes the audio pre-amplifier volume, in per cents.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
         @param newval : an integer corresponding to the audio pre-amplifier volume, in per cents
 

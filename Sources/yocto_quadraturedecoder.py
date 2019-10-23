@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_quadraturedecoder.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_quadraturedecoder.py 37619 2019-10-11 11:52:42Z mvuilleu $
 #
 #  Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
 #
@@ -131,6 +131,8 @@ class YQuadratureDecoder(YSensor):
     def set_decoding(self, newval):
         """
         Changes the activation state of the quadrature decoder.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
         @param newval : either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according
         to the activation state of the quadrature decoder

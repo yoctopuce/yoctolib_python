@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorledcluster.py 37000 2019-09-03 06:40:17Z mvuilleu $
+#  $Id: yocto_colorledcluster.py 37619 2019-10-11 11:52:42Z mvuilleu $
 #
 #  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #
@@ -280,9 +280,8 @@ class YColorLedCluster(YFunction):
     def set_rgbColorAtPowerOn(self, ledIndex, count, rgbValue):
         """
         Changes the  color at device startup of consecutive LEDs in the cluster, using a RGB color.
-        Encoding is done as follows: 0xRRGGBB.
-        Don't forget to call saveLedsConfigAtPowerOn() to make sure the modification is saved in the device
-        flash memory.
+        Encoding is done as follows: 0xRRGGBB. Don't forget to call saveLedsConfigAtPowerOn()
+        to make sure the modification is saved in the device flash memory.
 
         @param ledIndex :  index of the first affected LED.
         @param count    :  affected LED count.
@@ -297,9 +296,8 @@ class YColorLedCluster(YFunction):
     def set_hslColorAtPowerOn(self, ledIndex, count, hslValue):
         """
         Changes the  color at device startup of consecutive LEDs in the cluster, using a HSL color.
-        Encoding is done as follows: 0xHHSSLL.
-        Don't forget to call saveLedsConfigAtPowerOn() to make sure the modification is saved in the device
-        flash memory.
+        Encoding is done as follows: 0xHHSSLL. Don't forget to call saveLedsConfigAtPowerOn()
+        to make sure the modification is saved in the device flash memory.
 
         @param ledIndex :  index of the first affected LED.
         @param count    :  affected LED count.

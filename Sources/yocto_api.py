@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 37230 2019-09-20 08:43:51Z seb $
+# * $Id: yocto_api.py 37692 2019-10-14 14:58:03Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -764,8 +764,8 @@ class YAPIContext(object):
 
     def SetNetworkTimeout(self, networkMsTimeout):
         """
-        Modifies the network connection delay for YAPI.RegisterHub() and
-        YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+        Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().
+        This delay impacts only the YoctoHubs and VirtualHub
         which are accessible through the network. By default, this delay is of 20000 milliseconds,
         but depending or you network you may want to change this delay.
         For example if your network infrastructure uses a GSM connection.
@@ -777,8 +777,8 @@ class YAPIContext(object):
 
     def GetNetworkTimeout(self):
         """
-        Returns the network connection delay for YAPI.RegisterHub() and
-        YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+        Returns the network connection delay for yRegisterHub() and yUpdateDeviceList().
+        This delay impacts only the YoctoHubs and VirtualHub
         which are accessible through the network. By default, this delay is of 20000 milliseconds,
         but depending or you network you may want to change this delay.
         For example if your network infrastructure uses a GSM connection.
@@ -864,7 +864,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "37304"
+    YOCTO_API_BUILD_NO = "37780"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1458,8 +1458,8 @@ class YAPI:
     @staticmethod
     def SetNetworkTimeout(networkMsTimeout):
         """
-        Modifies the network connection delay for YAPI.RegisterHub() and
-        YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+        Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().
+        This delay impacts only the YoctoHubs and VirtualHub
         which are accessible through the network. By default, this delay is of 20000 milliseconds,
         but depending or you network you may want to change this delay.
         For example if your network infrastructure uses a GSM connection.
@@ -1472,8 +1472,8 @@ class YAPI:
     @staticmethod
     def GetNetworkTimeout():
         """
-        Returns the network connection delay for YAPI.RegisterHub() and
-        YAPI.UpdateDeviceList(). This delay impacts only the YoctoHubs and VirtualHub
+        Returns the network connection delay for yRegisterHub() and yUpdateDeviceList().
+        This delay impacts only the YoctoHubs and VirtualHub
         which are accessible through the network. By default, this delay is of 20000 milliseconds,
         but depending or you network you may want to change this delay.
         For example if your network infrastructure uses a GSM connection.
@@ -3277,10 +3277,10 @@ class YMeasure(object):
         self._minVal = minVal
         self._avgVal = avgVal
         self._maxVal = maxVal
-        rounded = int(start * 10 + 0.5)
-        self._start_datetime = datetime.datetime.fromtimestamp(rounded / 10.0)
-        rounded = int(end * 10 + 0.5)
-        self._end_datetime = datetime.datetime.fromtimestamp(rounded / 10.0)
+        rounded = int(start * 100 + 0.5)
+        self._start_datetime = datetime.datetime.fromtimestamp(rounded / 100.0)
+        rounded = int(end * 100 + 0.5)
+        self._end_datetime = datetime.datetime.fromtimestamp(rounded / 100.0)
 
     def get_startTimeUTC_asDatetime(self):
         """

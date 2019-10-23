@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_powersupply.py 34115 2019-01-23 14:23:54Z seb $
+#  $Id: yocto_powersupply.py 37653 2019-10-11 17:37:17Z mvuilleu $
 #
 #  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
 #
@@ -446,7 +446,7 @@ class YPowerSupply(YFunction):
                 (floating-point number, representing the end voltage in V)
         @param ms_duration : total duration of the transition, in milliseconds
 
-        @return YAPI_SUCCESS when the call succeeds.
+        @return YAPI.SUCCESS when the call succeeds.
         """
         # newval
         if V_target < 0.0:

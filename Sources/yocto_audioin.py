@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_audioin.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_audioin.py 37619 2019-10-11 11:52:42Z mvuilleu $
 #
 #  Implements yFindAudioIn(), the high-level API for AudioIn functions
 #
@@ -111,6 +111,8 @@ class YAudioIn(YFunction):
     def set_volume(self, newval):
         """
         Changes audio input gain, in per cents.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
         @param newval : an integer corresponding to audio input gain, in per cents
 

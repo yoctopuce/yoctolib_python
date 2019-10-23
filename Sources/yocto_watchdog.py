@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_watchdog.py 34976 2019-04-05 06:47:49Z seb $
+#  $Id: yocto_watchdog.py 37619 2019-10-11 11:52:42Z mvuilleu $
 #
 #  Implements yFindWatchdog(), the high-level API for Watchdog functions
 #
@@ -193,12 +193,15 @@ class YWatchdog(YFunction):
 
     def set_stateAtPowerOn(self, newval):
         """
-        Preset the state of the watchdog at device startup (A for the idle position,
-        B for the active position, UNCHANGED for no modification). Remember to call the matching module saveToFlash()
+        Changes the state of the watchdog at device startup (A for the idle position,
+        B for the active position, UNCHANGED for no modification).
+        Remember to call the matching module saveToFlash()
         method, otherwise this call will have no effect.
 
         @param newval : a value among YWatchdog.STATEATPOWERON_UNCHANGED, YWatchdog.STATEATPOWERON_A and
-        YWatchdog.STATEATPOWERON_B
+        YWatchdog.STATEATPOWERON_B corresponding to the state of the watchdog at device startup (A for the
+        idle position,
+                B for the active position, UNCHANGED for no modification)
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -209,10 +212,11 @@ class YWatchdog(YFunction):
 
     def get_maxTimeOnStateA(self):
         """
-        Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
-        switching back in to B state. Zero means no maximum time.
+        Returns the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+        A before automatically switching back in to B state. Zero means no time limit.
 
-        @return an integer
+        @return an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+                A before automatically switching back in to B state
 
         On failure, throws an exception or returns YWatchdog.MAXTIMEONSTATEA_INVALID.
         """
@@ -225,10 +229,13 @@ class YWatchdog(YFunction):
 
     def set_maxTimeOnStateA(self, newval):
         """
-        Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically
-        switching back in to B state. Use zero for no maximum time.
+        Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+        before automatically switching back in to B state. Use zero for no time limit.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
-        @param newval : an integer
+        @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+                before automatically switching back in to B state
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -239,8 +246,8 @@ class YWatchdog(YFunction):
 
     def get_maxTimeOnStateB(self):
         """
-        Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
-        switching back in to A state. Zero means no maximum time.
+        Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B
+        before automatically switching back in to A state. Zero means no time limit.
 
         @return an integer
 
@@ -255,10 +262,14 @@ class YWatchdog(YFunction):
 
     def set_maxTimeOnStateB(self, newval):
         """
-        Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically
-        switching back in to A state. Use zero for no maximum time.
+        Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before
+        automatically switching back in to A state. Use zero for no time limit.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
-        @param newval : an integer
+        @param newval : an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to
+        stay in state B before
+                automatically switching back in to A state
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -467,10 +478,12 @@ class YWatchdog(YFunction):
 
     def set_triggerDelay(self, newval):
         """
-        Changes the waiting delay before a reset is triggered by the watchdog, in milliseconds.
+        Changes the waiting delay before a reset is triggered by the watchdog,
+        in milliseconds. Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
-        @param newval : an integer corresponding to the waiting delay before a reset is triggered by the
-        watchdog, in milliseconds
+        @param newval : an integer corresponding to the waiting delay before a reset is triggered by the watchdog,
+                in milliseconds
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -497,6 +510,8 @@ class YWatchdog(YFunction):
     def set_triggerDuration(self, newval):
         """
         Changes the duration of resets caused by the watchdog, in milliseconds.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
 
         @param newval : an integer corresponding to the duration of resets caused by the watchdog, in milliseconds
 
