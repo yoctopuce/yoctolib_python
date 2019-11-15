@@ -1,6 +1,9 @@
-Python v1.10.37780
+Python v1.10.38155
 
-- Add missing "saveToFlash" hints
-- Add workaround USB bug of Raspberry Pi 4
-- Fix Yocto-3D-V2 mount position handling
-- Fix lake of precision of get_startTimeUTC_asDatetime() and get_endTimeUTC_asDatetime() methods for YMeasure objects
+(Libs)- Improve every class description (add sample product name)
+(Libs)- Generate new classes using u31 for unsigned ints
+(Misc)- Fix Application that was not started correctly
+(Misc)- Set AssemblyFileVersion to all CS.Net assembly
+(Misc)- labview/cs:fix few details
+(Misc)- dot net proxy:added ref keeper class
+(yapi)- Add warning on Raspberry Pi 4 with old boot EEPROM

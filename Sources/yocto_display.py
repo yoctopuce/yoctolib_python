@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 37000 2019-09-03 06:40:17Z mvuilleu $
+#* $Id: yocto_display.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -542,6 +542,8 @@ class YDisplayLayer(object):
 #noinspection PyProtectedMember
 class YDisplay(YFunction):
     """
+    The YDisplay class allows to drive Yoctopuce displays, for instance using a Yocto-MaxiDisplay, a
+    Yocto-MiniDisplay, a Yocto-MaxiDisplay-G or a Yocto-Display.
     Yoctopuce display interface has been designed to easily
     show information and images. The device provides built-in
     multi-layer rendering. Layers can be drawn offline, individually,
@@ -870,7 +872,8 @@ class YDisplay(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the display
+        @param func : a string that uniquely characterizes the display, for instance
+                YD128X64.display.
 
         @return a YDisplay object allowing you to drive the display.
         """

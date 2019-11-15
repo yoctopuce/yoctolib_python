@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_servo.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_servo.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindServo(), the high-level API for Servo functions
 #
@@ -47,7 +47,8 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YServo(YFunction):
     """
-    Yoctopuce application programming interface allows you not only to move
+    The YServo class is designed to drive remote-control servo motors
+    outputs, for instance using a Yocto-Servo. This class allows you not only to move
     a servo to a given position, but also to specify the time interval
     in which the move should be performed. This makes it possible to
     synchronize two servos involved in a same move.
@@ -347,7 +348,8 @@ class YServo(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the servo
+        @param func : a string that uniquely characterizes the servo, for instance
+                SERVORC1.servo1.
 
         @return a YServo object allowing you to drive the servo.
         """

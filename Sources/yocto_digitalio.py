@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_digitalio.py 37653 2019-10-11 17:37:17Z mvuilleu $
+#  $Id: yocto_digitalio.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #
@@ -47,12 +47,15 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YDigitalIO(YFunction):
     """
-    The Yoctopuce application programming interface allows you to switch the state of each
-    channel of the I/O port. You can switch all channels at once, or one by one. Most functions
+    The YDigitalIO class allows you drive a Yoctopuce digital input/output port, for instance using a
+    Yocto-Maxi-IO-V2 or a Yocto-IO.
+    It can be used to setup the direction of each channel, to read the state of each channel
+    and to switch the state of each channel configures as an output.
+    You can work on all channels at once, or one by one. Most functions
     use a binary representation for channels where bit 0 matches channel #0 , bit 1 matches channel
-    #1 and so on.... If you are not familiar with numbers binary representation, you will find more
-    information here: en.wikipedia.org/wiki/Binary_number#Representation . The library
-    can also automatically generate short pulses of a determined duration. Electrical behavior
+    #1 and so on. If you are not familiar with numbers binary representation, you will find more
+    information here: en.wikipedia.org/wiki/Binary_number#Representation. It is also possible
+    to automatically generate short pulses of a determined duration. Electrical behavior
     of each I/O can be modified (open drain and reverse polarity).
 
     """
@@ -354,7 +357,8 @@ class YDigitalIO(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the digital IO port
+        @param func : a string that uniquely characterizes the digital IO port, for instance
+                MAXIIO02.digitalIO.
 
         @return a YDigitalIO object allowing you to drive the digital IO port.
         """

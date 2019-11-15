@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_wakeupmonitor.py 37000 2019-09-03 06:40:17Z mvuilleu $
+#  $Id: yocto_wakeupmonitor.py 38030 2019-11-04 17:56:01Z mvuilleu $
 #
 #  Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
 #
@@ -47,8 +47,9 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YWakeUpMonitor(YFunction):
     """
-    The WakeUpMonitor function handles globally all wake-up sources, as well
-    as automated sleep mode.
+    The YWakeUpMonitor class handles globally all wake-up sources, as well
+    as automated sleep mode, for instance using a YoctoHub-Wireless-g, a YoctoHub-GSM-3G-NA, a
+    YoctoHub-GSM-3G-EU or a YoctoHub-Wireless-SR.
 
     """
     #--- (end of YWakeUpMonitor class start)
@@ -59,8 +60,8 @@ class YWakeUpMonitor(YFunction):
     #--- (YWakeUpMonitor yapiwrapper)
     #--- (end of YWakeUpMonitor yapiwrapper)
     #--- (YWakeUpMonitor definitions)
-    POWERDURATION_INVALID = YAPI.INVALID_INT
-    SLEEPCOUNTDOWN_INVALID = YAPI.INVALID_INT
+    POWERDURATION_INVALID = YAPI.INVALID_UINT
+    SLEEPCOUNTDOWN_INVALID = YAPI.INVALID_UINT
     NEXTWAKEUP_INVALID = YAPI.INVALID_LONG
     RTCTIME_INVALID = YAPI.INVALID_LONG
     WAKEUPREASON_USBPOWER = 0
@@ -263,7 +264,8 @@ class YWakeUpMonitor(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the monitor
+        @param func : a string that uniquely characterizes the monitor, for instance
+                YHUBWLN3.wakeUpMonitor.
 
         @return a YWakeUpMonitor object allowing you to drive the monitor.
         """

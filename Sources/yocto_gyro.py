@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 37619 2019-10-11 11:52:42Z mvuilleu $
+#* $Id: yocto_gyro.py 38030 2019-11-04 17:56:01Z mvuilleu $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -47,8 +47,11 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YQt(YSensor):
     """
-    The Yoctopuce API YQt class provides direct access to the Yocto3D attitude estimation
-    using a quaternion. It is usually not needed to use the YQt class directly, as the
+    The YQt class provides direct access to the 3D attitude estimation provided by Yoctopuce
+    inertial sensors, for instance using a Yocto-3D-V2. The four instances of YQt provide direct access
+    to the individual
+    quaternion components representing the orientation.
+    It is usually not needed to use the YQt class directly, as the
     YGyro class provides a more convenient higher-level interface.
 
     """
@@ -94,7 +97,8 @@ class YQt(YSensor):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the quaternion component
+        @param func : a string that uniquely characterizes the quaternion component, for instance
+                Y3DMK002.qt1.
 
         @return a YQt object allowing you to drive the quaternion component.
         """
@@ -175,22 +179,17 @@ def yInternalGyroCallback(YQt_obj, str_value):
 #noinspection PyProtectedMember
 class YGyro(YSensor):
     """
-    The YSensor class is the parent class for all Yoctopuce sensors. It can be
-    used to read the current value and unit of any sensor, read the min/max
-    value, configure autonomous recording frequency and access recorded data.
-    It also provide a function to register a callback invoked each time the
-    observed value changes, or at a predefined interval. Using this class rather
-    than a specific subclass makes it possible to create generic applications
-    that work with any Yoctopuce sensor, even those that do not yet exist.
-    Note: The YAnButton class is the only analog input which does not inherit
-    from YSensor.
+    The YGyro class allows you to read and configure Yoctopuce angular velocity
+    sensors, for instance using a Yocto-3D-V2. It inherits from YSensor class the core functions to
+    read measurements,
+    to register callback functions, to access the autonomous datalogger.
 
     """
     #--- (end of generated code: YGyro class start)
     #--- (generated code: YGyro return codes)
     #--- (end of generated code: YGyro return codes)
     #--- (generated code: YGyro definitions)
-    BANDWIDTH_INVALID = YAPI.INVALID_INT
+    BANDWIDTH_INVALID = YAPI.INVALID_UINT
     XVALUE_INVALID = YAPI.INVALID_DOUBLE
     YVALUE_INVALID = YAPI.INVALID_DOUBLE
     ZVALUE_INVALID = YAPI.INVALID_DOUBLE
@@ -338,7 +337,8 @@ class YGyro(YSensor):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the gyroscope
+        @param func : a string that uniquely characterizes the gyroscope, for instance
+                Y3DMK002.gyro.
 
         @return a YGyro object allowing you to drive the gyroscope.
         """

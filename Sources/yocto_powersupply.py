@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_powersupply.py 37653 2019-10-11 17:37:17Z mvuilleu $
+#  $Id: yocto_powersupply.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
 #
@@ -47,7 +47,8 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YPowerSupply(YFunction):
     """
-    The Yoctopuce application programming interface allows you to change the voltage set point,
+    The YPowerSupply class allows you to drive a Yoctopuce power supply$DEV_ENà.
+    It can be use to change the voltage set point,
     the current limit and the enable/disable the output.
 
     """
@@ -426,7 +427,8 @@ class YPowerSupply(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the regulated power supply
+        @param func : a string that uniquely characterizes the regulated power supply, for instance
+                MyDevice.powerSupply.
 
         @return a YPowerSupply object allowing you to drive the regulated power supply.
         """

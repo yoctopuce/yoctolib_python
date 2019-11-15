@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multiaxiscontroller.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_multiaxiscontroller.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
 #
@@ -47,7 +47,8 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YMultiAxisController(YFunction):
     """
-    The Yoctopuce application programming interface allows you to drive a stepper motor.
+    The YMultiAxisController class allows you to drive multiple stepper motors
+    synchronously.
 
     """
     #--- (end of YMultiAxisController class start)
@@ -172,7 +173,8 @@ class YMultiAxisController(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the multi-axis controller
+        @param func : a string that uniquely characterizes the multi-axis controller, for instance
+                MyDevice.multiAxisController.
 
         @return a YMultiAxisController object allowing you to drive the multi-axis controller.
         """

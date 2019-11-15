@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 37168 2019-09-13 17:25:10Z mvuilleu $
+#* $Id: yocto_serialport.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -88,8 +88,9 @@ class YSnoopingRecord(object):
 #noinspection PyProtectedMember
 class YSerialPort(YFunction):
     """
-    The SerialPort function interface allows you to fully drive a Yoctopuce
-    serial port, to send and receive data, and to configure communication
+    The YSerialPort class allows you to fully drive a Yoctopuce serial port, for instance using a
+    Yocto-RS232, a Yocto-RS485 or a Yocto-Serial.
+    It can be used to send and receive data, and to configure communication
     parameters (baud rate, bit count, parity, flow control and protocol).
     Note that Yoctopuce serial ports are not exposed as virtual COM ports.
     They are meant to be used in the same way as all Yoctopuce devices.
@@ -489,7 +490,8 @@ class YSerialPort(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the serial port
+        @param func : a string that uniquely characterizes the serial port, for instance
+                RS232MK1.serialPort.
 
         @return a YSerialPort object allowing you to drive the serial port.
         """

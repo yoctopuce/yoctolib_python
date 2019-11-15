@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_led.py 36554 2019-07-29 12:21:31Z mvuilleu $
+#  $Id: yocto_led.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindLed(), the high-level API for Led functions
 #
@@ -47,8 +47,8 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YLed(YFunction):
     """
-    The Yoctopuce application programming interface
-    allows you not only to drive the intensity of the LED, but also to
+    The YLed class allows you to drive a monocolor LED, for instance using a Yocto-Buzzer.
+    You can not only to drive the intensity of the LED, but also to
     have it blink at various preset frequencies.
 
     """
@@ -205,7 +205,8 @@ class YLed(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the LED
+        @param func : a string that uniquely characterizes the LED, for instance
+                YBUZZER2.led1.
 
         @return a YLed object allowing you to drive the LED.
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multisenscontroller.py 34975 2019-04-04 17:01:43Z seb $
+#  $Id: yocto_multisenscontroller.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
 #
@@ -47,8 +47,8 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YMultiSensController(YFunction):
     """
-    The Yoctopuce application programming interface allows you to setup a customized
-    sensor chain.
+    The YMultiSensController class allows you to setup a customized
+    sensor chain on devices featuring that functionality, for instance using a Yocto-Temperature-IR.
 
     """
     #--- (end of YMultiSensController class start)
@@ -207,7 +207,8 @@ class YMultiSensController(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the multi-sensor controller
+        @param func : a string that uniquely characterizes the multi-sensor controller, for instance
+                YTEMPIR1.multiSensController.
 
         @return a YMultiSensController object allowing you to drive the multi-sensor controller.
         """

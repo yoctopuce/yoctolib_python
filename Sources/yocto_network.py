@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_network.py 37619 2019-10-11 11:52:42Z mvuilleu $
+#  $Id: yocto_network.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindNetwork(), the high-level API for Network functions
 #
@@ -48,7 +48,8 @@ from yocto_api import *
 class YNetwork(YFunction):
     """
     YNetwork objects provide access to TCP/IP parameters of Yoctopuce
-    modules that include a built-in network interface.
+    devices that include a built-in network interface, for instance using a YoctoHub-Ethernet, a
+    YoctoHub-Wireless-g, a YoctoHub-GSM-3G-NA or a YoctoHub-GSM-3G-EU.
 
     """
     #--- (end of YNetwork class start)
@@ -937,7 +938,8 @@ class YNetwork(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the network interface
+        @param func : a string that uniquely characterizes the network interface, for instance
+                YHUBETH1.network.
 
         @return a YNetwork object allowing you to drive the network interface.
         """

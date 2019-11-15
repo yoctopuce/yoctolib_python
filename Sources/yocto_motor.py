@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_motor.py 37619 2019-10-11 11:52:42Z mvuilleu $
+#  $Id: yocto_motor.py 38030 2019-11-04 17:56:01Z mvuilleu $
 #
 #  Implements yFindMotor(), the high-level API for Motor functions
 #
@@ -47,7 +47,8 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YMotor(YFunction):
     """
-    Yoctopuce application programming interface allows you to drive the
+    The YMotor class allows you to drive a DC motor, for instance using a Yocto-Motor-DC. It can be
+    used to configure the
     power sent to the motor to make it turn both ways, but also to drive accelerations
     and decelerations. The motor will then accelerate automatically: you will not
     have to monitor it. The API also allows to slow down the motor by shortening
@@ -65,9 +66,9 @@ class YMotor(YFunction):
     DRIVINGFORCE_INVALID = YAPI.INVALID_DOUBLE
     BRAKINGFORCE_INVALID = YAPI.INVALID_DOUBLE
     CUTOFFVOLTAGE_INVALID = YAPI.INVALID_DOUBLE
-    OVERCURRENTLIMIT_INVALID = YAPI.INVALID_INT
+    OVERCURRENTLIMIT_INVALID = YAPI.INVALID_UINT
     FREQUENCY_INVALID = YAPI.INVALID_DOUBLE
-    STARTERTIME_INVALID = YAPI.INVALID_INT
+    STARTERTIME_INVALID = YAPI.INVALID_UINT
     FAILSAFETIMEOUT_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
     MOTORSTATUS_IDLE = 0
@@ -257,6 +258,15 @@ class YMotor(YFunction):
         return res
 
     def get_overCurrentLimit(self):
+        """
+        Returns the current threshold (in mA) above which the controller automatically
+        switches to error state. A zero value means that there is no limit.
+
+        @return an integer corresponding to the current threshold (in mA) above which the controller automatically
+                switches to error state
+
+        On failure, throws an exception or returns YMotor.OVERCURRENTLIMIT_INVALID.
+        """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
@@ -427,7 +437,8 @@ class YMotor(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the motor
+        @param func : a string that uniquely characterizes the motor, for instance
+                MOTORCTL.motor.
 
         @return a YMotor object allowing you to drive the motor.
         """

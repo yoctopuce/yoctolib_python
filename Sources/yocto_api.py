@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 37692 2019-10-14 14:58:03Z seb $
+# * $Id: yocto_api.py 38137 2019-11-14 10:23:36Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -864,7 +864,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "37780"
+    YOCTO_API_BUILD_NO = "38155"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -3935,10 +3935,10 @@ class YConsolidatedDataSet(object):
         self._nextidx = []
         self._nexttim = []
         #--- (end of generated code: YConsolidatedDataSet attributes)
-        self._init(start, end, sensorList)
+        self.imm_init(start, end, sensorList)
 
     # --- (generated code: YConsolidatedDataSet implementation)
-    def _init(self, startt, endt, sensorList):
+    def imm_init(self, startt, endt, sensorList):
         self._start = startt
         self._end = endt
         self._sensors = sensorList
@@ -4761,7 +4761,8 @@ class YFunction(object):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the function
+        @param func : a string that uniquely characterizes the function, for instance
+                MyDevice..
 
         @return a YFunction object allowing you to drive the function.
         """
@@ -5276,7 +5277,7 @@ class YFunction(object):
 #noinspection PyProtectedMember
 class YModule(YFunction):
     """
-    This interface is identical for all Yoctopuce USB modules.
+    The YModule class can be used with all Yoctopuce USB devices.
     It can be used to control the module global parameters, and
     to enumerate the functions provided by each module.
 
@@ -6933,7 +6934,7 @@ class YModule(YFunction):
 #noinspection PyProtectedMember
 class YSensor(YFunction):
     """
-    The YSensor class is the parent class for all Yoctopuce sensors. It can be
+    The YSensor class is the parent class for all Yoctopuce sensor types. It can be
     used to read the current value and unit of any sensor, read the min/max
     value, configure autonomous recording frequency and access recorded data.
     It also provide a function to register a callback invoked each time the
@@ -7338,7 +7339,8 @@ class YSensor(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the sensor
+        @param func : a string that uniquely characterizes the sensor, for instance
+                MyDevice..
 
         @return a YSensor object allowing you to drive the sensor.
         """
@@ -7840,9 +7842,11 @@ class YSensor(YFunction):
 #noinspection PyProtectedMember
 class YDataLogger(YFunction):
     """
-    Yoctopuce sensors include a non-volatile memory capable of storing ongoing measured
-    data automatically, without requiring a permanent connection to a computer.
-    The DataLogger function controls the global parameters of the internal data
+    A non-volatile memory for storing ongoing measured data is available on most Yoctopuce
+    sensors, for instance using a Yocto-Light-V3, a Yocto-Meteo-V2, a Yocto-Watt or a Yocto-3D-V2.
+    Recording can happen automatically, without requiring a permanent
+    connection to a computer.
+    The YDataLogger class controls the global parameters of the internal data
     logger. Recording control (start/stop) as well as data retreival is done at
     sensor objects level.
 
@@ -8097,7 +8101,8 @@ class YDataLogger(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the data logger
+        @param func : a string that uniquely characterizes the data logger, for instance
+                LIGHTMK3.dataLogger.
 
         @return a YDataLogger object allowing you to drive the data logger.
         """

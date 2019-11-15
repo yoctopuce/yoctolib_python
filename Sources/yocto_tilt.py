@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_tilt.py 37619 2019-10-11 11:52:42Z mvuilleu $
+#  $Id: yocto_tilt.py 38030 2019-11-04 17:56:01Z mvuilleu $
 #
 #  Implements yFindTilt(), the high-level API for Tilt functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YTilt(YSensor):
     """
-    The YSensor class is the parent class for all Yoctopuce sensors. It can be
+    The YSensor class is the parent class for all Yoctopuce sensor types. It can be
     used to read the current value and unit of any sensor, read the min/max
     value, configure autonomous recording frequency and access recorded data.
     It also provide a function to register a callback invoked each time the
@@ -66,7 +66,7 @@ class YTilt(YSensor):
     #--- (YTilt yapiwrapper)
     #--- (end of YTilt yapiwrapper)
     #--- (YTilt definitions)
-    BANDWIDTH_INVALID = YAPI.INVALID_INT
+    BANDWIDTH_INVALID = YAPI.INVALID_UINT
     AXIS_X = 0
     AXIS_Y = 1
     AXIS_Z = 2
@@ -154,7 +154,8 @@ class YTilt(YSensor):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the tilt sensor
+        @param func : a string that uniquely characterizes the tilt sensor, for instance
+                Y3DMK002.tilt1.
 
         @return a YTilt object allowing you to drive the tilt sensor.
         """

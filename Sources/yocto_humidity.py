@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_humidity.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_humidity.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindHumidity(), the high-level API for Humidity functions
 #
@@ -47,8 +47,9 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YHumidity(YSensor):
     """
-    The Yoctopuce class YHumidity allows you to read and configure Yoctopuce humidity
-    sensors. It inherits from YSensor class the core functions to read measurements,
+    The YHumidity class allows you to read and configure Yoctopuce humidity
+    sensors, for instance using a Yocto-Meteo-V2, a Yocto-VOC-V3 or a Yocto-CO2-V2. It inherits from
+    YSensor class the core functions to read measurements,
     to register callback functions, to access the autonomous datalogger.
 
     """
@@ -155,7 +156,8 @@ class YHumidity(YSensor):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the humidity sensor
+        @param func : a string that uniquely characterizes the humidity sensor, for instance
+                METEOMK2.humidity.
 
         @return a YHumidity object allowing you to drive the humidity sensor.
         """

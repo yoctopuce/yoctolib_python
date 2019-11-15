@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_audioin.py 37619 2019-10-11 11:52:42Z mvuilleu $
+#  $Id: yocto_audioin.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindAudioIn(), the high-level API for AudioIn functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YAudioIn(YFunction):
     """
-    The Yoctopuce application programming interface allows you to configure the volume of the input channel.
+    The YAudioIn class allows you to configure the volume of an audio input.
 
     """
     #--- (end of YAudioIn class start)
@@ -225,7 +225,8 @@ class YAudioIn(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the audio input
+        @param func : a string that uniquely characterizes the audio input, for instance
+                MyDevice.audioIn1.
 
         @return a YAudioIn object allowing you to drive the audio input.
         """

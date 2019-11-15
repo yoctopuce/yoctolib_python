@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_tvoc.py 33270 2018-11-22 08:41:15Z seb $
+#  $Id: yocto_tvoc.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindTvoc(), the high-level API for Tvoc functions
 #
@@ -47,8 +47,9 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YTvoc(YSensor):
     """
-    The Yoctopuce class YTvoc allows you to read and configure Yoctopuce Total Volatile Organic
-    Compound sensors. It inherits from YSensor class the core functions to read measurements,
+    The YTvoc class allows you to read and configure Yoctopuce Total Volatile Organic
+    Compound sensors, for instance using a Yocto-VOC-V3. It inherits from YSensor class the core
+    functions to read measurements,
     to register callback functions, to access the autonomous datalogger.
 
     """
@@ -98,7 +99,8 @@ class YTvoc(YSensor):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the Total  Volatile Organic Compound sensor
+        @param func : a string that uniquely characterizes the Total  Volatile Organic Compound sensor, for instance
+                YVOCMK03.tvoc.
 
         @return a YTvoc object allowing you to drive the Total  Volatile Organic Compound sensor.
         """

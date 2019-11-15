@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_oscontrol.py 32907 2018-11-02 10:18:55Z seb $
+#  $Id: yocto_oscontrol.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindOsControl(), the high-level API for OsControl functions
 #
@@ -47,8 +47,8 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YOsControl(YFunction):
     """
-    The OScontrol object allows some control over the operating system running a VirtualHub.
-    OsControl is available on the VirtualHub software only. This feature must be activated at the VirtualHub
+    The YOScontrol class provides some control over the operating system running a VirtualHub.
+    YOsControl is available on VirtualHub software only. This feature must be activated at the VirtualHub
     start up with -o option.
 
     """
@@ -123,7 +123,8 @@ class YOsControl(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the OS control
+        @param func : a string that uniquely characterizes the OS control, for instance
+                MyDevice.osControl.
 
         @return a YOsControl object allowing you to drive the OS control.
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_voltageoutput.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_voltageoutput.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YVoltageOutput(YFunction):
     """
-    The Yoctopuce application programming interface allows you to change the value of the voltage output.
+    The YVoltageOutput class allows you to drive a voltage output, for instance using a Yocto-0-10V-Tx.
 
     """
     #--- (end of YVoltageOutput class start)
@@ -177,7 +177,8 @@ class YVoltageOutput(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the voltage output
+        @param func : a string that uniquely characterizes the voltage output, for instance
+                TX010V01.voltageOutput1.
 
         @return a YVoltageOutput object allowing you to drive the voltage output.
         """

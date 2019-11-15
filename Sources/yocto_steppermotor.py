@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_steppermotor.py 33717 2018-12-14 14:22:04Z seb $
+#  $Id: yocto_steppermotor.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YStepperMotor(YFunction):
     """
-    The Yoctopuce application programming interface allows you to drive a stepper motor.
+    The YStepperMotor class allows you to drive a stepper motor.
 
     """
     #--- (end of YStepperMotor class start)
@@ -520,7 +520,8 @@ class YStepperMotor(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the stepper motor
+        @param func : a string that uniquely characterizes the stepper motor, for instance
+                MyDevice.stepperMotor1.
 
         @return a YStepperMotor object allowing you to drive the stepper motor.
         """

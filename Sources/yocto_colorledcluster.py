@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorledcluster.py 37619 2019-10-11 11:52:42Z mvuilleu $
+#  $Id: yocto_colorledcluster.py 37827 2019-10-25 13:07:48Z mvuilleu $
 #
 #  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #
@@ -47,10 +47,10 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YColorLedCluster(YFunction):
     """
-    The Yoctopuce application programming interface
-    allows you to drive a color LED cluster. Unlike the ColorLed class, the ColorLedCluster
-    allows to handle several LEDs at one. Color changes can be done   using RGB coordinates as well as
-    HSL coordinates.
+    The YColorLedCluster class allows you to drive a
+    color LED cluster, for instance using a Yocto-Color-V2. Unlike the ColorLed class, the ColorLedCluster
+    allows to handle several LEDs at one. Color changes can be done using RGB
+    coordinates as well as HSL coordinates.
     The module performs all conversions form RGB to HSL automatically. It is then
     self-evident to turn on a LED with a given hue and to progressively vary its
     saturation or lightness. If needed, you can find more information on the
@@ -248,7 +248,8 @@ class YColorLedCluster(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the RGB LED cluster
+        @param func : a string that uniquely characterizes the RGB LED cluster, for instance
+                YRGBLED2.colorLedCluster.
 
         @return a YColorLedCluster object allowing you to drive the RGB LED cluster.
         """
