@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_digitalio.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_digitalio.py 38510 2019-11-26 15:36:38Z mvuilleu $
 #
 #  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #
@@ -48,7 +48,7 @@ from yocto_api import *
 class YDigitalIO(YFunction):
     """
     The YDigitalIO class allows you drive a Yoctopuce digital input/output port, for instance using a
-    Yocto-Maxi-IO-V2 or a Yocto-IO.
+    Yocto-IO or a Yocto-Maxi-IO-V2.
     It can be used to setup the direction of each channel, to read the state of each channel
     and to switch the state of each channel configures as an output.
     You can work on all channels at once, or one by one. Most functions
@@ -358,7 +358,7 @@ class YDigitalIO(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the digital IO port, for instance
-                MAXIIO02.digitalIO.
+                YMINIIO0.digitalIO.
 
         @return a YDigitalIO object allowing you to drive the digital IO port.
         """

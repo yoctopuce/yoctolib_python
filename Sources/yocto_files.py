@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#* $Id: yocto_files.py 38510 2019-11-26 15:36:38Z mvuilleu $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -103,8 +103,8 @@ class YFileRecord(object):
 class YFiles(YFunction):
     """
     The YFiles class is used to access the filesystem embedded on
-    some Yoctopuce devices, for instance using a YoctoHub-Ethernet, a Yocto-Color-V2, a
-    YoctoHub-Wireless-g or a Yocto-RS232. This filesystem makes it
+    some Yoctopuce devices, for instance using a Yocto-Color-V2, a Yocto-RS232, a YoctoHub-Ethernet or
+    a YoctoHub-Wireless-g. This filesystem makes it
     possible for instance to design a custom web UI
     (for networked devices) or to add fonts (on display devices).
 
@@ -188,7 +188,7 @@ class YFiles(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the filesystem, for instance
-                YHUBETH1.files.
+                YRGBLED2.files.
 
         @return a YFiles object allowing you to drive the filesystem.
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_gps.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_gps.py 38462 2019-11-25 17:14:30Z seb $
 #
 #  Implements yFindGps(), the high-level API for Gps functions
 #
@@ -64,6 +64,8 @@ class YGps(YFunction):
     #--- (end of YGps yapiwrapper)
     #--- (YGps definitions)
     SATCOUNT_INVALID = YAPI.INVALID_LONG
+    SATPERCONST_INVALID = YAPI.INVALID_LONG
+    GPSREFRESHRATE_INVALID = YAPI.INVALID_DOUBLE
     LATITUDE_INVALID = YAPI.INVALID_STRING
     LONGITUDE_INVALID = YAPI.INVALID_STRING
     DILUTION_INVALID = YAPI.INVALID_DOUBLE
@@ -81,13 +83,13 @@ class YGps(YFunction):
     COORDSYSTEM_GPS_DM = 1
     COORDSYSTEM_GPS_D = 2
     COORDSYSTEM_INVALID = -1
-    CONSTELLATION_GPS = 0
-    CONSTELLATION_GLONASS = 1
-    CONSTELLATION_GALLILEO = 2
-    CONSTELLATION_GNSS = 3
+    CONSTELLATION_GNSS = 0
+    CONSTELLATION_GPS = 1
+    CONSTELLATION_GLONASS = 2
+    CONSTELLATION_GALILEO = 3
     CONSTELLATION_GPS_GLONASS = 4
-    CONSTELLATION_GPS_GALLILEO = 5
-    CONSTELLATION_GLONASS_GALLELIO = 6
+    CONSTELLATION_GPS_GALILEO = 5
+    CONSTELLATION_GLONASS_GALILEO = 6
     CONSTELLATION_INVALID = -1
     #--- (end of YGps definitions)
 
@@ -98,6 +100,8 @@ class YGps(YFunction):
         self._callback = None
         self._isFixed = YGps.ISFIXED_INVALID
         self._satCount = YGps.SATCOUNT_INVALID
+        self._satPerConst = YGps.SATPERCONST_INVALID
+        self._gpsRefreshRate = YGps.GPSREFRESHRATE_INVALID
         self._coordSystem = YGps.COORDSYSTEM_INVALID
         self._constellation = YGps.CONSTELLATION_INVALID
         self._latitude = YGps.LATITUDE_INVALID
@@ -118,6 +122,10 @@ class YGps(YFunction):
             self._isFixed = (json_val.getInt("isFixed") > 0 if 1 else 0)
         if json_val.has("satCount"):
             self._satCount = json_val.getLong("satCount")
+        if json_val.has("satPerConst"):
+            self._satPerConst = json_val.getLong("satPerConst")
+        if json_val.has("gpsRefreshRate"):
+            self._gpsRefreshRate = round(json_val.getDouble("gpsRefreshRate") * 1000.0 / 65536.0) / 1000.0
         if json_val.has("coordSystem"):
             self._coordSystem = json_val.getInt("coordSystem")
         if json_val.has("constellation"):
@@ -162,9 +170,9 @@ class YGps(YFunction):
 
     def get_satCount(self):
         """
-        Returns the count of visible satellites.
+        Returns the total count of satellites used to compute GPS position.
 
-        @return an integer corresponding to the count of visible satellites
+        @return an integer corresponding to the total count of satellites used to compute GPS position
 
         On failure, throws an exception or returns YGps.SATCOUNT_INVALID.
         """
@@ -173,6 +181,40 @@ class YGps(YFunction):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YGps.SATCOUNT_INVALID
         res = self._satCount
+        return res
+
+    def get_satPerConst(self):
+        """
+        Returns the count of visible satellites per constellation encoded
+        on a 32 bit integer: bits 0..5: GPS satellites count,  bits 6..11 : Glonass, bits 12..17 : Galileo.
+        this value is refreshed every 5 seconds only.
+
+        @return an integer corresponding to the count of visible satellites per constellation encoded
+                on a 32 bit integer: bits 0.
+
+        On failure, throws an exception or returns YGps.SATPERCONST_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YGps.SATPERCONST_INVALID
+        res = self._satPerConst
+        return res
+
+    def get_gpsRefreshRate(self):
+        """
+        Returns effective GPS data refresh frequency.
+        this value is refreshed every 5 seconds only.
+
+        @return a floating point number corresponding to effective GPS data refresh frequency
+
+        On failure, throws an exception or returns YGps.GPSREFRESHRATE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YGps.GPSREFRESHRATE_INVALID
+        res = self._gpsRefreshRate
         return res
 
     def get_coordSystem(self):
@@ -212,10 +254,9 @@ class YGps(YFunction):
         Returns the the satellites constellation used to compute
         positioning data.
 
-        @return a value among YGps.CONSTELLATION_GPS, YGps.CONSTELLATION_GLONASS,
-        YGps.CONSTELLATION_GALLILEO, YGps.CONSTELLATION_GNSS, YGps.CONSTELLATION_GPS_GLONASS,
-        YGps.CONSTELLATION_GPS_GALLILEO and YGps.CONSTELLATION_GLONASS_GALLELIO corresponding to the the
-        satellites constellation used to compute
+        @return a value among YGps.CONSTELLATION_GNSS, YGps.CONSTELLATION_GPS, YGps.CONSTELLATION_GLONASS,
+        YGps.CONSTELLATION_GALILEO, YGps.CONSTELLATION_GPS_GLONASS, YGps.CONSTELLATION_GPS_GALILEO and
+        YGps.CONSTELLATION_GLONASS_GALILEO corresponding to the the satellites constellation used to compute
                 positioning data
 
         On failure, throws an exception or returns YGps.CONSTELLATION_INVALID.
@@ -230,12 +271,12 @@ class YGps(YFunction):
     def set_constellation(self, newval):
         """
         Changes the satellites constellation used to compute
-        positioning data. Possible  constellations are GPS, Glonass, Galileo ,
-        GNSS ( = GPS + Glonass + Galileo) and the 3 possible pairs. This seeting has effect on Yocto-GPS rev A.
+        positioning data. Possible  constellations are GNSS ( = all supported constellations),
+        GPS, Glonass, Galileo , and the 3 possible pairs. This setting has  no effect on Yocto-GPS (V1).
 
-        @param newval : a value among YGps.CONSTELLATION_GPS, YGps.CONSTELLATION_GLONASS,
-        YGps.CONSTELLATION_GALLILEO, YGps.CONSTELLATION_GNSS, YGps.CONSTELLATION_GPS_GLONASS,
-        YGps.CONSTELLATION_GPS_GALLILEO and YGps.CONSTELLATION_GLONASS_GALLELIO corresponding to the
+        @param newval : a value among YGps.CONSTELLATION_GNSS, YGps.CONSTELLATION_GPS,
+        YGps.CONSTELLATION_GLONASS, YGps.CONSTELLATION_GALILEO, YGps.CONSTELLATION_GPS_GLONASS,
+        YGps.CONSTELLATION_GPS_GALILEO and YGps.CONSTELLATION_GLONASS_GALILEO corresponding to the
         satellites constellation used to compute
                 positioning data
 

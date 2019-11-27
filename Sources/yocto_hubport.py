@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_hubport.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_hubport.py 38510 2019-11-26 15:36:38Z mvuilleu $
 #
 #  Implements yFindHubPort(), the high-level API for HubPort functions
 #
@@ -48,8 +48,8 @@ from yocto_api import *
 class YHubPort(YFunction):
     """
     The YHubPort class provides control over the power supply for every port
-    on a YoctoHub, for instance using a YoctoHub-Ethernet, a YoctoHub-Wireless-g, a YoctoHub-Shield or
-    a YoctoHub-GSM-3G-NA. It provide information about the device connected to it.
+    on a YoctoHub, for instance using a YoctoHub-Ethernet, a YoctoHub-GSM-3G-NA, a YoctoHub-Shield or a
+    YoctoHub-Wireless-g. It provide information about the device connected to it.
     The logical name of a YHubPort is always automatically set to the
     unique serial number of the Yoctopuce device connected to it.
 

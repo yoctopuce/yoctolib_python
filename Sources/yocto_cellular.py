@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#* $Id: yocto_cellular.py 38510 2019-11-26 15:36:38Z mvuilleu $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -73,24 +73,59 @@ class YCellRecord(object):
 
 #--- (generated code: YCellRecord implementation)
     def get_cellOperator(self):
+        """
+        Returns the name of the the cell operator.
+
+        @return a string with the name of the the cell operator.
+        """
         return self._oper
 
     def get_mobileCountryCode(self):
+        """
+        Returns the Mobile Country Code (MCC).
+
+        @return the Mobile Country Code (MCC).
+        """
         return self._mcc
 
     def get_mobileNetworkCode(self):
+        """
+        Returns the Mobile Network Code (MNC).
+
+        @return the Mobile Network Code (MNC).
+        """
         return self._mnc
 
     def get_locationAreaCode(self):
+        """
+        Returns the Location Area Code (LAC).
+
+        @return the Location Area Code (LAC).
+        """
         return self._lac
 
     def get_cellId(self):
+        """
+        Returns the Cell Id.
+
+        @return the Cell Id.
+        """
         return self._cid
 
     def get_signalStrength(self):
+        """
+        Returns the signal strength.
+
+        @return the signal strength.
+        """
         return self._dbm
 
     def get_timingAdvance(self):
+        """
+        Returns the Timing Advance (TA).
+
+        @return the Timing Advance (TA).
+        """
         return self._tad
 
 #--- (end of generated code: YCellRecord implementation)
@@ -104,8 +139,8 @@ class YCellRecord(object):
 class YCellular(YFunction):
     """
     The YCellular class provides control over cellular network parameters
-    and status for devices that are GSM-enabled, for instance using a YoctoHub-GSM-3G-NA, a
-    YoctoHub-GSM-3G-EU or a YoctoHub-GSM-2G.
+    and status for devices that are GSM-enabled, for instance using a YoctoHub-GSM-2G, a
+    YoctoHub-GSM-3G-EU or a YoctoHub-GSM-3G-NA.
 
     """
     #--- (end of generated code: YCellular class start)
@@ -625,7 +660,7 @@ class YCellular(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the cellular interface, for instance
-                YHUBGSM4.cellular.
+                YHUBGSM1.cellular.
 
         @return a YCellular object allowing you to drive the cellular interface.
         """

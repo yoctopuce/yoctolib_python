@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_wakeupschedule.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_wakeupschedule.py 38510 2019-11-26 15:36:38Z mvuilleu $
 #
 #  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #
@@ -47,8 +47,8 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YWakeUpSchedule(YFunction):
     """
-    The YWakeUpSchedule class implements a wake up condition, for instance using a YoctoHub-Wireless-g,
-    a YoctoHub-GSM-3G-NA, a YoctoHub-GSM-3G-EU or a YoctoHub-Wireless-SR. The wake up time is
+    The YWakeUpSchedule class implements a wake up condition, for instance using a YoctoHub-GSM-3G-EU,
+    a YoctoHub-GSM-3G-NA, a YoctoHub-Wireless-SR or a YoctoHub-Wireless-g. The wake up time is
     specified as a set of months and/or days and/or hours and/or minutes when the
     wake up should happen.
 
@@ -323,7 +323,7 @@ class YWakeUpSchedule(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the wake up schedule, for instance
-                YHUBWLN3.wakeUpSchedule1.
+                YHUBGSM3.wakeUpSchedule1.
 
         @return a YWakeUpSchedule object allowing you to drive the wake up schedule.
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_wireless.py 37827 2019-10-25 13:07:48Z mvuilleu $
+# * $Id: yocto_wireless.py 38510 2019-11-26 15:36:38Z mvuilleu $
 # *
 # * Implements yFindWireless(), the high-level API for Wireless functions
 # *
@@ -114,8 +114,8 @@ class YWlanRecord(object):
 class YWireless(YFunction):
     """
     The YWireless class provides control over wireless network parameters
-    and status for devices that are wireless-enabled, for instance using a YoctoHub-Wireless-g, a
-    YoctoHub-Wireless-SR or a YoctoHub-Wireless.
+    and status for devices that are wireless-enabled, for instance using a YoctoHub-Wireless, a
+    YoctoHub-Wireless-SR or a YoctoHub-Wireless-g.
 
     """
     #--- (end of generated code: YWireless class start)
@@ -316,7 +316,7 @@ class YWireless(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the wireless lan interface, for instance
-                YHUBWLN3.wireless.
+                YHUBWLN1.wireless.
 
         @return a YWireless object allowing you to drive the wireless lan interface.
         """
@@ -361,8 +361,9 @@ class YWireless(YFunction):
     def adhocNetwork(self, ssid, securityKey):
         """
         Changes the configuration of the wireless lan interface to create an ad-hoc
-        wireless network, without using an access point. On the YoctoHub-Wireless-g,
-        it is best to use softAPNetworkInstead(), which emulates an access point
+        wireless network, without using an access point. On the YoctoHub-Wireless-g
+        and YoctoHub-Wireless-n,
+        you should use softAPNetwork() instead, which emulates an access point
         (Soft AP) which is more efficient and more widely supported than ad-hoc networks.
 
         When a security key is specified for an ad-hoc network, the network is protected
@@ -385,12 +386,16 @@ class YWireless(YFunction):
         """
         Changes the configuration of the wireless lan interface to create a new wireless
         network by emulating a WiFi access point (Soft AP). This function can only be
-        used with the YoctoHub-Wireless-g.
+        used with the YoctoHub-Wireless-g and the YoctoHub-Wireless-n.
 
-        When a security key is specified for a SoftAP network, the network is protected
-        by a WEP40 key (5 characters or 10 hexadecimal digits) or WEP128 key (13 characters
-        or 26 hexadecimal digits). It is recommended to use a well-randomized WEP128 key
-        using 26 hexadecimal digits to maximize security.
+        On the YoctoHub-Wireless-g, when a security key is specified for a SoftAP network,
+        the network is protected by a WEP40 key (5 characters or 10 hexadecimal digits) or
+        WEP128 key (13 characters or 26 hexadecimal digits). It is recommended to use a
+        well-randomized WEP128 key using 26 hexadecimal digits to maximize security.
+
+        On the YoctoHub-Wireless-n, when a security key is specified for a SoftAP network,
+        the network will be protected by WPA2.
+
         Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
 
         @param ssid : the name of the network to connect to

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 38137 2019-11-14 10:23:36Z seb $
+# * $Id: yocto_api.py 38510 2019-11-26 15:36:38Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -864,7 +864,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "38168"
+    YOCTO_API_BUILD_NO = "38532"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -7843,7 +7843,7 @@ class YSensor(YFunction):
 class YDataLogger(YFunction):
     """
     A non-volatile memory for storing ongoing measured data is available on most Yoctopuce
-    sensors, for instance using a Yocto-Light-V3, a Yocto-Meteo-V2, a Yocto-Watt or a Yocto-3D-V2.
+    sensors, for instance using a Yocto-3D-V2, a Yocto-Light-V3, a Yocto-Meteo-V2 or a Yocto-Watt.
     Recording can happen automatically, without requiring a permanent
     connection to a computer.
     The YDataLogger class controls the global parameters of the internal data
@@ -8102,7 +8102,7 @@ class YDataLogger(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the data logger, for instance
-                LIGHTMK3.dataLogger.
+                Y3DMK002.dataLogger.
 
         @return a YDataLogger object allowing you to drive the data logger.
         """

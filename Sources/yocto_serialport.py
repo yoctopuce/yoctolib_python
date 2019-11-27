@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#* $Id: yocto_serialport.py 38510 2019-11-26 15:36:38Z mvuilleu $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -69,12 +69,27 @@ class YSnoopingRecord(object):
 
     # --- (generated code: YSnoopingRecord implementation)
     def get_time(self):
+        """
+        Returns the elapsed time, in ms, since the beginning of the preceding message.
+
+        @return the elapsed time, in ms, since the beginning of the preceding message.
+        """
         return self._tim
 
     def get_direction(self):
+        """
+        Returns the message direction (RX=0 , TX=1) .
+
+        @return the message direction (RX=0 , TX=1) .
+        """
         return self._dir
 
     def get_message(self):
+        """
+        Returns the message content.
+
+        @return the message content.
+        """
         return self._msg
 
 #--- (end of generated code: YSnoopingRecord implementation)
@@ -89,7 +104,7 @@ class YSnoopingRecord(object):
 class YSerialPort(YFunction):
     """
     The YSerialPort class allows you to fully drive a Yoctopuce serial port, for instance using a
-    Yocto-RS232, a Yocto-RS485 or a Yocto-Serial.
+    Yocto-RS232, a Yocto-RS485-V2 or a Yocto-Serial.
     It can be used to send and receive data, and to configure communication
     parameters (baud rate, bit count, parity, flow control and protocol).
     Note that Yoctopuce serial ports are not exposed as virtual COM ports.

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_genericsensor.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_genericsensor.py 38510 2019-11-26 15:36:38Z mvuilleu $
 #
 #  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #
@@ -48,8 +48,8 @@ from yocto_api import *
 class YGenericSensor(YSensor):
     """
     The YGenericSensor class allows you to read and configure Yoctopuce signal
-    transducers, for instance using a Yocto-4-20mA-Rx, a Yocto-0-10V-Rx, a Yocto-milliVolt-Rx or a
-    Yocto-RS232. It inherits from YSensor class the core functions to read measurements,
+    transducers, for instance using a Yocto-0-10V-Rx, a Yocto-4-20mA-Rx, a Yocto-RS232 or a
+    Yocto-milliVolt-Rx. It inherits from YSensor class the core functions to read measurements,
     to register callback functions, to access the autonomous datalogger.
     This class adds the ability to configure the automatic conversion between the
     measured signal and the corresponding engineering unit.
@@ -372,7 +372,7 @@ class YGenericSensor(YSensor):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the generic sensor, for instance
-                RX420MA1.genericSensor1.
+                RX010V01.genericSensor1.
 
         @return a YGenericSensor object allowing you to drive the generic sensor.
         """
