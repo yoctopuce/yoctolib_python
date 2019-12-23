@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_daisychain.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_daisychain.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindDaisyChain(), the high-level API for DaisyChain functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YDaisyChain(YFunction):
     """
-    The YDaisyChain interface can be used to verify that devices that
+    The YDaisyChain class can be used to verify that devices that
     are daisy-chained directly from device to device, without a hub,
     are detected properly.
 

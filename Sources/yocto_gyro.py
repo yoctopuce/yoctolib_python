@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 38030 2019-11-04 17:56:01Z mvuilleu $
+#* $Id: yocto_gyro.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -47,12 +47,12 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YQt(YSensor):
     """
-    The YQt class provides direct access to the 3D attitude estimation provided by Yoctopuce
-    inertial sensors, for instance using a Yocto-3D-V2. The four instances of YQt provide direct access
-    to the individual
-    quaternion components representing the orientation.
-    It is usually not needed to use the YQt class directly, as the
-    YGyro class provides a more convenient higher-level interface.
+    The YQt class provides direct access to the 3D attitude estimation
+    provided by Yoctopuce inertial sensors. The four instances of YQt
+    provide direct access to the individual quaternion components representing the
+    orientation. It is usually not needed to use the YQt class
+    directly, as the YGyro class provides a more convenient higher-level
+    interface.
 
     """
     #--- (end of generated code: YQt class start)
@@ -179,10 +179,12 @@ def yInternalGyroCallback(YQt_obj, str_value):
 #noinspection PyProtectedMember
 class YGyro(YSensor):
     """
-    The YGyro class allows you to read and configure Yoctopuce angular velocity
-    sensors, for instance using a Yocto-3D-V2. It inherits from YSensor class the core functions to
-    read measurements,
-    to register callback functions, to access the autonomous datalogger.
+    The YGyro class allows you to read and configure Yoctopuce gyroscopes.
+    It inherits from YSensor class the core functions to read measurements,
+    to register callback functions, and to access the autonomous datalogger.
+    This class adds the possibility to access x, y and z components of the rotation
+    vector separately, as well as the possibility to deal with quaternion-based
+    orientation estimates.
 
     """
     #--- (end of generated code: YGyro class start)

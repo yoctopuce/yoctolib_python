@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_rangefinder.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_rangefinder.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
 #
@@ -47,10 +47,9 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YRangeFinder(YSensor):
     """
-    The YRangeFinder class allows you to use and configure Yoctopuce range finder
-    sensors, for instance using a Yocto-RangeFinder. It inherits from the YSensor class the core
-    functions to read measurements,
-    register callback functions, access the autonomous datalogger.
+    The YRangeFinder class allows you to read and configure Yoctopuce range finders.
+    It inherits from YSensor class the core functions to read measurements,
+    to register callback functions, and to access the autonomous datalogger.
     This class adds the ability to easily perform a one-point linear calibration
     to compensate the effect of a glass or filter placed in front of the sensor.
 

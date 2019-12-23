@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_groundspeed.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_groundspeed.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
 #
@@ -47,10 +47,9 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YGroundSpeed(YSensor):
     """
-    The YGroundSpeed class allows you to read the ground speed from Yoctopuce
-    geolocation sensors, for instance using a Yocto-GPS. It inherits from the YSensor class the core functions to
-    read measurements, register callback functions, access the autonomous
-    datalogger.
+    The YGroundSpeed class allows you to read and configure Yoctopuce ground speed sensors.
+    It inherits from YSensor class the core functions to read measurements,
+    to register callback functions, and to access the autonomous datalogger.
 
     """
     #--- (end of YGroundSpeed class start)

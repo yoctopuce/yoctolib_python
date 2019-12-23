@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 38510 2019-11-26 15:36:38Z mvuilleu $
+#* $Id: yocto_serialport.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -103,8 +103,7 @@ class YSnoopingRecord(object):
 #noinspection PyProtectedMember
 class YSerialPort(YFunction):
     """
-    The YSerialPort class allows you to fully drive a Yoctopuce serial port, for instance using a
-    Yocto-RS232, a Yocto-RS485-V2 or a Yocto-Serial.
+    The YSerialPort class allows you to fully drive a Yoctopuce serial port.
     It can be used to send and receive data, and to configure communication
     parameters (baud rate, bit count, parity, flow control and protocol).
     Note that Yoctopuce serial ports are not exposed as virtual COM ports.
@@ -125,6 +124,8 @@ class YSerialPort(YFunction):
     LASTMSG_INVALID = YAPI.INVALID_STRING
     CURRENTJOB_INVALID = YAPI.INVALID_STRING
     STARTUPJOB_INVALID = YAPI.INVALID_STRING
+    JOBMAXTASK_INVALID = YAPI.INVALID_UINT
+    JOBMAXSIZE_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
     PROTOCOL_INVALID = YAPI.INVALID_STRING
     SERIALMODE_INVALID = YAPI.INVALID_STRING
@@ -152,6 +153,8 @@ class YSerialPort(YFunction):
         self._lastMsg = YSerialPort.LASTMSG_INVALID
         self._currentJob = YSerialPort.CURRENTJOB_INVALID
         self._startupJob = YSerialPort.STARTUPJOB_INVALID
+        self._jobMaxTask = YSerialPort.JOBMAXTASK_INVALID
+        self._jobMaxSize = YSerialPort.JOBMAXSIZE_INVALID
         self._command = YSerialPort.COMMAND_INVALID
         self._protocol = YSerialPort.PROTOCOL_INVALID
         self._voltageLevel = YSerialPort.VOLTAGELEVEL_INVALID
@@ -179,6 +182,10 @@ class YSerialPort(YFunction):
             self._currentJob = json_val.getString("currentJob")
         if json_val.has("startupJob"):
             self._startupJob = json_val.getString("startupJob")
+        if json_val.has("jobMaxTask"):
+            self._jobMaxTask = json_val.getInt("jobMaxTask")
+        if json_val.has("jobMaxSize"):
+            self._jobMaxSize = json_val.getInt("jobMaxSize")
         if json_val.has("command"):
             self._command = json_val.getString("command")
         if json_val.has("protocol"):
@@ -337,6 +344,36 @@ class YSerialPort(YFunction):
         """
         rest_val = newval
         return self._setAttr("startupJob", rest_val)
+
+    def get_jobMaxTask(self):
+        """
+        Returns the maximum number of tasks in a job that the device can handle.
+
+        @return an integer corresponding to the maximum number of tasks in a job that the device can handle
+
+        On failure, throws an exception or returns YSerialPort.JOBMAXTASK_INVALID.
+        """
+        # res
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSerialPort.JOBMAXTASK_INVALID
+        res = self._jobMaxTask
+        return res
+
+    def get_jobMaxSize(self):
+        """
+        Returns maximum size allowed for job files.
+
+        @return an integer corresponding to maximum size allowed for job files
+
+        On failure, throws an exception or returns YSerialPort.JOBMAXSIZE_INVALID.
+        """
+        # res
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSerialPort.JOBMAXSIZE_INVALID
+        res = self._jobMaxSize
+        return res
 
     def get_command(self):
         # res

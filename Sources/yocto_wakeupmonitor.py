@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_wakeupmonitor.py 38510 2019-11-26 15:36:38Z mvuilleu $
+#  $Id: yocto_wakeupmonitor.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
 #
@@ -48,8 +48,7 @@ from yocto_api import *
 class YWakeUpMonitor(YFunction):
     """
     The YWakeUpMonitor class handles globally all wake-up sources, as well
-    as automated sleep mode, for instance using a YoctoHub-GSM-3G-EU, a YoctoHub-GSM-3G-NA, a
-    YoctoHub-Wireless-SR or a YoctoHub-Wireless-g.
+    as automated sleep mode.
 
     """
     #--- (end of YWakeUpMonitor class start)
@@ -242,7 +241,7 @@ class YWakeUpMonitor(YFunction):
     @staticmethod
     def FindWakeUpMonitor(func):
         """
-        Retrieves a monitor for a given identifier.
+        Retrieves a wake-up monitor for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -252,11 +251,11 @@ class YWakeUpMonitor(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the monitor is online at the time
+        This function does not require that the wake-up monitor is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YWakeUpMonitor.isOnline() to test if the monitor is
+        Use the method YWakeUpMonitor.isOnline() to test if the wake-up monitor is
         indeed online at a given time. In case of ambiguity when looking for
-        a monitor by logical name, no error is notified: the first instance
+        a wake-up monitor by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -264,10 +263,10 @@ class YWakeUpMonitor(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the monitor, for instance
+        @param func : a string that uniquely characterizes the wake-up monitor, for instance
                 YHUBGSM3.wakeUpMonitor.
 
-        @return a YWakeUpMonitor object allowing you to drive the monitor.
+        @return a YWakeUpMonitor object allowing you to drive the wake-up monitor.
         """
         # obj
         obj = YFunction._FindFromCache("WakeUpMonitor", func)
@@ -359,14 +358,14 @@ class YWakeUpMonitor(YFunction):
 
     def nextWakeUpMonitor(self):
         """
-        Continues the enumeration of monitors started using yFirstWakeUpMonitor().
-        Caution: You can't make any assumption about the returned monitors order.
-        If you want to find a specific a monitor, use WakeUpMonitor.findWakeUpMonitor()
+        Continues the enumeration of wake-up monitors started using yFirstWakeUpMonitor().
+        Caution: You can't make any assumption about the returned wake-up monitors order.
+        If you want to find a specific a wake-up monitor, use WakeUpMonitor.findWakeUpMonitor()
         and a hardwareID or a logical name.
 
         @return a pointer to a YWakeUpMonitor object, corresponding to
-                a monitor currently online, or a None pointer
-                if there are no more monitors to enumerate.
+                a wake-up monitor currently online, or a None pointer
+                if there are no more wake-up monitors to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -382,12 +381,12 @@ class YWakeUpMonitor(YFunction):
     @staticmethod
     def FirstWakeUpMonitor():
         """
-        Starts the enumeration of monitors currently accessible.
+        Starts the enumeration of wake-up monitors currently accessible.
         Use the method YWakeUpMonitor.nextWakeUpMonitor() to iterate on
-        next monitors.
+        next wake-up monitors.
 
         @return a pointer to a YWakeUpMonitor object, corresponding to
-                the first monitor currently online, or a None pointer
+                the first wake-up monitor currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()

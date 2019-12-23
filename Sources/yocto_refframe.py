@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_refframe.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_refframe.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindRefFrame(), the high-level API for RefFrame functions
 #
@@ -49,8 +49,7 @@ from yocto_api import *
 class YRefFrame(YFunction):
     """
     The YRefFrame class is used to setup the base orientation of the Yoctopuce inertial
-    sensors, for instance using a Yocto-3D-V2. Thanks to this, orientation functions relative to the
-    earth surface plane
+    sensors. Thanks to this, orientation functions relative to the earth surface plane
     can use the proper reference frame. The class also implements a tridimensional
     sensor calibration process, which can compensate for local variations
     of standard gravity and improve the precision of the tilt sensors.

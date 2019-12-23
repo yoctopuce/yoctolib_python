@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_spiport.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YSpiPort(YFunction):
     """
-    The YSpiPort class allows you to fully drive a Yoctopuce SPI port, for instance using a Yocto-SPI.
+    The YSpiPort class allows you to fully drive a Yoctopuce SPI port.
     It can be used to send and receive data, and to configure communication
     parameters (baud rate, bit count, parity, flow control and protocol).
     Note that Yoctopuce SPI ports are not exposed as virtual COM ports.
@@ -70,6 +70,8 @@ class YSpiPort(YFunction):
     LASTMSG_INVALID = YAPI.INVALID_STRING
     CURRENTJOB_INVALID = YAPI.INVALID_STRING
     STARTUPJOB_INVALID = YAPI.INVALID_STRING
+    JOBMAXTASK_INVALID = YAPI.INVALID_UINT
+    JOBMAXSIZE_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
     PROTOCOL_INVALID = YAPI.INVALID_STRING
     SPIMODE_INVALID = YAPI.INVALID_STRING
@@ -103,6 +105,8 @@ class YSpiPort(YFunction):
         self._lastMsg = YSpiPort.LASTMSG_INVALID
         self._currentJob = YSpiPort.CURRENTJOB_INVALID
         self._startupJob = YSpiPort.STARTUPJOB_INVALID
+        self._jobMaxTask = YSpiPort.JOBMAXTASK_INVALID
+        self._jobMaxSize = YSpiPort.JOBMAXSIZE_INVALID
         self._command = YSpiPort.COMMAND_INVALID
         self._protocol = YSpiPort.PROTOCOL_INVALID
         self._voltageLevel = YSpiPort.VOLTAGELEVEL_INVALID
@@ -132,6 +136,10 @@ class YSpiPort(YFunction):
             self._currentJob = json_val.getString("currentJob")
         if json_val.has("startupJob"):
             self._startupJob = json_val.getString("startupJob")
+        if json_val.has("jobMaxTask"):
+            self._jobMaxTask = json_val.getInt("jobMaxTask")
+        if json_val.has("jobMaxSize"):
+            self._jobMaxSize = json_val.getInt("jobMaxSize")
         if json_val.has("command"):
             self._command = json_val.getString("command")
         if json_val.has("protocol"):
@@ -294,6 +302,36 @@ class YSpiPort(YFunction):
         """
         rest_val = newval
         return self._setAttr("startupJob", rest_val)
+
+    def get_jobMaxTask(self):
+        """
+        Returns the maximum number of tasks in a job that the device can handle.
+
+        @return an integer corresponding to the maximum number of tasks in a job that the device can handle
+
+        On failure, throws an exception or returns YSpiPort.JOBMAXTASK_INVALID.
+        """
+        # res
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpiPort.JOBMAXTASK_INVALID
+        res = self._jobMaxTask
+        return res
+
+    def get_jobMaxSize(self):
+        """
+        Returns maximum size allowed for job files.
+
+        @return an integer corresponding to maximum size allowed for job files
+
+        On failure, throws an exception or returns YSpiPort.JOBMAXSIZE_INVALID.
+        """
+        # res
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpiPort.JOBMAXSIZE_INVALID
+        res = self._jobMaxSize
+        return res
 
     def get_command(self):
         # res

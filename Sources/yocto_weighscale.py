@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_weighscale.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_weighscale.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindWeighScale(), the high-level API for WeighScale functions
 #
@@ -47,8 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YWeighScale(YSensor):
     """
-    The YWeighScale class provides a weight measurement from a ratiometric sensor, for instance using a
-    Yocto-Bridge or a Yocto-MaxiBridge.
+    The YWeighScale class provides a weight measurement from a ratiometric sensor.
     It can be used to control the bridge excitation parameters, in order to avoid
     measure shifts caused by temperature variation in the electronics, and can also
     automatically apply an additional correction factor based on temperature to

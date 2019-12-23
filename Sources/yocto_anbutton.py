@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_anbutton.py 38510 2019-11-26 15:36:38Z mvuilleu $
+#  $Id: yocto_anbutton.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindAnButton(), the high-level API for AnButton functions
 #
@@ -47,8 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YAnButton(YFunction):
     """
-    The YAnButton class allows you to access simple resistive inputs on Yoctopuce
-    devices, for instance using a Yocto-Buzzer, a Yocto-Display, a Yocto-Knob or a Yocto-MaxiDisplay.
+    The YAnButton class provide access to basic resistive inputs.
     Such inputs can be used to measure the state
     of a simple button as well as to read an analog potentiometer (variable resistance).
     This can be use for instance with a continuous rotating knob, a throttle grip

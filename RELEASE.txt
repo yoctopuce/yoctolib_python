@@ -1,6 +1,3 @@
-Python v1.10.38545
+Python v1.10.38914
 
-- Add documentation for YSnoopingRecord and YCellRecord class
-- Add documentation about YoctoHub-wireless-n specificities
-- Fix GPSConstellation constants
-- Fix devices not detected on macOS Catalina (10.15)
+- Documentation improvements

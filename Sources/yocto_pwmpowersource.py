@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_pwmpowersource.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_pwmpowersource.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
 #
@@ -48,7 +48,7 @@ from yocto_api import *
 class YPwmPowerSource(YFunction):
     """
     The YPwmPowerSource class allows you to configure
-    the voltage source used by all PWM outputs on the same device, for instance using a Yocto-PWM-Tx.
+    the voltage source used by all PWM outputs on the same device.
 
     """
     #--- (end of YPwmPowerSource class start)
@@ -120,7 +120,7 @@ class YPwmPowerSource(YFunction):
     @staticmethod
     def FindPwmPowerSource(func):
         """
-        Retrieves a voltage source for a given identifier.
+        Retrieves a PWM generator power source for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -130,11 +130,11 @@ class YPwmPowerSource(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the voltage source is online at the time
+        This function does not require that the PWM generator power source is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YPwmPowerSource.isOnline() to test if the voltage source is
+        Use the method YPwmPowerSource.isOnline() to test if the PWM generator power source is
         indeed online at a given time. In case of ambiguity when looking for
-        a voltage source by logical name, no error is notified: the first instance
+        a PWM generator power source by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -142,10 +142,10 @@ class YPwmPowerSource(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the voltage source, for instance
+        @param func : a string that uniquely characterizes the PWM generator power source, for instance
                 YPWMTX01.pwmPowerSource.
 
-        @return a YPwmPowerSource object allowing you to drive the voltage source.
+        @return a YPwmPowerSource object allowing you to drive the PWM generator power source.
         """
         # obj
         obj = YFunction._FindFromCache("PwmPowerSource", func)
@@ -156,14 +156,14 @@ class YPwmPowerSource(YFunction):
 
     def nextPwmPowerSource(self):
         """
-        Continues the enumeration of Voltage sources started using yFirstPwmPowerSource().
-        Caution: You can't make any assumption about the returned Voltage sources order.
-        If you want to find a specific a voltage source, use PwmPowerSource.findPwmPowerSource()
+        Continues the enumeration of PWM generator power sources started using yFirstPwmPowerSource().
+        Caution: You can't make any assumption about the returned PWM generator power sources order.
+        If you want to find a specific a PWM generator power source, use PwmPowerSource.findPwmPowerSource()
         and a hardwareID or a logical name.
 
         @return a pointer to a YPwmPowerSource object, corresponding to
-                a voltage source currently online, or a None pointer
-                if there are no more Voltage sources to enumerate.
+                a PWM generator power source currently online, or a None pointer
+                if there are no more PWM generator power sources to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -179,12 +179,12 @@ class YPwmPowerSource(YFunction):
     @staticmethod
     def FirstPwmPowerSource():
         """
-        Starts the enumeration of Voltage sources currently accessible.
+        Starts the enumeration of PWM generator power sources currently accessible.
         Use the method YPwmPowerSource.nextPwmPowerSource() to iterate on
-        next Voltage sources.
+        next PWM generator power sources.
 
         @return a pointer to a YPwmPowerSource object, corresponding to
-                the first source currently online, or a None pointer
+                the first PWM generator power source currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()

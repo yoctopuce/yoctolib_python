@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_i2cport.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_i2cport.py 38913 2019-12-20 18:59:49Z mvuilleu $
 #
 #  Implements yFindI2cPort(), the high-level API for I2cPort functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YI2cPort(YFunction):
     """
-    The YI2cPort classe allows you to fully drive a Yoctopuce I2C port, for instance using a Yocto-I2C.
+    The YI2cPort classe allows you to fully drive a Yoctopuce I2C port.
     It can be used to send and receive data, and to configure communication
     parameters (baud rate, etc).
     Note that Yoctopuce I2C ports are not exposed as virtual COM ports.
@@ -70,6 +70,8 @@ class YI2cPort(YFunction):
     LASTMSG_INVALID = YAPI.INVALID_STRING
     CURRENTJOB_INVALID = YAPI.INVALID_STRING
     STARTUPJOB_INVALID = YAPI.INVALID_STRING
+    JOBMAXTASK_INVALID = YAPI.INVALID_UINT
+    JOBMAXSIZE_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
     PROTOCOL_INVALID = YAPI.INVALID_STRING
     I2CMODE_INVALID = YAPI.INVALID_STRING
@@ -92,6 +94,8 @@ class YI2cPort(YFunction):
         self._lastMsg = YI2cPort.LASTMSG_INVALID
         self._currentJob = YI2cPort.CURRENTJOB_INVALID
         self._startupJob = YI2cPort.STARTUPJOB_INVALID
+        self._jobMaxTask = YI2cPort.JOBMAXTASK_INVALID
+        self._jobMaxSize = YI2cPort.JOBMAXSIZE_INVALID
         self._command = YI2cPort.COMMAND_INVALID
         self._protocol = YI2cPort.PROTOCOL_INVALID
         self._i2cVoltageLevel = YI2cPort.I2CVOLTAGELEVEL_INVALID
@@ -119,6 +123,10 @@ class YI2cPort(YFunction):
             self._currentJob = json_val.getString("currentJob")
         if json_val.has("startupJob"):
             self._startupJob = json_val.getString("startupJob")
+        if json_val.has("jobMaxTask"):
+            self._jobMaxTask = json_val.getInt("jobMaxTask")
+        if json_val.has("jobMaxSize"):
+            self._jobMaxSize = json_val.getInt("jobMaxSize")
         if json_val.has("command"):
             self._command = json_val.getString("command")
         if json_val.has("protocol"):
@@ -277,6 +285,36 @@ class YI2cPort(YFunction):
         """
         rest_val = newval
         return self._setAttr("startupJob", rest_val)
+
+    def get_jobMaxTask(self):
+        """
+        Returns the maximum number of tasks in a job that the device can handle.
+
+        @return an integer corresponding to the maximum number of tasks in a job that the device can handle
+
+        On failure, throws an exception or returns YI2cPort.JOBMAXTASK_INVALID.
+        """
+        # res
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YI2cPort.JOBMAXTASK_INVALID
+        res = self._jobMaxTask
+        return res
+
+    def get_jobMaxSize(self):
+        """
+        Returns maximum size allowed for job files.
+
+        @return an integer corresponding to maximum size allowed for job files
+
+        On failure, throws an exception or returns YI2cPort.JOBMAXSIZE_INVALID.
+        """
+        # res
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YI2cPort.JOBMAXSIZE_INVALID
+        res = self._jobMaxSize
+        return res
 
     def get_command(self):
         # res
@@ -600,7 +638,7 @@ class YI2cPort(YFunction):
         @param jobfile : name of the job file to save on the device filesystem
         @param jsonDef : a string containing a JSON definition of the job
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
@@ -615,7 +653,7 @@ class YI2cPort(YFunction):
 
         @param jobfile : name of the job file (on the device filesystem)
 
-        @return YAPI_SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """

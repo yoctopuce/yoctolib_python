@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_arithmeticsensor.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_arithmeticsensor.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindArithmeticSensor(), the high-level API for ArithmeticSensor functions
 #
@@ -49,8 +49,8 @@ class YArithmeticSensor(YSensor):
     """
     The YArithmeticSensor class allows some Yoctopuce devices to compute in real-time
     values based on an arithmetic formula involving one or more measured signals as
-    well as the temperature. This functionality is only available on specific
-    Yoctopuce devices, for instance using a Yocto-MaxiMicroVolt-Rx.
+    well as the temperature. As for any physical sensor, the computed values can be
+    read by callback and stored in the built-in datalogger.
 
     """
     #--- (end of YArithmeticSensor class start)

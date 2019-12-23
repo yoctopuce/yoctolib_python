@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_digitalio.py 38510 2019-11-26 15:36:38Z mvuilleu $
+#  $Id: yocto_digitalio.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #
@@ -47,14 +47,13 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YDigitalIO(YFunction):
     """
-    The YDigitalIO class allows you drive a Yoctopuce digital input/output port, for instance using a
-    Yocto-IO or a Yocto-Maxi-IO-V2.
+    The YDigitalIO class allows you drive a Yoctopuce digital input/output port.
     It can be used to setup the direction of each channel, to read the state of each channel
     and to switch the state of each channel configures as an output.
     You can work on all channels at once, or one by one. Most functions
     use a binary representation for channels where bit 0 matches channel #0 , bit 1 matches channel
     #1 and so on. If you are not familiar with numbers binary representation, you will find more
-    information here: en.wikipedia.org/wiki/Binary_number#Representation. It is also possible
+    information here: https://en.wikipedia.org/wiki/Binary_number#Representation. It is also possible
     to automatically generate short pulses of a determined duration. Electrical behavior
     of each I/O can be modified (open drain and reverse polarity).
 

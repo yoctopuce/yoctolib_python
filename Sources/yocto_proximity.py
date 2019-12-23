@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_proximity.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_proximity.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindProximity(), the high-level API for Proximity functions
 #
@@ -47,12 +47,11 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YProximity(YSensor):
     """
-    The YProximity class allows you to use and configure Yoctopuce proximity
-    sensors, for instance using a Yocto-Proximity. It inherits from the YSensor class the core
-    functions to read measurements,
-    to register callback functions, to access the autonomous datalogger.
-    This class adds the ability to easily perform a one-point linear calibration
-    to compensate the effect of a glass or filter placed in front of the sensor.
+    The YProximity class allows you to read and configure Yoctopuce proximity sensors.
+    It inherits from YSensor class the core functions to read measurements,
+    to register callback functions, and to access the autonomous datalogger.
+    This class adds the ability to setup a detection threshold and to count the
+    number of detected state changes.
 
     """
     #--- (end of YProximity class start)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_motor.py 38030 2019-11-04 17:56:01Z mvuilleu $
+#  $Id: yocto_motor.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindMotor(), the high-level API for Motor functions
 #
@@ -47,8 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YMotor(YFunction):
     """
-    The YMotor class allows you to drive a DC motor, for instance using a Yocto-Motor-DC. It can be
-    used to configure the
+    The YMotor class allows you to drive a DC motor. It can be used to configure the
     power sent to the motor to make it turn both ways, but also to drive accelerations
     and decelerations. The motor will then accelerate automatically: you will not
     have to monitor it. The API also allows to slow down the motor by shortening

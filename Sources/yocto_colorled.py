@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorled.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_colorled.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindColorLed(), the high-level API for ColorLed functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YColorLed(YFunction):
     """
-    The YColorLed class allows you to drive a color LED, for instance using a Yocto-Color-V2 or a Yocto-PowerColor.
+    The ColorLed class allows you to drive a color LED.
     The color can be specified using RGB coordinates as well as HSL coordinates.
     The module performs all conversions form RGB to HSL automatically. It is then
     self-evident to turn on a LED with a given hue and to progressively vary its

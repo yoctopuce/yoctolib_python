@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_pressure.py 38510 2019-11-26 15:36:38Z mvuilleu $
+#  $Id: yocto_pressure.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindPressure(), the high-level API for Pressure functions
 #
@@ -47,10 +47,9 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YPressure(YSensor):
     """
-    The YPressure class allows you to read and configure Yoctopuce pressure
-    sensors, for instance using a Yocto-Altimeter-V2, a Yocto-CO2-V2, a Yocto-Meteo-V2 or a
-    Yocto-Pressure. It inherits from YSensor class the core functions to read measurements,
-    to register callback functions, to access the autonomous datalogger.
+    The YPressure class allows you to read and configure Yoctopuce pressure sensors.
+    It inherits from YSensor class the core functions to read measurements,
+    to register callback functions, and to access the autonomous datalogger.
 
     """
     #--- (end of YPressure class start)

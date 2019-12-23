@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorledcluster.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_colorledcluster.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #
@@ -48,8 +48,8 @@ from yocto_api import *
 class YColorLedCluster(YFunction):
     """
     The YColorLedCluster class allows you to drive a
-    color LED cluster, for instance using a Yocto-Color-V2. Unlike the ColorLed class, the ColorLedCluster
-    allows to handle several LEDs at one. Color changes can be done using RGB
+    color LED cluster. Unlike the ColorLed class, the YColorLedCluster
+    class allows to handle several LEDs at once. Color changes can be done using RGB
     coordinates as well as HSL coordinates.
     The module performs all conversions form RGB to HSL automatically. It is then
     self-evident to turn on a LED with a given hue and to progressively vary its

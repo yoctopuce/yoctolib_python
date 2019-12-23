@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 38510 2019-11-26 15:36:38Z mvuilleu $
+#* $Id: yocto_display.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -46,8 +46,8 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YDisplayLayer(object):
     """
-    A DisplayLayer is an image layer containing objects to display
-    (bitmaps, text, etc.). The content is displayed only when
+    Each DisplayLayer represents an image layer containing objects
+    to display (bitmaps, text, etc.). The content is displayed only when
     the layer is active on the screen (and not masked by other
     overlapping layers).
 
@@ -542,13 +542,17 @@ class YDisplayLayer(object):
 #noinspection PyProtectedMember
 class YDisplay(YFunction):
     """
-    The YDisplay class allows to drive Yoctopuce displays, for instance using a Yocto-Display, a
-    Yocto-MaxiDisplay, a Yocto-MaxiDisplay-G or a Yocto-MiniDisplay.
+    The YDisplay class allows to drive Yoctopuce displays.
     Yoctopuce display interface has been designed to easily
     show information and images. The device provides built-in
     multi-layer rendering. Layers can be drawn offline, individually,
     and freely moved on the display. It can also replay recorded
     sequences (animations).
+
+    In order to draw on the screen, you should use the
+    display.get_displayLayer method to retrieve the layer(s) on
+    which you want to draw, and then use methods defined in
+    YDisplayLayer to draw on the layers.
 
     """
     #--- (end of generated code: YDisplay class start)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_led.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_led.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindLed(), the high-level API for Led functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YLed(YFunction):
     """
-    The YLed class allows you to drive a monocolor LED, for instance using a Yocto-Buzzer.
+    The YLed class allows you to drive a monocolor LED.
     You can not only to drive the intensity of the LED, but also to
     have it blink at various preset frequencies.
 
@@ -183,7 +183,7 @@ class YLed(YFunction):
     @staticmethod
     def FindLed(func):
         """
-        Retrieves a LED for a given identifier.
+        Retrieves a monochrome LED for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -193,11 +193,11 @@ class YLed(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the LED is online at the time
+        This function does not require that the monochrome LED is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YLed.isOnline() to test if the LED is
+        Use the method YLed.isOnline() to test if the monochrome LED is
         indeed online at a given time. In case of ambiguity when looking for
-        a LED by logical name, no error is notified: the first instance
+        a monochrome LED by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -205,10 +205,10 @@ class YLed(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the LED, for instance
+        @param func : a string that uniquely characterizes the monochrome LED, for instance
                 YBUZZER2.led1.
 
-        @return a YLed object allowing you to drive the LED.
+        @return a YLed object allowing you to drive the monochrome LED.
         """
         # obj
         obj = YFunction._FindFromCache("Led", func)
@@ -219,14 +219,14 @@ class YLed(YFunction):
 
     def nextLed(self):
         """
-        Continues the enumeration of LEDs started using yFirstLed().
-        Caution: You can't make any assumption about the returned LEDs order.
-        If you want to find a specific a LED, use Led.findLed()
+        Continues the enumeration of monochrome LEDs started using yFirstLed().
+        Caution: You can't make any assumption about the returned monochrome LEDs order.
+        If you want to find a specific a monochrome LED, use Led.findLed()
         and a hardwareID or a logical name.
 
         @return a pointer to a YLed object, corresponding to
-                a LED currently online, or a None pointer
-                if there are no more LEDs to enumerate.
+                a monochrome LED currently online, or a None pointer
+                if there are no more monochrome LEDs to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -242,12 +242,12 @@ class YLed(YFunction):
     @staticmethod
     def FirstLed():
         """
-        Starts the enumeration of LEDs currently accessible.
+        Starts the enumeration of monochrome LEDs currently accessible.
         Use the method YLed.nextLed() to iterate on
-        next LEDs.
+        next monochrome LEDs.
 
         @return a pointer to a YLed object, corresponding to
-                the first LED currently online, or a None pointer
+                the first monochrome LED currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()

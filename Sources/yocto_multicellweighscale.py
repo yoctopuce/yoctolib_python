@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multicellweighscale.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_multicellweighscale.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
 #
@@ -48,8 +48,7 @@ from yocto_api import *
 class YMultiCellWeighScale(YSensor):
     """
     The YMultiCellWeighScale class provides a weight measurement from a set of ratiometric
-    sensors, for instance using a Yocto-MaxiBridge. It can be used to control the bridge excitation
-    parameters, in order to avoid
+    sensors. It can be used to control the bridge excitation parameters, in order to avoid
     measure shifts caused by temperature variation in the electronics, and can also
     automatically apply an additional correction factor based on temperature to
     compensate for offsets in the load cells themselves.

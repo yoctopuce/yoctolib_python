@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_compass.py 38030 2019-11-04 17:56:01Z mvuilleu $
+#  $Id: yocto_compass.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindCompass(), the high-level API for Compass functions
 #
@@ -47,10 +47,9 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YCompass(YSensor):
     """
-    The YCompass class allows you to read and configure Yoctopuce compass
-    sensors, for instance using a Yocto-3D-V2. It inherits from YSensor class the core functions to
-    read measurements,
-    to register callback functions, to access the autonomous datalogger.
+    The YCompass class allows you to read and configure Yoctopuce compass functions.
+    It inherits from YSensor class the core functions to read measurements,
+    to register callback functions, and to access the autonomous datalogger.
 
     """
     #--- (end of YCompass class start)
@@ -146,7 +145,7 @@ class YCompass(YSensor):
     @staticmethod
     def FindCompass(func):
         """
-        Retrieves a compass for a given identifier.
+        Retrieves a compass function for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -156,11 +155,11 @@ class YCompass(YSensor):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the compass is online at the time
+        This function does not require that the compass function is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YCompass.isOnline() to test if the compass is
+        Use the method YCompass.isOnline() to test if the compass function is
         indeed online at a given time. In case of ambiguity when looking for
-        a compass by logical name, no error is notified: the first instance
+        a compass function by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -168,10 +167,10 @@ class YCompass(YSensor):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the compass, for instance
+        @param func : a string that uniquely characterizes the compass function, for instance
                 Y3DMK002.compass.
 
-        @return a YCompass object allowing you to drive the compass.
+        @return a YCompass object allowing you to drive the compass function.
         """
         # obj
         obj = YFunction._FindFromCache("Compass", func)
@@ -182,14 +181,14 @@ class YCompass(YSensor):
 
     def nextCompass(self):
         """
-        Continues the enumeration of compasses started using yFirstCompass().
-        Caution: You can't make any assumption about the returned compasses order.
-        If you want to find a specific a compass, use Compass.findCompass()
+        Continues the enumeration of compass functions started using yFirstCompass().
+        Caution: You can't make any assumption about the returned compass functions order.
+        If you want to find a specific a compass function, use Compass.findCompass()
         and a hardwareID or a logical name.
 
         @return a pointer to a YCompass object, corresponding to
-                a compass currently online, or a None pointer
-                if there are no more compasses to enumerate.
+                a compass function currently online, or a None pointer
+                if there are no more compass functions to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -205,12 +204,12 @@ class YCompass(YSensor):
     @staticmethod
     def FirstCompass():
         """
-        Starts the enumeration of compasses currently accessible.
+        Starts the enumeration of compass functions currently accessible.
         Use the method YCompass.nextCompass() to iterate on
-        next compasses.
+        next compass functions.
 
         @return a pointer to a YCompass object, corresponding to
-                the first compass currently online, or a None pointer
+                the first compass function currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()

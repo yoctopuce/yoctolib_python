@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multisenscontroller.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_multisenscontroller.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
 #
@@ -48,7 +48,7 @@ from yocto_api import *
 class YMultiSensController(YFunction):
     """
     The YMultiSensController class allows you to setup a customized
-    sensor chain on devices featuring that functionality, for instance using a Yocto-Temperature-IR.
+    sensor chain on devices featuring that functionality.
 
     """
     #--- (end of YMultiSensController class start)

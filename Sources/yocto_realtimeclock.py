@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_realtimeclock.py 38510 2019-11-26 15:36:38Z mvuilleu $
+#  $Id: yocto_realtimeclock.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #
@@ -48,8 +48,7 @@ from yocto_api import *
 class YRealTimeClock(YFunction):
     """
     The YRealTimeClock class provide access to the embedded real-time clock available on some Yoctopuce
-    devices, for instance using a YoctoHub-GSM-3G-EU, a YoctoHub-GSM-3G-NA, a YoctoHub-Wireless-SR or a
-    YoctoHub-Wireless-g. It can provide current date and time, even after a power outage
+    devices. It can provide current date and time, even after a power outage
     lasting several days. It is the base for automated wake-up functions provided by the WakeUpScheduler.
     The current time may represent a local time as well as an UTC time, but no automatic time change
     will occur to account for daylight saving time.
@@ -188,7 +187,7 @@ class YRealTimeClock(YFunction):
     @staticmethod
     def FindRealTimeClock(func):
         """
-        Retrieves a clock for a given identifier.
+        Retrieves a real-time clock for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -198,11 +197,11 @@ class YRealTimeClock(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the clock is online at the time
+        This function does not require that the real-time clock is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YRealTimeClock.isOnline() to test if the clock is
+        Use the method YRealTimeClock.isOnline() to test if the real-time clock is
         indeed online at a given time. In case of ambiguity when looking for
-        a clock by logical name, no error is notified: the first instance
+        a real-time clock by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -210,10 +209,10 @@ class YRealTimeClock(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the clock, for instance
+        @param func : a string that uniquely characterizes the real-time clock, for instance
                 YHUBGSM3.realTimeClock.
 
-        @return a YRealTimeClock object allowing you to drive the clock.
+        @return a YRealTimeClock object allowing you to drive the real-time clock.
         """
         # obj
         obj = YFunction._FindFromCache("RealTimeClock", func)
@@ -224,14 +223,14 @@ class YRealTimeClock(YFunction):
 
     def nextRealTimeClock(self):
         """
-        Continues the enumeration of clocks started using yFirstRealTimeClock().
-        Caution: You can't make any assumption about the returned clocks order.
-        If you want to find a specific a clock, use RealTimeClock.findRealTimeClock()
+        Continues the enumeration of real-time clocks started using yFirstRealTimeClock().
+        Caution: You can't make any assumption about the returned real-time clocks order.
+        If you want to find a specific a real-time clock, use RealTimeClock.findRealTimeClock()
         and a hardwareID or a logical name.
 
         @return a pointer to a YRealTimeClock object, corresponding to
-                a clock currently online, or a None pointer
-                if there are no more clocks to enumerate.
+                a real-time clock currently online, or a None pointer
+                if there are no more real-time clocks to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -247,12 +246,12 @@ class YRealTimeClock(YFunction):
     @staticmethod
     def FirstRealTimeClock():
         """
-        Starts the enumeration of clocks currently accessible.
+        Starts the enumeration of real-time clocks currently accessible.
         Use the method YRealTimeClock.nextRealTimeClock() to iterate on
-        next clocks.
+        next real-time clocks.
 
         @return a pointer to a YRealTimeClock object, corresponding to
-                the first clock currently online, or a None pointer
+                the first real-time clock currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()

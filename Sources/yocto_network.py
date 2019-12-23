@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_network.py 38510 2019-11-26 15:36:38Z mvuilleu $
+#  $Id: yocto_network.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindNetwork(), the high-level API for Network functions
 #
@@ -48,8 +48,7 @@ from yocto_api import *
 class YNetwork(YFunction):
     """
     YNetwork objects provide access to TCP/IP parameters of Yoctopuce
-    devices that include a built-in network interface, for instance using a YoctoHub-Ethernet, a
-    YoctoHub-GSM-3G-EU, a YoctoHub-GSM-3G-NA or a YoctoHub-Wireless-g.
+    devices that include a built-in network interface.
 
     """
     #--- (end of YNetwork class start)

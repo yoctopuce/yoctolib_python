@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_accelerometer.py 38030 2019-11-04 17:56:01Z mvuilleu $
+#  $Id: yocto_accelerometer.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindAccelerometer(), the high-level API for Accelerometer functions
 #
@@ -47,10 +47,11 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YAccelerometer(YSensor):
     """
-    The YAccelerometer class allows you to read and configure Yoctopuce acceleration
-    sensors, for instance using a Yocto-3D-V2. It inherits from YSensor class the core functions to
-    read measurements,
-    to register callback functions, to access the autonomous datalogger.
+    The YAccelerometer class allows you to read and configure Yoctopuce accelerometers.
+    It inherits from YSensor class the core functions to read measurements,
+    to register callback functions, and to access the autonomous datalogger.
+    This class adds the possibility to access x, y and z components of the acceleration
+    vector separately.
 
     """
     #--- (end of YAccelerometer class start)

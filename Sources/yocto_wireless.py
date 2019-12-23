@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_wireless.py 38510 2019-11-26 15:36:38Z mvuilleu $
+# * $Id: yocto_wireless.py 38899 2019-12-20 17:21:03Z mvuilleu $
 # *
 # * Implements yFindWireless(), the high-level API for Wireless functions
 # *
@@ -81,15 +81,16 @@ class YWlanRecord(object):
 
     def get_channel(self):
         """
-        Returns the 802.11 channel.
+        Returns the 802.11 b/g/n channel number used by this network.
 
-        @return the 802.11 channel.
+        @return an integer corresponding to the channel.
         """
         return self._channel
 
     def get_security(self):
         """
         Returns the security algorithm used by the wireless network.
+        If the network implements to security, the value is "OPEN".
 
         @return a string with the security algorithm.
         """
@@ -99,7 +100,7 @@ class YWlanRecord(object):
         """
         Returns the quality of the wireless network link, in per cents.
 
-        @return the quality of the wireless network link, in per cents.
+        @return an integer between 0 and 100 corresponding to the signal quality.
         """
         return self._rssi
 
@@ -114,8 +115,8 @@ class YWlanRecord(object):
 class YWireless(YFunction):
     """
     The YWireless class provides control over wireless network parameters
-    and status for devices that are wireless-enabled, for instance using a YoctoHub-Wireless, a
-    YoctoHub-Wireless-SR or a YoctoHub-Wireless-g.
+    and status for devices that are wireless-enabled.
+    Note that TCP/IP parameters are configured separately, using class YNetwork.
 
     """
     #--- (end of generated code: YWireless class start)
@@ -293,7 +294,7 @@ class YWireless(YFunction):
     @staticmethod
     def FindWireless(func):
         """
-        Retrieves a wireless lan interface for a given identifier.
+        Retrieves a wireless LAN interface for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -303,11 +304,11 @@ class YWireless(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the wireless lan interface is online at the time
+        This function does not require that the wireless LAN interface is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YWireless.isOnline() to test if the wireless lan interface is
+        Use the method YWireless.isOnline() to test if the wireless LAN interface is
         indeed online at a given time. In case of ambiguity when looking for
-        a wireless lan interface by logical name, no error is notified: the first instance
+        a wireless LAN interface by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -315,10 +316,10 @@ class YWireless(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the wireless lan interface, for instance
+        @param func : a string that uniquely characterizes the wireless LAN interface, for instance
                 YHUBWLN1.wireless.
 
-        @return a YWireless object allowing you to drive the wireless lan interface.
+        @return a YWireless object allowing you to drive the wireless LAN interface.
         """
         # obj
         obj = YFunction._FindFromCache("Wireless", func)
@@ -432,14 +433,14 @@ class YWireless(YFunction):
 
     def nextWireless(self):
         """
-        Continues the enumeration of wireless lan interfaces started using yFirstWireless().
-        Caution: You can't make any assumption about the returned wireless lan interfaces order.
-        If you want to find a specific a wireless lan interface, use Wireless.findWireless()
+        Continues the enumeration of wireless LAN interfaces started using yFirstWireless().
+        Caution: You can't make any assumption about the returned wireless LAN interfaces order.
+        If you want to find a specific a wireless LAN interface, use Wireless.findWireless()
         and a hardwareID or a logical name.
 
         @return a pointer to a YWireless object, corresponding to
-                a wireless lan interface currently online, or a None pointer
-                if there are no more wireless lan interfaces to enumerate.
+                a wireless LAN interface currently online, or a None pointer
+                if there are no more wireless LAN interfaces to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -455,12 +456,12 @@ class YWireless(YFunction):
     @staticmethod
     def FirstWireless():
         """
-        Starts the enumeration of wireless lan interfaces currently accessible.
+        Starts the enumeration of wireless LAN interfaces currently accessible.
         Use the method YWireless.nextWireless() to iterate on
-        next wireless lan interfaces.
+        next wireless LAN interfaces.
 
         @return a pointer to a YWireless object, corresponding to
-                the first wireless lan interface currently online, or a None pointer
+                the first wireless LAN interface currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()

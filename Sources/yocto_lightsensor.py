@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_lightsensor.py 38510 2019-11-26 15:36:38Z mvuilleu $
+#  $Id: yocto_lightsensor.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindLightSensor(), the high-level API for LightSensor functions
 #
@@ -47,10 +47,9 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YLightSensor(YSensor):
     """
-    The YLightSensor class allows you to read and configure Yoctopuce light
-    sensors, for instance using a Yocto-Light-V3, a Yocto-Proximity or a Yocto-RangeFinder. It inherits
-    from YSensor class the core functions to read measurements,
-    to register callback functions, to access the autonomous datalogger.
+    The YLightSensor class allows you to read and configure Yoctopuce light sensors.
+    It inherits from YSensor class the core functions to read measurements,
+    to register callback functions, and to access the autonomous datalogger.
     This class adds the ability to easily perform a one-point linear calibration
     to compensate the effect of a glass or filter placed in front of the sensor.
     For some light sensors with several working modes, this class can select the

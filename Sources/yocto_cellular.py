@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 38510 2019-11-26 15:36:38Z mvuilleu $
+#* $Id: yocto_cellular.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -45,6 +45,12 @@ from yocto_api import *
 #--- (generated code: YCellRecord class start)
 #noinspection PyProtectedMember
 class YCellRecord(object):
+    """
+    YCellRecord objects are used to describe a wireless network.
+    These objects are used in particular in conjunction with the
+    YCellular class.
+
+    """
     #--- (end of generated code: YCellRecord class start)
     #--- (generated code: YCellRecord return codes)
     #--- (end of generated code: YCellRecord return codes)
@@ -74,7 +80,7 @@ class YCellRecord(object):
 #--- (generated code: YCellRecord implementation)
     def get_cellOperator(self):
         """
-        Returns the name of the the cell operator.
+        Returns the name of the the cell operator, as received from the network.
 
         @return a string with the name of the the cell operator.
         """
@@ -82,49 +88,54 @@ class YCellRecord(object):
 
     def get_mobileCountryCode(self):
         """
-        Returns the Mobile Country Code (MCC).
+        Returns the Mobile Country Code (MCC). The MCC is a unique identifier for each country.
 
-        @return the Mobile Country Code (MCC).
+        @return an integer corresponding to the Mobile Country Code (MCC).
         """
         return self._mcc
 
     def get_mobileNetworkCode(self):
         """
-        Returns the Mobile Network Code (MNC).
+        Returns the Mobile Network Code (MNC). The MNC is a unique identifier for each phone
+        operator within a country.
 
-        @return the Mobile Network Code (MNC).
+        @return an integer corresponding to the Mobile Network Code (MNC).
         """
         return self._mnc
 
     def get_locationAreaCode(self):
         """
-        Returns the Location Area Code (LAC).
+        Returns the Location Area Code (LAC). The LAC is a unique identifier for each
+        place within a country.
 
-        @return the Location Area Code (LAC).
+        @return an integer corresponding to the Location Area Code (LAC).
         """
         return self._lac
 
     def get_cellId(self):
         """
-        Returns the Cell Id.
+        Returns the Cell ID. The Cell ID is a unique identifier for each
+        base transmission station within a LAC.
 
-        @return the Cell Id.
+        @return an integer corresponding to the Cell Id.
         """
         return self._cid
 
     def get_signalStrength(self):
         """
-        Returns the signal strength.
+        Returns the signal strength, measured in dBm.
 
-        @return the signal strength.
+        @return an integer corresponding to the signal strength.
         """
         return self._dbm
 
     def get_timingAdvance(self):
         """
-        Returns the Timing Advance (TA).
+        Returns the Timing Advance (TA). The TA corresponds to the time necessary
+        for the signal to reach the base station from the device.
+        Each increment corresponds about to 550m of distance.
 
-        @return the Timing Advance (TA).
+        @return an integer corresponding to the Timing Advance (TA).
         """
         return self._tad
 
@@ -139,8 +150,8 @@ class YCellRecord(object):
 class YCellular(YFunction):
     """
     The YCellular class provides control over cellular network parameters
-    and status for devices that are GSM-enabled, for instance using a YoctoHub-GSM-2G, a
-    YoctoHub-GSM-3G-EU or a YoctoHub-GSM-3G-NA.
+    and status for devices that are GSM-enabled.
+    Note that TCP/IP parameters are configured separately, using class YNetwork.
 
     """
     #--- (end of generated code: YCellular class start)

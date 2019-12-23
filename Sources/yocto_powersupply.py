@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_powersupply.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_powersupply.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YPowerSupply(YFunction):
     """
-    The YPowerSupply class allows you to drive a Yoctopuce power supply$DEV_ENà.
+    The YPowerSupply class allows you to drive a Yoctopuce power supply.
     It can be use to change the voltage set point,
     the current limit and the enable/disable the output.
 

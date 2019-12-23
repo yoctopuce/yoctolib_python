@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_audioout.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_audioout.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindAudioOut(), the high-level API for AudioOut functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YAudioOut(YFunction):
     """
-    The YAudioOut class allows you to configure the volume of an audio outout.
+    The YAudioOut class allows you to configure the volume of an audio output.
 
     """
     #--- (end of YAudioOut class start)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_bluetoothlink.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_bluetoothlink.py 38899 2019-12-20 17:21:03Z mvuilleu $
 #
 #  Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
 #
@@ -47,8 +47,8 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YBluetoothLink(YFunction):
     """
-    BluetoothLink function provides control over bluetooth link
-    and status for devices that are bluetooth-enabled.
+    BluetoothLink function provides control over Bluetooth link
+    and status for devices that are Bluetooth-enabled.
 
     """
     #--- (end of YBluetoothLink class start)
@@ -352,7 +352,7 @@ class YBluetoothLink(YFunction):
     @staticmethod
     def FindBluetoothLink(func):
         """
-        Retrieves a cellular interface for a given identifier.
+        Retrieves a Bluetooth sound controller for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -362,11 +362,11 @@ class YBluetoothLink(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the cellular interface is online at the time
+        This function does not require that the Bluetooth sound controller is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YBluetoothLink.isOnline() to test if the cellular interface is
+        Use the method YBluetoothLink.isOnline() to test if the Bluetooth sound controller is
         indeed online at a given time. In case of ambiguity when looking for
-        a cellular interface by logical name, no error is notified: the first instance
+        a Bluetooth sound controller by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -374,10 +374,10 @@ class YBluetoothLink(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the cellular interface, for instance
+        @param func : a string that uniquely characterizes the Bluetooth sound controller, for instance
                 MyDevice.bluetoothLink1.
 
-        @return a YBluetoothLink object allowing you to drive the cellular interface.
+        @return a YBluetoothLink object allowing you to drive the Bluetooth sound controller.
         """
         # obj
         obj = YFunction._FindFromCache("BluetoothLink", func)
@@ -408,14 +408,14 @@ class YBluetoothLink(YFunction):
 
     def nextBluetoothLink(self):
         """
-        Continues the enumeration of cellular interfaces started using yFirstBluetoothLink().
-        Caution: You can't make any assumption about the returned cellular interfaces order.
-        If you want to find a specific a cellular interface, use BluetoothLink.findBluetoothLink()
+        Continues the enumeration of Bluetooth sound controllers started using yFirstBluetoothLink().
+        Caution: You can't make any assumption about the returned Bluetooth sound controllers order.
+        If you want to find a specific a Bluetooth sound controller, use BluetoothLink.findBluetoothLink()
         and a hardwareID or a logical name.
 
         @return a pointer to a YBluetoothLink object, corresponding to
-                a cellular interface currently online, or a None pointer
-                if there are no more cellular interfaces to enumerate.
+                a Bluetooth sound controller currently online, or a None pointer
+                if there are no more Bluetooth sound controllers to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -431,12 +431,12 @@ class YBluetoothLink(YFunction):
     @staticmethod
     def FirstBluetoothLink():
         """
-        Starts the enumeration of cellular interfaces currently accessible.
+        Starts the enumeration of Bluetooth sound controllers currently accessible.
         Use the method YBluetoothLink.nextBluetoothLink() to iterate on
-        next cellular interfaces.
+        next Bluetooth sound controllers.
 
         @return a pointer to a YBluetoothLink object, corresponding to
-                the first cellular interface currently online, or a None pointer
+                the first Bluetooth sound controller currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()
