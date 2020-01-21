@@ -1,3 +1,4 @@
-Python v1.10.38914
+Python v1.10.39263
 
-- Documentation improvements
+- Improve USB handling on very slow host (Raspberry Pi Zero)
+- Fix crash with 'Invalid operation' message on macOS Catalina
