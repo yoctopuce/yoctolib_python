@@ -1,4 +1,6 @@
-Python v1.10.39263
+Python v1.10.40411
 
-- Improve USB handling on very slow host (Raspberry Pi Zero)
-- Fix crash with 'Invalid operation' message on macOS Catalina
+- Add definitions for temperature type "CHANNEL_OFF" and callback encoding "INFLUXDB_V2"
+- Add example for Yocto-MaxiBuzzer
+- Add fallback to HTTP protocol on old YoctoHubs
+- Fix doc for queryHex method

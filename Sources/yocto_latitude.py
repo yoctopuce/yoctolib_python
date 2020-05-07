@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_latitude.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_latitude.py 39658 2020-03-12 15:36:29Z seb $
 #
 #  Implements yFindLatitude(), the high-level API for Latitude functions
 #
@@ -99,7 +99,7 @@ class YLatitude(YSensor):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the latitude sensor, for instance
-                YGNSSMK1.latitude.
+                YGNSSMK2.latitude.
 
         @return a YLatitude object allowing you to drive the latitude sensor.
         """

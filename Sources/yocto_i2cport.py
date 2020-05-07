@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_i2cport.py 38934 2019-12-23 09:29:53Z seb $
+#  $Id: yocto_i2cport.py 39333 2020-01-30 10:05:40Z mvuilleu $
 #
 #  Implements yFindI2cPort(), the high-level API for I2cPort functions
 #
@@ -617,6 +617,40 @@ class YI2cPort(YFunction):
         # res
 
         url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + self._escapeAttr(query)
+        msgbin = self._download(url)
+        msgarr = self._json_get_array(msgbin)
+        msglen = len(msgarr)
+        if msglen == 0:
+            return ""
+        # // last element of array is the new position
+        msglen = msglen - 1
+        self._rxptr = YAPI._atoi(msgarr[msglen])
+        if msglen == 0:
+            return ""
+        res = self._json_get_string(YString2Byte(msgarr[0]))
+        return res
+
+    def queryHex(self, hexString, maxWait):
+        """
+        Sends a binary message to the serial port, and reads the reply, if any.
+        This function is intended to be used when the serial port is configured for
+        Frame-based protocol.
+
+        @param hexString : the message to send, coded in hexadecimal
+        @param maxWait : the maximum number of milliseconds to wait for a reply.
+
+        @return the next frame received after sending the message, as a hex string.
+                Additional frames can be obtained by calling readHex or readMessages.
+
+        On failure, throws an exception or returns an empty string.
+        """
+        # url
+        # msgbin
+        msgarr = []
+        # msglen
+        # res
+
+        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=$" + hexString
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
         msglen = len(msgarr)

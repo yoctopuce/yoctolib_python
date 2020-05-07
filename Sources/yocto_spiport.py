@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_spiport.py 40298 2020-05-05 08:37:49Z seb $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -706,6 +706,40 @@ class YSpiPort(YFunction):
         # res
 
         url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + self._escapeAttr(query)
+        msgbin = self._download(url)
+        msgarr = self._json_get_array(msgbin)
+        msglen = len(msgarr)
+        if msglen == 0:
+            return ""
+        # // last element of array is the new position
+        msglen = msglen - 1
+        self._rxptr = YAPI._atoi(msgarr[msglen])
+        if msglen == 0:
+            return ""
+        res = self._json_get_string(YString2Byte(msgarr[0]))
+        return res
+
+    def queryHex(self, hexString, maxWait):
+        """
+        Sends a binary message to the serial port, and reads the reply, if any.
+        This function is intended to be used when the serial port is configured for
+        Frame-based protocol.
+
+        @param hexString : the message to send, coded in hexadecimal
+        @param maxWait : the maximum number of milliseconds to wait for a reply.
+
+        @return the next frame received after sending the message, as a hex string.
+                Additional frames can be obtained by calling readHex or readMessages.
+
+        On failure, throws an exception or returns an empty string.
+        """
+        # url
+        # msgbin
+        msgarr = []
+        # msglen
+        # res
+
+        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=$" + hexString
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
         msglen = len(msgarr)

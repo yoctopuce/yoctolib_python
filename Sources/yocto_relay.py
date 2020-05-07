@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_relay.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_relay.py 39434 2020-02-25 08:53:55Z seb $
 #
 #  Implements yFindRelay(), the high-level API for Relay functions
 #

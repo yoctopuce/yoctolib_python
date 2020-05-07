@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_groundspeed.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_groundspeed.py 39658 2020-03-12 15:36:29Z seb $
 #
 #  Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
 #
@@ -99,7 +99,7 @@ class YGroundSpeed(YSensor):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the ground speed sensor, for instance
-                YGNSSMK1.groundSpeed.
+                YGNSSMK2.groundSpeed.
 
         @return a YGroundSpeed object allowing you to drive the ground speed sensor.
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_temperature.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_temperature.py 39648 2020-03-12 13:56:10Z mvuilleu $
 #
 #  Implements yFindTemperature(), the high-level API for Temperature functions
 #
@@ -83,6 +83,7 @@ class YTemperature(YSensor):
     SENSORTYPE_RES_INTERNAL = 14
     SENSORTYPE_IR = 15
     SENSORTYPE_RES_PT1000 = 16
+    SENSORTYPE_CHANNEL_OFF = 17
     SENSORTYPE_INVALID = -1
     #--- (end of YTemperature definitions)
 
@@ -140,8 +141,9 @@ class YTemperature(YSensor):
         YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES,
         YTemperature.SENSORTYPE_PT100_2WIRES, YTemperature.SENSORTYPE_RES_OHM,
         YTemperature.SENSORTYPE_RES_NTC, YTemperature.SENSORTYPE_RES_LINEAR,
-        YTemperature.SENSORTYPE_RES_INTERNAL, YTemperature.SENSORTYPE_IR and
-        YTemperature.SENSORTYPE_RES_PT1000 corresponding to the temperature sensor type
+        YTemperature.SENSORTYPE_RES_INTERNAL, YTemperature.SENSORTYPE_IR,
+        YTemperature.SENSORTYPE_RES_PT1000 and YTemperature.SENSORTYPE_CHANNEL_OFF corresponding to the
+        temperature sensor type
 
         On failure, throws an exception or returns YTemperature.SENSORTYPE_INVALID.
         """
@@ -166,8 +168,9 @@ class YTemperature(YSensor):
         YTemperature.SENSORTYPE_PT100_4WIRES, YTemperature.SENSORTYPE_PT100_3WIRES,
         YTemperature.SENSORTYPE_PT100_2WIRES, YTemperature.SENSORTYPE_RES_OHM,
         YTemperature.SENSORTYPE_RES_NTC, YTemperature.SENSORTYPE_RES_LINEAR,
-        YTemperature.SENSORTYPE_RES_INTERNAL, YTemperature.SENSORTYPE_IR and
-        YTemperature.SENSORTYPE_RES_PT1000 corresponding to the temperature sensor type
+        YTemperature.SENSORTYPE_RES_INTERNAL, YTemperature.SENSORTYPE_IR,
+        YTemperature.SENSORTYPE_RES_PT1000 and YTemperature.SENSORTYPE_CHANNEL_OFF corresponding to the
+        temperature sensor type
 
         @return YAPI.SUCCESS if the call succeeds.
 
