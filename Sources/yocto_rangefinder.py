@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_rangefinder.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_rangefinder.py 40655 2020-05-25 14:12:58Z mvuilleu $
 #
 #  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
 #
@@ -125,9 +125,9 @@ class YRangeFinder(YSensor):
         Returns the range finder running mode. The rangefinder running mode
         allows you to put priority on precision, speed or maximum range.
 
-        @return a value among YRangeFinder.RANGEFINDERMODE_DEFAULT, YRangeFinder.RANGEFINDERMODE_LONG_RANGE,
-        YRangeFinder.RANGEFINDERMODE_HIGH_ACCURACY and YRangeFinder.RANGEFINDERMODE_HIGH_SPEED
-        corresponding to the range finder running mode
+        @return a value among YRangeFinder.RANGEFINDERMODE_DEFAULT,
+        YRangeFinder.RANGEFINDERMODE_LONG_RANGE, YRangeFinder.RANGEFINDERMODE_HIGH_ACCURACY and
+        YRangeFinder.RANGEFINDERMODE_HIGH_SPEED corresponding to the range finder running mode
 
         On failure, throws an exception or returns YRangeFinder.RANGEFINDERMODE_INVALID.
         """

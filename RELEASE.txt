@@ -1,6 +1,3 @@
-Python v1.10.40411
+Python v1.10.40924
 
-- Add definitions for temperature type "CHANNEL_OFF" and callback encoding "INFLUXDB_V2"
-- Add example for Yocto-MaxiBuzzer
-- Add fallback to HTTP protocol on old YoctoHubs
-- Fix doc for queryHex method
+- Fix set_allSettingsAndFiles() that was accepting files with \r\n line ending

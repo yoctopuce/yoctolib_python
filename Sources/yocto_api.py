@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 38914 2019-12-20 19:14:33Z mvuilleu $
+# * $Id: yocto_api.py 40890 2020-06-09 16:29:14Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -864,7 +864,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "40411"
+    YOCTO_API_BUILD_NO = "40924"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2272,10 +2272,22 @@ class YAPI:
     @staticmethod
     def FreeAPI():
         """
-        Frees dynamically allocated memory blocks used by the Yoctopuce library.
-        It is generally not required to call this function, unless you
-        want to free all dynamically allocated memory blocks in order to
-        track a memory leak for instance.
+        Waits for all pending communications with Yoctopuce devices to be
+        completed then frees dynamically allocated resources used by
+        the Yoctopuce library.
+
+        From an operating system standpoint, it is generally not required to call
+        this function since the OS will automatically free allocated resources
+        once your program is completed. However there are two situations when
+        you may really want to use that function:
+
+        - Free all dynamically allocated memory blocks in order to
+        track a memory leak.
+
+        - Send commands to devices right before the end
+        of the program. Since commands are sent in an asynchronous way
+        the program could exit before all commands are effectively sent.
+
         You should not call any other library function after calling
         yFreeAPI(), or your program will crash.
         """
@@ -6001,6 +6013,9 @@ class YModule(YFunction):
         # json_api
         # json_files
         # json_extra
+        # fuperror
+        # globalres
+        fuperror = 0
         json = YByte2String(settings)
         json_api = self._get_json_path(json, "api")
         if json_api == "":
@@ -6027,9 +6042,16 @@ class YModule(YFunction):
                 name = self._decode_json_string(name)
                 data = self._get_json_path(y, "data")
                 data = self._decode_json_string(data)
-                self._upload(name, YAPI._hexStrToBin(data))
+                if name == "":
+                    fuperror = fuperror + 1
+                else:
+                    self._upload(name, YAPI._hexStrToBin(data))
         # // Apply settings a second time for file-dependent settings and dynamic sensor nodes
-        return self.set_allSettings(YString2Byte(json_api))
+        globalres = self.set_allSettings(YString2Byte(json_api))
+        if not (fuperror == 0):
+            self._throw(YAPI.IO_ERROR, "Error during file upload")
+            return YAPI.IO_ERROR
+        return globalres
 
     def hasFunction(self, funcId):
         """
