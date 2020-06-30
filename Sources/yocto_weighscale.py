@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_weighscale.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_weighscale.py 41112 2020-06-29 13:21:58Z seb $
 #
 #  Implements yFindWeighScale(), the high-level API for WeighScale functions
 #
@@ -363,7 +363,8 @@ class YWeighScale(YSensor):
     def tare(self):
         """
         Adapts the load cell signal bias (stored in the corresponding genericSensor)
-        so that the current signal corresponds to a zero weight.
+        so that the current signal corresponds to a zero weight. Remember to call the
+        saveToFlash() method of the module if the modification must be kept.
 
         @return YAPI.SUCCESS if the call succeeds.
 

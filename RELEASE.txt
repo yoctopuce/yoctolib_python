@@ -1,3 +1,3 @@
-Python v1.10.40924
+Python v1.10.41115
 
-- Fix set_allSettingsAndFiles() that was accepting files with \r\n line ending
+- Fix potential timeout during datalogger access
