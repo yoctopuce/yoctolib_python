@@ -707,12 +707,12 @@ class YI2cPort(YFunction):
 
         return self.sendCommand("Z")
 
-    def i2cSendBin(self, slaveAddr, buff):
+    def i2cSendBin(self, subordinateAddr, buff):
         """
         Sends a one-way message (provided as a a binary buffer) to a device on the I2C bus.
         This function checks and reports communication errors on the I2C bus.
 
-        @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+        @param subordinateAddr : the 7-bit address of the subordinate device (without the direction bit)
         @param buff : the binary buffer to be sent
 
         @return YAPI.SUCCESS if the call succeeds.
@@ -724,7 +724,7 @@ class YI2cPort(YFunction):
         # val
         # msg
         # reply
-        msg = "@" + ("%02x" % slaveAddr) + ":"
+        msg = "@" + ("%02x" % subordinateAddr) + ":"
         nBytes = len(buff)
         idx = 0
         while idx < nBytes:
@@ -746,12 +746,12 @@ class YI2cPort(YFunction):
             return YAPI.IO_ERROR
         return YAPI.SUCCESS
 
-    def i2cSendArray(self, slaveAddr, values):
+    def i2cSendArray(self, subordinateAddr, values):
         """
         Sends a one-way message (provided as a list of integer) to a device on the I2C bus.
         This function checks and reports communication errors on the I2C bus.
 
-        @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+        @param subordinateAddr : the 7-bit address of the subordinate device (without the direction bit)
         @param values : a list of data bytes to be sent
 
         @return YAPI.SUCCESS if the call succeeds.
@@ -763,7 +763,7 @@ class YI2cPort(YFunction):
         # val
         # msg
         # reply
-        msg = "@" + ("%02x" % slaveAddr) + ":"
+        msg = "@" + ("%02x" % subordinateAddr) + ":"
         nBytes = len(values)
         idx = 0
         while idx < nBytes:
@@ -785,17 +785,17 @@ class YI2cPort(YFunction):
             return YAPI.IO_ERROR
         return YAPI.SUCCESS
 
-    def i2cSendAndReceiveBin(self, slaveAddr, buff, rcvCount):
+    def i2cSendAndReceiveBin(self, subordinateAddr, buff, rcvCount):
         """
         Sends a one-way message (provided as a a binary buffer) to a device on the I2C bus,
         then read back the specified number of bytes from device.
         This function checks and reports communication errors on the I2C bus.
 
-        @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+        @param subordinateAddr : the 7-bit address of the subordinate device (without the direction bit)
         @param buff : the binary buffer to be sent
         @param rcvCount : the number of bytes to receive once the data bytes are sent
 
-        @return a list of bytes with the data received from slave device.
+        @return a list of bytes with the data received from subordinate device.
 
         On failure, throws an exception or returns an empty binary buffer.
         """
@@ -805,7 +805,7 @@ class YI2cPort(YFunction):
         # msg
         # reply
         # rcvbytes
-        msg = "@" + ("%02x" % slaveAddr) + ":"
+        msg = "@" + ("%02x" % subordinateAddr) + ":"
         nBytes = len(buff)
         idx = 0
         while idx < nBytes:
@@ -834,17 +834,17 @@ class YI2cPort(YFunction):
         rcvbytes = YAPI._hexStrToBin(reply)
         return rcvbytes
 
-    def i2cSendAndReceiveArray(self, slaveAddr, values, rcvCount):
+    def i2cSendAndReceiveArray(self, subordinateAddr, values, rcvCount):
         """
         Sends a one-way message (provided as a list of integer) to a device on the I2C bus,
         then read back the specified number of bytes from device.
         This function checks and reports communication errors on the I2C bus.
 
-        @param slaveAddr : the 7-bit address of the slave device (without the direction bit)
+        @param subordinateAddr : the 7-bit address of the subordinate device (without the direction bit)
         @param values : a list of data bytes to be sent
         @param rcvCount : the number of bytes to receive once the data bytes are sent
 
-        @return a list of bytes with the data received from slave device.
+        @return a list of bytes with the data received from subordinate device.
 
         On failure, throws an exception or returns an empty array.
         """
@@ -855,7 +855,7 @@ class YI2cPort(YFunction):
         # reply
         # rcvbytes
         res = []
-        msg = "@" + ("%02x" % slaveAddr) + ":"
+        msg = "@" + ("%02x" % subordinateAddr) + ":"
         nBytes = len(values)
         idx = 0
         while idx < nBytes:
