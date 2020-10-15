@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_i2cport.py 39333 2020-01-30 10:05:40Z mvuilleu $
+#  $Id: yocto_i2cport.py 41171 2020-07-02 17:49:00Z mvuilleu $
 #
 #  Implements yFindI2cPort(), the high-level API for I2cPort functions
 #
@@ -43,7 +43,61 @@ __docformat__ = 'restructuredtext en'
 from yocto_api import *
 
 
-#--- (YI2cPort class start)
+#--- (generated code: YI2cSnoopingRecord class start)
+#noinspection PyProtectedMember
+class YI2cSnoopingRecord(object):
+    #--- (end of generated code: YI2cSnoopingRecord class start)
+    #--- (generated code: YI2cSnoopingRecord definitions)
+    #--- (end of generated code: YI2cSnoopingRecord definitions)
+
+    def __init__(self, json_str):
+        #--- (generated code: YI2cSnoopingRecord attributes)
+        self._tim = 0
+        self._dir = 0
+        self._msg = ''
+        #--- (end of generated code: YI2cSnoopingRecord attributes)
+        json = YJSONObject(json_str, 0, len(json_str))
+        json.parse()
+        self._tim = json.getInt("t")
+        m = json.getString("m")
+        if m[0] == '<':
+            self._dir = 1
+        else:
+            self._dir = 0
+        self._msg = m[1:]
+
+    #--- (generated code: YI2cSnoopingRecord implementation)
+    def get_time(self):
+        """
+        Returns the elapsed time, in ms, since the beginning of the preceding message.
+
+        @return the elapsed time, in ms, since the beginning of the preceding message.
+        """
+        return self._tim
+
+    def get_direction(self):
+        """
+        Returns the message direction (RX=0, TX=1).
+
+        @return the message direction (RX=0, TX=1).
+        """
+        return self._dir
+
+    def get_message(self):
+        """
+        Returns the message content.
+
+        @return the message content.
+        """
+        return self._msg
+
+#--- (end of generated code: YI2cSnoopingRecord implementation)
+
+#--- (generated code: YI2cSnoopingRecord functions)
+#--- (end of generated code: YI2cSnoopingRecord functions)
+
+
+#--- (generated code: YI2cPort class start)
 #noinspection PyProtectedMember
 class YI2cPort(YFunction):
     """
@@ -54,14 +108,14 @@ class YI2cPort(YFunction):
     They are meant to be used in the same way as all Yoctopuce devices.
 
     """
-    #--- (end of YI2cPort class start)
-    #--- (YI2cPort return codes)
-    #--- (end of YI2cPort return codes)
-    #--- (YI2cPort dlldef)
-    #--- (end of YI2cPort dlldef)
-    #--- (YI2cPort yapiwrapper)
-    #--- (end of YI2cPort yapiwrapper)
-    #--- (YI2cPort definitions)
+    #--- (end of generated code: YI2cPort class start)
+    #--- (generated code: YI2cPort return codes)
+    #--- (end of generated code: YI2cPort return codes)
+    #--- (generated code: YI2cPort dlldef)
+    #--- (end of generated code: YI2cPort dlldef)
+    #--- (generated code: YI2cPort yapiwrapper)
+    #--- (end of generated code: YI2cPort yapiwrapper)
+    #--- (generated code: YI2cPort definitions)
     RXCOUNT_INVALID = YAPI.INVALID_UINT
     TXCOUNT_INVALID = YAPI.INVALID_UINT
     ERRCOUNT_INVALID = YAPI.INVALID_UINT
@@ -79,12 +133,12 @@ class YI2cPort(YFunction):
     I2CVOLTAGELEVEL_3V3 = 1
     I2CVOLTAGELEVEL_1V8 = 2
     I2CVOLTAGELEVEL_INVALID = -1
-    #--- (end of YI2cPort definitions)
+    #--- (end of generated code: YI2cPort definitions)
 
     def __init__(self, func):
         super(YI2cPort, self).__init__(func)
         self._className = 'I2cPort'
-        #--- (YI2cPort attributes)
+        #--- (generated code: YI2cPort attributes)
         self._callback = None
         self._rxCount = YI2cPort.RXCOUNT_INVALID
         self._txCount = YI2cPort.TXCOUNT_INVALID
@@ -103,9 +157,9 @@ class YI2cPort(YFunction):
         self._rxptr = 0
         self._rxbuff = ''
         self._rxbuffptr = 0
-        #--- (end of YI2cPort attributes)
+        #--- (end of generated code: YI2cPort attributes)
 
-    #--- (YI2cPort implementation)
+    #--- (generated code: YI2cPort implementation)
     def _parseAttr(self, json_val):
         if json_val.has("rxCount"):
             self._rxCount = json_val.getInt("rxCount")
@@ -1048,6 +1102,44 @@ class YI2cPort(YFunction):
 
         return self.writeHex(msg)
 
+    def snoopMessages(self, maxWait):
+        """
+        Retrieves messages (both direction) in the I2C port buffer, starting at current position.
+
+        If no message is found, the search waits for one up to the specified maximum timeout
+        (in milliseconds).
+
+        @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+                in the receive buffer.
+
+        @return an array of YI2cSnoopingRecord objects containing the messages found, if any.
+
+        On failure, throws an exception or returns an empty array.
+        """
+        # url
+        # msgbin
+        msgarr = []
+        # msglen
+        res = []
+        # idx
+
+        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&t=0"
+        msgbin = self._download(url)
+        msgarr = self._json_get_array(msgbin)
+        msglen = len(msgarr)
+        if msglen == 0:
+            return res
+        # // last element of array is the new position
+        msglen = msglen - 1
+        self._rxptr = YAPI._atoi(msgarr[msglen])
+        idx = 0
+
+        while idx < msglen:
+            res.append(YI2cSnoopingRecord(msgarr[idx]))
+            idx = idx + 1
+
+        return res
+
     def nextI2cPort(self):
         """
         Continues the enumeration of I2C ports started using yFirstI2cPort().
@@ -1066,9 +1158,9 @@ class YI2cPort(YFunction):
             return None
         return YI2cPort.FindI2cPort(hwidRef.value)
 
-#--- (end of YI2cPort implementation)
+#--- (end of generated code: YI2cPort implementation)
 
-#--- (YI2cPort functions)
+#--- (generated code: YI2cPort functions)
 
     @staticmethod
     def FirstI2cPort():
@@ -1102,4 +1194,4 @@ class YI2cPort(YFunction):
 
         return YI2cPort.FindI2cPort(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of YI2cPort functions)
+#--- (end of generated code: YI2cPort functions)

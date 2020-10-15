@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_anbutton.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_anbutton.py 42053 2020-10-14 09:46:00Z seb $
 #
 #  Implements yFindAnButton(), the high-level API for AnButton functions
 #
@@ -79,6 +79,9 @@ class YAnButton(YFunction):
     ISPRESSED_FALSE = 0
     ISPRESSED_TRUE = 1
     ISPRESSED_INVALID = -1
+    INPUTTYPE_ANALOG = 0
+    INPUTTYPE_DIGITAL4 = 1
+    INPUTTYPE_INVALID = -1
     #--- (end of YAnButton definitions)
 
     def __init__(self, func):
@@ -97,6 +100,7 @@ class YAnButton(YFunction):
         self._lastTimeReleased = YAnButton.LASTTIMERELEASED_INVALID
         self._pulseCounter = YAnButton.PULSECOUNTER_INVALID
         self._pulseTimer = YAnButton.PULSETIMER_INVALID
+        self._inputType = YAnButton.INPUTTYPE_INVALID
         #--- (end of YAnButton attributes)
 
     #--- (YAnButton implementation)
@@ -123,6 +127,8 @@ class YAnButton(YFunction):
             self._pulseCounter = json_val.getLong("pulseCounter")
         if json_val.has("pulseTimer"):
             self._pulseTimer = json_val.getLong("pulseTimer")
+        if json_val.has("inputType"):
+            self._inputType = json_val.getInt("inputType")
         super(YAnButton, self)._parseAttr(json_val)
 
     def get_calibratedValue(self):
@@ -372,6 +378,37 @@ class YAnButton(YFunction):
                 return YAnButton.PULSETIMER_INVALID
         res = self._pulseTimer
         return res
+
+    def get_inputType(self):
+        """
+        Returns the decoding method applied to the input (analog or multiplexed binary switches).
+
+        @return either YAnButton.INPUTTYPE_ANALOG or YAnButton.INPUTTYPE_DIGITAL4, according to the
+        decoding method applied to the input (analog or multiplexed binary switches)
+
+        On failure, throws an exception or returns YAnButton.INPUTTYPE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YAnButton.INPUTTYPE_INVALID
+        res = self._inputType
+        return res
+
+    def set_inputType(self, newval):
+        """
+        Changes the decoding method applied to the input (analog or multiplexed binary switches).
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
+
+        @param newval : either YAnButton.INPUTTYPE_ANALOG or YAnButton.INPUTTYPE_DIGITAL4, according to the
+        decoding method applied to the input (analog or multiplexed binary switches)
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("inputType", rest_val)
 
     @staticmethod
     def FindAnButton(func):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_power.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_power.py 41290 2020-07-24 10:02:23Z mvuilleu $
 #
 #  Implements yFindPower(), the high-level API for Power functions
 #
@@ -63,6 +63,8 @@ class YPower(YSensor):
     #--- (YPower definitions)
     COSPHI_INVALID = YAPI.INVALID_DOUBLE
     METER_INVALID = YAPI.INVALID_DOUBLE
+    DELIVEREDENERGYMETER_INVALID = YAPI.INVALID_DOUBLE
+    RECEIVEDENERGYMETER_INVALID = YAPI.INVALID_DOUBLE
     METERTIMER_INVALID = YAPI.INVALID_UINT
     #--- (end of YPower definitions)
 
@@ -73,6 +75,8 @@ class YPower(YSensor):
         self._callback = None
         self._cosPhi = YPower.COSPHI_INVALID
         self._meter = YPower.METER_INVALID
+        self._deliveredEnergyMeter = YPower.DELIVEREDENERGYMETER_INVALID
+        self._receivedEnergyMeter = YPower.RECEIVEDENERGYMETER_INVALID
         self._meterTimer = YPower.METERTIMER_INVALID
         #--- (end of YPower attributes)
 
@@ -82,6 +86,10 @@ class YPower(YSensor):
             self._cosPhi = round(json_val.getDouble("cosPhi") * 1000.0 / 65536.0) / 1000.0
         if json_val.has("meter"):
             self._meter = round(json_val.getDouble("meter") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("deliveredEnergyMeter"):
+            self._deliveredEnergyMeter = round(json_val.getDouble("deliveredEnergyMeter") * 1000.0 / 65536.0) / 1000.0
+        if json_val.has("receivedEnergyMeter"):
+            self._receivedEnergyMeter = round(json_val.getDouble("receivedEnergyMeter") * 1000.0 / 65536.0) / 1000.0
         if json_val.has("meterTimer"):
             self._meterTimer = json_val.getInt("meterTimer")
         super(YPower, self)._parseAttr(json_val)
@@ -109,11 +117,12 @@ class YPower(YSensor):
 
     def get_meter(self):
         """
-        Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time.
-        Note that this counter is reset at each start of the device.
+        Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+        but only when positive. Note that this counter is reset at each start of the device.
 
         @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
-        integrating the power consumption over time
+        integrating the power consumption over time,
+                but only when positive
 
         On failure, throws an exception or returns YPower.METER_INVALID.
         """
@@ -122,6 +131,42 @@ class YPower(YSensor):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPower.METER_INVALID
         res = self._meter
+        return res
+
+    def get_deliveredEnergyMeter(self):
+        """
+        Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+        but only when positive. Note that this counter is reset at each start of the device.
+
+        @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
+        integrating the power consumption over time,
+                but only when positive
+
+        On failure, throws an exception or returns YPower.DELIVEREDENERGYMETER_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YPower.DELIVEREDENERGYMETER_INVALID
+        res = self._deliveredEnergyMeter
+        return res
+
+    def get_receivedEnergyMeter(self):
+        """
+        Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+        but only when negative. Note that this counter is reset at each start of the device.
+
+        @return a floating point number corresponding to the energy counter, maintained by the wattmeter by
+        integrating the power consumption over time,
+                but only when negative
+
+        On failure, throws an exception or returns YPower.RECEIVEDENERGYMETER_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YPower.RECEIVEDENERGYMETER_INVALID
+        res = self._receivedEnergyMeter
         return res
 
     def get_meterTimer(self):
@@ -178,7 +223,7 @@ class YPower(YSensor):
 
     def reset(self):
         """
-        Resets the energy counter.
+        Resets the energy counters.
 
         @return YAPI.SUCCESS if the call succeeds.
 

@@ -1,3 +1,7 @@
-Python v1.10.41115
+Python v1.10.42060
 
-- Fix potential timeout during datalogger access
+- Add decodePLMN support into YCellular
+- Add function to retrieve all messages (snooping) for SpiPort and I2cPort
+- Add separate meters for delivered/received energy and bandwidth attribute for PwmInput
+- Improve firmware update speed
+- Fix slight error in NTC parameters computation

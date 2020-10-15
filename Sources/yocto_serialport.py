@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 40298 2020-05-05 08:37:49Z seb $
+#* $Id: yocto_serialport.py 41171 2020-07-02 17:49:00Z mvuilleu $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -44,15 +44,15 @@ from yocto_api import *
 
 
 
-# --- (generated code: YSnoopingRecord class start)
+#--- (generated code: YSnoopingRecord class start)
 #noinspection PyProtectedMember
 class YSnoopingRecord(object):
     #--- (end of generated code: YSnoopingRecord class start)
-    # --- (generated code: YSnoopingRecord definitions)
+    #--- (generated code: YSnoopingRecord definitions)
     #--- (end of generated code: YSnoopingRecord definitions)
 
     def __init__(self, json_str):
-        # --- (generated code: YSnoopingRecord attributes)
+        #--- (generated code: YSnoopingRecord attributes)
         self._tim = 0
         self._dir = 0
         self._msg = ''
@@ -67,7 +67,7 @@ class YSnoopingRecord(object):
             self._dir = 0
         self._msg = m[1:]
 
-    # --- (generated code: YSnoopingRecord implementation)
+    #--- (generated code: YSnoopingRecord implementation)
     def get_time(self):
         """
         Returns the elapsed time, in ms, since the beginning of the preceding message.
@@ -78,9 +78,9 @@ class YSnoopingRecord(object):
 
     def get_direction(self):
         """
-        Returns the message direction (RX=0 , TX=1) .
+        Returns the message direction (RX=0, TX=1).
 
-        @return the message direction (RX=0 , TX=1) .
+        @return the message direction (RX=0, TX=1).
         """
         return self._dir
 
@@ -94,7 +94,7 @@ class YSnoopingRecord(object):
 
 #--- (end of generated code: YSnoopingRecord implementation)
 
-# --- (generated code: YSnoopingRecord functions)
+#--- (generated code: YSnoopingRecord functions)
 #--- (end of generated code: YSnoopingRecord functions)
 
 
@@ -391,6 +391,7 @@ class YSerialPort(YFunction):
         """
         Returns the type of protocol used over the serial line, as a string.
         Possible values are "Line" for ASCII messages separated by CR and/or LF,
+        "StxEtx" for ASCII messages delimited by STX/ETX codes,
         "Frame:[timeout]ms" for binary messages separated by a delay time,
         "Modbus-ASCII" for MODBUS messages in ASCII mode,
         "Modbus-RTU" for MODBUS messages in RTU mode,
@@ -414,6 +415,7 @@ class YSerialPort(YFunction):
         """
         Changes the type of protocol used over the serial line.
         Possible values are "Line" for ASCII messages separated by CR and/or LF,
+        "StxEtx" for ASCII messages delimited by STX/ETX codes,
         "Frame:[timeout]ms" for binary messages separated by a delay time,
         "Modbus-ASCII" for MODBUS messages in ASCII mode,
         "Modbus-RTU" for MODBUS messages in RTU mode,
@@ -1210,6 +1212,22 @@ class YSerialPort(YFunction):
             idx = idx + 1
 
         return res
+
+    def writeStxEtx(self, text):
+        """
+        Sends an ASCII string to the serial port, preceeded with an STX code and
+        followed by an ETX code.
+
+        @param text : the text string to send
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # buff
+        buff = YString2Byte("" + str(chr(2)) + "" + text + "" + str(chr(3)))
+        # // send string using file upload
+        return self._upload("txdata", buff)
 
     def writeMODBUS(self, hexString):
         """

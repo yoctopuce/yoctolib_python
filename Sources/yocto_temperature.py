@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_temperature.py 39648 2020-03-12 13:56:10Z mvuilleu $
+#  $Id: yocto_temperature.py 42054 2020-10-14 09:46:38Z seb $
 #
 #  Implements yFindTemperature(), the high-level API for Temperature functions
 #
@@ -278,8 +278,8 @@ class YTemperature(YSensor):
         # res100
         tempValues = []
         resValues = []
-        t0 = 25.0+275.15
-        t1 = 100.0+275.15
+        t0 = 25.0+273.15
+        t1 = 100.0+273.15
         res100 = res25 * math.exp(beta*(1.0/t1 - 1.0/t0))
         del tempValues[:]
         del resValues[:]

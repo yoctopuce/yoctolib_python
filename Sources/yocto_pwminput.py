@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_pwminput.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_pwminput.py 41348 2020-08-10 15:12:57Z seb $
 #
 #  Implements yFindPwmInput(), the high-level API for PwmInput functions
 #
@@ -69,6 +69,8 @@ class YPwmInput(YSensor):
     PULSECOUNTER_INVALID = YAPI.INVALID_LONG
     PULSETIMER_INVALID = YAPI.INVALID_LONG
     DEBOUNCEPERIOD_INVALID = YAPI.INVALID_UINT
+    BANDWIDTH_INVALID = YAPI.INVALID_UINT
+    EDGESPERPERIOD_INVALID = YAPI.INVALID_UINT
     PWMREPORTMODE_PWM_DUTYCYCLE = 0
     PWMREPORTMODE_PWM_FREQUENCY = 1
     PWMREPORTMODE_PWM_PULSEDURATION = 2
@@ -79,6 +81,7 @@ class YPwmInput(YSensor):
     PWMREPORTMODE_PWM_STATE = 7
     PWMREPORTMODE_PWM_FREQ_CPS = 8
     PWMREPORTMODE_PWM_FREQ_CPM = 9
+    PWMREPORTMODE_PWM_PERIODCOUNT = 10
     PWMREPORTMODE_INVALID = -1
     #--- (end of YPwmInput definitions)
 
@@ -95,6 +98,8 @@ class YPwmInput(YSensor):
         self._pulseTimer = YPwmInput.PULSETIMER_INVALID
         self._pwmReportMode = YPwmInput.PWMREPORTMODE_INVALID
         self._debouncePeriod = YPwmInput.DEBOUNCEPERIOD_INVALID
+        self._bandwidth = YPwmInput.BANDWIDTH_INVALID
+        self._edgesPerPeriod = YPwmInput.EDGESPERPERIOD_INVALID
         #--- (end of YPwmInput attributes)
 
     #--- (YPwmInput implementation)
@@ -115,6 +120,10 @@ class YPwmInput(YSensor):
             self._pwmReportMode = json_val.getInt("pwmReportMode")
         if json_val.has("debouncePeriod"):
             self._debouncePeriod = json_val.getInt("debouncePeriod")
+        if json_val.has("bandwidth"):
+            self._bandwidth = json_val.getInt("bandwidth")
+        if json_val.has("edgesPerPeriod"):
+            self._edgesPerPeriod = json_val.getInt("edgesPerPeriod")
         super(YPwmInput, self)._parseAttr(json_val)
 
     def set_unit(self, newval):
@@ -240,9 +249,9 @@ class YPwmInput(YSensor):
         YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION, YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT,
         YPwmInput.PWMREPORTMODE_PWM_PULSECOUNT, YPwmInput.PWMREPORTMODE_PWM_CPS,
         YPwmInput.PWMREPORTMODE_PWM_CPM, YPwmInput.PWMREPORTMODE_PWM_STATE,
-        YPwmInput.PWMREPORTMODE_PWM_FREQ_CPS and YPwmInput.PWMREPORTMODE_PWM_FREQ_CPM corresponding to the
-        parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
-        function and callbacks
+        YPwmInput.PWMREPORTMODE_PWM_FREQ_CPS, YPwmInput.PWMREPORTMODE_PWM_FREQ_CPM and
+        YPwmInput.PWMREPORTMODE_PWM_PERIODCOUNT corresponding to the parameter (frequency/duty cycle, pulse
+        width, edges count) returned by the get_currentValue function and callbacks
 
         On failure, throws an exception or returns YPwmInput.PWMREPORTMODE_INVALID.
         """
@@ -265,9 +274,10 @@ class YPwmInput(YSensor):
         YPwmInput.PWMREPORTMODE_PWM_FREQUENCY, YPwmInput.PWMREPORTMODE_PWM_PULSEDURATION,
         YPwmInput.PWMREPORTMODE_PWM_EDGECOUNT, YPwmInput.PWMREPORTMODE_PWM_PULSECOUNT,
         YPwmInput.PWMREPORTMODE_PWM_CPS, YPwmInput.PWMREPORTMODE_PWM_CPM,
-        YPwmInput.PWMREPORTMODE_PWM_STATE, YPwmInput.PWMREPORTMODE_PWM_FREQ_CPS and
-        YPwmInput.PWMREPORTMODE_PWM_FREQ_CPM corresponding to the  parameter  type (frequency/duty cycle,
-        pulse width, or edge count) returned by the get_currentValue function and callbacks
+        YPwmInput.PWMREPORTMODE_PWM_STATE, YPwmInput.PWMREPORTMODE_PWM_FREQ_CPS,
+        YPwmInput.PWMREPORTMODE_PWM_FREQ_CPM and YPwmInput.PWMREPORTMODE_PWM_PERIODCOUNT corresponding to
+        the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
+        get_currentValue function and callbacks
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -304,6 +314,54 @@ class YPwmInput(YSensor):
         """
         rest_val = str(newval)
         return self._setAttr("debouncePeriod", rest_val)
+
+    def get_bandwidth(self):
+        """
+        Returns the input signal sampling rate, in kHz.
+
+        @return an integer corresponding to the input signal sampling rate, in kHz
+
+        On failure, throws an exception or returns YPwmInput.BANDWIDTH_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YPwmInput.BANDWIDTH_INVALID
+        res = self._bandwidth
+        return res
+
+    def set_bandwidth(self, newval):
+        """
+        Changes the input signal sampling rate, measured in kHz.
+        A lower sampling frequency can be used to hide hide-frequency bounce effects,
+        for instance on electromechanical contacts, but limits the measure resolution.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
+
+        @param newval : an integer corresponding to the input signal sampling rate, measured in kHz
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("bandwidth", rest_val)
+
+    def get_edgesPerPeriod(self):
+        """
+        Returns the number of edges detected per preiod. For a clean PWM signal, this should be exactly two,
+        but in cas the signal is created by a mechanical contact with bounces, it can get higher.
+
+        @return an integer corresponding to the number of edges detected per preiod
+
+        On failure, throws an exception or returns YPwmInput.EDGESPERPERIOD_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YPwmInput.EDGESPERPERIOD_INVALID
+        res = self._edgesPerPeriod
+        return res
 
     @staticmethod
     def FindPwmInput(func):
