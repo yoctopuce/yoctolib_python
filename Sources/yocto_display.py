@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#* $Id: yocto_display.py 42093 2020-10-16 18:02:23Z mvuilleu $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -595,9 +595,9 @@ class YDisplay(YFunction):
         self._layerHeight = YDisplay.LAYERHEIGHT_INVALID
         self._layerCount = YDisplay.LAYERCOUNT_INVALID
         self._command = YDisplay.COMMAND_INVALID
+        self._allDisplayLayers = []
         #--- (end of generated code: YDisplay attributes)
         self._sequence = ""
-        self._allDisplayLayers = []
         self._recording = False
 
     #--- (generated code: YDisplay implementation)
@@ -1047,6 +1047,31 @@ class YDisplay(YFunction):
         self.flushLayers()
         return self.sendCommand("E" + str(int(layerIdA)) + "," + str(int(layerIdB)))
 
+    def get_displayLayer(self, layerId):
+        """
+        Returns a YDisplayLayer object that can be used to draw on the specified
+        layer. The content is displayed only when the layer is active on the
+        screen (and not masked by other overlapping layers).
+
+        @param layerId : the identifier of the layer (a number in range 0..layerCount-1)
+
+        @return an YDisplayLayer object
+
+        On failure, throws an exception or returns None.
+        """
+        # layercount
+        # idx
+        layercount = self.get_layerCount()
+        if not ((layerId >= 0) and (layerId < layercount)):
+            self._throw(YAPI.INVALID_ARGUMENT, "invalid DisplayLayer index")
+            return None
+        if len(self._allDisplayLayers) == 0:
+            idx = 0
+            while idx < layercount:
+                self._allDisplayLayers.append(YDisplayLayer(self, idx))
+                idx = idx + 1
+        return self._allDisplayLayers[layerId]
+
     def nextDisplay(self):
         """
         Continues the enumeration of displays started using yFirstDisplay().
@@ -1066,29 +1091,6 @@ class YDisplay(YFunction):
         return YDisplay.FindDisplay(hwidRef.value)
 
 #--- (end of generated code: YDisplay implementation)
-
-    def get_displayLayer(self, layerId):
-        """
-        Returns a YDisplayLayer object that can be used to draw on the specified
-        layer. The content is displayed only when the layer is active on the
-        screen (and not masked by other overlapping layers).
-
-        @param layerId : the identifier of the layer (a number in range 0..layerCount-1)
-
-        @return an YDisplayLayer object
-
-        On failure, throws an exception or returns None.
-        """
-        layercount = self.get_layerCount()
-        if (layerId < 0) or (layerId >= layercount):
-            self._throw(-1, "invalid DisplayLayer index, valid values are [0.." + str(layercount - 1) + "]")
-            return None
-
-        if len(self._allDisplayLayers) == 0:
-            for i in range(0, layercount):
-                self._allDisplayLayers.append(YDisplayLayer(self, str(i)))
-
-        return self._allDisplayLayers[layerId]
 
     def flushLayers(self):
         if self._allDisplayLayers is not None:

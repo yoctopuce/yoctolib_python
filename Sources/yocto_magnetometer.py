@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_magnetometer.py 38030 2019-11-04 17:56:01Z mvuilleu $
+#  $Id: yocto_magnetometer.py 42951 2020-12-14 09:43:29Z seb $
 #
 #  Implements yFindMagnetometer(), the high-level API for Magnetometer functions
 #
@@ -97,9 +97,9 @@ class YMagnetometer(YSensor):
 
     def get_bandwidth(self):
         """
-        Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+        Returns the measure update frequency, measured in Hz.
 
-        @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+        @return an integer corresponding to the measure update frequency, measured in Hz
 
         On failure, throws an exception or returns YMagnetometer.BANDWIDTH_INVALID.
         """
@@ -112,12 +112,12 @@ class YMagnetometer(YSensor):
 
     def set_bandwidth(self, newval):
         """
-        Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+        Changes the measure update frequency, measured in Hz. When the
         frequency is lower, the device performs averaging.
         Remember to call the saveToFlash()
         method of the module if the modification must be kept.
 
-        @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+        @param newval : an integer corresponding to the measure update frequency, measured in Hz
 
         @return YAPI.SUCCESS if the call succeeds.
 

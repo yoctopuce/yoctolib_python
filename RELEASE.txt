@@ -1,7 +1,3 @@
-Python v1.10.42060
+Python v1.10.42982
 
-- Add decodePLMN support into YCellular
-- Add function to retrieve all messages (snooping) for SpiPort and I2cPort
-- Add separate meters for delivered/received energy and bandwidth attribute for PwmInput
-- Improve firmware update speed
-- Fix slight error in NTC parameters computation
+- Add Example for Yocto-Inclinometer

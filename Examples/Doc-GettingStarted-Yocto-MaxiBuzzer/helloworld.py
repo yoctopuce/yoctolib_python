@@ -2,10 +2,10 @@
 #
 #  $Id: svn_id $
 #
-#  An example that show how to use a  yocto-MaxiBuzzer
+#  An example that show how to use a  Yocto-MaxiBuzzer
 #
 #  You can find more information on our web site:
-#   yocto-MaxiBuzzer documentation:
+#   Yocto-MaxiBuzzer documentation:
 #      https://www.yoctopuce.com/EN/products/yocto-maxibuzzer/doc.html
 #   Python API Reference:
 #      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html

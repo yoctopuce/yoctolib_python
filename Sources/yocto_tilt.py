@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_tilt.py 38030 2019-11-04 17:56:01Z mvuilleu $
+#  $Id: yocto_tilt.py 42951 2020-12-14 09:43:29Z seb $
 #
 #  Implements yFindTilt(), the high-level API for Tilt functions
 #
@@ -92,9 +92,9 @@ class YTilt(YSensor):
 
     def get_bandwidth(self):
         """
-        Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+        Returns the measure update frequency, measured in Hz.
 
-        @return an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+        @return an integer corresponding to the measure update frequency, measured in Hz
 
         On failure, throws an exception or returns YTilt.BANDWIDTH_INVALID.
         """
@@ -107,12 +107,12 @@ class YTilt(YSensor):
 
     def set_bandwidth(self, newval):
         """
-        Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only). When the
+        Changes the measure update frequency, measured in Hz. When the
         frequency is lower, the device performs averaging.
         Remember to call the saveToFlash()
         method of the module if the modification must be kept.
 
-        @param newval : an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+        @param newval : an integer corresponding to the measure update frequency, measured in Hz
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -165,6 +165,40 @@ class YTilt(YSensor):
             obj = YTilt(func)
             YFunction._AddToCache("Tilt", func, obj)
         return obj
+
+    def calibrateToZero(self):
+        """
+        Performs a zero calibration for the tilt measurement (Yocto-Inclinometer only).
+        When this method is invoked, a simple shift (translation)
+        is applied so that the current position is reported as a zero angle.
+        Be aware that this shift will also affect the measurement boundaries.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # currentRawVal
+        rawVals = []
+        refVals = []
+        currentRawVal = self.get_currentRawValue()
+        del rawVals[:]
+        del refVals[:]
+        rawVals.append(currentRawVal)
+        refVals.append(0.0)
+
+
+        return self.calibrateFromPoints(rawVals, refVals)
+
+    def restoreZeroCalibration(self):
+        """
+        Cancels any previous zero calibration for the tilt measurement (Yocto-Inclinometer only).
+        This function restores the factory zero calibration.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self._setAttr("calibrationParam", "0")
 
     def nextTilt(self):
         """
