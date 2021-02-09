@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_refframe.py 42951 2020-12-14 09:43:29Z seb $
+#  $Id: yocto_refframe.py 43619 2021-01-29 09:14:45Z mvuilleu $
 #
 #  Implements yFindRefFrame(), the high-level API for RefFrame functions
 #
@@ -275,12 +275,12 @@ class YRefFrame(YFunction):
         pitch/roll tilt sensors.
 
         @return a value among the YRefFrame.MOUNTPOSITION enumeration
-                (YRefFrame.MOUNTPOSITION.BOTTOM,   YRefFrame.MOUNTPOSITION.TOP,
+                (YRefFrame.MOUNTPOSITION.BOTTOM,  YRefFrame.MOUNTPOSITION.TOP,
                 YRefFrame.MOUNTPOSITION.FRONT,    YRefFrame.MOUNTPOSITION.RIGHT,
                 YRefFrame.MOUNTPOSITION.REAR,     YRefFrame.MOUNTPOSITION.LEFT),
                 corresponding to the installation in a box, on one of the six faces.
 
-        On failure, throws an exception or returns YRefFrame.MOUNTPOSITION.INVALID.
+        On failure, throws an exception or returns YRefFrame.MOUNTPOSITION_INVALID.
         """
         # position
         position = self.get_mountPos()
@@ -302,7 +302,7 @@ class YRefFrame(YFunction):
                 On the bottom face, the 12H orientation points to the front, while
                 on the top face, the 12H orientation points to the rear.
 
-        On failure, throws an exception or returns YRefFrame.MOUNTORIENTATION.INVALID.
+        On failure, throws an exception or returns YRefFrame.MOUNTORIENTATION_INVALID.
         """
         # position
         position = self.get_mountPos()
@@ -319,7 +319,7 @@ class YRefFrame(YFunction):
         the earth surface) so that the measures are made relative to this position.
 
         @param position : a value among the YRefFrame.MOUNTPOSITION enumeration
-                (YRefFrame.MOUNTPOSITION.BOTTOM,   YRefFrame.MOUNTPOSITION.TOP,
+                (YRefFrame.MOUNTPOSITION.BOTTOM,  YRefFrame.MOUNTPOSITION.TOP,
                 YRefFrame.MOUNTPOSITION.FRONT,    YRefFrame.MOUNTPOSITION.RIGHT,
                 YRefFrame.MOUNTPOSITION.REAR,     YRefFrame.MOUNTPOSITION.LEFT),
                 corresponding to the installation in a box, on one of the six faces.

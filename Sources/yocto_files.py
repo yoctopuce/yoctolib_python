@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 38934 2019-12-23 09:29:53Z seb $
+#* $Id: yocto_files.py 43478 2021-01-21 13:49:12Z mvuilleu $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -187,7 +187,7 @@ class YFiles(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the filesystem, for instance
-                YBUZZER2.files.
+                YRGBLED2.files.
 
         @return a YFiles object allowing you to drive the filesystem.
         """

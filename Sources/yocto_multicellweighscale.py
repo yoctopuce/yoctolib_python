@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multicellweighscale.py 41108 2020-06-29 12:29:07Z seb $
+#  $Id: yocto_multicellweighscale.py 43478 2021-01-21 13:49:12Z mvuilleu $
 #
 #  Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
 #
@@ -70,6 +70,9 @@ class YMultiCellWeighScale(YSensor):
     COMPENSATION_INVALID = YAPI.INVALID_DOUBLE
     ZEROTRACKING_INVALID = YAPI.INVALID_DOUBLE
     COMMAND_INVALID = YAPI.INVALID_STRING
+    EXTERNALSENSE_FALSE = 0
+    EXTERNALSENSE_TRUE = 1
+    EXTERNALSENSE_INVALID = -1
     EXCITATION_OFF = 0
     EXCITATION_DC = 1
     EXCITATION_AC = 2
@@ -82,6 +85,7 @@ class YMultiCellWeighScale(YSensor):
         #--- (YMultiCellWeighScale attributes)
         self._callback = None
         self._cellCount = YMultiCellWeighScale.CELLCOUNT_INVALID
+        self._externalSense = YMultiCellWeighScale.EXTERNALSENSE_INVALID
         self._excitation = YMultiCellWeighScale.EXCITATION_INVALID
         self._tempAvgAdaptRatio = YMultiCellWeighScale.TEMPAVGADAPTRATIO_INVALID
         self._tempChgAdaptRatio = YMultiCellWeighScale.TEMPCHGADAPTRATIO_INVALID
@@ -96,6 +100,8 @@ class YMultiCellWeighScale(YSensor):
     def _parseAttr(self, json_val):
         if json_val.has("cellCount"):
             self._cellCount = json_val.getInt("cellCount")
+        if json_val.has("externalSense"):
+            self._externalSense = (json_val.getInt("externalSense") > 0 if 1 else 0)
         if json_val.has("excitation"):
             self._excitation = json_val.getInt("excitation")
         if json_val.has("tempAvgAdaptRatio"):
@@ -157,6 +163,40 @@ class YMultiCellWeighScale(YSensor):
         """
         rest_val = str(newval)
         return self._setAttr("cellCount", rest_val)
+
+    def get_externalSense(self):
+        """
+        Returns true if entry 4 is used as external sense for 6-wires load cells.
+
+        @return either YMultiCellWeighScale.EXTERNALSENSE_FALSE or YMultiCellWeighScale.EXTERNALSENSE_TRUE,
+        according to true if entry 4 is used as external sense for 6-wires load cells
+
+        On failure, throws an exception or returns YMultiCellWeighScale.EXTERNALSENSE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YMultiCellWeighScale.EXTERNALSENSE_INVALID
+        res = self._externalSense
+        return res
+
+    def set_externalSense(self, newval):
+        """
+        Changes the configuration to tell if entry 4 is used as external sense for
+        6-wires load cells. Remember to call the saveToFlash() method of the
+        module if the modification must be kept.
+
+        @param newval : either YMultiCellWeighScale.EXTERNALSENSE_FALSE or
+        YMultiCellWeighScale.EXTERNALSENSE_TRUE, according to the configuration to tell if entry 4 is used
+        as external sense for
+                6-wires load cells
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("externalSense", rest_val)
 
     def get_excitation(self):
         """

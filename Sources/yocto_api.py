@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 41171 2020-07-02 17:49:00Z mvuilleu $
+# * $Id: yocto_api.py 43619 2021-01-29 09:14:45Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -864,7 +864,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "42982"
+    YOCTO_API_BUILD_NO = "43781"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -4928,7 +4928,7 @@ class YFunction(object):
 
         @return a string corresponding to the serial number of the module, as set by the factory.
 
-        On failure, throws an exception or returns YModule.SERIALNUMBER_INVALID.
+        On failure, throws an exception or returns YFunction.SERIALNUMBER_INVALID.
         """
         # m
         m = self.get_module()
@@ -5264,7 +5264,7 @@ class YFunction(object):
 
         @return an identifier of type YFUN_DESCR.
 
-        If the function has never been contacted, the returned value is YFunction.FUNCTIONDESCRIPTOR_INVALID.
+        If the function has never been contacted, the returned value is Y$CLASSNAME$.FUNCTIONDESCRIPTOR_INVALID.
         """
         return self._fundescr
 
@@ -8167,7 +8167,7 @@ class YDataLogger(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the data logger, for instance
-                LIGHTMK3.dataLogger.
+                RX420MA1.dataLogger.
 
         @return a YDataLogger object allowing you to drive the data logger.
         """
