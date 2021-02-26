@@ -1,4 +1,3 @@
-Python v1.10.43781
+Python v1.10.44029
 
-use api version 1.0
-- improve documentation
+- Add YAPI.AddUdevRule() method

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 43619 2021-01-29 09:14:45Z mvuilleu $
+# * $Id: yocto_api.py 44025 2021-02-25 09:38:14Z web $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -762,6 +762,33 @@ class YAPIContext(object):
         res = YAPI._yapiGetNetDevListValidity()
         return res
 
+    def AddUdevRule(self, force):
+        """
+        Adds a UDEV rule which authorizes all users to access Yoctopuce modules
+        connected to the USB ports. This function works only under Linux. The process that
+        calls this method must have root privileges because this method changes the Linux configuration.
+
+        @param force : if true, overwrites any existing rule.
+
+        @return an empty string if the rule has been added.
+
+        On failure, returns a string that starts with "error:".
+        """
+        # msg
+        # res
+        # c_force
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        if force:
+            c_force = 1
+        else:
+            c_force = 0
+        res = YAPI._yapiAddUdevRulesForYocto(c_force, errmsg)
+        if res < 0:
+            msg = "error: " + YByte2String(errmsg.value)
+        else:
+            msg = ""
+        return msg
+
     def SetNetworkTimeout(self, networkMsTimeout):
         """
         Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().
@@ -864,7 +891,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "43781"
+    YOCTO_API_BUILD_NO = "44029"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1245,6 +1272,9 @@ class YAPI:
         YAPI._yapiGetNetworkTimeout = YAPI._yApiCLib.yapiGetNetworkTimeout
         YAPI._yapiGetNetworkTimeout.restypes = ctypes.c_int
         YAPI._yapiGetNetworkTimeout.argtypes = []
+        YAPI._yapiAddUdevRulesForYocto = YAPI._yApiCLib.yapiAddUdevRulesForYocto
+        YAPI._yapiAddUdevRulesForYocto.restypes = ctypes.c_int
+        YAPI._yapiAddUdevRulesForYocto.argtypes = [ctypes.c_int, ctypes.c_char_p]
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
@@ -1454,6 +1484,21 @@ class YAPI:
         @return the number of seconds between each enumeration.
         """
         return YAPI._yapiContext.GetDeviceListValidity()
+
+    @staticmethod
+    def AddUdevRule(force):
+        """
+        Adds a UDEV rule which authorizes all users to access Yoctopuce modules
+        connected to the USB ports. This function works only under Linux. The process that
+        calls this method must have root privileges because this method changes the Linux configuration.
+
+        @param force : if true, overwrites any existing rule.
+
+        @return an empty string if the rule has been added.
+
+        On failure, returns a string that starts with "error:".
+        """
+        return YAPI._yapiContext.AddUdevRule(force)
 
     @staticmethod
     def SetNetworkTimeout(networkMsTimeout):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_quadraturedecoder.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_quadraturedecoder.py 44023 2021-02-25 09:23:38Z web $
 #
 #  Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
 #
@@ -63,6 +63,8 @@ class YQuadratureDecoder(YSensor):
     SPEED_INVALID = YAPI.INVALID_DOUBLE
     DECODING_OFF = 0
     DECODING_ON = 1
+    DECODING_DIV2 = 2
+    DECODING_DIV4 = 3
     DECODING_INVALID = -1
     #--- (end of YQuadratureDecoder definitions)
 
@@ -80,7 +82,7 @@ class YQuadratureDecoder(YSensor):
         if json_val.has("speed"):
             self._speed = round(json_val.getDouble("speed") * 1000.0 / 65536.0) / 1000.0
         if json_val.has("decoding"):
-            self._decoding = (json_val.getInt("decoding") > 0 if 1 else 0)
+            self._decoding = json_val.getInt("decoding")
         super(YQuadratureDecoder, self)._parseAttr(json_val)
 
     def set_currentValue(self, newval):
@@ -116,8 +118,9 @@ class YQuadratureDecoder(YSensor):
         """
         Returns the current activation state of the quadrature decoder.
 
-        @return either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according to the
-        current activation state of the quadrature decoder
+        @return a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
+        YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the current
+        activation state of the quadrature decoder
 
         On failure, throws an exception or returns YQuadratureDecoder.DECODING_INVALID.
         """
@@ -134,14 +137,15 @@ class YQuadratureDecoder(YSensor):
         Remember to call the saveToFlash()
         method of the module if the modification must be kept.
 
-        @param newval : either YQuadratureDecoder.DECODING_OFF or YQuadratureDecoder.DECODING_ON, according
-        to the activation state of the quadrature decoder
+        @param newval : a value among YQuadratureDecoder.DECODING_OFF, YQuadratureDecoder.DECODING_ON,
+        YQuadratureDecoder.DECODING_DIV2 and YQuadratureDecoder.DECODING_DIV4 corresponding to the
+        activation state of the quadrature decoder
 
         @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
-        rest_val = "1" if newval > 0 else "0"
+        rest_val = str(newval)
         return self._setAttr("decoding", rest_val)
 
     @staticmethod
