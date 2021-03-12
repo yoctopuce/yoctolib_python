@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 44025 2021-02-25 09:38:14Z web $
+# * $Id: yocto_api.py 44114 2021-03-03 17:47:55Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -891,7 +891,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "44029"
+    YOCTO_API_BUILD_NO = "44175"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -8212,7 +8212,7 @@ class YDataLogger(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the data logger, for instance
-                RX420MA1.dataLogger.
+                LIGHTMK3.dataLogger.
 
         @return a YDataLogger object allowing you to drive the data logger.
         """

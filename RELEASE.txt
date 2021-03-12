@@ -1,3 +1,4 @@
-Python v1.10.44029
+Python v1.10.44175
 
-- Add YAPI.AddUdevRule() method
+- Add Yocto-CO2-V2 forced calibration method
+- Improve error reporting during firmware update
