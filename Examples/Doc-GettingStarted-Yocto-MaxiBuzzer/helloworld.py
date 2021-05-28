@@ -23,7 +23,6 @@ from yocto_buzzer import *
 from yocto_colorled import *
 from yocto_anbutton import *
 
-
 def usage():
     scriptname = os.path.basename(sys.argv[0])
     print("Usage:")
@@ -34,10 +33,8 @@ def usage():
     print(scriptname + ' any ')
     sys.exit()
 
-
 def die(msg):
     sys.exit(msg + ' (check USB cable)')
-
 
 if len(sys.argv) < 2:
     usage()
@@ -50,7 +47,7 @@ if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
     sys.exit("init error" + errmsg.value)
 
 if target == 'ANY':
-    # retreive any SegmentedDisplay
+    # retrieve any Buzzer
     buz = YBuzzer.FirstBuzzer()
     if buz is None:
         die('no device connected')

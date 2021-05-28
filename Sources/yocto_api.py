@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 44114 2021-03-03 17:47:55Z mvuilleu $
+# * $Id: yocto_api.py 45292 2021-05-25 23:27:54Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -891,7 +891,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "44175"
+    YOCTO_API_BUILD_NO = "45343"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2271,7 +2271,7 @@ class YAPI:
             YAPI.yloadYapiCDLL()
         version = YRefParam()
         date = YRefParam()
-        if YAPI.apiGetAPIVersion(version, date) != YAPI.YOCTO_API_VERSION_BCD:
+        if YAPI.apiGetAPIVersion(version, date) < YAPI.YOCTO_API_VERSION_BCD:
             if errmsg is not None:
                 errmsg.value = YAPI._yApiCLibFile + " does does not match the version of the Libary (Libary=" + YAPI.YOCTO_API_VERSION_STR + "." + YAPI.YOCTO_API_BUILD_NO
                 # noinspection PyTypeChecker
@@ -8212,7 +8212,7 @@ class YDataLogger(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the data logger, for instance
-                LIGHTMK3.dataLogger.
+                RX420MA1.dataLogger.
 
         @return a YDataLogger object allowing you to drive the data logger.
         """

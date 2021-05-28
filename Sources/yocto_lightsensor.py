@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_lightsensor.py 42951 2020-12-14 09:43:29Z seb $
+#  $Id: yocto_lightsensor.py 45292 2021-05-25 23:27:54Z mvuilleu $
 #
 #  Implements yFindLightSensor(), the high-level API for LightSensor functions
 #
@@ -172,7 +172,7 @@ class YLightSensor(YSensor):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the light sensor, for instance
-                LIGHTMK3.lightSensor.
+                LIGHTMK4.lightSensor.
 
         @return a YLightSensor object allowing you to drive the light sensor.
         """

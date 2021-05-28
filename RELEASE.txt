@@ -1,4 +1,3 @@
-Python v1.10.44175
+Python v1.10.45343
 
-- Add Yocto-CO2-V2 forced calibration method
-- Improve error reporting during firmware update
+- Add Example for Yocto-MaxiKnob

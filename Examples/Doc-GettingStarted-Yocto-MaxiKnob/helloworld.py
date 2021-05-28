@@ -1,12 +1,12 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 45299 2021-05-26 07:13:05Z web $
+#  $Id: svn_id $
 #
-#  An example that show how to use a  Yocto-Buzzer
+#  An example that show how to use a  Yocto-MaxiKnob
 #
 #  You can find more information on our web site:
-#   Yocto-Buzzer documentation:
-#      https://www.yoctopuce.com/EN/products/yocto-buzzer/doc.html
+#   Yocto-MaxiKnob documentation:
+#      https://www.yoctopuce.com/EN/products/yocto-maxiknob/doc.html
 #   Python API Reference:
 #      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
 #
@@ -17,11 +17,14 @@
 import os, sys
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..", "..", "Sources"))
+# !/usr/bin/python
 
-from yocto_api import *
+
 from yocto_buzzer import *
-from yocto_led import *
+from yocto_colorledcluster import *
+from yocto_quadraturedecoder import *
 from yocto_anbutton import *
+
 
 def usage():
     scriptname = os.path.basename(sys.argv[0])
@@ -33,8 +36,13 @@ def usage():
     print(scriptname + ' any ')
     sys.exit()
 
+
 def die(msg):
     sys.exit(msg + ' (check USB cable)')
+
+
+def notefreq(note):
+    return 220.0 * math.exp(note * math.log(2) / 12)
 
 if len(sys.argv) < 2:
     usage()
@@ -57,28 +65,29 @@ else:
 if not (buz.isOnline()):
     die('device not connected')
 serial = buz.get_module().get_serialNumber()
-led1 = YLed.FindLed(serial + ".led1")
-led2 = YLed.FindLed(serial + ".led2")
-button1 = YAnButton.FindAnButton(serial + ".anButton1")
-button2 = YAnButton.FindAnButton(serial + ".anButton2")
-print("press any of the test buttons")
-while button1.isOnline():
-    b1 = button1.get_isPressed()
-    b2 = button2.get_isPressed()
-    if b1 or b2:
-        if b1:
-            led = led1
-            freq = 1500
-        else:
-            led = led2
-            freq = 750
-        led.set_power(YLed.POWER_ON)
-        led.set_luminosity(100)
-        led.set_blinking(YLed.BLINKING_PANIC)
-        for i in range(5):  # this can be done using sequence as well
-            buz.set_frequency(freq)
-            buz.freqMove(2 * freq, 250)
-            YAPI.Sleep(250, errmsg)
-        buz.set_frequency(0)
-        led.set_power(YLed.POWER_OFF)
+leds = YColorLedCluster.FindColorLedCluster(serial + ".colorLedCluster")
+button = YAnButton.FindAnButton(serial + ".anButton1")
+qd = YQuadratureDecoder.FindQuadratureDecoder(serial + ".quadratureDecoder1")
+
+if (not button.isOnline()) or (not qd.isOnline()):
+    sys.exit("Make sure the Yocto-MaxiKnob is configured with at least one AnButton and One Quadrature decoder.")
+
+lastPos = qd.get_currentValue()
+buz.set_volume(100)
+qd.set_edgesPerCycle(2)
+
+print("press button 1, or turn the encoder")
+while button.isOnline():
+    if button.get_isPressed() and lastPos != 0:
+        lastPos = 0
+        qd.set_currentValue(0)
+        buz.playNotes("'E32 C8")
+        leds.set_rgbColor(0, 1, 0x000000)
+    else:
+        p = math.floor(qd.get_currentValue())
+        if lastPos != p:
+            lastPos = p
+            buz.pulse(notefreq(p), 250)
+            leds.set_hslColor(0, 1, 0x00FF7f | (p % 255) << 16)
+
 YAPI.FreeAPI()

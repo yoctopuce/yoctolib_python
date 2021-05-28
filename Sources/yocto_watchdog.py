@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_watchdog.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_watchdog.py 44548 2021-04-13 09:56:42Z mvuilleu $
 #
 #  Implements yFindWatchdog(), the high-level API for Watchdog functions
 #
@@ -72,6 +72,7 @@ class YWatchdog(YFunction):
     COUNTDOWN_INVALID = YAPI.INVALID_LONG
     TRIGGERDELAY_INVALID = YAPI.INVALID_LONG
     TRIGGERDURATION_INVALID = YAPI.INVALID_LONG
+    LASTTRIGGER_INVALID = YAPI.INVALID_UINT
     STATE_A = 0
     STATE_B = 1
     STATE_INVALID = -1
@@ -107,6 +108,7 @@ class YWatchdog(YFunction):
         self._running = YWatchdog.RUNNING_INVALID
         self._triggerDelay = YWatchdog.TRIGGERDELAY_INVALID
         self._triggerDuration = YWatchdog.TRIGGERDURATION_INVALID
+        self._lastTrigger = YWatchdog.LASTTRIGGER_INVALID
         self._firm = 0
         #--- (end of YWatchdog attributes)
 
@@ -143,6 +145,8 @@ class YWatchdog(YFunction):
             self._triggerDelay = json_val.getLong("triggerDelay")
         if json_val.has("triggerDuration"):
             self._triggerDuration = json_val.getLong("triggerDuration")
+        if json_val.has("lastTrigger"):
+            self._lastTrigger = json_val.getInt("lastTrigger")
         super(YWatchdog, self)._parseAttr(json_val)
 
     def get_state(self):
@@ -524,6 +528,21 @@ class YWatchdog(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("triggerDuration", rest_val)
+
+    def get_lastTrigger(self):
+        """
+        Returns the number of seconds spent since the last output power-up event.
+
+        @return an integer corresponding to the number of seconds spent since the last output power-up event
+
+        On failure, throws an exception or returns YWatchdog.LASTTRIGGER_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YWatchdog.LASTTRIGGER_INVALID
+        res = self._lastTrigger
+        return res
 
     @staticmethod
     def FindWatchdog(func):
