@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 45292 2021-05-25 23:27:54Z mvuilleu $
+# * $Id: yocto_api.py 45551 2021-06-14 13:51:37Z web $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -891,7 +891,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "45343"
+    YOCTO_API_BUILD_NO = "45664"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1416,6 +1416,7 @@ class YAPI:
     UNAUTHORIZED = -12             # unauthorized access to password-protected device
     RTC_NOT_READY = -13            # real-time clock has not been initialized (or time was lost)
     FILE_NOT_FOUND = -14           # the file is not found
+    SSL_ERROR = -15                # Error reported by mbedSSL
 
     #--- (end of generated code: YFunction return codes)
 

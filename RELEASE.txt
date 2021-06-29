@@ -1,3 +1,4 @@
-Python v1.10.45343
+Python v1.10.45664
 
-- Add Example for Yocto-MaxiKnob
+- Fix wrong error message when an host is unreachable.
+- Fix YAPI.TestHub return value that was not YAPI.SUCCESS on success. Now the method work as documented
