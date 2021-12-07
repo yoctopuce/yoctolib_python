@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 45551 2021-06-14 13:51:37Z web $
+# * $Id: yocto_api.py 46904 2021-10-25 15:34:15Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -891,7 +891,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "45664"
+    YOCTO_API_BUILD_NO = "47582"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2347,7 +2347,8 @@ class YAPI:
     @staticmethod
     def RegisterHub(url, errmsg=None):
         """
-        Setup the Yoctopuce library to use modules connected on a given machine. The
+        Setup the Yoctopuce library to use modules connected on a given machine. Idealy this
+        call will be made once at the begining of your application.  The
         parameter will determine how the API will work. Use the following values:
 
         <b>usb</b>: When the usb keyword is used, the API will work with
@@ -2380,7 +2381,9 @@ class YAPI:
 
         http://username:password@address:port
 
-        You can call <i>RegisterHub</i> several times to connect to several machines.
+        You can call <i>RegisterHub</i> several times to connect to several machines. On
+        the other hand, it is useless and even counterproductive to call <i>RegisterHub</i>
+        with to same address multiple times during the life of the application.
 
         @param url : a string containing either "usb","callback" or the
                 root URL of the hub to monitor
@@ -2501,21 +2504,18 @@ class YAPI:
             if YAPI.YISERR(res):
                 return res
         res = YAPI.yapiUpdateDeviceList(0, errmsg)
-        if YAPI.YISERR(res):
-            return res
-        # noinspection PyUnresolvedReferences
-        res = YAPI._yapiHandleEvents(errmsg_buffer)
-        if YAPI.YISERR(res):
-            if errmsg is not None:
-                # noinspection PyAttributeOutsideInit
-                errmsg.value = YByte2String(errmsg_buffer.value)
-            return res
+        if not YAPI.YISERR(res):
+            res = YAPI._yapiHandleEvents(errmsg_buffer)
+            if YAPI.YISERR(res):
+                if errmsg is not None:
+                    # noinspection PyAttributeOutsideInit
+                    errmsg.value = YByte2String(errmsg_buffer.value)
         while len(YAPI._PlugEvents) > 0:
             YAPI.yapiLockDeviceCallBack(errmsg)
             p = YAPI._PlugEvents.pop(0)
             YAPI.yapiUnlockDeviceCallBack(errmsg)
             p.invokePlug()
-        return YAPI.SUCCESS
+        return res
 
     @staticmethod
     def TriggerHubDiscovery(errmsg=None):
@@ -3042,15 +3042,23 @@ class YDataStream(object):
         if self._isAvg:
             while idx + 3 < len(udat):
                 del dat[:]
-                dat.append(self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))))
-                dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
-                dat.append(self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))))
+                if (udat[idx] == 65535) and (udat[idx + 1] == 65535):
+                    dat.append(float('nan'))
+                    dat.append(float('nan'))
+                    dat.append(float('nan'))
+                else:
+                    dat.append(self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))))
+                    dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
+                    dat.append(self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))))
                 idx = idx + 6
                 self._values.append(dat[:])
         else:
             while idx + 1 < len(udat):
                 del dat[:]
-                dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
+                if (udat[idx] == 65535) and (udat[idx + 1] == 65535):
+                    dat.append(float('nan'))
+                else:
+                    dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
                 self._values.append(dat[:])
                 idx = idx + 2
 
@@ -3663,6 +3671,7 @@ class YDataSet(object):
         # tim
         # itv
         # fitv
+        # avgv
         # end_
         # nCols
         # minCol
@@ -3705,8 +3714,9 @@ class YDataSet(object):
                 firstMeasure = False
             else:
                 end_ = tim + itv
-            if (end_ > self._startTimeMs) and ((self._endTimeMs == 0) or (tim < self._endTimeMs)):
-                self._measures.append(YMeasure(tim / 1000, end_ / 1000, y[minCol], y[avgCol], y[maxCol]))
+            avgv = y[avgCol]
+            if (end_ > self._startTimeMs) and ((self._endTimeMs == 0) or (tim < self._endTimeMs)) and not (isNaN(avgv)):
+                self._measures.append(YMeasure(tim / 1000, end_ / 1000, y[minCol], avgv, y[maxCol]))
             tim = end_
 
         return self.get_progress()
@@ -8213,7 +8223,7 @@ class YDataLogger(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the data logger, for instance
-                RX420MA1.dataLogger.
+                LIGHTMK4.dataLogger.
 
         @return a YDataLogger object allowing you to drive the data logger.
         """

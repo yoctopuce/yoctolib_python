@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_wakeupmonitor.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_wakeupmonitor.py 45843 2021-08-04 07:51:59Z mvuilleu $
 #
 #  Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
 #
@@ -264,7 +264,7 @@ class YWakeUpMonitor(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the wake-up monitor, for instance
-                YHUBGSM3.wakeUpMonitor.
+                YHUBGSM1.wakeUpMonitor.
 
         @return a YWakeUpMonitor object allowing you to drive the wake-up monitor.
         """

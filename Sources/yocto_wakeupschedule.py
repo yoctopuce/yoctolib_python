@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_wakeupschedule.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_wakeupschedule.py 45843 2021-08-04 07:51:59Z mvuilleu $
 #
 #  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #
@@ -322,7 +322,7 @@ class YWakeUpSchedule(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the wake up schedule, for instance
-                YHUBGSM3.wakeUpSchedule1.
+                YHUBGSM1.wakeUpSchedule1.
 
         @return a YWakeUpSchedule object allowing you to drive the wake up schedule.
         """
