@@ -1,9 +1,3 @@
-Python v1.10.47582
+Python v1.10.47660
 
-- Add support for missing measures in DataStream (returned as NaN) and skipping them in DataSet
-- Add support for YInputChain class
-- Improve documentation of YAPI.RegisterHub
-- Improve WebSocket connection robustness
-- Fix bug in JSON parser (was causing never ending loop on firmware update of Yocto-MaxiThermistor with locgical name and calibrations)
-- Fix bug when YoctoHub is accessible by USB and Network
-- Improve error reporting if VirtualHub is registered two times with different URL
+- Fix missing plug event (bug introduced with revision 47582)
