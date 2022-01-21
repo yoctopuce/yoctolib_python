@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 38913 2019-12-20 18:59:49Z mvuilleu $
+#* $Id: yocto_messagebox.py 48014 2022-01-12 08:06:41Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -622,7 +622,7 @@ class YSms(object):
                     n = n - 1
                     v2 = 4 * YGetByte(res, n) + v1
                     if YGetByte(expasc, i-3) == 45:
-                        v2 += 128
+                        v2 = v2 + 128
                     res[n] = v2
         return res
 

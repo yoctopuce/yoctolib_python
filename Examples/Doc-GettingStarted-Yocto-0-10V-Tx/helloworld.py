@@ -1,6 +1,6 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 32630 2018-10-10 14:11:07Z seb $
+#  $Id: helloworld.py 48203 2022-01-20 13:50:08Z mvuilleu $
 #
 #  An example that show how to use a  Yocto-0-10V-Tx
 #
@@ -38,7 +38,7 @@ def die(msg):
     sys.exit(msg + ' (check USB cable)')
 
 
-if len(sys.argv) < 4:
+if len(sys.argv) < 3:
     usage()
 
 target = sys.argv[1].upper()

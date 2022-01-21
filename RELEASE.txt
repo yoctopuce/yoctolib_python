@@ -1,3 +1,6 @@
-Python v1.10.47660
+Python v1.10.48220
 
-- Fix missing plug event (bug introduced with revision 47582)
+- Fix YSMS addText method
+- Fix search feature in HTML documentation
+- Fix reconnexion isssue with WebSocket
+- Fix Yocto-0-10V-Tx example

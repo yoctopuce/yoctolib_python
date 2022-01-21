@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_realtimeclock.py 45843 2021-08-04 07:51:59Z mvuilleu $
+#  $Id: yocto_realtimeclock.py 48183 2022-01-20 10:26:11Z mvuilleu $
 #
 #  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #
@@ -210,7 +210,7 @@ class YRealTimeClock(YFunction):
         call registerHub() at application initialization time.
 
         @param func : a string that uniquely characterizes the real-time clock, for instance
-                YHUBGSM1.realTimeClock.
+                YHUBGSM5.realTimeClock.
 
         @return a YRealTimeClock object allowing you to drive the real-time clock.
         """
