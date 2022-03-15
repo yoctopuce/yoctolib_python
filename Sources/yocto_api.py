@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 46904 2021-10-25 15:34:15Z seb $
+# * $Id: yocto_api.py 48946 2022-03-14 07:42:14Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -43,6 +43,7 @@ __docformat__ = 'restructuredtext en'
 
 import datetime
 import ctypes
+import math
 import platform
 # import abc  (not supported in 2.5.x)
 import random
@@ -53,17 +54,14 @@ import array
 import binascii
 from ctypes import *
 
-
 #
 #  PYTHON 2.x VS PYTHON 3.x compatibility check
 #
 def YByte2StringPython2x(binBuffer):
     return binBuffer.decode("latin-1")
 
-
 def YString2BytePython2x(strBuffer):
     return strBuffer.encode("latin-1")
-
 
 def YGetBytePython2x(binBuffer, idx):
     item = binBuffer[idx]
@@ -71,10 +69,8 @@ def YGetBytePython2x(binBuffer, idx):
         return item
     return ord(item)
 
-
 def YAddBytePython2x(binBuffer, b):
     return binBuffer + chr(b)
-
 
 def YRelTickCountPython2x(dt):
     td = dt - datetime.datetime(1970, 1, 1)
@@ -84,40 +80,50 @@ def YRelTickCountPython2x(dt):
 def YByte2StringPython3x(binBuffer):
     return binBuffer.decode("latin-1")
 
-
 def YString2BytePython3x(strBuffer):
     return strBuffer.encode("latin-1")
-
 
 def YGetBytePython3x(binBuffer, l):
     return binBuffer[l]
 
-
 def YAddBytePython3x(binBuffer, b):
     return binBuffer + bytes([b])
-
 
 def YRelTickCountPython3x(dt):
     td = dt - datetime.datetime(1970, 1, 1)
     return int(round(td.total_seconds() * 1000.0))
 
 
+def YArrayToBytesPython2x(a):
+    return a.tostring()
+
+# array.tostring is deprecated in Python 3.2 and was removed in 3.9!
+def YArrayToBytesPython32plus(a):
+    return a.tobytes()
+
 YByte2String = None
 YString2Byte = None
 YGetByte = None
 YAddByte = None
+YRelTickCount = None
+YArrayToBytes = None
 if sys.version_info < (3, 0):
     YByte2String = YByte2StringPython2x
     YString2Byte = YString2BytePython2x
     YGetByte = YGetBytePython2x
     YAddByte = YAddBytePython2x
     YRelTickCount = YRelTickCountPython2x
+    YArrayToBytes = YArrayToBytesPython2x
 else:
     YByte2String = YByte2StringPython3x
     YString2Byte = YString2BytePython3x
     YGetByte = YGetBytePython3x
     YAddByte = YAddBytePython3x
     YRelTickCount = YRelTickCountPython3x
+    if sys.version_info < (3, 2):
+        YArrayToBytes = YArrayToBytesPython2x
+    else:
+        YArrayToBytes = YArrayToBytesPython32plus
 
 # Ugly global var for Python 2 compatibility
 yLogFct = None
@@ -891,7 +897,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "48220"
+    YOCTO_API_BUILD_NO = "49016"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -3715,7 +3721,7 @@ class YDataSet(object):
             else:
                 end_ = tim + itv
             avgv = y[avgCol]
-            if (end_ > self._startTimeMs) and ((self._endTimeMs == 0) or (tim < self._endTimeMs)) and not (isNaN(avgv)):
+            if (end_ > self._startTimeMs) and ((self._endTimeMs == 0) or (tim < self._endTimeMs)) and not (math.isnan(avgv)):
                 self._measures.append(YMeasure(tim / 1000, end_ / 1000, y[minCol], avgv, y[maxCol]))
             tim = end_
 
@@ -4686,7 +4692,7 @@ class YFunction(object):
             content = bytes(content)
         elif not isinstance(content, bytes):
             if isinstance(content, array.array):
-                content = content.tostring()
+                content = YArrayToBytes(content)
             else:
                 content = content.encode("latin1")
         body = body.encode("ASCII") + content

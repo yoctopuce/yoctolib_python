@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_network.py 39573 2020-03-10 17:20:22Z seb $
+#  $Id: yocto_network.py 48692 2022-02-24 22:30:52Z mvuilleu $
 #
 #  Implements yFindNetwork(), the high-level API for Network functions
 #
@@ -63,6 +63,7 @@ class YNetwork(YFunction):
     IPADDRESS_INVALID = YAPI.INVALID_STRING
     SUBNETMASK_INVALID = YAPI.INVALID_STRING
     ROUTER_INVALID = YAPI.INVALID_STRING
+    CURRENTDNS_INVALID = YAPI.INVALID_STRING
     IPCONFIG_INVALID = YAPI.INVALID_STRING
     PRIMARYDNS_INVALID = YAPI.INVALID_STRING
     SECONDARYDNS_INVALID = YAPI.INVALID_STRING
@@ -118,6 +119,7 @@ class YNetwork(YFunction):
         self._ipAddress = YNetwork.IPADDRESS_INVALID
         self._subnetMask = YNetwork.SUBNETMASK_INVALID
         self._router = YNetwork.ROUTER_INVALID
+        self._currentDNS = YNetwork.CURRENTDNS_INVALID
         self._ipConfig = YNetwork.IPCONFIG_INVALID
         self._primaryDNS = YNetwork.PRIMARYDNS_INVALID
         self._secondaryDNS = YNetwork.SECONDARYDNS_INVALID
@@ -151,6 +153,8 @@ class YNetwork(YFunction):
             self._subnetMask = json_val.getString("subnetMask")
         if json_val.has("router"):
             self._router = json_val.getString("router")
+        if json_val.has("currentDNS"):
+            self._currentDNS = json_val.getString("currentDNS")
         if json_val.has("ipConfig"):
             self._ipConfig = json_val.getString("ipConfig")
         if json_val.has("primaryDNS"):
@@ -281,6 +285,21 @@ class YNetwork(YFunction):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YNetwork.ROUTER_INVALID
         res = self._router
+        return res
+
+    def get_currentDNS(self):
+        """
+        Returns the IP address of the DNS server currently used by the device.
+
+        @return a string corresponding to the IP address of the DNS server currently used by the device
+
+        On failure, throws an exception or returns YNetwork.CURRENTDNS_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YNetwork.CURRENTDNS_INVALID
+        res = self._currentDNS
         return res
 
     def get_ipConfig(self):

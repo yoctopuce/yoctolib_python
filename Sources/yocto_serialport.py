@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 41171 2020-07-02 17:49:00Z mvuilleu $
+#* $Id: yocto_serialport.py 48954 2022-03-14 09:55:13Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -1139,6 +1139,21 @@ class YSerialPort(YFunction):
             res = "" + res + "" + ("%02X" % YGetByte(buff, ofs))
             ofs = ofs + 1
         return res
+
+    def sendBreak(self, duration):
+        """
+        Emits a BREAK condition on the serial interface. When the specified
+        duration is 0, the BREAK signal will be exactly one character wide.
+        When the duration is between 1 and 100, the BREAK condition will
+        be hold for the specified number of milliseconds.
+
+        @param duration : 0 for a standard BREAK, or duration between 1 and 100 ms
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("B" + str(int(duration)))
 
     def set_RTS(self, val):
         """

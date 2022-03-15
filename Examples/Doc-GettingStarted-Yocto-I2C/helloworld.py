@@ -56,7 +56,7 @@ else:
         sys.exit('Module not connected')
 
 # sample code reading MCP9804 temperature sensor
-i2cPort.set_i2cMode("400kbps")
+i2cPort.set_i2cMode("100kbps")
 i2cPort.set_i2cVoltageLevel(YI2cPort.I2CVOLTAGELEVEL_3V3)
 i2cPort.reset()
 # do not forget to configure the powerOutput and
