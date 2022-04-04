@@ -1,5 +1,3 @@
-Python v1.10.49016
+Python v1.10.49275
 
-- Add sendBreak method in SerialPort
-- Fix compatibility of display.drawBitmap with python versions >= 3.9
-- Fix error "isNaN' is not defined" when using datalogger
+- Add workaround for "Hardened Runtime" error for python 2.7 on macOS

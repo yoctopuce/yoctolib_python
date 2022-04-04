@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 48946 2022-03-14 07:42:14Z seb $
+# * $Id: yocto_api.py 49192 2022-03-29 09:39:18Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -897,7 +897,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "49016"
+    YOCTO_API_BUILD_NO = "49275"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1016,7 +1016,7 @@ class YAPI:
             machine = platform.machine()
             if libpath == '':
                 libpath = '.'
-                #
+            #
             #  WINDOWS
             #
             if system == 'Windows':
@@ -1059,6 +1059,7 @@ class YAPI:
             elif platform.system() == 'Darwin':
                 if sys.maxsize > 2 ** 32:
                     YAPI._yApiCLibFile = libpath + "/cdll/libyapi.dylib"
+                    YAPI._yApiCLibFile = os.path.abspath(YAPI._yApiCLibFile)
                 else:
                     raise NotImplementedError("Only Intel 64 bits installation are supported for Mac OS X.")
             #
@@ -1067,7 +1068,6 @@ class YAPI:
             else:
                 raise NotImplementedError("unsupported platform " + system +
                                           ", contact support@yoctopuce.com.")
-
         if not os.path.exists(YAPI._yApiCLibFile):
             raise ImportError(
                 "YAPI shared library is missing (" + YAPI._yApiCLibFile +
