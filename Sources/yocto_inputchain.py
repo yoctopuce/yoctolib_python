@@ -73,6 +73,9 @@ class YInputChain(YFunction):
     BITCHAIN7_INVALID = YAPI.INVALID_STRING
     WATCHDOGPERIOD_INVALID = YAPI.INVALID_UINT
     CHAINDIAGS_INVALID = YAPI.INVALID_UINT
+    LOOPBACKTEST_OFF = 0
+    LOOPBACKTEST_ON = 1
+    LOOPBACKTEST_INVALID = -1
     #--- (end of YInputChain definitions)
 
     def __init__(self, func):
@@ -82,6 +85,7 @@ class YInputChain(YFunction):
         self._callback = None
         self._expectedNodes = YInputChain.EXPECTEDNODES_INVALID
         self._detectedNodes = YInputChain.DETECTEDNODES_INVALID
+        self._loopbackTest = YInputChain.LOOPBACKTEST_INVALID
         self._refreshRate = YInputChain.REFRESHRATE_INVALID
         self._bitChain1 = YInputChain.BITCHAIN1_INVALID
         self._bitChain2 = YInputChain.BITCHAIN2_INVALID
@@ -105,6 +109,8 @@ class YInputChain(YFunction):
             self._expectedNodes = json_val.getInt("expectedNodes")
         if json_val.has("detectedNodes"):
             self._detectedNodes = json_val.getInt("detectedNodes")
+        if json_val.has("loopbackTest"):
+            self._loopbackTest = (json_val.getInt("loopbackTest") > 0 if 1 else 0)
         if json_val.has("refreshRate"):
             self._refreshRate = json_val.getInt("refreshRate")
         if json_val.has("bitChain1"):
@@ -171,6 +177,40 @@ class YInputChain(YFunction):
                 return YInputChain.DETECTEDNODES_INVALID
         res = self._detectedNodes
         return res
+
+    def get_loopbackTest(self):
+        """
+        Returns the activation state of the exhaustive chain connectivity test.
+        The connectivity test requires a cable connecting the end of the chain
+        to the loopback test connector.
+
+        @return either YInputChain.LOOPBACKTEST_OFF or YInputChain.LOOPBACKTEST_ON, according to the
+        activation state of the exhaustive chain connectivity test
+
+        On failure, throws an exception or returns YInputChain.LOOPBACKTEST_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YInputChain.LOOPBACKTEST_INVALID
+        res = self._loopbackTest
+        return res
+
+    def set_loopbackTest(self, newval):
+        """
+        Changes the activation state of the exhaustive chain connectivity test.
+        The connectivity test requires a cable connecting the end of the chain
+        to the loopback test connector.
+
+        @param newval : either YInputChain.LOOPBACKTEST_OFF or YInputChain.LOOPBACKTEST_ON, according to
+        the activation state of the exhaustive chain connectivity test
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("loopbackTest", rest_val)
 
     def get_refreshRate(self):
         """
