@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multisenscontroller.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_multisenscontroller.py 49501 2022-04-21 07:09:25Z mvuilleu $
 #
 #  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
 #
@@ -61,6 +61,7 @@ class YMultiSensController(YFunction):
     #--- (YMultiSensController definitions)
     NSENSORS_INVALID = YAPI.INVALID_UINT
     MAXSENSORS_INVALID = YAPI.INVALID_UINT
+    LASTADDRESSDETECTED_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
     MAINTENANCEMODE_FALSE = 0
     MAINTENANCEMODE_TRUE = 1
@@ -75,6 +76,7 @@ class YMultiSensController(YFunction):
         self._nSensors = YMultiSensController.NSENSORS_INVALID
         self._maxSensors = YMultiSensController.MAXSENSORS_INVALID
         self._maintenanceMode = YMultiSensController.MAINTENANCEMODE_INVALID
+        self._lastAddressDetected = YMultiSensController.LASTADDRESSDETECTED_INVALID
         self._command = YMultiSensController.COMMAND_INVALID
         #--- (end of YMultiSensController attributes)
 
@@ -86,6 +88,8 @@ class YMultiSensController(YFunction):
             self._maxSensors = json_val.getInt("maxSensors")
         if json_val.has("maintenanceMode"):
             self._maintenanceMode = (json_val.getInt("maintenanceMode") > 0 if 1 else 0)
+        if json_val.has("lastAddressDetected"):
+            self._lastAddressDetected = json_val.getInt("lastAddressDetected")
         if json_val.has("command"):
             self._command = json_val.getString("command")
         super(YMultiSensController, self)._parseAttr(json_val)
@@ -111,7 +115,7 @@ class YMultiSensController(YFunction):
         saveToFlash() method of the module if the
         modification must be kept. It is recommended to restart the
         device with  module->reboot() after modifying
-        (and saving) this settings
+        (and saving) this settings.
 
         @param newval : an integer corresponding to the number of sensors to poll
 
@@ -170,6 +174,24 @@ class YMultiSensController(YFunction):
         rest_val = "1" if newval > 0 else "0"
         return self._setAttr("maintenanceMode", rest_val)
 
+    def get_lastAddressDetected(self):
+        """
+        Returns the I2C address of the most recently detected sensor. This method can
+        be used to in case of I2C communication error to determine what is the
+        last sensor that can be reached, or after a call to setupAddress
+        to make sure that the address change was properly processed.
+
+        @return an integer corresponding to the I2C address of the most recently detected sensor
+
+        On failure, throws an exception or returns YMultiSensController.LASTADDRESSDETECTED_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YMultiSensController.LASTADDRESSDETECTED_INVALID
+        res = self._lastAddressDetected
+        return res
+
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -224,9 +246,10 @@ class YMultiSensController(YFunction):
         Configures the I2C address of the only sensor connected to the device.
         It is recommended to put the the device in maintenance mode before
         changing sensor addresses.  This method is only intended to work with a single
-        sensor connected to the device, if several sensors are connected, the result
+        sensor connected to the device. If several sensors are connected, the result
         is unpredictable.
-        Note that the device is probably expecting to find a string of sensors with specific
+
+        Note that the device is expecting to find a sensor or a string of sensors with specific
         addresses. Check the device documentation to find out which addresses should be used.
 
         @param addr : new address of the connected sensor
@@ -235,8 +258,40 @@ class YMultiSensController(YFunction):
                 On failure, throws an exception or returns a negative error code.
         """
         # cmd
+        # res
         cmd = "A" + str(int(addr))
-        return self.set_command(cmd)
+        res = self.set_command(cmd)
+        if not (res == YAPI.SUCCESS):
+            self._throw(YAPI.IO_ERROR, "unable to trigger address change")
+            return YAPI.IO_ERROR
+        YAPI.Sleep(1500)
+        res = self.get_lastAddressDetected()
+        if not (res > 0):
+            self._throw(YAPI.IO_ERROR, "IR sensor not found")
+            return YAPI.IO_ERROR
+        if not (res == addr):
+            self._throw(YAPI.IO_ERROR, "address change failed")
+            return YAPI.IO_ERROR
+        return YAPI.SUCCESS
+
+    def get_sensorAddress(self):
+        """
+        Triggers the I2C address detection procedure for the only sensor connected to the device.
+        This method is only intended to work with a single sensor connected to the device.
+        If several sensors are connected, the result is unpredictable.
+
+        @return the I2C address of the detected sensor, or 0 if none is found
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # res
+        res = self.set_command("a")
+        if not (res == YAPI.SUCCESS):
+            self._throw(YAPI.IO_ERROR, "unable to trigger address detection")
+            return res
+        YAPI.Sleep(1000)
+        res = self.get_lastAddressDetected()
+        return res
 
     def nextMultiSensController(self):
         """
