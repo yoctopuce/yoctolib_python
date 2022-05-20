@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 48954 2022-03-14 09:55:13Z seb $
+#* $Id: yocto_serialport.py 49818 2022-05-19 09:57:42Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -137,6 +137,7 @@ class YSerialPort(YFunction):
     VOLTAGELEVEL_RS232 = 5
     VOLTAGELEVEL_RS485 = 6
     VOLTAGELEVEL_TTL1V8 = 7
+    VOLTAGELEVEL_SDI12 = 8
     VOLTAGELEVEL_INVALID = -1
     #--- (end of generated code: YSerialPort definitions)
 
@@ -162,6 +163,8 @@ class YSerialPort(YFunction):
         self._rxptr = 0
         self._rxbuff = ''
         self._rxbuffptr = 0
+        self._eventCallback = None
+        self._eventPos = 0
         #--- (end of generated code: YSerialPort attributes)
 
     #--- (generated code: YSerialPort implementation)
@@ -443,8 +446,8 @@ class YSerialPort(YFunction):
 
         @return a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
         YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
-        YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
-        corresponding to the voltage level used on the serial line
+        YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485, YSerialPort.VOLTAGELEVEL_TTL1V8 and
+        YSerialPort.VOLTAGELEVEL_SDI12 corresponding to the voltage level used on the serial line
 
         On failure, throws an exception or returns YSerialPort.VOLTAGELEVEL_INVALID.
         """
@@ -467,8 +470,8 @@ class YSerialPort(YFunction):
 
         @param newval : a value among YSerialPort.VOLTAGELEVEL_OFF, YSerialPort.VOLTAGELEVEL_TTL3V,
         YSerialPort.VOLTAGELEVEL_TTL3VR, YSerialPort.VOLTAGELEVEL_TTL5V, YSerialPort.VOLTAGELEVEL_TTL5VR,
-        YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485 and YSerialPort.VOLTAGELEVEL_TTL1V8
-        corresponding to the voltage type used on the serial line
+        YSerialPort.VOLTAGELEVEL_RS232, YSerialPort.VOLTAGELEVEL_RS485, YSerialPort.VOLTAGELEVEL_TTL1V8 and
+        YSerialPort.VOLTAGELEVEL_SDI12 corresponding to the voltage type used on the serial line
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -1227,6 +1230,56 @@ class YSerialPort(YFunction):
             idx = idx + 1
 
         return res
+
+    def registerSnoopingCallback(self, callback):
+        """
+        Registers a callback function to be called each time that a message is sent or
+        received by the serial port.
+
+        @param callback : the callback function to call, or a None pointer.
+                The callback function should take four arguments:
+                the YSerialPort object that emitted the event, and
+                the SnoopingRecord object that describes the message
+                sent or received.
+                On failure, throws an exception or returns a negative error code.
+        """
+        if callback is not None:
+            self.registerValueCallback(yInternalEventCallback)
+        else:
+            self.registerValueCallback(None)
+        # // register user callback AFTER the internal pseudo-event,
+        # // to make sure we start with future events only
+        self._eventCallback = callback
+        return 0
+
+    def _internalEventHandler(self, advstr):
+        # url
+        # msgbin
+        msgarr = []
+        # msglen
+        # idx
+        if not (self._eventCallback is not None):
+            # // first simulated event, use it only to initialize reference values
+            self._eventPos = 0
+
+        url = "rxmsg.json?pos=" + str(int(self._eventPos)) + "&maxw=0&t=0"
+        msgbin = self._download(url)
+        msgarr = self._json_get_array(msgbin)
+        msglen = len(msgarr)
+        if msglen == 0:
+            return YAPI.SUCCESS
+        # // last element of array is the new position
+        msglen = msglen - 1
+        if not (self._eventCallback is not None):
+            # // first simulated event, use it only to initialize reference values
+            self._eventPos = YAPI._atoi(msgarr[msglen])
+            return YAPI.SUCCESS
+        self._eventPos = YAPI._atoi(msgarr[msglen])
+        idx = 0
+        while idx < msglen:
+            self._eventCallback(self, YSnoopingRecord(msgarr[idx]))
+            idx = idx + 1
+        return YAPI.SUCCESS
 
     def writeStxEtx(self, text):
         """

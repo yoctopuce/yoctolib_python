@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 49192 2022-03-29 09:39:18Z seb $
+# * $Id: yocto_api.py 49750 2022-05-13 07:10:42Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -897,7 +897,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "49504"
+    YOCTO_API_BUILD_NO = "49822"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2769,9 +2769,7 @@ class YFirmwareUpdate(object):
     @staticmethod
     def GetAllBootLoaders():
         """
-        Returns a list of all the modules in "firmware update" mode. Only devices
-        connected over USB are listed. For devices connected to a YoctoHub, you
-        must connect yourself to the YoctoHub web interface.
+        Returns a list of all the modules in "firmware update" mode.
 
         @return an array of strings containing the serial numbers of devices in "firmware update" mode.
         """

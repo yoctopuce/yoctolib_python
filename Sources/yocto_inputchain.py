@@ -42,8 +42,8 @@
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
 
-def yInternalEventCallback(inputChain, value):
-    inputChain._internalEventHandler(value)
+def yInternalEventCallback(obj, value):
+    obj._internalEventHandler(value)
 
 #--- (YInputChain class start)
 #noinspection PyProtectedMember
