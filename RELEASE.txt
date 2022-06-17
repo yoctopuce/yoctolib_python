@@ -1,4 +1,5 @@
-Python v1.10.49822
+Python v1.10.50144
 
-- Add support for registerSnoopingCallback in YSerialPort
-- Add SDI12 levels
+- Improve behaviour of MODBUS snooping callback in case of reset()
+- Various doc improvements
+- Fix potential crash when using YMessageBox class

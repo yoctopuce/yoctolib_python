@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 49750 2022-05-13 07:10:42Z seb $
+# * $Id: yocto_api.py 49919 2022-05-30 12:21:42Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -54,14 +54,17 @@ import array
 import binascii
 from ctypes import *
 
+
 #
 #  PYTHON 2.x VS PYTHON 3.x compatibility check
 #
 def YByte2StringPython2x(binBuffer):
     return binBuffer.decode("latin-1")
 
+
 def YString2BytePython2x(strBuffer):
     return strBuffer.encode("latin-1")
+
 
 def YGetBytePython2x(binBuffer, idx):
     item = binBuffer[idx]
@@ -69,8 +72,10 @@ def YGetBytePython2x(binBuffer, idx):
         return item
     return ord(item)
 
+
 def YAddBytePython2x(binBuffer, b):
     return binBuffer + chr(b)
+
 
 def YRelTickCountPython2x(dt):
     td = dt - datetime.datetime(1970, 1, 1)
@@ -80,14 +85,18 @@ def YRelTickCountPython2x(dt):
 def YByte2StringPython3x(binBuffer):
     return binBuffer.decode("latin-1")
 
+
 def YString2BytePython3x(strBuffer):
     return strBuffer.encode("latin-1")
+
 
 def YGetBytePython3x(binBuffer, l):
     return binBuffer[l]
 
+
 def YAddBytePython3x(binBuffer, b):
     return binBuffer + bytes([b])
+
 
 def YRelTickCountPython3x(dt):
     td = dt - datetime.datetime(1970, 1, 1)
@@ -97,9 +106,11 @@ def YRelTickCountPython3x(dt):
 def YArrayToBytesPython2x(a):
     return a.tostring()
 
+
 # array.tostring is deprecated in Python 3.2 and was removed in 3.9!
 def YArrayToBytesPython32plus(a):
     return a.tobytes()
+
 
 YByte2String = None
 YString2Byte = None
@@ -158,7 +169,7 @@ class YJSONType:
 # noinspection PyClassHasNoInit
 class Tjstate:
     JSTART, JWAITFORNAME, JWAITFORENDOFNAME, JWAITFORCOLON, JWAITFORDATA, JWAITFORNEXTSTRUCTMEMBER, JWAITFORNEXTARRAYITEM, \
-        JWAITFORSTRINGVALUE, JWAITFORSTRINGVALUE_ESC, JWAITFORINTVALUE, JWAITFORBOOLVALUE = range(11)
+    JWAITFORSTRINGVALUE, JWAITFORSTRINGVALUE_ESC, JWAITFORINTVALUE, JWAITFORBOOLVALUE = range(11)
 
 
 class YJSONContent(object):
@@ -725,23 +736,23 @@ class YJSONObject(YJSONContent):
         return self._keys[i]
 
 
-#--- (generated code: YAPIContext class start)
+# --- (generated code: YAPIContext class start)
 #noinspection PyProtectedMember
 class YAPIContext(object):
     #--- (end of generated code: YAPIContext class start)
-    #--- (generated code: YAPIContext return codes)
+    # --- (generated code: YAPIContext return codes)
     #--- (end of generated code: YAPIContext return codes)
-    #--- (generated code: YAPIContext dlldef)
+    # --- (generated code: YAPIContext dlldef)
     #--- (end of generated code: YAPIContext dlldef)
-    #--- (generated code: YAPIContext definitions)
+    # --- (generated code: YAPIContext definitions)
     #--- (end of generated code: YAPIContext definitions)
 
     def __init__(self):
-        #--- (generated code: YAPIContext attributes)
+        # --- (generated code: YAPIContext attributes)
         self._defaultCacheValidity = 5
         #--- (end of generated code: YAPIContext attributes)
 
-    #--- (generated code: YAPIContext implementation)
+    # --- (generated code: YAPIContext implementation)
     def SetDeviceListValidity(self, deviceListValidity):
         """
         Modifies the delay between each forced enumeration of the used YoctoHubs.
@@ -852,7 +863,7 @@ class YAPIContext(object):
 
 #--- (end of generated code: YAPIContext implementation)
 
-#--- (generated code: YAPIContext functions)
+# --- (generated code: YAPIContext functions)
 #--- (end of generated code: YAPIContext functions)
 
 
@@ -897,7 +908,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "49822"
+    YOCTO_API_BUILD_NO = "50144"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1098,7 +1109,6 @@ class YAPI:
             raise ImportError(
                 "Unable to import YAPI shared library (" + YAPI._yApiCLibFile +
                 "), make sure it is available and accessible.")
-
 
         ##--- (generated code: YFunction dlldef)
         YAPI._yapiInitAPI = YAPI._yApiCLib.yapiInitAPI
@@ -1465,7 +1475,7 @@ class YAPI:
         context.response = result
         context.errmsgRef = errmsgRef
 
-    #--- (generated code: YAPIContext yapiwrapper)
+    # --- (generated code: YAPIContext yapiwrapper)
     @staticmethod
     def SetDeviceListValidity(deviceListValidity):
         """
@@ -1863,7 +1873,6 @@ class YAPI:
                 # noinspection PyAttributeOutsideInit
                 errmsg.value = YByte2String(errBuffer.value)
             return res
-
         while len(YAPI._DataEvents) > 0:
             YAPI.yapiLockFunctionCallBack(errmsg)
             if not (len(YAPI._DataEvents)):
@@ -1957,6 +1966,7 @@ class YAPI:
             ev = YAPI._Event()
             ev.setArrival(modul)
             YAPI._PlugEvents.append(ev)
+
 
     @staticmethod
     def native_HubDiscoveryCallback(serial_ptr, url_ptr):
@@ -2109,12 +2119,30 @@ class YAPI:
     def native_yFunctionUpdateCallback(f, data):
         if data is None:
             return
+        dbgval = YByte2String(data)
+        # first run is to look if we have a know objet online
         for i in range(len(YFunction._FunctionCallbacks)):
-            if YFunction._FunctionCallbacks[i].get_functionDescriptor() == f:
+            descriptor = YFunction._FunctionCallbacks[i].get_functionDescriptor()
+            if descriptor == f:
                 ev = YAPI._Event()
                 ev.setFunVal(YFunction._FunctionCallbacks[i], YByte2String(data))
                 YAPI._DataEvents.append(ev)
                 return 0
+        # second run look for previousin offline functions
+        for i in range(len(YFunction._FunctionCallbacks)):
+            descriptor = YFunction._FunctionCallbacks[i].get_functionDescriptor()
+            if descriptor == YFunction.FUNCTIONDESCRIPTOR_INVALID:
+                try:
+                    hardware_id = YFunction._FunctionCallbacks[i].get_hardwareId()
+                    if hardware_id != YFunction.HARDWAREID_INVALID:
+                        descriptor = YFunction._FunctionCallbacks[i].get_functionDescriptor()
+                        if descriptor == YFunction.FUNCTIONDESCRIPTOR_INVALID:
+                            ev = YAPI._Event()
+                            ev.setFunVal(YFunction._FunctionCallbacks[i], YByte2String(data))
+                            YAPI._DataEvents.append(ev)
+                            return 0
+                except YAPI_Exception:
+                    pass
         return 0
 
     @staticmethod
@@ -6940,7 +6968,7 @@ class YModule(YFunction):
 
         funid = funcIdRef.value
         i = len(funid)
-        while i > 0 and '0' <= funid[i-1] <= '9':
+        while i > 0 and '0' <= funid[i - 1] <= '9':
             i -= 1
         res = funid[1:i]
         return funid[0].upper() + res

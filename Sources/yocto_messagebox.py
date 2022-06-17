@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 48014 2022-01-12 08:06:41Z seb $
+#* $Id: yocto_messagebox.py 50144 2022-06-17 06:59:52Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -64,20 +64,20 @@ class YSms(object):
         self._mbox = None
         self._slot = 0
         self._deliv = 0
-        self._smsc = ''
+        self._smsc = ""
         self._mref = 0
-        self._orig = ''
-        self._dest = ''
+        self._orig = ""
+        self._dest = ""
         self._pid = 0
         self._alphab = 0
         self._mclass = 0
-        self._stamp = ''
+        self._stamp = ""
         self._udh = ''
         self._udata = ''
         self._npdu = 0
         self._pdu = ''
         self._parts = []
-        self._aggSig = ''
+        self._aggSig = ""
         self._aggIdx = 0
         self._aggCnt = 0
         #--- (end of generated code: YSms attributes)
@@ -437,12 +437,12 @@ class YSms(object):
                 partno = partno + 1
 
         self._parts = sorted
-        self._npdu = len(sorted)
         # // inherit header fields from first part
         subsms = self._parts[0]
         retcode = self.parsePdu(subsms.get_pdu())
         if retcode != YAPI.SUCCESS:
             return retcode
+        self._npdu = len(sorted)
         # // concatenate user data from all parts
         totsize = 0
         partno = 0
@@ -1055,7 +1055,7 @@ class YSms(object):
         # retcode
         # pdu
 
-        if self._slot > 0:
+        if self._npdu < 2:
             return self._mbox.clearSIMSlot(self._slot)
         retcode = YAPI.SUCCESS
         i = 0
@@ -1105,7 +1105,7 @@ class YMessageBox(YFunction):
         self._pduReceived = YMessageBox.PDURECEIVED_INVALID
         self._command = YMessageBox.COMMAND_INVALID
         self._nextMsgRef = 0
-        self._prevBitmapStr = ''
+        self._prevBitmapStr = ""
         self._pdus = []
         self._messages = []
         self._gsm2unicodeReady = 0
@@ -1277,8 +1277,87 @@ class YMessageBox(YFunction):
         return self._nextMsgRef
 
     def clearSIMSlot(self, slot):
-        self._prevBitmapStr = ""
-        return self.set_command("DS" + str(int(slot)))
+        # retry
+        # idx
+        # res
+        # bitmapStr
+        # int_res
+        # newBitmap
+        # bitVal
+
+        retry = 5
+        while retry > 0:
+            self.clearCache()
+            bitmapStr = self.get_slotsBitmap()
+            newBitmap = YAPI._hexStrToBin(bitmapStr)
+            idx = ((slot) >> (3))
+            if idx < len(newBitmap):
+                bitVal = ((1) << ((((slot) & (7)))))
+                if (((YGetByte(newBitmap, idx)) & (bitVal))) != 0:
+                    self._prevBitmapStr = ""
+                    int_res = self.set_command("DS" + str(int(slot)))
+                    if int_res < 0:
+                        return int_res
+                else:
+                    return YAPI.SUCCESS
+            else:
+                return YAPI.INVALID_ARGUMENT
+            res = self._AT("")
+            retry = retry - 1
+        return YAPI.IO_ERROR
+
+    def _AT(self, cmd):
+        # chrPos
+        # cmdLen
+        # waitMore
+        # res
+        # buff
+        # bufflen
+        # buffstr
+        # buffstrlen
+        # idx
+        # suffixlen
+        # // copied form the YCellular class
+        # // quote dangerous characters used in AT commands
+        cmdLen = len(cmd)
+        chrPos = cmd.find("#")
+        while chrPos >= 0:
+            cmd = "" + (cmd)[0: 0 + chrPos] + "" + str(chr(37)) + "23" + (cmd)[chrPos+1: chrPos+1 + cmdLen-chrPos-1]
+            cmdLen = cmdLen + 2
+            chrPos = cmd.find("#")
+        chrPos = cmd.find("+")
+        while chrPos >= 0:
+            cmd = "" + (cmd)[0: 0 + chrPos] + "" + str(chr(37)) + "2B" + (cmd)[chrPos+1: chrPos+1 + cmdLen-chrPos-1]
+            cmdLen = cmdLen + 2
+            chrPos = cmd.find("+")
+        chrPos = cmd.find("=")
+        while chrPos >= 0:
+            cmd = "" + (cmd)[0: 0 + chrPos] + "" + str(chr(37)) + "3D" + (cmd)[chrPos+1: chrPos+1 + cmdLen-chrPos-1]
+            cmdLen = cmdLen + 2
+            chrPos = cmd.find("=")
+        cmd = "at.txt?cmd=" + cmd
+        res = ""
+        # // max 2 minutes (each iteration may take up to 5 seconds if waiting)
+        waitMore = 24
+        while waitMore > 0:
+            buff = self._download(cmd)
+            bufflen = len(buff)
+            buffstr = YByte2String(buff)
+            buffstrlen = len(buffstr)
+            idx = bufflen - 1
+            while (idx > 0) and (YGetByte(buff, idx) != 64) and (YGetByte(buff, idx) != 10) and (YGetByte(buff, idx) != 13):
+                idx = idx - 1
+            if YGetByte(buff, idx) == 64:
+                # // continuation detected
+                suffixlen = bufflen - idx
+                cmd = "at.txt?cmd=" + (buffstr)[buffstrlen - suffixlen: buffstrlen - suffixlen + suffixlen]
+                buffstr = (buffstr)[0: 0 + buffstrlen - suffixlen]
+                waitMore = waitMore - 1
+            else:
+                # // request complete
+                waitMore = 0
+            res = "" + res + "" + buffstr
+        return res
 
     def fetchPdu(self, slot):
         # binPdu

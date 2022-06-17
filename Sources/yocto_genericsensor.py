@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_genericsensor.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_genericsensor.py 49903 2022-05-25 14:18:36Z mvuilleu $
 #
 #  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #
@@ -72,6 +72,7 @@ class YGenericSensor(YSensor):
     SIGNALSAMPLING_LOW_NOISE = 2
     SIGNALSAMPLING_LOW_NOISE_FILTERED = 3
     SIGNALSAMPLING_HIGHEST_RATE = 4
+    SIGNALSAMPLING_AC = 5
     SIGNALSAMPLING_INVALID = -1
     ENABLED_FALSE = 0
     ENABLED_TRUE = 1
@@ -276,8 +277,8 @@ class YGenericSensor(YSensor):
 
         @return a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
         YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE,
-        YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED and YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE
-        corresponding to the electric signal sampling method to use
+        YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED, YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE and
+        YGenericSensor.SIGNALSAMPLING_AC corresponding to the electric signal sampling method to use
 
         On failure, throws an exception or returns YGenericSensor.SIGNALSAMPLING_INVALID.
         """
@@ -301,8 +302,8 @@ class YGenericSensor(YSensor):
 
         @param newval : a value among YGenericSensor.SIGNALSAMPLING_HIGH_RATE,
         YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED, YGenericSensor.SIGNALSAMPLING_LOW_NOISE,
-        YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED and YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE
-        corresponding to the electric signal sampling method to use
+        YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED, YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE and
+        YGenericSensor.SIGNALSAMPLING_AC corresponding to the electric signal sampling method to use
 
         @return YAPI.SUCCESS if the call succeeds.
 

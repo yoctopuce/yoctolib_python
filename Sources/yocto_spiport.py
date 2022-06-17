@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 49744 2022-05-11 15:13:45Z mvuilleu $
+#  $Id: yocto_spiport.py 49903 2022-05-25 14:18:36Z mvuilleu $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -172,6 +172,7 @@ class YSpiPort(YFunction):
         self._rxptr = 0
         self._rxbuff = ''
         self._rxbuffptr = 0
+        self._eventPos = 0
         #--- (end of generated code: YSpiPort attributes)
 
     #--- (generated code: YSpiPort implementation)
@@ -846,6 +847,7 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
+        self._eventPos = 0
         self._rxptr = 0
         self._rxbuffptr = 0
         self._rxbuff = bytearray(0)
