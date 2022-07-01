@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 41779 2020-09-04 09:15:57Z seb $
+#* $Id: yocto_cellular.py 50281 2022-06-30 07:21:14Z mvuilleu $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -3919,6 +3919,43 @@ class YCellular(YFunction):
         @return a string containing the corresponding cell operator brand name.
         """
         return self.imm_decodePLMN(mccmnc)
+
+    def get_communicationProfiles(self):
+        """
+        Returns the list available radio communication profiles, as a string array
+        (YoctoHub-GSM-4G only).
+        Each string is a made of a numerical ID, followed by a colon,
+        followed by the profile description.
+
+        @return a list of string describing available radio communication profiles.
+        """
+        # profiles
+        lines = []
+        # nlines
+        # idx
+        # line
+        # cpos
+        # profno
+        res = []
+
+        profiles = self._AT("+UMNOPROF=?")
+        lines = (profiles).split('\n')
+        nlines = len(lines)
+        if not (nlines > 0):
+            self._throw(YAPI.IO_ERROR, "fail to retrieve profile list")
+            return res
+        del res[:]
+        idx = 0
+        while idx < nlines:
+            line = lines[idx]
+            cpos = line.find(":")
+            if cpos > 0:
+                profno = YAPI._atoi((line)[0: 0 + cpos])
+                if profno > 0:
+                    res.append(line)
+            idx = idx + 1
+
+        return res
 
     def nextCellular(self):
         """

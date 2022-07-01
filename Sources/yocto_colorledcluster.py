@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorledcluster.py 44921 2021-05-06 08:03:05Z mvuilleu $
+#  $Id: yocto_colorledcluster.py 50281 2022-06-30 07:21:14Z mvuilleu $
 #
 #  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #
@@ -67,6 +67,7 @@ class YColorLedCluster(YFunction):
     #--- (YColorLedCluster definitions)
     ACTIVELEDCOUNT_INVALID = YAPI.INVALID_UINT
     MAXLEDCOUNT_INVALID = YAPI.INVALID_UINT
+    DYNAMICLEDCOUNT_INVALID = YAPI.INVALID_UINT
     BLINKSEQMAXCOUNT_INVALID = YAPI.INVALID_UINT
     BLINKSEQMAXSIZE_INVALID = YAPI.INVALID_UINT
     COMMAND_INVALID = YAPI.INVALID_STRING
@@ -84,6 +85,7 @@ class YColorLedCluster(YFunction):
         self._activeLedCount = YColorLedCluster.ACTIVELEDCOUNT_INVALID
         self._ledType = YColorLedCluster.LEDTYPE_INVALID
         self._maxLedCount = YColorLedCluster.MAXLEDCOUNT_INVALID
+        self._dynamicLedCount = YColorLedCluster.DYNAMICLEDCOUNT_INVALID
         self._blinkSeqMaxCount = YColorLedCluster.BLINKSEQMAXCOUNT_INVALID
         self._blinkSeqMaxSize = YColorLedCluster.BLINKSEQMAXSIZE_INVALID
         self._command = YColorLedCluster.COMMAND_INVALID
@@ -97,6 +99,8 @@ class YColorLedCluster(YFunction):
             self._ledType = json_val.getInt("ledType")
         if json_val.has("maxLedCount"):
             self._maxLedCount = json_val.getInt("maxLedCount")
+        if json_val.has("dynamicLedCount"):
+            self._dynamicLedCount = json_val.getInt("dynamicLedCount")
         if json_val.has("blinkSeqMaxCount"):
             self._blinkSeqMaxCount = json_val.getInt("blinkSeqMaxCount")
         if json_val.has("blinkSeqMaxSize"):
@@ -180,6 +184,22 @@ class YColorLedCluster(YFunction):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YColorLedCluster.MAXLEDCOUNT_INVALID
         res = self._maxLedCount
+        return res
+
+    def get_dynamicLedCount(self):
+        """
+        Returns the maximum number of LEDs that can perform autonomous transitions and sequences.
+
+        @return an integer corresponding to the maximum number of LEDs that can perform autonomous
+        transitions and sequences
+
+        On failure, throws an exception or returns YColorLedCluster.DYNAMICLEDCOUNT_INVALID.
+        """
+        # res
+        if self._cacheExpiration == datetime.datetime.fromtimestamp(86400):
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YColorLedCluster.DYNAMICLEDCOUNT_INVALID
+        res = self._dynamicLedCount
         return res
 
     def get_blinkSeqMaxCount(self):

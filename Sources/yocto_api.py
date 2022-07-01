@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 49919 2022-05-30 12:21:42Z seb $
+# * $Id: yocto_api.py 50280 2022-06-30 07:20:48Z martinm $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -908,7 +908,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "50144"
+    YOCTO_API_BUILD_NO = "50357"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -4680,7 +4680,7 @@ class YFunction(object):
         # Get device Object
         res = self._getDevice(devRef, errmsgRef)
         if YAPI.YISERR(res):
-            self._throw(res, request)
+            self._throw(res, YByte2String(request))
             return b""
         res = devRef.value.HTTPRequest(request, httpbuffer, errmsgRef)
         if YAPI.YISERR(res):

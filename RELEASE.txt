@@ -1,5 +1,4 @@
-Python v1.10.50144
+Python v1.10.50357
 
-- Improve behaviour of MODBUS snooping callback in case of reset()
-- Various doc improvements
-- Fix potential crash when using YMessageBox class
+- Add support for retrieving communication profiles list on YoctoHub-GSM-4G
+- Fixed occasional exception in exception handler
