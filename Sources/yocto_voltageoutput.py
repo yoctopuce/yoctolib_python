@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_voltageoutput.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_voltageoutput.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
 #
@@ -76,11 +76,11 @@ class YVoltageOutput(YFunction):
     #--- (YVoltageOutput implementation)
     def _parseAttr(self, json_val):
         if json_val.has("currentVoltage"):
-            self._currentVoltage = round(json_val.getDouble("currentVoltage") * 1000.0 / 65536.0) / 1000.0
+            self._currentVoltage = round(json_val.getDouble("currentVoltage") / 65.536) / 1000.0
         if json_val.has("voltageTransition"):
             self._voltageTransition = json_val.getString("voltageTransition")
         if json_val.has("voltageAtStartUp"):
-            self._voltageAtStartUp = round(json_val.getDouble("voltageAtStartUp") * 1000.0 / 65536.0) / 1000.0
+            self._voltageAtStartUp = round(json_val.getDouble("voltageAtStartUp") / 65.536) / 1000.0
         super(YVoltageOutput, self)._parseAttr(json_val)
 
     def set_currentVoltage(self, newval):

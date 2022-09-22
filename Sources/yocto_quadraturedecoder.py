@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_quadraturedecoder.py 45843 2021-08-04 07:51:59Z mvuilleu $
+#  $Id: yocto_quadraturedecoder.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
 #
@@ -80,7 +80,7 @@ class YQuadratureDecoder(YSensor):
     #--- (YQuadratureDecoder implementation)
     def _parseAttr(self, json_val):
         if json_val.has("speed"):
-            self._speed = round(json_val.getDouble("speed") * 1000.0 / 65536.0) / 1000.0
+            self._speed = round(json_val.getDouble("speed") / 65.536) / 1000.0
         if json_val.has("decoding"):
             self._decoding = (json_val.getInt("decoding") > 0 if 1 else 0)
         if json_val.has("edgesPerCycle"):

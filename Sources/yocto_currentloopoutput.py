@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_currentloopoutput.py 38913 2019-12-20 18:59:49Z mvuilleu $
+#  $Id: yocto_currentloopoutput.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
 #
@@ -83,11 +83,11 @@ class YCurrentLoopOutput(YFunction):
     #--- (YCurrentLoopOutput implementation)
     def _parseAttr(self, json_val):
         if json_val.has("current"):
-            self._current = round(json_val.getDouble("current") * 1000.0 / 65536.0) / 1000.0
+            self._current = round(json_val.getDouble("current") / 65.536) / 1000.0
         if json_val.has("currentTransition"):
             self._currentTransition = json_val.getString("currentTransition")
         if json_val.has("currentAtStartUp"):
-            self._currentAtStartUp = round(json_val.getDouble("currentAtStartUp") * 1000.0 / 65536.0) / 1000.0
+            self._currentAtStartUp = round(json_val.getDouble("currentAtStartUp") / 65.536) / 1000.0
         if json_val.has("loopPower"):
             self._loopPower = json_val.getInt("loopPower")
         super(YCurrentLoopOutput, self)._parseAttr(json_val)

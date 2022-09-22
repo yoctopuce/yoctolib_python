@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_pwmoutput.py 38913 2019-12-20 18:59:49Z mvuilleu $
+#  $Id: yocto_pwmoutput.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #
@@ -94,19 +94,19 @@ class YPwmOutput(YFunction):
         if json_val.has("enabled"):
             self._enabled = (json_val.getInt("enabled") > 0 if 1 else 0)
         if json_val.has("frequency"):
-            self._frequency = round(json_val.getDouble("frequency") * 1000.0 / 65536.0) / 1000.0
+            self._frequency = round(json_val.getDouble("frequency") / 65.536) / 1000.0
         if json_val.has("period"):
-            self._period = round(json_val.getDouble("period") * 1000.0 / 65536.0) / 1000.0
+            self._period = round(json_val.getDouble("period") / 65.536) / 1000.0
         if json_val.has("dutyCycle"):
-            self._dutyCycle = round(json_val.getDouble("dutyCycle") * 1000.0 / 65536.0) / 1000.0
+            self._dutyCycle = round(json_val.getDouble("dutyCycle") / 65.536) / 1000.0
         if json_val.has("pulseDuration"):
-            self._pulseDuration = round(json_val.getDouble("pulseDuration") * 1000.0 / 65536.0) / 1000.0
+            self._pulseDuration = round(json_val.getDouble("pulseDuration") / 65.536) / 1000.0
         if json_val.has("pwmTransition"):
             self._pwmTransition = json_val.getString("pwmTransition")
         if json_val.has("enabledAtPowerOn"):
             self._enabledAtPowerOn = (json_val.getInt("enabledAtPowerOn") > 0 if 1 else 0)
         if json_val.has("dutyCycleAtPowerOn"):
-            self._dutyCycleAtPowerOn = round(json_val.getDouble("dutyCycleAtPowerOn") * 1000.0 / 65536.0) / 1000.0
+            self._dutyCycleAtPowerOn = round(json_val.getDouble("dutyCycleAtPowerOn") / 65.536) / 1000.0
         super(YPwmOutput, self)._parseAttr(json_val)
 
     def get_enabled(self):

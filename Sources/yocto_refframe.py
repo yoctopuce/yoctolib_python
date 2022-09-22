@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_refframe.py 43619 2021-01-29 09:14:45Z mvuilleu $
+#  $Id: yocto_refframe.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindRefFrame(), the high-level API for RefFrame functions
 #
@@ -122,7 +122,7 @@ class YRefFrame(YFunction):
         if json_val.has("mountPos"):
             self._mountPos = json_val.getInt("mountPos")
         if json_val.has("bearing"):
-            self._bearing = round(json_val.getDouble("bearing") * 1000.0 / 65536.0) / 1000.0
+            self._bearing = round(json_val.getDouble("bearing") / 65.536) / 1000.0
         if json_val.has("calibrationParam"):
             self._calibrationParam = json_val.getString("calibrationParam")
         if json_val.has("fusionMode"):

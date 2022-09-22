@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_temperature.py 42054 2020-10-14 09:46:38Z seb $
+#  $Id: yocto_temperature.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindTemperature(), the high-level API for Temperature functions
 #
@@ -103,7 +103,7 @@ class YTemperature(YSensor):
         if json_val.has("sensorType"):
             self._sensorType = json_val.getInt("sensorType")
         if json_val.has("signalValue"):
-            self._signalValue = round(json_val.getDouble("signalValue") * 1000.0 / 65536.0) / 1000.0
+            self._signalValue = round(json_val.getDouble("signalValue") / 65.536) / 1000.0
         if json_val.has("signalUnit"):
             self._signalUnit = json_val.getString("signalUnit")
         if json_val.has("command"):

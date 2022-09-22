@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 50280 2022-06-30 07:20:48Z martinm $
+# * $Id: yocto_api.py 50689 2022-08-17 14:37:15Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -908,7 +908,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "50357"
+    YOCTO_API_BUILD_NO = "51008"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -7154,13 +7154,13 @@ class YSensor(YFunction):
         if json_val.has("unit"):
             self._unit = json_val.getString("unit")
         if json_val.has("currentValue"):
-            self._currentValue = round(json_val.getDouble("currentValue") * 1000.0 / 65536.0) / 1000.0
+            self._currentValue = round(json_val.getDouble("currentValue") / 65.536) / 1000.0
         if json_val.has("lowestValue"):
-            self._lowestValue = round(json_val.getDouble("lowestValue") * 1000.0 / 65536.0) / 1000.0
+            self._lowestValue = round(json_val.getDouble("lowestValue") / 65.536) / 1000.0
         if json_val.has("highestValue"):
-            self._highestValue = round(json_val.getDouble("highestValue") * 1000.0 / 65536.0) / 1000.0
+            self._highestValue = round(json_val.getDouble("highestValue") / 65.536) / 1000.0
         if json_val.has("currentRawValue"):
-            self._currentRawValue = round(json_val.getDouble("currentRawValue") * 1000.0 / 65536.0) / 1000.0
+            self._currentRawValue = round(json_val.getDouble("currentRawValue") / 65.536) / 1000.0
         if json_val.has("logFrequency"):
             self._logFrequency = json_val.getString("logFrequency")
         if json_val.has("reportFrequency"):
@@ -7170,7 +7170,7 @@ class YSensor(YFunction):
         if json_val.has("calibrationParam"):
             self._calibrationParam = json_val.getString("calibrationParam")
         if json_val.has("resolution"):
-            self._resolution = round(json_val.getDouble("resolution") * 1000.0 / 65536.0) / 1000.0
+            self._resolution = round(json_val.getDouble("resolution") / 65.536) / 1000.0
         if json_val.has("sensorState"):
             self._sensorState = json_val.getInt("sensorState")
         super(YSensor, self)._parseAttr(json_val)

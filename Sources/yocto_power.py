@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_power.py 41290 2020-07-24 10:02:23Z mvuilleu $
+#  $Id: yocto_power.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindPower(), the high-level API for Power functions
 #
@@ -83,13 +83,13 @@ class YPower(YSensor):
     #--- (YPower implementation)
     def _parseAttr(self, json_val):
         if json_val.has("cosPhi"):
-            self._cosPhi = round(json_val.getDouble("cosPhi") * 1000.0 / 65536.0) / 1000.0
+            self._cosPhi = round(json_val.getDouble("cosPhi") / 65.536) / 1000.0
         if json_val.has("meter"):
-            self._meter = round(json_val.getDouble("meter") * 1000.0 / 65536.0) / 1000.0
+            self._meter = round(json_val.getDouble("meter") / 65.536) / 1000.0
         if json_val.has("deliveredEnergyMeter"):
-            self._deliveredEnergyMeter = round(json_val.getDouble("deliveredEnergyMeter") * 1000.0 / 65536.0) / 1000.0
+            self._deliveredEnergyMeter = round(json_val.getDouble("deliveredEnergyMeter") / 65.536) / 1000.0
         if json_val.has("receivedEnergyMeter"):
-            self._receivedEnergyMeter = round(json_val.getDouble("receivedEnergyMeter") * 1000.0 / 65536.0) / 1000.0
+            self._receivedEnergyMeter = round(json_val.getDouble("receivedEnergyMeter") / 65.536) / 1000.0
         if json_val.has("meterTimer"):
             self._meterTimer = json_val.getInt("meterTimer")
         super(YPower, self)._parseAttr(json_val)

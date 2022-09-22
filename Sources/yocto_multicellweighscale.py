@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multicellweighscale.py 43478 2021-01-21 13:49:12Z mvuilleu $
+#  $Id: yocto_multicellweighscale.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
 #
@@ -105,17 +105,17 @@ class YMultiCellWeighScale(YSensor):
         if json_val.has("excitation"):
             self._excitation = json_val.getInt("excitation")
         if json_val.has("tempAvgAdaptRatio"):
-            self._tempAvgAdaptRatio = round(json_val.getDouble("tempAvgAdaptRatio") * 1000.0 / 65536.0) / 1000.0
+            self._tempAvgAdaptRatio = round(json_val.getDouble("tempAvgAdaptRatio") / 65.536) / 1000.0
         if json_val.has("tempChgAdaptRatio"):
-            self._tempChgAdaptRatio = round(json_val.getDouble("tempChgAdaptRatio") * 1000.0 / 65536.0) / 1000.0
+            self._tempChgAdaptRatio = round(json_val.getDouble("tempChgAdaptRatio") / 65.536) / 1000.0
         if json_val.has("compTempAvg"):
-            self._compTempAvg = round(json_val.getDouble("compTempAvg") * 1000.0 / 65536.0) / 1000.0
+            self._compTempAvg = round(json_val.getDouble("compTempAvg") / 65.536) / 1000.0
         if json_val.has("compTempChg"):
-            self._compTempChg = round(json_val.getDouble("compTempChg") * 1000.0 / 65536.0) / 1000.0
+            self._compTempChg = round(json_val.getDouble("compTempChg") / 65.536) / 1000.0
         if json_val.has("compensation"):
-            self._compensation = round(json_val.getDouble("compensation") * 1000.0 / 65536.0) / 1000.0
+            self._compensation = round(json_val.getDouble("compensation") / 65.536) / 1000.0
         if json_val.has("zeroTracking"):
-            self._zeroTracking = round(json_val.getDouble("zeroTracking") * 1000.0 / 65536.0) / 1000.0
+            self._zeroTracking = round(json_val.getDouble("zeroTracking") / 65.536) / 1000.0
         if json_val.has("command"):
             self._command = json_val.getString("command")
         super(YMultiCellWeighScale, self)._parseAttr(json_val)

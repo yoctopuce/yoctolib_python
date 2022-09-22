@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_motor.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_motor.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindMotor(), the high-level API for Motor functions
 #
@@ -102,15 +102,15 @@ class YMotor(YFunction):
         if json_val.has("motorStatus"):
             self._motorStatus = json_val.getInt("motorStatus")
         if json_val.has("drivingForce"):
-            self._drivingForce = round(json_val.getDouble("drivingForce") * 1000.0 / 65536.0) / 1000.0
+            self._drivingForce = round(json_val.getDouble("drivingForce") / 65.536) / 1000.0
         if json_val.has("brakingForce"):
-            self._brakingForce = round(json_val.getDouble("brakingForce") * 1000.0 / 65536.0) / 1000.0
+            self._brakingForce = round(json_val.getDouble("brakingForce") / 65.536) / 1000.0
         if json_val.has("cutOffVoltage"):
-            self._cutOffVoltage = round(json_val.getDouble("cutOffVoltage") * 1000.0 / 65536.0) / 1000.0
+            self._cutOffVoltage = round(json_val.getDouble("cutOffVoltage") / 65.536) / 1000.0
         if json_val.has("overCurrentLimit"):
             self._overCurrentLimit = json_val.getInt("overCurrentLimit")
         if json_val.has("frequency"):
-            self._frequency = round(json_val.getDouble("frequency") * 1000.0 / 65536.0) / 1000.0
+            self._frequency = round(json_val.getDouble("frequency") / 65.536) / 1000.0
         if json_val.has("starterTime"):
             self._starterTime = json_val.getInt("starterTime")
         if json_val.has("failSafeTimeout"):

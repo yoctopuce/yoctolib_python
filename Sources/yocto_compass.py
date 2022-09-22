@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_compass.py 42951 2020-12-14 09:43:29Z seb $
+#  $Id: yocto_compass.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindCompass(), the high-level API for Compass functions
 #
@@ -85,7 +85,7 @@ class YCompass(YSensor):
         if json_val.has("axis"):
             self._axis = json_val.getInt("axis")
         if json_val.has("magneticHeading"):
-            self._magneticHeading = round(json_val.getDouble("magneticHeading") * 1000.0 / 65536.0) / 1000.0
+            self._magneticHeading = round(json_val.getDouble("magneticHeading") / 65.536) / 1000.0
         super(YCompass, self)._parseAttr(json_val)
 
     def get_bandwidth(self):

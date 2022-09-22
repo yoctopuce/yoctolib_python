@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_rangefinder.py 40655 2020-05-25 14:12:58Z mvuilleu $
+#  $Id: yocto_rangefinder.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
 #
@@ -98,7 +98,7 @@ class YRangeFinder(YSensor):
         if json_val.has("hardwareCalibration"):
             self._hardwareCalibration = json_val.getString("hardwareCalibration")
         if json_val.has("currentTemperature"):
-            self._currentTemperature = round(json_val.getDouble("currentTemperature") * 1000.0 / 65536.0) / 1000.0
+            self._currentTemperature = round(json_val.getDouble("currentTemperature") / 65.536) / 1000.0
         if json_val.has("command"):
             self._command = json_val.getString("command")
         super(YRangeFinder, self)._parseAttr(json_val)

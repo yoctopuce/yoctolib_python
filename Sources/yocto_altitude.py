@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_altitude.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_altitude.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindAltitude(), the high-level API for Altitude functions
 #
@@ -78,7 +78,7 @@ class YAltitude(YSensor):
     #--- (YAltitude implementation)
     def _parseAttr(self, json_val):
         if json_val.has("qnh"):
-            self._qnh = round(json_val.getDouble("qnh") * 1000.0 / 65536.0) / 1000.0
+            self._qnh = round(json_val.getDouble("qnh") / 65.536) / 1000.0
         if json_val.has("technology"):
             self._technology = json_val.getString("technology")
         super(YAltitude, self)._parseAttr(json_val)

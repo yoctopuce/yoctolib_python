@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_powersupply.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_powersupply.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
 #
@@ -102,29 +102,29 @@ class YPowerSupply(YFunction):
     #--- (YPowerSupply implementation)
     def _parseAttr(self, json_val):
         if json_val.has("voltageSetPoint"):
-            self._voltageSetPoint = round(json_val.getDouble("voltageSetPoint") * 1000.0 / 65536.0) / 1000.0
+            self._voltageSetPoint = round(json_val.getDouble("voltageSetPoint") / 65.536) / 1000.0
         if json_val.has("currentLimit"):
-            self._currentLimit = round(json_val.getDouble("currentLimit") * 1000.0 / 65536.0) / 1000.0
+            self._currentLimit = round(json_val.getDouble("currentLimit") / 65.536) / 1000.0
         if json_val.has("powerOutput"):
             self._powerOutput = (json_val.getInt("powerOutput") > 0 if 1 else 0)
         if json_val.has("voltageSense"):
             self._voltageSense = json_val.getInt("voltageSense")
         if json_val.has("measuredVoltage"):
-            self._measuredVoltage = round(json_val.getDouble("measuredVoltage") * 1000.0 / 65536.0) / 1000.0
+            self._measuredVoltage = round(json_val.getDouble("measuredVoltage") / 65.536) / 1000.0
         if json_val.has("measuredCurrent"):
-            self._measuredCurrent = round(json_val.getDouble("measuredCurrent") * 1000.0 / 65536.0) / 1000.0
+            self._measuredCurrent = round(json_val.getDouble("measuredCurrent") / 65.536) / 1000.0
         if json_val.has("inputVoltage"):
-            self._inputVoltage = round(json_val.getDouble("inputVoltage") * 1000.0 / 65536.0) / 1000.0
+            self._inputVoltage = round(json_val.getDouble("inputVoltage") / 65.536) / 1000.0
         if json_val.has("vInt"):
-            self._vInt = round(json_val.getDouble("vInt") * 1000.0 / 65536.0) / 1000.0
+            self._vInt = round(json_val.getDouble("vInt") / 65.536) / 1000.0
         if json_val.has("ldoTemperature"):
-            self._ldoTemperature = round(json_val.getDouble("ldoTemperature") * 1000.0 / 65536.0) / 1000.0
+            self._ldoTemperature = round(json_val.getDouble("ldoTemperature") / 65.536) / 1000.0
         if json_val.has("voltageTransition"):
             self._voltageTransition = json_val.getString("voltageTransition")
         if json_val.has("voltageAtStartUp"):
-            self._voltageAtStartUp = round(json_val.getDouble("voltageAtStartUp") * 1000.0 / 65536.0) / 1000.0
+            self._voltageAtStartUp = round(json_val.getDouble("voltageAtStartUp") / 65.536) / 1000.0
         if json_val.has("currentAtStartUp"):
-            self._currentAtStartUp = round(json_val.getDouble("currentAtStartUp") * 1000.0 / 65536.0) / 1000.0
+            self._currentAtStartUp = round(json_val.getDouble("currentAtStartUp") / 65.536) / 1000.0
         if json_val.has("command"):
             self._command = json_val.getString("command")
         super(YPowerSupply, self)._parseAttr(json_val)

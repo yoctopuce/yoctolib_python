@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_proximity.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_proximity.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindProximity(), the high-level API for Proximity functions
 #
@@ -101,7 +101,7 @@ class YProximity(YSensor):
     #--- (YProximity implementation)
     def _parseAttr(self, json_val):
         if json_val.has("signalValue"):
-            self._signalValue = round(json_val.getDouble("signalValue") * 1000.0 / 65536.0) / 1000.0
+            self._signalValue = round(json_val.getDouble("signalValue") / 65.536) / 1000.0
         if json_val.has("detectionThreshold"):
             self._detectionThreshold = json_val.getInt("detectionThreshold")
         if json_val.has("detectionHysteresis"):

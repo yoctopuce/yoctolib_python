@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_steppermotor.py 43478 2021-01-21 13:49:12Z mvuilleu $
+#  $Id: yocto_steppermotor.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #
@@ -117,13 +117,13 @@ class YStepperMotor(YFunction):
         if json_val.has("stepPos"):
             self._stepPos = json_val.getDouble("stepPos") / 16.0
         if json_val.has("speed"):
-            self._speed = round(json_val.getDouble("speed") * 1000.0 / 65536.0) / 1000.0
+            self._speed = round(json_val.getDouble("speed") / 65.536) / 1000.0
         if json_val.has("pullinSpeed"):
-            self._pullinSpeed = round(json_val.getDouble("pullinSpeed") * 1000.0 / 65536.0) / 1000.0
+            self._pullinSpeed = round(json_val.getDouble("pullinSpeed") / 65.536) / 1000.0
         if json_val.has("maxAccel"):
-            self._maxAccel = round(json_val.getDouble("maxAccel") * 1000.0 / 65536.0) / 1000.0
+            self._maxAccel = round(json_val.getDouble("maxAccel") / 65.536) / 1000.0
         if json_val.has("maxSpeed"):
-            self._maxSpeed = round(json_val.getDouble("maxSpeed") * 1000.0 / 65536.0) / 1000.0
+            self._maxSpeed = round(json_val.getDouble("maxSpeed") / 65.536) / 1000.0
         if json_val.has("stepping"):
             self._stepping = json_val.getInt("stepping")
         if json_val.has("overcurrent"):

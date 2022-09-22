@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_genericsensor.py 49903 2022-05-25 14:18:36Z mvuilleu $
+#  $Id: yocto_genericsensor.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #
@@ -96,7 +96,7 @@ class YGenericSensor(YSensor):
     #--- (YGenericSensor implementation)
     def _parseAttr(self, json_val):
         if json_val.has("signalValue"):
-            self._signalValue = round(json_val.getDouble("signalValue") * 1000.0 / 65536.0) / 1000.0
+            self._signalValue = round(json_val.getDouble("signalValue") / 65.536) / 1000.0
         if json_val.has("signalUnit"):
             self._signalUnit = json_val.getString("signalUnit")
         if json_val.has("signalRange"):
@@ -104,7 +104,7 @@ class YGenericSensor(YSensor):
         if json_val.has("valueRange"):
             self._valueRange = json_val.getString("valueRange")
         if json_val.has("signalBias"):
-            self._signalBias = round(json_val.getDouble("signalBias") * 1000.0 / 65536.0) / 1000.0
+            self._signalBias = round(json_val.getDouble("signalBias") / 65.536) / 1000.0
         if json_val.has("signalSampling"):
             self._signalSampling = json_val.getInt("signalSampling")
         if json_val.has("enabled"):

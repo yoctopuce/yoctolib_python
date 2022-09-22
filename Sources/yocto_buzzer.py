@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_buzzer.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_buzzer.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindBuzzer(), the high-level API for Buzzer functions
 #
@@ -85,7 +85,7 @@ class YBuzzer(YFunction):
     #--- (YBuzzer implementation)
     def _parseAttr(self, json_val):
         if json_val.has("frequency"):
-            self._frequency = round(json_val.getDouble("frequency") * 1000.0 / 65536.0) / 1000.0
+            self._frequency = round(json_val.getDouble("frequency") / 65.536) / 1000.0
         if json_val.has("volume"):
             self._volume = json_val.getInt("volume")
         if json_val.has("playSeqSize"):

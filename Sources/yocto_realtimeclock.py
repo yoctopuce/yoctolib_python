@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_realtimeclock.py 48183 2022-01-20 10:26:11Z mvuilleu $
+#  $Id: yocto_realtimeclock.py 50595 2022-07-28 07:54:15Z mvuilleu $
 #
 #  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #
@@ -68,6 +68,9 @@ class YRealTimeClock(YFunction):
     TIMESET_FALSE = 0
     TIMESET_TRUE = 1
     TIMESET_INVALID = -1
+    DISABLEHOSTSYNC_FALSE = 0
+    DISABLEHOSTSYNC_TRUE = 1
+    DISABLEHOSTSYNC_INVALID = -1
     #--- (end of YRealTimeClock definitions)
 
     def __init__(self, func):
@@ -79,6 +82,7 @@ class YRealTimeClock(YFunction):
         self._dateTime = YRealTimeClock.DATETIME_INVALID
         self._utcOffset = YRealTimeClock.UTCOFFSET_INVALID
         self._timeSet = YRealTimeClock.TIMESET_INVALID
+        self._disableHostSync = YRealTimeClock.DISABLEHOSTSYNC_INVALID
         #--- (end of YRealTimeClock attributes)
 
     #--- (YRealTimeClock implementation)
@@ -91,6 +95,8 @@ class YRealTimeClock(YFunction):
             self._utcOffset = json_val.getInt("utcOffset")
         if json_val.has("timeSet"):
             self._timeSet = (json_val.getInt("timeSet") > 0 if 1 else 0)
+        if json_val.has("disableHostSync"):
+            self._disableHostSync = (json_val.getInt("disableHostSync") > 0 if 1 else 0)
         super(YRealTimeClock, self)._parseAttr(json_val)
 
     def get_unixTime(self):
@@ -183,6 +189,40 @@ class YRealTimeClock(YFunction):
                 return YRealTimeClock.TIMESET_INVALID
         res = self._timeSet
         return res
+
+    def get_disableHostSync(self):
+        """
+        Returns true if the automatic clock synchronization with host has been disabled,
+        and false otherwise.
+
+        @return either YRealTimeClock.DISABLEHOSTSYNC_FALSE or YRealTimeClock.DISABLEHOSTSYNC_TRUE,
+        according to true if the automatic clock synchronization with host has been disabled,
+                and false otherwise
+
+        On failure, throws an exception or returns YRealTimeClock.DISABLEHOSTSYNC_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YRealTimeClock.DISABLEHOSTSYNC_INVALID
+        res = self._disableHostSync
+        return res
+
+    def set_disableHostSync(self, newval):
+        """
+        Changes the automatic clock synchronization with host working state.
+        To disable automatic synchronization, set the value to true.
+        To enable automatic synchronization (default), set the value to false.
+
+        @param newval : either YRealTimeClock.DISABLEHOSTSYNC_FALSE or YRealTimeClock.DISABLEHOSTSYNC_TRUE,
+        according to the automatic clock synchronization with host working state
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("disableHostSync", rest_val)
 
     @staticmethod
     def FindRealTimeClock(func):

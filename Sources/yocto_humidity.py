@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_humidity.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_humidity.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindHumidity(), the high-level API for Humidity functions
 #
@@ -76,9 +76,9 @@ class YHumidity(YSensor):
     #--- (YHumidity implementation)
     def _parseAttr(self, json_val):
         if json_val.has("relHum"):
-            self._relHum = round(json_val.getDouble("relHum") * 1000.0 / 65536.0) / 1000.0
+            self._relHum = round(json_val.getDouble("relHum") / 65.536) / 1000.0
         if json_val.has("absHum"):
-            self._absHum = round(json_val.getDouble("absHum") * 1000.0 / 65536.0) / 1000.0
+            self._absHum = round(json_val.getDouble("absHum") / 65.536) / 1000.0
         super(YHumidity, self)._parseAttr(json_val)
 
     def set_unit(self, newval):

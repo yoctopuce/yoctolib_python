@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 42951 2020-12-14 09:43:29Z seb $
+#* $Id: yocto_gyro.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*
@@ -228,11 +228,11 @@ class YGyro(YSensor):
         if json_val.has("bandwidth"):
             self._bandwidth = json_val.getInt("bandwidth")
         if json_val.has("xValue"):
-            self._xValue = round(json_val.getDouble("xValue") * 1000.0 / 65536.0) / 1000.0
+            self._xValue = round(json_val.getDouble("xValue") / 65.536) / 1000.0
         if json_val.has("yValue"):
-            self._yValue = round(json_val.getDouble("yValue") * 1000.0 / 65536.0) / 1000.0
+            self._yValue = round(json_val.getDouble("yValue") / 65.536) / 1000.0
         if json_val.has("zValue"):
-            self._zValue = round(json_val.getDouble("zValue") * 1000.0 / 65536.0) / 1000.0
+            self._zValue = round(json_val.getDouble("zValue") / 65.536) / 1000.0
         super(YGyro, self)._parseAttr(json_val)
 
     def get_bandwidth(self):

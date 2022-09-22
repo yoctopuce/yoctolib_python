@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 50281 2022-06-30 07:21:14Z mvuilleu $
+#* $Id: yocto_cellular.py 50494 2022-07-19 16:08:56Z mvuilleu $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -3951,7 +3951,7 @@ class YCellular(YFunction):
             cpos = line.find(":")
             if cpos > 0:
                 profno = YAPI._atoi((line)[0: 0 + cpos])
-                if profno > 0:
+                if profno > 1:
                     res.append(line)
             idx = idx + 1
 

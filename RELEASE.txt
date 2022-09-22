@@ -1,4 +1,5 @@
-Python v1.10.50357
+Python v1.10.51008
 
-- Add support for retrieving communication profiles list on YoctoHub-GSM-4G
-- Fixed occasional exception in exception handler
+- Remove "SIM ICCID select" profile from list returned by get_communicationProfiles
+- Optimize float computations on measureVal for all libraries
+- Fix potiential socket leak on Linux

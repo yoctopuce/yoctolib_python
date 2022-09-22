@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_gps.py 39658 2020-03-12 15:36:29Z seb $
+#  $Id: yocto_gps.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindGps(), the high-level API for Gps functions
 #
@@ -125,7 +125,7 @@ class YGps(YFunction):
         if json_val.has("satPerConst"):
             self._satPerConst = json_val.getLong("satPerConst")
         if json_val.has("gpsRefreshRate"):
-            self._gpsRefreshRate = round(json_val.getDouble("gpsRefreshRate") * 1000.0 / 65536.0) / 1000.0
+            self._gpsRefreshRate = round(json_val.getDouble("gpsRefreshRate") / 65.536) / 1000.0
         if json_val.has("coordSystem"):
             self._coordSystem = json_val.getInt("coordSystem")
         if json_val.has("constellation"):
@@ -135,13 +135,13 @@ class YGps(YFunction):
         if json_val.has("longitude"):
             self._longitude = json_val.getString("longitude")
         if json_val.has("dilution"):
-            self._dilution = round(json_val.getDouble("dilution") * 1000.0 / 65536.0) / 1000.0
+            self._dilution = round(json_val.getDouble("dilution") / 65.536) / 1000.0
         if json_val.has("altitude"):
-            self._altitude = round(json_val.getDouble("altitude") * 1000.0 / 65536.0) / 1000.0
+            self._altitude = round(json_val.getDouble("altitude") / 65.536) / 1000.0
         if json_val.has("groundSpeed"):
-            self._groundSpeed = round(json_val.getDouble("groundSpeed") * 1000.0 / 65536.0) / 1000.0
+            self._groundSpeed = round(json_val.getDouble("groundSpeed") / 65.536) / 1000.0
         if json_val.has("direction"):
-            self._direction = round(json_val.getDouble("direction") * 1000.0 / 65536.0) / 1000.0
+            self._direction = round(json_val.getDouble("direction") / 65.536) / 1000.0
         if json_val.has("unixTime"):
             self._unixTime = json_val.getLong("unixTime")
         if json_val.has("dateTime"):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_pwminput.py 41348 2020-08-10 15:12:57Z seb $
+#  $Id: yocto_pwminput.py 50689 2022-08-17 14:37:15Z mvuilleu $
 #
 #  Implements yFindPwmInput(), the high-level API for PwmInput functions
 #
@@ -105,13 +105,13 @@ class YPwmInput(YSensor):
     #--- (YPwmInput implementation)
     def _parseAttr(self, json_val):
         if json_val.has("dutyCycle"):
-            self._dutyCycle = round(json_val.getDouble("dutyCycle") * 1000.0 / 65536.0) / 1000.0
+            self._dutyCycle = round(json_val.getDouble("dutyCycle") / 65.536) / 1000.0
         if json_val.has("pulseDuration"):
-            self._pulseDuration = round(json_val.getDouble("pulseDuration") * 1000.0 / 65536.0) / 1000.0
+            self._pulseDuration = round(json_val.getDouble("pulseDuration") / 65.536) / 1000.0
         if json_val.has("frequency"):
-            self._frequency = round(json_val.getDouble("frequency") * 1000.0 / 65536.0) / 1000.0
+            self._frequency = round(json_val.getDouble("frequency") / 65.536) / 1000.0
         if json_val.has("period"):
-            self._period = round(json_val.getDouble("period") * 1000.0 / 65536.0) / 1000.0
+            self._period = round(json_val.getDouble("period") / 65.536) / 1000.0
         if json_val.has("pulseCounter"):
             self._pulseCounter = json_val.getLong("pulseCounter")
         if json_val.has("pulseTimer"):
