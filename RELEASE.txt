@@ -1,5 +1,4 @@
-Python v1.10.51008
+Python v1.10.51050
 
 - Remove "SIM ICCID select" profile from list returned by get_communicationProfiles
-- Optimize float computations on measureVal for all libraries
-- Fix potiential socket leak on Linux
+- Fix potential socket leak on Linux
