@@ -1,4 +1,3 @@
-Python v1.10.51050
+Python v1.10.51176
 
-- Remove "SIM ICCID select" profile from list returned by get_communicationProfiles
-- Fix potential socket leak on Linux
+- Add SensorMonitor example
