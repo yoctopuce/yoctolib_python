@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 50689 2022-08-17 14:37:15Z mvuilleu $
+# * $Id: yocto_api.py 51266 2022-10-10 09:18:25Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -908,7 +908,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "51176"
+    YOCTO_API_BUILD_NO = "51266"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -6670,6 +6670,23 @@ class YModule(YFunction):
                 res = subres
         self.clearCache()
         return res
+
+    def addFileToHTTPCallback(self, filename):
+        """
+        Adds a file to the uploaded data at the next HTTP callback.
+        This function only affects the next HTTP callback and only works in
+        HTTP callback mode.
+
+        @param filename : the name of the file to upload at the next HTTP callback
+
+        @return nothing.
+        """
+        # content
+
+        content = self._download("@YCB+" + filename)
+        if len(content) == 0:
+            return YAPI.NOT_SUPPORTED
+        return YAPI.SUCCESS
 
     def get_hardwareId(self):
         """
