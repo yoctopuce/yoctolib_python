@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YHubPort(YFunction):
     """
-    The YHubPort class provides control over the power supply for slave ports
+    The YHubPort class provides control over the power supply for subordinate ports
     on a YoctoHub. It provide information about the device connected to it.
     The logical name of a YHubPort is always automatically set to the
     unique serial number of the Yoctopuce device connected to it.
@@ -160,7 +160,7 @@ class YHubPort(YFunction):
     @staticmethod
     def FindHubPort(func):
         """
-        Retrieves a YoctoHub slave port for a given identifier.
+        Retrieves a YoctoHub subordinate port for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -170,11 +170,11 @@ class YHubPort(YFunction):
         <li>ModuleLogicalName.FunctionLogicalName</li>
         </ul>
 
-        This function does not require that the YoctoHub slave port is online at the time
+        This function does not require that the YoctoHub subordinate port is online at the time
         it is invoked. The returned object is nevertheless valid.
-        Use the method YHubPort.isOnline() to test if the YoctoHub slave port is
+        Use the method YHubPort.isOnline() to test if the YoctoHub subordinate port is
         indeed online at a given time. In case of ambiguity when looking for
-        a YoctoHub slave port by logical name, no error is notified: the first instance
+        a YoctoHub subordinate port by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -182,10 +182,10 @@ class YHubPort(YFunction):
         you are certain that the matching device is plugged, make sure that you did
         call registerHub() at application initialization time.
 
-        @param func : a string that uniquely characterizes the YoctoHub slave port, for instance
+        @param func : a string that uniquely characterizes the YoctoHub subordinate port, for instance
                 YHUBETH1.hubPort1.
 
-        @return a YHubPort object allowing you to drive the YoctoHub slave port.
+        @return a YHubPort object allowing you to drive the YoctoHub subordinate port.
         """
         # obj
         obj = YFunction._FindFromCache("HubPort", func)
@@ -196,14 +196,14 @@ class YHubPort(YFunction):
 
     def nextHubPort(self):
         """
-        Continues the enumeration of YoctoHub slave ports started using yFirstHubPort().
-        Caution: You can't make any assumption about the returned YoctoHub slave ports order.
-        If you want to find a specific a YoctoHub slave port, use HubPort.findHubPort()
+        Continues the enumeration of YoctoHub subordinate ports started using yFirstHubPort().
+        Caution: You can't make any assumption about the returned YoctoHub subordinate ports order.
+        If you want to find a specific a YoctoHub subordinate port, use HubPort.findHubPort()
         and a hardwareID or a logical name.
 
         @return a pointer to a YHubPort object, corresponding to
-                a YoctoHub slave port currently online, or a None pointer
-                if there are no more YoctoHub slave ports to enumerate.
+                a YoctoHub subordinate port currently online, or a None pointer
+                if there are no more YoctoHub subordinate ports to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -219,12 +219,12 @@ class YHubPort(YFunction):
     @staticmethod
     def FirstHubPort():
         """
-        Starts the enumeration of YoctoHub slave ports currently accessible.
+        Starts the enumeration of YoctoHub subordinate ports currently accessible.
         Use the method YHubPort.nextHubPort() to iterate on
-        next YoctoHub slave ports.
+        next YoctoHub subordinate ports.
 
         @return a pointer to a YHubPort object, corresponding to
-                the first YoctoHub slave port currently online, or a None pointer
+                the first YoctoHub subordinate port currently online, or a None pointer
                 if there are none.
         """
         devRef = YRefParam()

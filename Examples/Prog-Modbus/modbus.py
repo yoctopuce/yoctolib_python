@@ -22,10 +22,10 @@ else:
     if serialPort is None:
         sys.exit('No module connected (check cable)')
 
-print("Please enter the MODBUS slave address (1...255)")
-slave = 0
-while (slave < 1) or (slave > 255):
-    slave = int(input("slave: "))  # use raw_input in python 2.x
+print("Please enter the MODBUS subordinate address (1...255)")
+subordinate = 0
+while (subordinate < 1) or (subordinate > 255):
+    subordinate = int(input("subordinate: "))  # use raw_input in python 2.x
 
 reg = 0
 while (reg < 1) or (reg >= 50000) or (reg % 10000) == 0:
@@ -35,13 +35,13 @@ while (reg < 1) or (reg >= 50000) or (reg % 10000) == 0:
 
 while True:
     if reg >= 40001:
-        val = serialPort.modbusReadInputRegisters(slave, reg - 40001, 1)[0]
+        val = serialPort.modbusReadInputRegisters(subordinate, reg - 40001, 1)[0]
     elif reg >= 30001:
-        val = serialPort.modbusReadRegisters(slave, reg - 30001, 1)[0]
+        val = serialPort.modbusReadRegisters(subordinate, reg - 30001, 1)[0]
     elif reg >= 10001:
-        val = serialPort.modbusReadInputBits(slave, reg - 10001, 1)[0]
+        val = serialPort.modbusReadInputBits(subordinate, reg - 10001, 1)[0]
     else:
-        val = serialPort.modbusReadBits(slave, reg - 1, 1)[0]
+        val = serialPort.modbusReadBits(subordinate, reg - 1, 1)[0]
 
     print("Current value: " + str(val))
     print("Press ENTER to read again, Q to quit")
@@ -54,6 +54,6 @@ while True:
     if cmd != "" and ((reg % 30000) < 10000):
         val = int(cmd)
         if reg >= 30001:
-            serialPort.modbusWriteRegister(slave, reg - 30001, val)
+            serialPort.modbusWriteRegister(subordinate, reg - 30001, val)
         else:
-            serialPort.modbusWriteBit(slave, reg - 1, val)
+            serialPort.modbusWriteBit(subordinate, reg - 1, val)
