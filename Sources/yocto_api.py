@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 51266 2022-10-10 09:18:25Z seb $
+# * $Id: yocto_api.py 51903 2022-11-29 17:25:59Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -908,7 +908,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "51266"
+    YOCTO_API_BUILD_NO = "52094"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2969,6 +2969,7 @@ class YDataStream(object):
         self._calraw = []
         self._calref = []
         self._values = []
+        self._isLoaded = 0
         #--- (end of generated code: YDataStream attributes)
         self._calhdl = None
         self._parent = parent
@@ -3064,6 +3065,8 @@ class YDataStream(object):
         # idx
         udat = []
         dat = []
+        if self._isLoaded and not (self._isClosed):
+            return YAPI.SUCCESS
         if len(sdata) == 0:
             self._nRows = 0
             return YAPI.SUCCESS
@@ -3095,11 +3098,25 @@ class YDataStream(object):
                 idx = idx + 2
 
         self._nRows = len(self._values)
+        self._isLoaded = True
         return YAPI.SUCCESS
+
+    def _wasLoaded(self):
+        return self._isLoaded
 
     def _get_url(self):
         # url
         url = "logger.json?id=" + self._functionId + "&run=" + str(int(self._runNo)) + "&utc=" + str(int(self._utcStamp))
+        return url
+
+    def _get_baseurl(self):
+        # url
+        url = "logger.json?id=" + self._functionId + "&run=" + str(int(self._runNo)) + "&utc="
+        return url
+
+    def _get_urlsuffix(self):
+        # url
+        url = "" + str(int(self._utcStamp))
         return url
 
     def loadStream(self):
@@ -3479,6 +3496,7 @@ class YDataSet(object):
         self._hardwareId = ''
         self._functionId = ''
         self._unit = ''
+        self._bulkLoad = 0
         self._startTimeMs = 0
         self._endTimeMs = 0
         self._progress = 0
@@ -3525,6 +3543,8 @@ class YDataSet(object):
         streamEndTime = 0
         self._functionId = p.getString("id")
         self._unit = p.getString("unit")
+        if p.has("bulk"):
+            self._bulkLoad = YAPI._atoi(p.getString("bulk"))
         if p.has("calib"):
             self._calib = YAPI._decodeFloats(p.getString("calib"))
             self._calib[0] = round(self._calib[0] / 1000)
@@ -3621,9 +3641,10 @@ class YDataSet(object):
             else:
                 # // stream that are partially in the dataset
                 # // we need to parse data to filter value outside the dataset
-                url = y._get_url()
-                data = self._parent._download(url)
-                y._parseStream(data)
+                if not (y._wasLoaded()):
+                    url = y._get_url()
+                    data = self._parent._download(url)
+                    y._parseStream(data)
                 dataRows = y.get_dataRows()
                 if len(dataRows) == 0:
                     return self.get_progress()
@@ -3666,8 +3687,9 @@ class YDataSet(object):
                             previewMinVal = minVal
                         if previewMaxVal < maxVal:
                             previewMaxVal = maxVal
-                        previewTotalAvg = previewTotalAvg + (avgVal * mitv)
-                        previewTotalTime = previewTotalTime + mitv
+                        if not (math.isnan(avgVal)):
+                            previewTotalAvg = previewTotalAvg + (avgVal * mitv)
+                            previewTotalTime = previewTotalTime + mitv
                     tim = end_
                     m_pos = m_pos + 1
                 if previewTotalTime > 0:
@@ -3710,13 +3732,23 @@ class YDataSet(object):
         # avgCol
         # maxCol
         # firstMeasure
+        # baseurl
+        # url
+        # suffix
+        suffixes = []
+        # idx
+        # bulkFile
+        streamStr = []
+        # urlIdx
+        # streamBin
 
         if progress != self._progress:
             return self._progress
         if self._progress < 0:
             return self.loadSummary(data)
         stream = self._streams[self._progress]
-        stream._parseStream(data)
+        if not (stream._wasLoaded()):
+            stream._parseStream(data)
         dataRows = stream.get_dataRows()
         self._progress = self._progress + 1
         if len(dataRows) == 0:
@@ -3751,6 +3783,34 @@ class YDataSet(object):
                 self._measures.append(YMeasure(tim / 1000, end_ / 1000, y[minCol], avgv, y[maxCol]))
             tim = end_
 
+        # // Perform bulk preload to speed-up network transfer
+        if (self._bulkLoad > 0) and (self._progress < len(self._streams)):
+            stream = self._streams[self._progress]
+            if stream._wasLoaded():
+                return self.get_progress()
+            baseurl = stream._get_baseurl()
+            url = stream._get_url()
+            suffix = stream._get_urlsuffix()
+            suffixes.append(suffix)
+            idx = self._progress+1
+            while (idx < len(self._streams)) and (len(suffixes) < self._bulkLoad):
+                stream = self._streams[idx]
+                if not (stream._wasLoaded()) and (stream._get_baseurl() == baseurl):
+                    suffix = stream._get_urlsuffix()
+                    suffixes.append(suffix)
+                    url = url + "," + suffix
+                idx = idx + 1
+            bulkFile = self._parent._download(url)
+            streamStr = self._parent._json_get_array(bulkFile)
+            urlIdx = 0
+            idx = self._progress
+            while (idx < len(self._streams)) and (urlIdx < len(suffixes)) and (urlIdx < len(streamStr)):
+                stream = self._streams[idx]
+                if (stream._get_baseurl() == baseurl) and (stream._get_urlsuffix() == suffixes[urlIdx]):
+                    streamBin = YString2Byte(streamStr[urlIdx])
+                    stream._parseStream(streamBin)
+                    urlIdx = urlIdx + 1
+                idx = idx + 1
         return self.get_progress()
 
     def get_privateDataStreams(self):
@@ -3874,6 +3934,9 @@ class YDataSet(object):
                 return 100
             else:
                 stream = self._streams[self._progress]
+                if stream._wasLoaded():
+                    # // Do not reload stream if it was already loaded
+                    return self.processMore(self._progress, YString2Byte(""))
                 url = stream._get_url()
         try:
             return self.processMore(self._progress, self._parent._download(url))

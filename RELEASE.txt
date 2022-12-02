@@ -1,3 +1,4 @@
-Python v1.10.51266
+Python v1.10.52094
 
-- Add addFileToHTTPCallback methode to YModule
+- Add support for connecting to VirtualHub-4web
+- Improve error message when YoctoHub is not reacheable.
