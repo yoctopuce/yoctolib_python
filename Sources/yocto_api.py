@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 51903 2022-11-29 17:25:59Z mvuilleu $
+# * $Id: yocto_api.py 52307 2022-12-12 14:40:20Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -908,7 +908,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "52094"
+    YOCTO_API_BUILD_NO = "52382"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -5393,14 +5393,14 @@ class YFunction(object):
         funcIdRef = YRefParam()
         funcNameRef = YRefParam()
         funcValueRef = YRefParam()
-
+        if self._serial != '':
+            return YModule.FindModule(self._serial + ".module")
         fundescr = YAPI.yapiGetFunction(self._className, self._func, errmsgRef)
         if not YAPI.YISERR(fundescr):
             if not YAPI.YISERR(
                     YAPI.yapiGetFunctionInfo(fundescr, devdescrRef, serialRef, funcIdRef, funcNameRef, funcValueRef,
                                              errmsgRef)):
                 return YModule.FindModule(serialRef.value + ".module")
-
         # return a true YModule object even if it is not a module valid for communicating
         return YModule.FindModule("module_of_" + self._className + "_" + self._func)
 

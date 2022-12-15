@@ -1,6 +1,6 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 32628 2018-10-10 13:37:59Z seb $
+#  $Id: helloworld.py 52208 2022-12-07 08:17:21Z mvuilleu $
 #
 #  An example that show how to use a  Yocto-RS485
 #
@@ -43,7 +43,7 @@ while (slave < 1) or (slave > 255):
 
 reg = 0
 while (reg < 1) or (reg >= 50000) or (reg % 10000) == 0:
-    print("Please select a Coil No (>=1), Input Bit No (>=10001+),")
+    print("Please select a Coil No (>=1), Input Bit No (>=10001),")
     print("Input Register No (>=30001) or Register No (>=40001)")
     reg = int(input("No: "))  # use raw_input in python 2.x
 
@@ -59,17 +59,17 @@ while serialPort.isOnline():
 
     print("Current value: " + str(val))
     print("Press ENTER to read again, Q to quit")
-    if (reg % 30000) < 10000:
+    if (reg % 40000) < 10000:
         print(" or enter a new value")
 
     cmd = input(": ")  # use raw_input in python 2.x
     if (cmd == "q") or (cmd == "Q"):
         sys.exit()
 
-    if cmd != "" and ((reg % 30000) < 10000):
+    if cmd != "" and ((reg % 40000) < 10000):
         val = int(cmd)
-        if reg >= 30001:
-            serialPort.modbusWriteRegister(slave, reg - 30001, val)
+        if reg >= 40001:
+            serialPort.modbusWriteRegister(slave, reg - 40001, val)
         else:
             serialPort.modbusWriteBit(slave, reg - 1, val)
 YAPI.FreeAPI()
