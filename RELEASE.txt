@@ -1,6 +1,6 @@
-Python v1.10.52382
+Python v1.10.53071
 
-- Fix wrong MODBUS holding register base address in examples
-- Fix get_module() method that was not working during removal callback
-- Fix firmware update
-- Fix error 404 returned by USB device when used directly from the API
+- Add PyQt6 example
+- Improve handling of IO error
+- Fixe few typos in the doc
+- Fix missing notification if UpdateDeviceList is never called

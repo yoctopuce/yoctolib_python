@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 52307 2022-12-12 14:40:20Z seb $
+# * $Id: yocto_api.py 53056 2023-02-06 09:42:48Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -908,7 +908,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "52382"
+    YOCTO_API_BUILD_NO = "53071"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1327,8 +1327,8 @@ class YAPI:
         YFACE_EMPTY, YFACE_RUNNING, YFACE_ERROR = range(3)
 
     class _Event:
-        ARRIVAL, REMOVAL, CHANGE, FUN_VALUE, FUN_TIMEDREPORT, \
-            HUB_DISCOVERY, CONFCHANGE, BEACON_CHANGE, YAPI_NOP = range(9)
+        ARRIVAL, REMOVAL, CHANGE, FUN_VALUE, FUN_TIMEDREPORT, FUN_REFRESH,\
+            HUB_DISCOVERY, CONFCHANGE, BEACON_CHANGE, YAPI_NOP = range(10)
 
         def __init__(self):
             self.ev = self.YAPI_NOP
@@ -1367,6 +1367,10 @@ class YAPI:
             self.ev = self.FUN_VALUE
             self.func = func
             self.value = value
+
+        def setFunRefresh(self, func):
+            self.ev = self.FUN_REFRESH
+            self.func = func
 
         def setTimedReport(self, func, timestamp, duration, report):
             self.ev = self.FUN_TIMEDREPORT
@@ -1414,6 +1418,8 @@ class YAPI:
                 self.module._invokeConfigChangeCallback()
             elif self.ev == self.BEACON_CHANGE:
                 self.module._invokeBeaconCallback(self.beacon)
+            elif self.ev == self.FUN_REFRESH:
+                self.func.isOnline()
 
     ##--- (generated code: YFunction return codes)
     # Yoctopuce error codes, used by default as function return value
@@ -1956,6 +1962,12 @@ class YAPI:
     def native_yDeviceArrivalCallback(d):
         YDevice.PlugDevice(d)
         infos = YAPI.emptyDeviceSt()
+        for i in range(len(YFunction._FunctionCallbacks)):
+            descriptor = YFunction._FunctionCallbacks[i].get_functionDescriptor()
+            if descriptor == YFunction.FUNCTIONDESCRIPTOR_INVALID:
+                ev = YAPI._Event()
+                ev.setFunRefresh(YFunction._FunctionCallbacks[i])
+                YAPI._DataEvents.append(ev)
         errmsgRef = YRefParam()
         if YAPI.yapiGetDeviceInfo(d, infos, errmsgRef) != YAPI.SUCCESS:
             return
@@ -1966,7 +1978,6 @@ class YAPI:
             ev = YAPI._Event()
             ev.setArrival(modul)
             YAPI._PlugEvents.append(ev)
-
 
     @staticmethod
     def native_HubDiscoveryCallback(serial_ptr, url_ptr):
@@ -2119,8 +2130,7 @@ class YAPI:
     def native_yFunctionUpdateCallback(f, data):
         if data is None:
             return
-        dbgval = YByte2String(data)
-        # first run is to look if we have a know objet online
+        # look if we have a know objet online
         for i in range(len(YFunction._FunctionCallbacks)):
             descriptor = YFunction._FunctionCallbacks[i].get_functionDescriptor()
             if descriptor == f:
@@ -2128,21 +2138,6 @@ class YAPI:
                 ev.setFunVal(YFunction._FunctionCallbacks[i], YByte2String(data))
                 YAPI._DataEvents.append(ev)
                 return 0
-        # second run look for previousin offline functions
-        for i in range(len(YFunction._FunctionCallbacks)):
-            descriptor = YFunction._FunctionCallbacks[i].get_functionDescriptor()
-            if descriptor == YFunction.FUNCTIONDESCRIPTOR_INVALID:
-                try:
-                    hardware_id = YFunction._FunctionCallbacks[i].get_hardwareId()
-                    if hardware_id != YFunction.HARDWAREID_INVALID:
-                        descriptor = YFunction._FunctionCallbacks[i].get_functionDescriptor()
-                        if descriptor == YFunction.FUNCTIONDESCRIPTOR_INVALID:
-                            ev = YAPI._Event()
-                            ev.setFunVal(YFunction._FunctionCallbacks[i], YByte2String(data))
-                            YAPI._DataEvents.append(ev)
-                            return 0
-                except YAPI_Exception:
-                    pass
         return 0
 
     @staticmethod
@@ -3913,7 +3908,7 @@ class YDataSet(object):
 
     def loadMore(self):
         """
-        Loads the the next block of measures from the dataLogger, and updates
+        Loads the next block of measures from the dataLogger, and updates
         the progress indicator.
 
         @return an integer in the range 0 to 100 (percentage of completion),

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_i2cport.py 41171 2020-07-02 17:49:00Z mvuilleu $
+#  $Id: yocto_i2cport.py 52939 2023-01-26 11:12:44Z mvuilleu $
 #
 #  Implements yFindI2cPort(), the high-level API for I2cPort functions
 #
@@ -640,15 +640,27 @@ class YI2cPort(YFunction):
 
         @return the number of bytes available to read
         """
-        # buff
-        # bufflen
+        # availPosStr
+        # atPos
         # res
+        # databin
 
-        buff = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
-        bufflen = len(buff) - 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            bufflen = bufflen - 1
-        res = YAPI._atoi((YByte2String(buff))[0: 0 + bufflen])
+        databin = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
+        availPosStr = YByte2String(databin)
+        atPos = availPosStr.find("@")
+        res = YAPI._atoi((availPosStr)[0: 0 + atPos])
+        return res
+
+    def end_tell(self):
+        # availPosStr
+        # atPos
+        # res
+        # databin
+
+        databin = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
+        availPosStr = YByte2String(databin)
+        atPos = availPosStr.find("@")
+        res = YAPI._atoi((availPosStr)[atPos+1: atPos+1 + len(availPosStr)-atPos-1])
         return res
 
     def queryLine(self, query, maxWait):
@@ -664,13 +676,21 @@ class YI2cPort(YFunction):
 
         On failure, throws an exception or returns an empty string.
         """
+        # prevpos
         # url
         # msgbin
         msgarr = []
         # msglen
         # res
+        if len(query) <= 80:
+            # // fast query
+            url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + self._escapeAttr(query)
+        else:
+            # // long query
+            prevpos = self.end_tell()
+            self._upload("txdata", YString2Byte(query + "\r\n"))
+            url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&pos=" + str(int(prevpos))
 
-        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + self._escapeAttr(query)
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
         msglen = len(msgarr)
@@ -698,13 +718,21 @@ class YI2cPort(YFunction):
 
         On failure, throws an exception or returns an empty string.
         """
+        # prevpos
         # url
         # msgbin
         msgarr = []
         # msglen
         # res
+        if len(hexString) <= 80:
+            # // fast query
+            url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=$" + hexString
+        else:
+            # // long query
+            prevpos = self.end_tell()
+            self._upload("txdata", YAPI._hexStrToBin(hexString))
+            url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&pos=" + str(int(prevpos))
 
-        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=$" + hexString
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
         msglen = len(msgarr)
@@ -859,6 +887,10 @@ class YI2cPort(YFunction):
         # msg
         # reply
         # rcvbytes
+        rcvbytes = bytearray(0)
+        if not (rcvCount<=512):
+            self._throw(YAPI.INVALID_ARGUMENT, "Cannot read more than 512 bytes")
+            return rcvbytes
         msg = "@" + ("%02x" % slaveAddr) + ":"
         nBytes = len(buff)
         idx = 0
@@ -867,12 +899,18 @@ class YI2cPort(YFunction):
             msg = "" + msg + "" + ("%02x" % val)
             idx = idx + 1
         idx = 0
+        if rcvCount > 54:
+            while rcvCount - idx > 255:
+                msg = "" + msg + "xx*FF"
+                idx = idx + 255
+            if rcvCount - idx > 2:
+                msg = "" + msg + "xx*" + ("%02X" % (rcvCount - idx))
+                idx = rcvCount
         while idx < rcvCount:
             msg = "" + msg + "xx"
             idx = idx + 1
 
         reply = self.queryLine(msg,1000)
-        rcvbytes = bytearray(0)
         if not (len(reply) > 0):
             self._throw(YAPI.IO_ERROR, "No response from I2C device")
             return rcvbytes
@@ -909,6 +947,10 @@ class YI2cPort(YFunction):
         # reply
         # rcvbytes
         res = []
+        del res[:]
+        if not (rcvCount<=512):
+            self._throw(YAPI.INVALID_ARGUMENT, "Cannot read more than 512 bytes")
+            return res
         msg = "@" + ("%02x" % slaveAddr) + ":"
         nBytes = len(values)
         idx = 0
@@ -917,6 +959,13 @@ class YI2cPort(YFunction):
             msg = "" + msg + "" + ("%02x" % val)
             idx = idx + 1
         idx = 0
+        if rcvCount > 54:
+            while rcvCount - idx > 255:
+                msg = "" + msg + "xx*FF"
+                idx = idx + 255
+            if rcvCount - idx > 2:
+                msg = "" + msg + "xx*" + ("%02X" % (rcvCount - idx))
+                idx = rcvCount
         while idx < rcvCount:
             msg = "" + msg + "xx"
             idx = idx + 1

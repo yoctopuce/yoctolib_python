@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 49903 2022-05-25 14:18:36Z mvuilleu $
+#  $Id: yocto_spiport.py 52892 2023-01-25 10:13:30Z seb $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -732,15 +732,27 @@ class YSpiPort(YFunction):
 
         @return the number of bytes available to read
         """
-        # buff
-        # bufflen
+        # availPosStr
+        # atPos
         # res
+        # databin
 
-        buff = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
-        bufflen = len(buff) - 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            bufflen = bufflen - 1
-        res = YAPI._atoi((YByte2String(buff))[0: 0 + bufflen])
+        databin = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
+        availPosStr = YByte2String(databin)
+        atPos = availPosStr.find("@")
+        res = YAPI._atoi((availPosStr)[0: 0 + atPos])
+        return res
+
+    def end_tell(self):
+        # availPosStr
+        # atPos
+        # res
+        # databin
+
+        databin = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
+        availPosStr = YByte2String(databin)
+        atPos = availPosStr.find("@")
+        res = YAPI._atoi((availPosStr)[atPos+1: atPos+1 + len(availPosStr)-atPos-1])
         return res
 
     def queryLine(self, query, maxWait):
@@ -756,13 +768,21 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns an empty string.
         """
+        # prevpos
         # url
         # msgbin
         msgarr = []
         # msglen
         # res
+        if len(query) <= 80:
+            # // fast query
+            url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + self._escapeAttr(query)
+        else:
+            # // long query
+            prevpos = self.end_tell()
+            self._upload("txdata", YString2Byte(query + "\r\n"))
+            url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&pos=" + str(int(prevpos))
 
-        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=!" + self._escapeAttr(query)
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
         msglen = len(msgarr)
@@ -790,13 +810,21 @@ class YSpiPort(YFunction):
 
         On failure, throws an exception or returns an empty string.
         """
+        # prevpos
         # url
         # msgbin
         msgarr = []
         # msglen
         # res
+        if len(hexString) <= 80:
+            # // fast query
+            url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=$" + hexString
+        else:
+            # // long query
+            prevpos = self.end_tell()
+            self._upload("txdata", YAPI._hexStrToBin(hexString))
+            url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&pos=" + str(int(prevpos))
 
-        url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=$" + hexString
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
         msglen = len(msgarr)
