@@ -1,6 +1,11 @@
-Python v1.10.53071
+Python v1.10.53327
 
 - Add PyQt6 example
+- Improvements for serialPort, spiPort and I2cPort
 - Improve handling of IO error
-- Fixe few typos in the doc
+- Fix a few typos in the doc
 - Fix missing notification if UpdateDeviceList is never called
+- Fix handling of file uploads to VirtualHub-4web
+- Fix module->get_url function (broken since version 51576, nov 2022)
+- Fix TestHub that was not working with VirtualHub4Web
+- Fix rare enumeration issue when using VirtualHub or YoctoHub
