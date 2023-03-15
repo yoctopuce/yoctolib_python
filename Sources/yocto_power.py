@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_power.py 52318 2022-12-13 10:58:18Z seb $
+#  $Id: yocto_power.py 53420 2023-03-06 10:38:51Z mvuilleu $
 #
 #  Implements yFindPower(), the high-level API for Power functions
 #
@@ -61,6 +61,7 @@ class YPower(YSensor):
     #--- (YPower yapiwrapper)
     #--- (end of YPower yapiwrapper)
     #--- (YPower definitions)
+    POWERFACTOR_INVALID = YAPI.INVALID_DOUBLE
     COSPHI_INVALID = YAPI.INVALID_DOUBLE
     METER_INVALID = YAPI.INVALID_DOUBLE
     DELIVEREDENERGYMETER_INVALID = YAPI.INVALID_DOUBLE
@@ -73,6 +74,7 @@ class YPower(YSensor):
         self._className = 'Power'
         #--- (YPower attributes)
         self._callback = None
+        self._powerFactor = YPower.POWERFACTOR_INVALID
         self._cosPhi = YPower.COSPHI_INVALID
         self._meter = YPower.METER_INVALID
         self._deliveredEnergyMeter = YPower.DELIVEREDENERGYMETER_INVALID
@@ -82,6 +84,8 @@ class YPower(YSensor):
 
     #--- (YPower implementation)
     def _parseAttr(self, json_val):
+        if json_val.has("powerFactor"):
+            self._powerFactor = round(json_val.getDouble("powerFactor") / 65.536) / 1000.0
         if json_val.has("cosPhi"):
             self._cosPhi = round(json_val.getDouble("cosPhi") / 65.536) / 1000.0
         if json_val.has("meter"):
@@ -94,13 +98,33 @@ class YPower(YSensor):
             self._meterTimer = json_val.getInt("meterTimer")
         super(YPower, self)._parseAttr(json_val)
 
+    def get_powerFactor(self):
+        """
+        Returns the power factor (PF), i.e. ratio between the active power consumed (in W)
+        and the apparent power provided (VA).
+
+        @return a floating point number corresponding to the power factor (PF), i.e
+
+        On failure, throws an exception or returns YPower.POWERFACTOR_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YPower.POWERFACTOR_INVALID
+        res = self._powerFactor
+        if res == YPower.POWERFACTOR_INVALID:
+            res = self._cosPhi
+        res = round(res * 1000) / 1000
+        return res
+
     def get_cosPhi(self):
         """
-        Returns the power factor (the ratio between the real power consumed,
-        measured in W, and the apparent power provided, measured in VA).
+        Returns the Displacement Power factor (DPF), i.e. cosine of the phase shift between
+        the voltage and current fundamentals.
+        On the Yocto-Watt (V1), the value returned by this method correponds to the
+        power factor as this device is cannot estimate the true DPF.
 
-        @return a floating point number corresponding to the power factor (the ratio between the real power consumed,
-                measured in W, and the apparent power provided, measured in VA)
+        @return a floating point number corresponding to the Displacement Power factor (DPF), i.e
 
         On failure, throws an exception or returns YPower.COSPHI_INVALID.
         """

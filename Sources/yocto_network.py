@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_network.py 48692 2022-02-24 22:30:52Z mvuilleu $
+#  $Id: yocto_network.py 53420 2023-03-06 10:38:51Z mvuilleu $
 #
 #  Implements yFindNetwork(), the high-level API for Network functions
 #
@@ -107,6 +107,9 @@ class YNetwork(YFunction):
     CALLBACKENCODING_PRTG = 11
     CALLBACKENCODING_INFLUXDB_V2 = 12
     CALLBACKENCODING_INVALID = -1
+    CALLBACKTEMPLATE_OFF = 0
+    CALLBACKTEMPLATE_ON = 1
+    CALLBACKTEMPLATE_INVALID = -1
     #--- (end of YNetwork definitions)
 
     def __init__(self, func):
@@ -133,6 +136,7 @@ class YNetwork(YFunction):
         self._callbackUrl = YNetwork.CALLBACKURL_INVALID
         self._callbackMethod = YNetwork.CALLBACKMETHOD_INVALID
         self._callbackEncoding = YNetwork.CALLBACKENCODING_INVALID
+        self._callbackTemplate = YNetwork.CALLBACKTEMPLATE_INVALID
         self._callbackCredentials = YNetwork.CALLBACKCREDENTIALS_INVALID
         self._callbackInitialDelay = YNetwork.CALLBACKINITIALDELAY_INVALID
         self._callbackSchedule = YNetwork.CALLBACKSCHEDULE_INVALID
@@ -181,6 +185,8 @@ class YNetwork(YFunction):
             self._callbackMethod = json_val.getInt("callbackMethod")
         if json_val.has("callbackEncoding"):
             self._callbackEncoding = json_val.getInt("callbackEncoding")
+        if json_val.has("callbackTemplate"):
+            self._callbackTemplate = (json_val.getInt("callbackTemplate") > 0 if 1 else 0)
         if json_val.has("callbackCredentials"):
             self._callbackCredentials = json_val.getString("callbackCredentials")
         if json_val.has("callbackInitialDelay"):
@@ -741,6 +747,42 @@ class YNetwork(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("callbackEncoding", rest_val)
+
+    def get_callbackTemplate(self):
+        """
+        Returns the activation state of the custom template file to customize callback
+        format. If the custom callback template is disabled, it will be ignored even
+        if present on the YoctoHub.
+
+        @return either YNetwork.CALLBACKTEMPLATE_OFF or YNetwork.CALLBACKTEMPLATE_ON, according to the
+        activation state of the custom template file to customize callback
+                format
+
+        On failure, throws an exception or returns YNetwork.CALLBACKTEMPLATE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YNetwork.CALLBACKTEMPLATE_INVALID
+        res = self._callbackTemplate
+        return res
+
+    def set_callbackTemplate(self, newval):
+        """
+        Enable the use of a template file to customize callbacks format.
+        When the custom callback template file is enabled, the template file
+        will be loaded for each callback in order to build the data to post to the
+        server. If template file does not exist on the YoctoHub, the callback will
+        fail with an error message indicating the name of the expected template file.
+
+        @param newval : either YNetwork.CALLBACKTEMPLATE_OFF or YNetwork.CALLBACKTEMPLATE_ON
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("callbackTemplate", rest_val)
 
     def get_callbackCredentials(self):
         """
