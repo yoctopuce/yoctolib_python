@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_realtimeclock.py 50595 2022-07-28 07:54:15Z mvuilleu $
+#  $Id: yocto_realtimeclock.py 53841 2023-04-04 09:20:11Z mvuilleu $
 #
 #  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #
@@ -213,6 +213,9 @@ class YRealTimeClock(YFunction):
         Changes the automatic clock synchronization with host working state.
         To disable automatic synchronization, set the value to true.
         To enable automatic synchronization (default), set the value to false.
+
+        If you want the change to be kept after a device reboot,
+        make sure  to call the matching module saveToFlash().
 
         @param newval : either YRealTimeClock.DISABLEHOSTSYNC_FALSE or YRealTimeClock.DISABLEHOSTSYNC_TRUE,
         according to the automatic clock synchronization with host working state

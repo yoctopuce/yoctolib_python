@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 53258 2023-02-16 11:16:45Z seb $
+# * $Id: yocto_api.py 53857 2023-04-04 15:04:32Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -908,7 +908,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "53532"
+    YOCTO_API_BUILD_NO = "54037"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1291,6 +1291,9 @@ class YAPI:
         YAPI._yapiAddUdevRulesForYocto = YAPI._yApiCLib.yapiAddUdevRulesForYocto
         YAPI._yapiAddUdevRulesForYocto.restypes = ctypes.c_int
         YAPI._yapiAddUdevRulesForYocto.argtypes = [ctypes.c_int, ctypes.c_char_p]
+        YAPI._yapiGetNextHubRef = YAPI._yApiCLib.yapiGetNextHubRef
+        YAPI._yapiGetNextHubRef.restypes = ctypes.c_int
+        YAPI._yapiGetNextHubRef.argtypes = [ctypes.c_int]
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
@@ -3316,7 +3319,7 @@ class YDataStream(object):
     def get_realDuration(self):
         if self._isClosed:
             return self._duration
-        return int(int(time.time()) - self._utcStamp)
+        return float(int(time.time()) - self._utcStamp)
 
     def get_dataRows(self):
         """
@@ -5058,10 +5061,11 @@ class YFunction(object):
 
     def isReadOnly(self):
         """
-        Test if the function is readOnly. Return true if the function is write protected
-        or that the function is not available.
+        Indicates whether changes to the function are prohibited or allowed.
+        Returns true if the function is blocked by an admin password
+        or if the function is not available.
 
-        @return true if the function is readOnly or not online.
+        @return true if the function is write-protected or not online.
         """
         # serial
         errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
@@ -6379,7 +6383,7 @@ class YModule(YFunction):
                         maxSize = len(words)
                     i = 3
                     while i < maxSize:
-                        calibData.append(int(words[i]))
+                        calibData.append(float(words[i]))
                         i = i + 1
             else:
                 if paramVer == 1:
@@ -6394,7 +6398,7 @@ class YModule(YFunction):
                             maxSize = len(words)
                         i = 1
                         while i < maxSize:
-                            calibData.append(int(words[i]))
+                            calibData.append(float(words[i]))
                             i = i + 1
                 else:
                     if paramVer == 0:
