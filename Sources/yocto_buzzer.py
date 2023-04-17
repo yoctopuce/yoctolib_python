@@ -153,7 +153,7 @@ class YBuzzer(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
-        return self._setAttr("volume", rest_val)
+        return self._setAttr("_volume", rest_val)
 
     def get_playSeqSize(self):
         """
