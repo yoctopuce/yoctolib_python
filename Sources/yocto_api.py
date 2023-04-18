@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 53857 2023-04-04 15:04:32Z mvuilleu $
+# * $Id: yocto_api.py 54066 2023-04-17 14:22:16Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -908,7 +908,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "54037"
+    YOCTO_API_BUILD_NO = "54070"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1291,9 +1291,6 @@ class YAPI:
         YAPI._yapiAddUdevRulesForYocto = YAPI._yApiCLib.yapiAddUdevRulesForYocto
         YAPI._yapiAddUdevRulesForYocto.restypes = ctypes.c_int
         YAPI._yapiAddUdevRulesForYocto.argtypes = [ctypes.c_int, ctypes.c_char_p]
-        YAPI._yapiGetNextHubRef = YAPI._yApiCLib.yapiGetNextHubRef
-        YAPI._yapiGetNextHubRef.restypes = ctypes.c_int
-        YAPI._yapiGetNextHubRef.argtypes = [ctypes.c_int]
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
