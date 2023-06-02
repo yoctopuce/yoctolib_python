@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_powersupply.py 50689 2022-08-17 14:37:15Z mvuilleu $
+#  $Id: yocto_powersupply.py 54768 2023-05-26 06:46:41Z seb $
 #
 #  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
 #
@@ -65,8 +65,6 @@ class YPowerSupply(YFunction):
     MEASUREDVOLTAGE_INVALID = YAPI.INVALID_DOUBLE
     MEASUREDCURRENT_INVALID = YAPI.INVALID_DOUBLE
     INPUTVOLTAGE_INVALID = YAPI.INVALID_DOUBLE
-    VINT_INVALID = YAPI.INVALID_DOUBLE
-    LDOTEMPERATURE_INVALID = YAPI.INVALID_DOUBLE
     VOLTAGETRANSITION_INVALID = YAPI.INVALID_STRING
     VOLTAGEATSTARTUP_INVALID = YAPI.INVALID_DOUBLE
     CURRENTATSTARTUP_INVALID = YAPI.INVALID_DOUBLE
@@ -74,9 +72,6 @@ class YPowerSupply(YFunction):
     POWEROUTPUT_OFF = 0
     POWEROUTPUT_ON = 1
     POWEROUTPUT_INVALID = -1
-    VOLTAGESENSE_INT = 0
-    VOLTAGESENSE_EXT = 1
-    VOLTAGESENSE_INVALID = -1
     #--- (end of YPowerSupply definitions)
 
     def __init__(self, func):
@@ -87,12 +82,9 @@ class YPowerSupply(YFunction):
         self._voltageSetPoint = YPowerSupply.VOLTAGESETPOINT_INVALID
         self._currentLimit = YPowerSupply.CURRENTLIMIT_INVALID
         self._powerOutput = YPowerSupply.POWEROUTPUT_INVALID
-        self._voltageSense = YPowerSupply.VOLTAGESENSE_INVALID
         self._measuredVoltage = YPowerSupply.MEASUREDVOLTAGE_INVALID
         self._measuredCurrent = YPowerSupply.MEASUREDCURRENT_INVALID
         self._inputVoltage = YPowerSupply.INPUTVOLTAGE_INVALID
-        self._vInt = YPowerSupply.VINT_INVALID
-        self._ldoTemperature = YPowerSupply.LDOTEMPERATURE_INVALID
         self._voltageTransition = YPowerSupply.VOLTAGETRANSITION_INVALID
         self._voltageAtStartUp = YPowerSupply.VOLTAGEATSTARTUP_INVALID
         self._currentAtStartUp = YPowerSupply.CURRENTATSTARTUP_INVALID
@@ -107,18 +99,12 @@ class YPowerSupply(YFunction):
             self._currentLimit = round(json_val.getDouble("currentLimit") / 65.536) / 1000.0
         if json_val.has("powerOutput"):
             self._powerOutput = (json_val.getInt("powerOutput") > 0 if 1 else 0)
-        if json_val.has("voltageSense"):
-            self._voltageSense = json_val.getInt("voltageSense")
         if json_val.has("measuredVoltage"):
             self._measuredVoltage = round(json_val.getDouble("measuredVoltage") / 65.536) / 1000.0
         if json_val.has("measuredCurrent"):
             self._measuredCurrent = round(json_val.getDouble("measuredCurrent") / 65.536) / 1000.0
         if json_val.has("inputVoltage"):
             self._inputVoltage = round(json_val.getDouble("inputVoltage") / 65.536) / 1000.0
-        if json_val.has("vInt"):
-            self._vInt = round(json_val.getDouble("vInt") / 65.536) / 1000.0
-        if json_val.has("ldoTemperature"):
-            self._ldoTemperature = round(json_val.getDouble("ldoTemperature") / 65.536) / 1000.0
         if json_val.has("voltageTransition"):
             self._voltageTransition = json_val.getString("voltageTransition")
         if json_val.has("voltageAtStartUp"):
@@ -215,36 +201,6 @@ class YPowerSupply(YFunction):
         rest_val = "1" if newval > 0 else "0"
         return self._setAttr("powerOutput", rest_val)
 
-    def get_voltageSense(self):
-        """
-        Returns the output voltage control point.
-
-        @return either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to the
-        output voltage control point
-
-        On failure, throws an exception or returns YPowerSupply.VOLTAGESENSE_INVALID.
-        """
-        # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YPowerSupply.VOLTAGESENSE_INVALID
-        res = self._voltageSense
-        return res
-
-    def set_voltageSense(self, newval):
-        """
-        Changes the voltage control point.
-
-        @param newval : either YPowerSupply.VOLTAGESENSE_INT or YPowerSupply.VOLTAGESENSE_EXT, according to
-        the voltage control point
-
-        @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
-        """
-        rest_val = str(newval)
-        return self._setAttr("voltageSense", rest_val)
-
     def get_measuredVoltage(self):
         """
         Returns the measured output voltage, in V.
@@ -288,36 +244,6 @@ class YPowerSupply(YFunction):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YPowerSupply.INPUTVOLTAGE_INVALID
         res = self._inputVoltage
-        return res
-
-    def get_vInt(self):
-        """
-        Returns the internal voltage, in V.
-
-        @return a floating point number corresponding to the internal voltage, in V
-
-        On failure, throws an exception or returns YPowerSupply.VINT_INVALID.
-        """
-        # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YPowerSupply.VINT_INVALID
-        res = self._vInt
-        return res
-
-    def get_ldoTemperature(self):
-        """
-        Returns the LDO temperature, in Celsius.
-
-        @return a floating point number corresponding to the LDO temperature, in Celsius
-
-        On failure, throws an exception or returns YPowerSupply.LDOTEMPERATURE_INVALID.
-        """
-        # res
-        if self._cacheExpiration <= YAPI.GetTickCount():
-            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YPowerSupply.LDOTEMPERATURE_INVALID
-        res = self._ldoTemperature
         return res
 
     def get_voltageTransition(self):

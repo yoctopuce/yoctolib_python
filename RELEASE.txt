@@ -1,3 +1,4 @@
-Python v1.10.54070
+Python v1.10.54821
 
-- Fix "undefined symbol: yapiGetNextHubRef" error introduced with v1.10.54037
+- Add support for YHub class
+- Fix documentation of YAPI class
