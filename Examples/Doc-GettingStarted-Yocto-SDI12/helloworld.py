@@ -19,7 +19,7 @@ import os, sys
 sys.path.append(os.path.join("..", "..", "Sources"))
 
 from yocto_api import *
-from yocto_i2cport import *
+from yocto_sdi12port import *
 
 
 def usage():
@@ -47,32 +47,31 @@ if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
     sys.exit("init error" + errmsg.value)
 
 if target == 'ANY':
-    i2cPort = YI2cPort.FirstI2cPort()
-    if i2cPort is None:
+    sdi12Port = YSdi12Port.FirstSdi12Port()
+    if sdi12Port is None:
         sys.exit('No module connected (check cable)')
 else:
-    i2cPort = YI2cPort.FindI2cPort(sys.argv[1] + ".i2cPort")
-    if not i2cPort.isOnline():
+    sdi12Port = YSdi12Port.FirstSdi12Port(sys.argv[1] + ".sdi12port")
+    if not sdi12Port.isOnline():
         sys.exit('Module not connected')
 
-# sample code reading MCP9804 temperature sensor
-i2cPort.set_i2cMode("100kbps")
-i2cPort.set_i2cVoltageLevel(YI2cPort.I2CVOLTAGELEVEL_3V3)
-i2cPort.reset()
-# do not forget to configure the powerOutput and
-# of the Yocto-I2C as well if used
-print("****************************")
-print("* make sure voltage levels *")
-print("* are properly configured  *")
-print("****************************")
+singleSensor = sdi12Port.discoverSingleSensor()
+print("%-35s %s " % ("Sensor address :", singleSensor.get_sensorAddress()))
+print("%-35s %s " % ("Sensor SDI-12 compatibility : " , singleSensor.get_sensorProtocol()))
+print("%-35s %s " % ("Sensor company name : " , singleSensor.get_sensorVendor()))
+print("%-35s %s " % ("Sensor model number : " , singleSensor.get_sensorModel()))
+print("%-35s %s " % ("Sensor version : " , singleSensor.get_sensorVersion()))
+print("%-35s %s " % ("Sensor serial number : " , singleSensor.get_sensorSerial()))
 
-toSend = [0x05]
-received = i2cPort.i2cSendAndReceiveArray(0x1f, toSend, 2)
-tempReg = (received[0] << 8) + received[1]
-if tempReg & 0x1000:
-    tempReg -= 0x2000   # perform sign extension
-else:
-    tempReg &= 0x0fff   # clear status bits
-print("Ambiant temperature: " + str(tempReg / 16.0))
+valSensor = sdi12Port.readSensor(singleSensor.get_sensorAddress(),"M",5000)
+i = 0
+while i < len(valSensor):
+    if singleSensor.get_measureCount() > 1:
+        print("{0} : {1:8.2f} {2:8s} ({3})".format(singleSensor.get_measureSymbol(i),
+                valSensor[i], singleSensor.get_measureUnit(i),
+                singleSensor.get_measureDescription(i)))
+    else:
+        print(valSensor[i])
+    i += 1
 
 YAPI.FreeAPI()

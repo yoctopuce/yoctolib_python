@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 50144 2022-06-17 06:59:52Z seb $
+#* $Id: yocto_messagebox.py 55576 2023-07-25 06:26:34Z mvuilleu $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -1090,6 +1090,7 @@ class YMessageBox(YFunction):
     SLOTSBITMAP_INVALID = YAPI.INVALID_STRING
     PDUSENT_INVALID = YAPI.INVALID_UINT
     PDURECEIVED_INVALID = YAPI.INVALID_UINT
+    OBEY_INVALID = YAPI.INVALID_STRING
     COMMAND_INVALID = YAPI.INVALID_STRING
     #--- (end of generated code: YMessageBox definitions)
 
@@ -1103,6 +1104,7 @@ class YMessageBox(YFunction):
         self._slotsBitmap = YMessageBox.SLOTSBITMAP_INVALID
         self._pduSent = YMessageBox.PDUSENT_INVALID
         self._pduReceived = YMessageBox.PDURECEIVED_INVALID
+        self._obey = YMessageBox.OBEY_INVALID
         self._command = YMessageBox.COMMAND_INVALID
         self._nextMsgRef = 0
         self._prevBitmapStr = ""
@@ -1125,6 +1127,8 @@ class YMessageBox(YFunction):
             self._pduSent = json_val.getInt("pduSent")
         if json_val.has("pduReceived"):
             self._pduReceived = json_val.getInt("pduReceived")
+        if json_val.has("obey"):
+            self._obey = json_val.getString("obey")
         if json_val.has("command"):
             self._command = json_val.getString("command")
         super(YMessageBox, self)._parseAttr(json_val)
@@ -1222,6 +1226,48 @@ class YMessageBox(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("pduReceived", rest_val)
+
+    def get_obey(self):
+        """
+        Returns the phone number authorized to send remote management commands.
+        When a phone number is specified, the hub will take contre of all incoming
+        SMS messages: it will execute commands coming from the authorized number,
+        and delete all messages once received (whether authorized or not).
+        If you need to receive SMS messages using your own software, leave this
+        attribute empty.
+
+        @return a string corresponding to the phone number authorized to send remote management commands
+
+        On failure, throws an exception or returns YMessageBox.OBEY_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YMessageBox.OBEY_INVALID
+        res = self._obey
+        return res
+
+    def set_obey(self, newval):
+        """
+        Changes the phone number authorized to send remote management commands.
+        The phone number usually starts with a '+' and does not include spacers.
+        When a phone number is specified, the hub will take contre of all incoming
+        SMS messages: it will execute commands coming from the authorized number,
+        and delete all messages once received (whether authorized or not).
+        If you need to receive SMS messages using your own software, leave this
+        attribute empty. Remember to call the saveToFlash() method of the
+        module if the modification must be kept.
+
+        This feature is only available since YoctoHub-GSM-4G.
+
+        @param newval : a string corresponding to the phone number authorized to send remote management commands
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("obey", rest_val)
 
     def get_command(self):
         # res

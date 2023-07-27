@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 54649 2023-05-22 10:09:20Z seb $
+# * $Id: yocto_api.py 55447 2023-07-06 07:03:11Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -932,7 +932,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "54852"
+    YOCTO_API_BUILD_NO = "55677"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1066,12 +1066,13 @@ class YAPI:
             #  LINUX (INTEL + ARM)
             #
             elif platform.system() == 'Linux':
-                if machine.find("aarch64") >= 0:
-                    YAPI._yApiCLibFile = libpath + "/cdll/libyapi-aarch64.so"
-                    YAPI._yApiCLibFileFallback = libpath + "/cdll/libyapi-aarch64.so"
-                elif machine.find("arm") >= 0:
-                    YAPI._yApiCLibFile = libpath + "/cdll/libyapi-armhf.so"
-                    YAPI._yApiCLibFileFallback = libpath + "/cdll/libyapi-armel.so"
+                if machine.find("aarch64") >= 0 or machine.find("arm") >= 0:
+                    if arch == '64bit':
+                        YAPI._yApiCLibFile = libpath + "/cdll/libyapi-aarch64.so"
+                        YAPI._yApiCLibFileFallback = libpath + "/cdll/libyapi-aarch64.so"
+                    else:
+                        YAPI._yApiCLibFile = libpath + "/cdll/libyapi-armhf.so"
+                        YAPI._yApiCLibFileFallback = libpath + "/cdll/libyapi-armel.so"
                 elif machine.find("mips") >= 0:
                     byteorder_str = sys.byteorder
                     if byteorder_str.lower() == 'little':
@@ -1532,6 +1533,8 @@ class YAPI:
         @param deviceListValidity : nubmer of seconds between each enumeration.
         @noreturn
         """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
         YAPI._yapiContext.SetDeviceListValidity(deviceListValidity)
 
     @staticmethod
@@ -1542,6 +1545,8 @@ class YAPI:
 
         @return the number of seconds between each enumeration.
         """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
         return YAPI._yapiContext.GetDeviceListValidity()
 
     @staticmethod
@@ -1557,6 +1562,8 @@ class YAPI:
 
         On failure, returns a string that starts with "error:".
         """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
         return YAPI._yapiContext.AddUdevRule(force)
 
     @staticmethod
@@ -1571,6 +1578,8 @@ class YAPI:
         @param networkMsTimeout : the network connection delay in milliseconds.
         @noreturn
         """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
         YAPI._yapiContext.SetNetworkTimeout(networkMsTimeout)
 
     @staticmethod
@@ -1584,6 +1593,8 @@ class YAPI:
 
         @return the network connection delay in milliseconds.
         """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
         return YAPI._yapiContext.GetNetworkTimeout()
 
     @staticmethod
@@ -1601,6 +1612,8 @@ class YAPI:
                 loaded function parameters, in milliseconds.
         @noreturn
         """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
         YAPI._yapiContext.SetCacheValidity(cacheValidityMs)
 
     @staticmethod
@@ -1614,14 +1627,20 @@ class YAPI:
         @return an integer corresponding to the validity attributed to the
                 loaded function parameters, in milliseconds
         """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
         return YAPI._yapiContext.GetCacheValidity()
 
     @staticmethod
     def nextHubInUseInternal(hubref):
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
         return YAPI._yapiContext.nextHubInUseInternal(hubref)
 
     @staticmethod
     def getYHubObj(hubref):
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
         return YAPI._yapiContext.getYHubObj(hubref)
 
     #--- (end of generated code: YAPIContext yapiwrapper)

@@ -1,6 +1,6 @@
 # ********************************************************************
 #
-#  $Id: svn_id $
+#  $Id: helloworld.py 55641 2023-07-26 09:43:42Z seb $
 #
 #  An example that show how to use a  Yocto-MaxiMicroVolt-Rx
 #

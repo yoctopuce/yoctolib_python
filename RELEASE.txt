@@ -1,4 +1,5 @@
-Python v1.10.54852
+Python v1.10.55677
 
-- Add support for YHub class
-- Fix documentation of YAPI class
+- Update class definition for MessageBox and PowerSupply
+- Add SDI12Port support
+- Update default port strategy on RegisterHub when contacting VirtualHub4Web (was using 4444, now use 80)

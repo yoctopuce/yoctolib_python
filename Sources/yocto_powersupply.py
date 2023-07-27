@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_powersupply.py 54768 2023-05-26 06:46:41Z seb $
+#  $Id: yocto_powersupply.py 55576 2023-07-25 06:26:34Z mvuilleu $
 #
 #  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
 #
@@ -48,8 +48,8 @@ from yocto_api import *
 class YPowerSupply(YFunction):
     """
     The YPowerSupply class allows you to drive a Yoctopuce power supply.
-    It can be use to change the voltage set point,
-    the current limit and the enable/disable the output.
+    It can be use to change the voltage and current limits, and to enable/disable
+    the output.
 
     """
     #--- (end of YPowerSupply class start)
@@ -60,18 +60,21 @@ class YPowerSupply(YFunction):
     #--- (YPowerSupply yapiwrapper)
     #--- (end of YPowerSupply yapiwrapper)
     #--- (YPowerSupply definitions)
-    VOLTAGESETPOINT_INVALID = YAPI.INVALID_DOUBLE
+    VOLTAGELIMIT_INVALID = YAPI.INVALID_DOUBLE
     CURRENTLIMIT_INVALID = YAPI.INVALID_DOUBLE
     MEASUREDVOLTAGE_INVALID = YAPI.INVALID_DOUBLE
     MEASUREDCURRENT_INVALID = YAPI.INVALID_DOUBLE
     INPUTVOLTAGE_INVALID = YAPI.INVALID_DOUBLE
     VOLTAGETRANSITION_INVALID = YAPI.INVALID_STRING
-    VOLTAGEATSTARTUP_INVALID = YAPI.INVALID_DOUBLE
-    CURRENTATSTARTUP_INVALID = YAPI.INVALID_DOUBLE
+    VOLTAGELIMITATSTARTUP_INVALID = YAPI.INVALID_DOUBLE
+    CURRENTLIMITATSTARTUP_INVALID = YAPI.INVALID_DOUBLE
     COMMAND_INVALID = YAPI.INVALID_STRING
     POWEROUTPUT_OFF = 0
     POWEROUTPUT_ON = 1
     POWEROUTPUT_INVALID = -1
+    POWEROUTPUTATSTARTUP_OFF = 0
+    POWEROUTPUTATSTARTUP_ON = 1
+    POWEROUTPUTATSTARTUP_INVALID = -1
     #--- (end of YPowerSupply definitions)
 
     def __init__(self, func):
@@ -79,22 +82,23 @@ class YPowerSupply(YFunction):
         self._className = 'PowerSupply'
         #--- (YPowerSupply attributes)
         self._callback = None
-        self._voltageSetPoint = YPowerSupply.VOLTAGESETPOINT_INVALID
+        self._voltageLimit = YPowerSupply.VOLTAGELIMIT_INVALID
         self._currentLimit = YPowerSupply.CURRENTLIMIT_INVALID
         self._powerOutput = YPowerSupply.POWEROUTPUT_INVALID
         self._measuredVoltage = YPowerSupply.MEASUREDVOLTAGE_INVALID
         self._measuredCurrent = YPowerSupply.MEASUREDCURRENT_INVALID
         self._inputVoltage = YPowerSupply.INPUTVOLTAGE_INVALID
         self._voltageTransition = YPowerSupply.VOLTAGETRANSITION_INVALID
-        self._voltageAtStartUp = YPowerSupply.VOLTAGEATSTARTUP_INVALID
-        self._currentAtStartUp = YPowerSupply.CURRENTATSTARTUP_INVALID
+        self._voltageLimitAtStartUp = YPowerSupply.VOLTAGELIMITATSTARTUP_INVALID
+        self._currentLimitAtStartUp = YPowerSupply.CURRENTLIMITATSTARTUP_INVALID
+        self._powerOutputAtStartUp = YPowerSupply.POWEROUTPUTATSTARTUP_INVALID
         self._command = YPowerSupply.COMMAND_INVALID
         #--- (end of YPowerSupply attributes)
 
     #--- (YPowerSupply implementation)
     def _parseAttr(self, json_val):
-        if json_val.has("voltageSetPoint"):
-            self._voltageSetPoint = round(json_val.getDouble("voltageSetPoint") / 65.536) / 1000.0
+        if json_val.has("voltageLimit"):
+            self._voltageLimit = round(json_val.getDouble("voltageLimit") / 65.536) / 1000.0
         if json_val.has("currentLimit"):
             self._currentLimit = round(json_val.getDouble("currentLimit") / 65.536) / 1000.0
         if json_val.has("powerOutput"):
@@ -107,40 +111,42 @@ class YPowerSupply(YFunction):
             self._inputVoltage = round(json_val.getDouble("inputVoltage") / 65.536) / 1000.0
         if json_val.has("voltageTransition"):
             self._voltageTransition = json_val.getString("voltageTransition")
-        if json_val.has("voltageAtStartUp"):
-            self._voltageAtStartUp = round(json_val.getDouble("voltageAtStartUp") / 65.536) / 1000.0
-        if json_val.has("currentAtStartUp"):
-            self._currentAtStartUp = round(json_val.getDouble("currentAtStartUp") / 65.536) / 1000.0
+        if json_val.has("voltageLimitAtStartUp"):
+            self._voltageLimitAtStartUp = round(json_val.getDouble("voltageLimitAtStartUp") / 65.536) / 1000.0
+        if json_val.has("currentLimitAtStartUp"):
+            self._currentLimitAtStartUp = round(json_val.getDouble("currentLimitAtStartUp") / 65.536) / 1000.0
+        if json_val.has("powerOutputAtStartUp"):
+            self._powerOutputAtStartUp = (json_val.getInt("powerOutputAtStartUp") > 0 if 1 else 0)
         if json_val.has("command"):
             self._command = json_val.getString("command")
         super(YPowerSupply, self)._parseAttr(json_val)
 
-    def set_voltageSetPoint(self, newval):
+    def set_voltageLimit(self, newval):
         """
-        Changes the voltage set point, in V.
+        Changes the voltage limit, in V.
 
-        @param newval : a floating point number corresponding to the voltage set point, in V
+        @param newval : a floating point number corresponding to the voltage limit, in V
 
         @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(int(round(newval * 65536.0, 1)))
-        return self._setAttr("voltageSetPoint", rest_val)
+        return self._setAttr("voltageLimit", rest_val)
 
-    def get_voltageSetPoint(self):
+    def get_voltageLimit(self):
         """
-        Returns the voltage set point, in V.
+        Returns the voltage limit, in V.
 
-        @return a floating point number corresponding to the voltage set point, in V
+        @return a floating point number corresponding to the voltage limit, in V
 
-        On failure, throws an exception or returns YPowerSupply.VOLTAGESETPOINT_INVALID.
+        On failure, throws an exception or returns YPowerSupply.VOLTAGELIMIT_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YPowerSupply.VOLTAGESETPOINT_INVALID
-        res = self._voltageSetPoint
+                return YPowerSupply.VOLTAGELIMIT_INVALID
+        res = self._voltageLimit
         return res
 
     def set_currentLimit(self, newval):
@@ -258,7 +264,7 @@ class YPowerSupply(YFunction):
         rest_val = newval
         return self._setAttr("voltageTransition", rest_val)
 
-    def set_voltageAtStartUp(self, newval):
+    def set_voltageLimitAtStartUp(self, newval):
         """
         Changes the voltage set point at device start up. Remember to call the matching
         module saveToFlash() method, otherwise this call has no effect.
@@ -270,24 +276,24 @@ class YPowerSupply(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(int(round(newval * 65536.0, 1)))
-        return self._setAttr("voltageAtStartUp", rest_val)
+        return self._setAttr("voltageLimitAtStartUp", rest_val)
 
-    def get_voltageAtStartUp(self):
+    def get_voltageLimitAtStartUp(self):
         """
-        Returns the selected voltage set point at device startup, in V.
+        Returns the selected voltage limit at device startup, in V.
 
-        @return a floating point number corresponding to the selected voltage set point at device startup, in V
+        @return a floating point number corresponding to the selected voltage limit at device startup, in V
 
-        On failure, throws an exception or returns YPowerSupply.VOLTAGEATSTARTUP_INVALID.
+        On failure, throws an exception or returns YPowerSupply.VOLTAGELIMITATSTARTUP_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YPowerSupply.VOLTAGEATSTARTUP_INVALID
-        res = self._voltageAtStartUp
+                return YPowerSupply.VOLTAGELIMITATSTARTUP_INVALID
+        res = self._voltageLimitAtStartUp
         return res
 
-    def set_currentAtStartUp(self, newval):
+    def set_currentLimitAtStartUp(self, newval):
         """
         Changes the current limit at device start up. Remember to call the matching
         module saveToFlash() method, otherwise this call has no effect.
@@ -299,22 +305,53 @@ class YPowerSupply(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(int(round(newval * 65536.0, 1)))
-        return self._setAttr("currentAtStartUp", rest_val)
+        return self._setAttr("currentLimitAtStartUp", rest_val)
 
-    def get_currentAtStartUp(self):
+    def get_currentLimitAtStartUp(self):
         """
         Returns the selected current limit at device startup, in mA.
 
         @return a floating point number corresponding to the selected current limit at device startup, in mA
 
-        On failure, throws an exception or returns YPowerSupply.CURRENTATSTARTUP_INVALID.
+        On failure, throws an exception or returns YPowerSupply.CURRENTLIMITATSTARTUP_INVALID.
         """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YPowerSupply.CURRENTATSTARTUP_INVALID
-        res = self._currentAtStartUp
+                return YPowerSupply.CURRENTLIMITATSTARTUP_INVALID
+        res = self._currentLimitAtStartUp
         return res
+
+    def get_powerOutputAtStartUp(self):
+        """
+        Returns the power supply output switch state.
+
+        @return either YPowerSupply.POWEROUTPUTATSTARTUP_OFF or YPowerSupply.POWEROUTPUTATSTARTUP_ON,
+        according to the power supply output switch state
+
+        On failure, throws an exception or returns YPowerSupply.POWEROUTPUTATSTARTUP_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YPowerSupply.POWEROUTPUTATSTARTUP_INVALID
+        res = self._powerOutputAtStartUp
+        return res
+
+    def set_powerOutputAtStartUp(self, newval):
+        """
+        Changes the power supply output switch state at device start up. Remember to call the matching
+        module saveToFlash() method, otherwise this call has no effect.
+
+        @param newval : either YPowerSupply.POWEROUTPUTATSTARTUP_OFF or
+        YPowerSupply.POWEROUTPUTATSTARTUP_ON, according to the power supply output switch state at device start up
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("powerOutputAtStartUp", rest_val)
 
     def get_command(self):
         # res
