@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_wakeupschedule.py 48183 2022-01-20 10:26:11Z mvuilleu $
+#  $Id: yocto_wakeupschedule.py 56230 2023-08-21 15:20:59Z mvuilleu $
 #
 #  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #
@@ -66,6 +66,7 @@ class YWakeUpSchedule(YFunction):
     WEEKDAYS_INVALID = YAPI.INVALID_UINT
     MONTHDAYS_INVALID = YAPI.INVALID_UINT
     MONTHS_INVALID = YAPI.INVALID_UINT
+    SECONDSBEFORE_INVALID = YAPI.INVALID_UINT
     NEXTOCCURENCE_INVALID = YAPI.INVALID_LONG
     #--- (end of YWakeUpSchedule definitions)
 
@@ -80,6 +81,7 @@ class YWakeUpSchedule(YFunction):
         self._weekDays = YWakeUpSchedule.WEEKDAYS_INVALID
         self._monthDays = YWakeUpSchedule.MONTHDAYS_INVALID
         self._months = YWakeUpSchedule.MONTHS_INVALID
+        self._secondsBefore = YWakeUpSchedule.SECONDSBEFORE_INVALID
         self._nextOccurence = YWakeUpSchedule.NEXTOCCURENCE_INVALID
         #--- (end of YWakeUpSchedule attributes)
 
@@ -97,6 +99,8 @@ class YWakeUpSchedule(YFunction):
             self._monthDays = json_val.getInt("monthDays")
         if json_val.has("months"):
             self._months = json_val.getInt("months")
+        if json_val.has("secondsBefore"):
+            self._secondsBefore = json_val.getInt("secondsBefore")
         if json_val.has("nextOccurence"):
             self._nextOccurence = json_val.getLong("nextOccurence")
         super(YWakeUpSchedule, self)._parseAttr(json_val)
@@ -280,6 +284,40 @@ class YWakeUpSchedule(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("months", rest_val)
+
+    def get_secondsBefore(self):
+        """
+        Returns the number of seconds to anticipate wake-up time to allow
+        the system to power-up.
+
+        @return an integer corresponding to the number of seconds to anticipate wake-up time to allow
+                the system to power-up
+
+        On failure, throws an exception or returns YWakeUpSchedule.SECONDSBEFORE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YWakeUpSchedule.SECONDSBEFORE_INVALID
+        res = self._secondsBefore
+        return res
+
+    def set_secondsBefore(self, newval):
+        """
+        Changes the number of seconds to anticipate wake-up time to allow
+        the system to power-up.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+
+        @param newval : an integer corresponding to the number of seconds to anticipate wake-up time to allow
+                the system to power-up
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("secondsBefore", rest_val)
 
     def get_nextOccurence(self):
         """

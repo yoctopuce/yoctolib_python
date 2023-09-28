@@ -1,12 +1,12 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 55641 2023-07-26 09:43:42Z seb $
+#  $Id: helloworld.py 56194 2023-08-21 07:39:11Z seb $
 #
-#  An example that show how to use a  Yocto-I2C
+#  An example that show how to use a  Yocto-SDI12
 #
 #  You can find more information on our web site:
-#   Yocto-I2C documentation:
-#      https://www.yoctopuce.com/EN/products/yocto-i2c/doc.html
+#   Yocto-SDI12 documentation:
+#      https://www.yoctopuce.com/EN/products/yocto-sdi12/doc.html
 #   Python API Reference:
 #      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
 #

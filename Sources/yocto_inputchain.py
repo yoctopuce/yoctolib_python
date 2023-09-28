@@ -96,7 +96,7 @@ class YInputChain(YFunction):
         self._bitChain7 = YInputChain.BITCHAIN7_INVALID
         self._watchdogPeriod = YInputChain.WATCHDOGPERIOD_INVALID
         self._chainDiags = YInputChain.CHAINDIAGS_INVALID
-        self._eventCallback = None
+        self._stateChangeCallback = None
         self._prevPos = 0
         self._eventPos = 0
         self._eventStamp = 0
@@ -489,7 +489,7 @@ class YInputChain(YFunction):
         content = self._download("events.txt")
         return YByte2String(content)
 
-    def registerEventCallback(self, callback):
+    def registerStateChangeCallback(self, callback):
         """
         Registers a callback function to be called each time that an event is detected on the
         input chain.The callback is invoked only during the execution of
@@ -510,7 +510,7 @@ class YInputChain(YFunction):
             self.registerValueCallback(None)
         # // register user callback AFTER the internal pseudo-event,
         # // to make sure we start with future events only
-        self._eventCallback = callback
+        self._stateChangeCallback = callback
         return 0
 
     def _internalEventHandler(self, cbpos):
@@ -538,7 +538,7 @@ class YInputChain(YFunction):
         self._prevPos = newPos
         if newPos < self._eventPos:
             return YAPI.SUCCESS
-        if not (self._eventCallback is not None):
+        if not (self._stateChangeCallback is not None):
             # // first simulated event, use it to initialize reference values
             self._eventPos = newPos
             del self._eventChains[:]
@@ -586,7 +586,7 @@ class YInputChain(YFunction):
                             chainIdx = YAPI._atoi(evtType) - 1
                             evtChange = self._strXor(evtData, self._eventChains[chainIdx])
                             self._eventChains[chainIdx] = evtData
-                    self._eventCallback(self, evtStamp, evtType, evtData, evtChange)
+                    self._stateChangeCallback(self, evtStamp, evtType, evtData, evtChange)
             arrPos = arrPos + 1
         return YAPI.SUCCESS
 

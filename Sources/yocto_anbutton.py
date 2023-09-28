@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_anbutton.py 43478 2021-01-21 13:49:12Z mvuilleu $
+#  $Id: yocto_anbutton.py 56268 2023-08-25 17:43:56Z mvuilleu $
 #
 #  Implements yFindAnButton(), the high-level API for AnButton functions
 #
@@ -82,6 +82,7 @@ class YAnButton(YFunction):
     INPUTTYPE_ANALOG_FAST = 0
     INPUTTYPE_DIGITAL4 = 1
     INPUTTYPE_ANALOG_SMOOTH = 2
+    INPUTTYPE_DIGITAL_FAST = 3
     INPUTTYPE_INVALID = -1
     #--- (end of YAnButton definitions)
 
@@ -384,9 +385,9 @@ class YAnButton(YFunction):
         """
         Returns the decoding method applied to the input (analog or multiplexed binary switches).
 
-        @return a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4 and
-        YAnButton.INPUTTYPE_ANALOG_SMOOTH corresponding to the decoding method applied to the input (analog
-        or multiplexed binary switches)
+        @return a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4,
+        YAnButton.INPUTTYPE_ANALOG_SMOOTH and YAnButton.INPUTTYPE_DIGITAL_FAST corresponding to the
+        decoding method applied to the input (analog or multiplexed binary switches)
 
         On failure, throws an exception or returns YAnButton.INPUTTYPE_INVALID.
         """
@@ -402,9 +403,9 @@ class YAnButton(YFunction):
         Changes the decoding method applied to the input (analog or multiplexed binary switches).
         Remember to call the saveToFlash() method of the module if the modification must be kept.
 
-        @param newval : a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4 and
-        YAnButton.INPUTTYPE_ANALOG_SMOOTH corresponding to the decoding method applied to the input (analog
-        or multiplexed binary switches)
+        @param newval : a value among YAnButton.INPUTTYPE_ANALOG_FAST, YAnButton.INPUTTYPE_DIGITAL4,
+        YAnButton.INPUTTYPE_ANALOG_SMOOTH and YAnButton.INPUTTYPE_DIGITAL_FAST corresponding to the
+        decoding method applied to the input (analog or multiplexed binary switches)
 
         @return YAPI.SUCCESS if the call succeeds.
 

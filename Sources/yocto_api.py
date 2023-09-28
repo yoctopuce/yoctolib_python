@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 55447 2023-07-06 07:03:11Z seb $
+# * $Id: yocto_api.py 56393 2023-09-05 08:36:51Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -362,6 +362,12 @@ class YJSONNumber(YJSONContent):
             return self._doubleValue
         else:
             return self._intValue
+
+    def getString(self):
+        if self._isFloat:
+            return str(self._doubleValue)
+        else:
+            return str(self._intValue)
 
     def toString(self):
         if self._isFloat:
@@ -932,7 +938,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "1.10"
     YOCTO_API_VERSION_BCD = 0x0110
 
-    YOCTO_API_BUILD_NO = "55677"
+    YOCTO_API_BUILD_NO = "56784"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1476,6 +1482,9 @@ class YAPI:
     RTC_NOT_READY = -13            # real-time clock has not been initialized (or time was lost)
     FILE_NOT_FOUND = -14           # the file is not found
     SSL_ERROR = -15                # Error reported by mbedSSL
+    RFID_SOFT_ERROR = -16          # Recoverable error with RFID tag (eg. tag out of reach), check YRfidStatus for details
+    RFID_HARD_ERROR = -17          # Serious RFID error (eg. write-protected, out-of-boundary), check YRfidStatus for details
+    BUFFER_TOO_SMALL = -18         # The buffer provided is too small
 
     #--- (end of generated code: YFunction return codes)
 
@@ -7300,12 +7309,13 @@ class YModule(YFunction):
 
     def functionType(self, functionIndex):
         """
-        Retrieves the type of the <i>n</i>th function on the module.
+        Retrieves the type of the <i>n</i>th function on the module. Yoctopuce functions type names match
+        their class names without the <i>Y</i> prefix, for instance <i>Relay</i>, <i>Temperature</i> etc..
 
         @param functionIndex : the index of the function for which the information is desired, starting at
         0 for the first function.
 
-        @return a string corresponding to the type of the function
+        @return a string corresponding to the type of the function.
 
         On failure, throws an exception or returns an empty string.
         """

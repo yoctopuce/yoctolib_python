@@ -115,7 +115,7 @@ class YSdi12Sensor(object):
         self._valuesDesc = []
         #--- (end of generated code: YSdi12Sensor attributes)
         self._sdi12Port = YSdi12Port
-        self.parseInfoStr(json_str)
+        self._parseInfoStr(json_str)
 
     #--- (generated code: YSdi12Sensor implementation)
     def get_sensorAddress(self):
@@ -157,7 +157,7 @@ class YSdi12Sensor(object):
     def get_typeMeasure(self):
         return self._valuesDesc
 
-    def parseInfoStr(self, infoStr):
+    def _parseInfoStr(self, infoStr):
         # errmsg
 
         if len(infoStr) > 1:
@@ -176,44 +176,44 @@ class YSdi12Sensor(object):
                 self._model = (infoStr)[11: 11 + 6]
                 self._ver = (infoStr)[17: 17 + 3]
                 self._sn = (infoStr)[20: 20 + len(infoStr)-20]
-                self.queryValueInfo()
 
-    def queryValueInfo(self):
+    def _queryValueInfo(self):
         val = []
-
         data = []
         # infoNbVal
         # cmd
         # infoVal
+        # value
         # nbVal
         # k
         # i
         # j
+        listVal = []
 
         k = 0
         while k < 10:
             infoNbVal = self._sdi12Port.querySdi12(self._addr, "IM" + str(int(k)), 5000)
-            if  len(infoNbVal) > 1:
-                nbVal = YAPI._atoi((infoNbVal)[4: 4 + len(infoNbVal)-4])
-                if  nbVal != 0:
+            if len(infoNbVal) > 1:
+                value = (infoNbVal)[4: 4 + len(infoNbVal)-4]
+                nbVal = YAPI._atoi(value)
+                if nbVal != 0:
+                    del val[:]
                     i = 0
                     while i < nbVal:
                         cmd = "IM" + str(int(k)) + "_00" + str(int(i+1))
                         infoVal = self._sdi12Port.querySdi12(self._addr, cmd, 5000)
-                        listVal = []
-                        del listVal[:]
-                        del data[:]
-                        listVal.append("M" + str(int(k)))
-                        listVal.append(str(i+1))
                         data = (infoVal).split(';')
                         data = (data[0]).split(',')
+                        del listVal[:]
+                        listVal.append("M" + str(int(k)))
+                        listVal.append(str(i+1))
                         j = 0
                         while j < len(data):
                             listVal.append(data[j])
-                            j= j +1
-                        val.append(listVal)
-                        i= i +1
-            k = k+1
+                            j = j + 1
+                        val.append(listVal[:])
+                        i = i + 1
+            k = k + 1
         self._valuesDesc = val
 
 #--- (end of generated code: YSdi12Sensor implementation)
@@ -1305,18 +1305,25 @@ class YSdi12Port(YFunction):
         msgarr = []
         # msglen
         # res
+        cmdChar  = ""
 
         pattern = sensorAddr
-        cmdChar = (cmd)[0: 0 + 1]
-        if cmdChar == "M" or cmdChar == "D":
-            pattern = "" + sensorAddr + ":.*"
+        if len(cmd) > 0:
+            cmdChar = (cmd)[0: 0 + 1]
+        if sensorAddr == "?" :
+            pattern = ".*"
         else:
-            pattern = "" + sensorAddr + ".*"
+            if cmdChar == "M" or cmdChar == "D":
+                pattern = "" + sensorAddr + ":.*"
+            else:
+                pattern = "" + sensorAddr + ".*"
         pattern = self._escapeAttr(pattern)
         fullCmd = self._escapeAttr("+" + sensorAddr + "" + cmd + "!")
         url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&cmd=" + fullCmd + "&pat=" + pattern
 
         msgbin = self._download(url)
+        if len(msgbin)<2:
+            return ""
         msgarr = self._json_get_array(msgbin)
         msglen = len(msgarr)
         if msglen == 0:
@@ -1330,23 +1337,41 @@ class YSdi12Port(YFunction):
         return res
 
     def discoverSingleSensor(self):
-        # resStr
-        # info
+        """
+        Sends a discovery command to the bus, and reads the sensor information reply.
+        This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+        This function work when only one sensor is connected.
 
-        resStr = self.querySdi12("?","!",5000)
+        @return the reply returned by the sensor, as a YSdi12Sensor object.
+
+        On failure, throws an exception or returns an empty string.
+        """
+        # resStr
+
+        resStr = self.querySdi12("?","",5000)
         if resStr == "":
             return YSdi12Sensor(self, "ERSensor Not Found")
 
         return self.getSensorInformation(resStr)
 
     def discoverAllSensors(self):
-        addr = []
+        """
+        Sends a discovery command to the bus, and reads all sensors information reply.
+        This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+
+        @return all the information from every connected sensor, as an array of YSdi12Sensor object.
+
+        On failure, throws an exception or returns an empty string.
+        """
+        sensors = []
         idSens = []
         # res
         # i
         # lettreMin
         # lettreMaj
 
+        # // 1. Search for sensors present
+        del idSens[:]
         i = 0
         while i < 10:
             res = self.querySdi12(str(i),"!",500)
@@ -1366,13 +1391,33 @@ class YSdi12Port(YFunction):
             if len(res) >= 1:
                 idSens.append(res)
             i = i +1
+
+        # // 2. Query existing sensors information
         i = 0
+        del sensors[:]
         while i < len(idSens):
-            addr.append(self.getSensorInformation(idSens[i]))
+            sensors.append(self.getSensorInformation(idSens[i]))
             i = i + 1
-        return addr
+
+        return sensors
 
     def readSensor(self, sensorAddr, measCmd, maxWait):
+        """
+        Sends a mesurement command to the SDI-12 bus, and reads the sensor immediate reply.
+        The supported commands are:
+        M: Measurement start control
+        M1...M9: Additional measurement start command
+        D: Measurement reading control
+        This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+
+        @param sensorAddr : the sensor address, as a string
+        @param measCmd : the SDI12 query to send (without address and exclamation point)
+        @param maxWait : the maximum timeout to wait for a reply from sensor, in millisecond
+
+        @return the reply returned by the sensor, without newline, as a list of float.
+
+        On failure, throws an exception or returns an empty string.
+        """
         # resStr
         res = []
         tab = []
@@ -1385,17 +1430,29 @@ class YSdi12Port(YFunction):
         split = (tab[0]).split(':')
         if len(split) < 2:
             return res
+
         valdouble = float(split[1])
         res.append(valdouble)
-
         i = 1
-        while i< len(tab):
+        while i < len(tab):
             valdouble = float(tab[i])
             res.append(valdouble)
-            i = i+1
+            i = i + 1
+
         return res
 
     def changeAddress(self, oldAddress, newAddress):
+        """
+        Changes the address of the selected sensor, and returns the sensor information with the new address.
+        This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+
+        @param oldAddress : Actual sensor address, as a string
+        @param newAddress : New sensor address, as a string
+
+        @return the sensor address and information , as a YSdi12Sensor object.
+
+        On failure, throws an exception or returns an empty string.
+        """
         # addr
 
         self.querySdi12(oldAddress, "A" + newAddress,1000)
@@ -1403,21 +1460,53 @@ class YSdi12Port(YFunction):
         return addr
 
     def getSensorInformation(self, sensorAddr):
-        id = []
+        """
+        Sends a information command to the bus, and reads sensors information selected.
+        This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+
+        @param sensorAddr : Sensor address, as a string
+
+        @return the reply returned by the sensor, as a YSdi12Port object.
+
+        On failure, throws an exception or returns an empty string.
+        """
         # res
+        # sensor
 
         res = self.querySdi12(sensorAddr,"I",1000)
         if res == "":
             return YSdi12Sensor(self, "ERSensor Not Found")
-        return YSdi12Sensor(self, res)
+        sensor = YSdi12Sensor(self, res)
+        sensor._queryValueInfo()
+        return sensor
 
     def readConcurrentMeasurements(self, sensorAddr):
+        """
+        Sends a information command to the bus, and reads sensors information selected.
+        This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+
+        @param sensorAddr : Sensor address, as a string
+
+        @return the reply returned by the sensor, as a YSdi12Port object.
+
+        On failure, throws an exception or returns an empty string.
+        """
         res = []
 
         res= self.readSensor(sensorAddr,"D",1000)
         return res
 
     def requestConcurrentMeasurements(self, sensorAddr):
+        """
+        Sends a information command to the bus, and reads sensors information selected.
+        This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
+
+        @param sensorAddr : Sensor address, as a string
+
+        @return the reply returned by the sensor, as a YSdi12Port object.
+
+        On failure, throws an exception or returns an empty string.
+        """
         # timewait
         # wait
 

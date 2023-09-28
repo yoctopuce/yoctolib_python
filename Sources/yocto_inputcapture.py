@@ -127,6 +127,9 @@ class YInputCaptureData(object):
         # ms
         # recSize
         # count
+        # mult1
+        # mult2
+        # mult3
         # v
 
         buffSize = len(sdata)
@@ -180,12 +183,28 @@ class YInputCaptureData(object):
             while YGetByte(sdata, recOfs) >= 32:
                 self._var3unit = "" + self._var3unit + "" + str(chr(YGetByte(sdata, recOfs)))
                 recOfs = recOfs + 1
+        if ((recOfs) & (1)) == 1:
+            # // align to next word
+            recOfs = recOfs + 1
+        mult1 = 1
+        mult2 = 1
+        mult3 = 1
+        if recOfs < self._recOfs:
+            # // load optional value multiplier
+            mult1 = self._decodeU16(sdata, self._recOfs)
+            recOfs = recOfs + 2
+            if self._var2size > 0:
+                mult2 = self._decodeU16(sdata, self._recOfs)
+                recOfs = recOfs + 2
+            if self._var3size > 0:
+                mult3 = self._decodeU16(sdata, self._recOfs)
+                recOfs = recOfs + 2
 
         recOfs = self._recOfs
         count = self._nRecs
         while (count > 0) and (recOfs + self._var1size <= buffSize):
             v = self._decodeVal(sdata, recOfs, self._var1size) / 1000.0
-            self._var1samples.append(v)
+            self._var1samples.append(v*mult1)
             recOfs = recOfs + recSize
 
         if self._var2size > 0:
@@ -193,14 +212,14 @@ class YInputCaptureData(object):
             count = self._nRecs
             while (count > 0) and (recOfs + self._var2size <= buffSize):
                 v = self._decodeVal(sdata, recOfs, self._var2size) / 1000.0
-                self._var2samples.append(v)
+                self._var2samples.append(v*mult2)
                 recOfs = recOfs + recSize
         if self._var3size > 0:
             recOfs = self._recOfs + self._var1size + self._var2size
             count = self._nRecs
             while (count > 0) and (recOfs + self._var3size <= buffSize):
                 v = self._decodeVal(sdata, recOfs, self._var3size) / 1000.0
-                self._var3samples.append(v)
+                self._var3samples.append(v*mult3)
                 recOfs = recOfs + recSize
         return YAPI.SUCCESS
 

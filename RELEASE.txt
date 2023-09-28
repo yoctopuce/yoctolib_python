@@ -1,5 +1,3 @@
-Python v1.10.55677
+Python v1.10.56784
 
-- Update class definition for MessageBox and PowerSupply
-- Add SDI12Port support
-- Update default port strategy on RegisterHub when contacting VirtualHub4Web (was using 4444, now use 80)
+- test build
