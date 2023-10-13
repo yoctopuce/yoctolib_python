@@ -1,3 +1,6 @@
-Python v1.10.56784
+Python v1.10.57097
 
-- test build
+- Add new secondsBefore attribute to wakeUpSchedule
+- Add support for multiplier in InputCapture
+- Fix truncated value change callback for large V2 notifications when connecting via network
+- Fix network hub discovery (broken since 54099)
