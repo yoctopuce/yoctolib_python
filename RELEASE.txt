@@ -1,6 +1,4 @@
-Python v1.10.57097
+Python v1.10.57762
 
-- Add new secondsBefore attribute to wakeUpSchedule
-- Add support for multiplier in InputCapture
-- Fix truncated value change callback for large V2 notifications when connecting via network
-- Fix network hub discovery (broken since 54099)
+- Fix connection to HTTP server that use chunked encoding written in lower case
+- Fix potential missing serial number information in YHub when used with PreRegisterHub
