@@ -1,13 +1,13 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 32630 2018-10-10 14:11:07Z seb $
+#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
 #
-#  An example that show how to use a  Yocto-Light
+#  An example that shows how to use a  Yocto-Light
 #
 #  You can find more information on our web site:
 #   Yocto-Light documentation:
 #      https://www.yoctopuce.com/EN/products/yocto-light/doc.html
-#   Python API Reference:
+#   Python V2 API Reference:
 #      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
 #
 # *********************************************************************

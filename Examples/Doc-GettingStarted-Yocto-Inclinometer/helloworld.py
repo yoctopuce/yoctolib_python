@@ -1,8 +1,8 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 55641 2023-07-26 09:43:42Z seb $
+#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
 #
-#  An example that show how to use a  Yocto-Inclinometer
+#  An example that shows how to use a  Yocto-Inclinometer
 #
 #  You can find more information on our web site:
 #   Yocto-Inclinometer documentation:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_power.py 53420 2023-03-06 10:38:51Z mvuilleu $
+#  $Id: yocto_power.py 53431 2023-03-06 14:19:35Z seb $
 #
 #  Implements yFindPower(), the high-level API for Power functions
 #

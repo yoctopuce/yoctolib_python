@@ -943,7 +943,7 @@ class YRfidReader(YFunction):
         @param status : an RfidStatus object that will contain
                 the detailled status of the operation
 
-        @return YAPI.SUCCESS if the call succeeds.
+        @return a YRfidTagInfo object.
 
         On failure, throws an exception or returns an empty YRfidTagInfo objact.
         When it happens, you can get more information from the status object.
@@ -1387,7 +1387,7 @@ class YRfidReader(YFunction):
         """
         # content
 
-        content = self._download("events.txt")
+        content = self._download("events.txt?pos=0")
         return YByte2String(content)
 
     def registerEventCallback(self, callback):
@@ -1417,15 +1417,11 @@ class YRfidReader(YFunction):
     def _internalEventHandler(self, cbVal):
         # cbPos
         # cbDPos
-        # cbNtags
-        # searchTags
         # url
         # content
         # contentStr
-        currentTags = []
         eventArr = []
         # arrLen
-        lastEvents = []
         # lenStr
         # arrPos
         # eventStr
@@ -1433,13 +1429,14 @@ class YRfidReader(YFunction):
         # hexStamp
         # typePos
         # dataPos
+        # intStamp
+        # binMStamp
+        # msStamp
         # evtStamp
         # evtType
         # evtData
-        # tagIdx
         # // detect possible power cycle of the reader to clear event pointer
         cbPos = YAPI._atoi(cbVal)
-        cbNtags = ((cbPos) % (1000))
         cbPos = int((cbPos) / (1000))
         cbDPos = ((cbPos - self._prevCbPos) & (0x7ffff))
         self._prevCbPos = cbPos
@@ -1447,87 +1444,62 @@ class YRfidReader(YFunction):
             self._eventPos = 0
         if not (self._eventCallback is not None):
             return YAPI.SUCCESS
-        # // load all events since previous call
-        url = "events.txt?pos=" + str(int(self._eventPos))
-
-        content = self._download(url)
-        contentStr = YByte2String(content)
-        eventArr = (contentStr).split('\n')
-        arrLen = len(eventArr)
-        if not (arrLen > 0):
-            self._throw(YAPI.IO_ERROR, "fail to download events")
-            return YAPI.IO_ERROR
-        # // last element of array is the new position preceeded by '@'
-        arrLen = arrLen - 1
-        lenStr = eventArr[arrLen]
-        lenStr = (lenStr)[1: 1 + len(lenStr)-1]
-        # // update processed event position pointer
-        self._eventPos = YAPI._atoi(lenStr)
         if self._isFirstCb:
             # // first emulated value callback caused by registerValueCallback:
-            # // attempt to retrieve arrivals of all tags present to emulate arrival
+            # // retrieve arrivals of all tags currently present to emulate arrival
             self._isFirstCb = False
             self._eventStamp = 0
-            if cbNtags == 0:
-                return YAPI.SUCCESS
-            currentTags = self.get_tagIdList()
-            cbNtags = len(currentTags)
-            searchTags = cbNtags
-            del lastEvents[:]
-            arrPos = arrLen - 1
-            while (arrPos >= 0) and (searchTags > 0):
-                eventStr = eventArr[arrPos]
-                typePos = eventStr.find(":")+1
-                if typePos > 8:
-                    dataPos = eventStr.find("=")+1
-                    evtType = (eventStr)[typePos: typePos + 1]
-                    if (dataPos > 10) and evtType == "+":
-                        evtData = (eventStr)[dataPos: dataPos + len(eventStr)-dataPos]
-                        tagIdx = searchTags - 1
-                        while tagIdx >= 0:
-                            if evtData == currentTags[tagIdx]:
-                                lastEvents.append(0+arrPos)
-                                currentTags[tagIdx] = ""
-                                while (searchTags > 0) and currentTags[searchTags-1] == "":
-                                    searchTags = searchTags - 1
-                                tagIdx = -1
-                            tagIdx = tagIdx - 1
-                arrPos = arrPos - 1
-            # // If we have any remaining tags without a known arrival event,
-            # // create a pseudo callback with timestamp zero
-            tagIdx = 0
-            while tagIdx < searchTags:
-                evtData = currentTags[tagIdx]
-                if not (evtData == ""):
-                    self._eventCallback(self, 0, "+", evtData)
-                tagIdx = tagIdx + 1
+            content = self._download("events.txt")
+            contentStr = YByte2String(content)
+            eventArr = (contentStr).split('\n')
+            arrLen = len(eventArr)
+            if not (arrLen > 0):
+                self._throw(YAPI.IO_ERROR, "fail to download events")
+                return YAPI.IO_ERROR
+            # // first element of array is the new position preceeded by '@'
+            arrPos = 1
+            lenStr = eventArr[0]
+            lenStr = (lenStr)[1: 1 + len(lenStr)-1]
+            # // update processed event position pointer
+            self._eventPos = YAPI._atoi(lenStr)
         else:
-            # // regular callback
-            del lastEvents[:]
-            arrPos = arrLen - 1
-            while arrPos >= 0:
-                lastEvents.append(0+arrPos)
-                arrPos = arrPos - 1
-        # // now generate callbacks for each selected event
-        arrLen = len(lastEvents)
-        arrPos = arrLen - 1
-        while arrPos >= 0:
-            tagIdx = lastEvents[arrPos]
-            eventStr = eventArr[tagIdx]
+            # // load all events since previous call
+            url = "events.txt?pos=" + str(int(self._eventPos))
+            content = self._download(url)
+            contentStr = YByte2String(content)
+            eventArr = (contentStr).split('\n')
+            arrLen = len(eventArr)
+            if not (arrLen > 0):
+                self._throw(YAPI.IO_ERROR, "fail to download events")
+                return YAPI.IO_ERROR
+            # // last element of array is the new position preceeded by '@'
+            arrPos = 0
+            arrLen = arrLen - 1
+            lenStr = eventArr[arrLen]
+            lenStr = (lenStr)[1: 1 + len(lenStr)-1]
+            # // update processed event position pointer
+            self._eventPos = YAPI._atoi(lenStr)
+        # // now generate callbacks for each real event
+        while arrPos < arrLen:
+            eventStr = eventArr[arrPos]
             eventLen = len(eventStr)
-            if eventLen >= 1:
+            typePos = eventStr.find(":")+1
+            if (eventLen >= 14) and (typePos > 10):
                 hexStamp = (eventStr)[0: 0 + 8]
-                evtStamp = int(hexStamp, 16)
-                typePos = eventStr.find(":")+1
-                if (evtStamp >= self._eventStamp) and (typePos > 8):
-                    self._eventStamp = evtStamp
+                intStamp = int(hexStamp, 16)
+                if intStamp >= self._eventStamp:
+                    self._eventStamp = intStamp
+                    binMStamp = YString2Byte((eventStr)[8: 8 + 2])
+                    msStamp = (YGetByte(binMStamp, 0)-64) * 32 + YGetByte(binMStamp, 1)
+                    evtStamp = intStamp + (0.001 * msStamp)
                     dataPos = eventStr.find("=")+1
                     evtType = (eventStr)[typePos: typePos + 1]
                     evtData = ""
                     if dataPos > 10:
                         evtData = (eventStr)[dataPos: dataPos + eventLen-dataPos]
-                    self._eventCallback(self, evtStamp, evtType, evtData)
-            arrPos = arrPos - 1
+                    if self._eventCallback is not None:
+                        self._eventCallback(self, evtStamp, evtType, evtData)
+            arrPos = arrPos + 1
         return YAPI.SUCCESS
 
     def nextRfidReader(self):

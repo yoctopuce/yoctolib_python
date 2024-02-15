@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 55576 2023-07-25 06:26:34Z mvuilleu $
+#* $Id: yocto_messagebox.py 59222 2024-02-05 15:50:11Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -72,10 +72,10 @@ class YSms(object):
         self._alphab = 0
         self._mclass = 0
         self._stamp = ""
-        self._udh = ''
-        self._udata = ''
+        self._udh = bytearray()
+        self._udata = bytearray()
         self._npdu = 0
-        self._pdu = ''
+        self._pdu = bytearray()
         self._parts = []
         self._aggSig = ""
         self._aggIdx = 0
@@ -1112,7 +1112,7 @@ class YMessageBox(YFunction):
         self._messages = []
         self._gsm2unicodeReady = 0
         self._gsm2unicode = []
-        self._iso2gsm = ''
+        self._iso2gsm = bytearray()
         #--- (end of generated code: YMessageBox attributes)
 
     #--- (generated code: YMessageBox implementation)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_powersupply.py 55576 2023-07-25 06:26:34Z mvuilleu $
+#  $Id: yocto_powersupply.py 55633 2023-07-26 09:18:40Z seb $
 #
 #  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
 #

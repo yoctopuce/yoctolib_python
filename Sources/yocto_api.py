@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
+# -*- coding: latin-1 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 56393 2023-09-05 08:36:51Z seb $
+# * $Id: yocto_api.py 59238 2024-02-06 10:13:26Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -169,7 +169,7 @@ class YJSONType:
 # noinspection PyClassHasNoInit
 class Tjstate:
     JSTART, JWAITFORNAME, JWAITFORENDOFNAME, JWAITFORCOLON, JWAITFORDATA, JWAITFORNEXTSTRUCTMEMBER, JWAITFORNEXTARRAYITEM, \
-    JWAITFORSTRINGVALUE, JWAITFORSTRINGVALUE_ESC, JWAITFORINTVALUE, JWAITFORBOOLVALUE = range(11)
+        JWAITFORSTRINGVALUE, JWAITFORSTRINGVALUE_ESC, JWAITFORINTVALUE, JWAITFORBOOLVALUE = range(11)
 
 
 class YJSONContent(object):
@@ -813,6 +813,84 @@ class YAPIContext(object):
             msg = ""
         return msg
 
+    def DownloadHostCertificate(self, url, mstimeout):
+        """
+        Download the TLS/SSL certificate from the hub. This function allows to download a TLS/SSL certificate to add it
+        to the list of trusted certificates using the AddTrustedCertificates method.
+
+        @param url : the root URL of the VirtualHub V2 or HTTP server.
+        @param mstimeout : the number of milliseconds available to download the certificate.
+
+        @return a string containing the certificate. In case of error, returns a string starting with "error:".
+        """
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        smallbuff = ctypes.create_string_buffer(4096)
+        # bigbuff
+        # buffsize
+        fullsize = ctypes.c_int()
+        # res
+        # certifcate
+        fullsize.value = 0
+        res = YAPI._yapiGetRemoteCertificate(ctypes.create_string_buffer(YString2Byte(url)), mstimeout, smallbuff, 4096, ctypes.byref(fullsize), errmsg)
+        if res < 0:
+            if res == YAPI.BUFFER_TOO_SMALL:
+                fullsize.value = fullsize.value * 2
+                buffsize = fullsize.value
+                bigbuff = ctypes.create_string_buffer(buffsize)
+                res = YAPI._yapiGetRemoteCertificate(ctypes.create_string_buffer(YString2Byte(url)), mstimeout, bigbuff, buffsize, ctypes.byref(fullsize), errmsg)
+                if res < 0:
+                    certifcate = "error:" + YByte2String(errmsg.value)
+                else:
+                    certifcate = YByte2String(bigbuff.value)
+                bigbuff = None
+            else:
+                certifcate = "error:" + YByte2String(errmsg.value)
+            return YString2Byte(certifcate)
+        else:
+            certifcate = YByte2String(smallbuff.value)
+        return YString2Byte(certifcate)
+
+    def AddTrustedCertificates(self, certificate):
+        """
+        Adds a TLS/SSL certificate to the list of trusted certificates. By default, the library
+        library will reject TLS/SSL connections to servers whose certificate is not known. This function
+        function allows to add a list of known certificates. It is also possible to disable the verification
+        using the SetNetworkSecurityOptions method.
+
+        @param certificate : a string containing one or more certificates.
+
+        @return an empty string if the certificate has been added correctly.
+                In case of error, returns a string starting with "error:".
+        """
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        # size
+        # res
+        # // null char must be inclued
+        size = len(certificate) + 1
+        res = YAPI._yapiAddSSLCertificateCli(ctypes.create_string_buffer(YString2Byte(certificate)), size, errmsg)
+        if res < 0:
+            return YByte2String(errmsg.value)
+        else:
+            return ""
+
+    def SetNetworkSecurityOptions(self, options):
+        """
+        Enables or disables certain TLS/SSL certificate checks.
+
+        @param options: The options: YAPI.NO_TRUSTED_CA_CHECK,
+                YAPI.NO_EXPIRATION_CHECK, YAPI.NO_HOSTNAME_CHECK.
+
+        @return an empty string if the options are taken into account.
+                On error, returns a string beginning with "error:".
+        """
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        # res
+        res = YAPI._yapiSetNetworkSecurityOptions(options, errmsg)
+        if res < 0:
+            return YByte2String(errmsg.value)
+        else:
+            return ""
+
     def SetNetworkTimeout(self, networkMsTimeout):
         """
         Modifies the network connection delay for yRegisterHub() and yUpdateDeviceList().
@@ -890,8 +968,10 @@ class YAPIContext(object):
         if hubref in self._yhub_cache:
             return self._yhub_cache[hubref]
         return None
+
     def _addYHubToCache(self, hubref, obj):
         self._yhub_cache[hubref] = obj
+
 
 # --- (generated code: YAPIContext functions)
 #--- (end of generated code: YAPIContext functions)
@@ -935,10 +1015,10 @@ class YAPI:
     RESEND_MISSING_PKT = 4
     DETECT_ALL = DETECT_USB | DETECT_NET
 
-    YOCTO_API_VERSION_STR = "1.10"
-    YOCTO_API_VERSION_BCD = 0x0110
+    YOCTO_API_VERSION_STR = "2.0"
+    YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "57762"
+    YOCTO_API_BUILD_NO = "59414"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1322,6 +1402,18 @@ class YAPI:
         YAPI._yapiAddUdevRulesForYocto = YAPI._yApiCLib.yapiAddUdevRulesForYocto
         YAPI._yapiAddUdevRulesForYocto.restypes = ctypes.c_int
         YAPI._yapiAddUdevRulesForYocto.argtypes = [ctypes.c_int, ctypes.c_char_p]
+        YAPI._yapiSetSSLCertificateSrv = YAPI._yApiCLib.yapiSetSSLCertificateSrv
+        YAPI._yapiSetSSLCertificateSrv.restypes = ctypes.c_int
+        YAPI._yapiSetSSLCertificateSrv.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+        YAPI._yapiAddSSLCertificateCli = YAPI._yApiCLib.yapiAddSSLCertificateCli
+        YAPI._yapiAddSSLCertificateCli.restypes = ctypes.c_int
+        YAPI._yapiAddSSLCertificateCli.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p]
+        YAPI._yapiSetNetworkSecurityOptions = YAPI._yApiCLib.yapiSetNetworkSecurityOptions
+        YAPI._yapiSetNetworkSecurityOptions.restypes = ctypes.c_int
+        YAPI._yapiSetNetworkSecurityOptions.argtypes = [ctypes.c_int, ctypes.c_char_p]
+        YAPI._yapiGetRemoteCertificate = YAPI._yApiCLib.yapiGetRemoteCertificate
+        YAPI._yapiGetRemoteCertificate.restypes = ctypes.c_int
+        YAPI._yapiGetRemoteCertificate.argtypes = [ctypes.c_char_p, ctypes.c_ulonglong, ctypes.c_char_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p]
         YAPI._yapiGetNextHubRef = YAPI._yApiCLib.yapiGetNextHubRef
         YAPI._yapiGetNextHubRef.restypes = ctypes.c_int
         YAPI._yapiGetNextHubRef.argtypes = [ctypes.c_int]
@@ -1370,7 +1462,7 @@ class YAPI:
         YFACE_EMPTY, YFACE_RUNNING, YFACE_ERROR = range(3)
 
     class _Event:
-        ARRIVAL, REMOVAL, CHANGE, FUN_VALUE, FUN_TIMEDREPORT, FUN_REFRESH,\
+        ARRIVAL, REMOVAL, CHANGE, FUN_VALUE, FUN_TIMEDREPORT, FUN_REFRESH, \
             HUB_DISCOVERY, CONFCHANGE, BEACON_CHANGE, YAPI_NOP = range(10)
 
         def __init__(self):
@@ -1456,7 +1548,8 @@ class YAPI:
             elif self.ev == self.FUN_TIMEDREPORT:
                 if self.report[0] <= 2:
                     sensor = self.func
-                    sensor._invokeTimedReportCallback(sensor._decodeTimedReport(self.timestamp, self.duration, self.report))
+                    sensor._invokeTimedReportCallback(
+                        sensor._decodeTimedReport(self.timestamp, self.duration, self.report))
             elif self.ev == self.CONFCHANGE:
                 self.module._invokeConfigChangeCallback()
             elif self.ev == self.BEACON_CHANGE:
@@ -1485,6 +1578,13 @@ class YAPI:
     RFID_SOFT_ERROR = -16          # Recoverable error with RFID tag (eg. tag out of reach), check YRfidStatus for details
     RFID_HARD_ERROR = -17          # Serious RFID error (eg. write-protected, out-of-boundary), check YRfidStatus for details
     BUFFER_TOO_SMALL = -18         # The buffer provided is too small
+    DNS_ERROR = -19                # Error during name resolutions (invalid hostname or dns communication error)
+    SSL_UNK_CERT = -20             # The certificate is not correctly signed by the trusted CA
+
+    # TLS / SSL definitions
+    NO_TRUSTED_CA_CHECK = 1        # Disables certificate checking
+    NO_EXPIRATION_CHECK = 2        # Disables certificate expiration date checking
+    NO_HOSTNAME_CHECK = 4          # Disable hostname checking
 
     #--- (end of generated code: YFunction return codes)
 
@@ -1502,7 +1602,8 @@ class YAPI:
 
     _yapiFunctionUpdateFunc = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p)
 
-    _yapiTimedReportFunc = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_double, POINTER(c_ubyte), ctypes.c_int, ctypes.c_double)
+    _yapiTimedReportFunc = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_double, POINTER(c_ubyte), ctypes.c_int,
+                                            ctypes.c_double)
 
     _yapiHubDiscoveryCallback = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_char_p)
 
@@ -1574,6 +1675,53 @@ class YAPI:
         if not YAPI._apiInitialized:
             YAPI.InitAPI(0)
         return YAPI._yapiContext.AddUdevRule(force)
+
+    @staticmethod
+    def DownloadHostCertificate(url, mstimeout):
+        """
+        Download the TLS/SSL certificate from the hub. This function allows to download a TLS/SSL certificate to add it
+        to the list of trusted certificates using the AddTrustedCertificates method.
+
+        @param url : the root URL of the VirtualHub V2 or HTTP server.
+        @param mstimeout : the number of milliseconds available to download the certificate.
+
+        @return a string containing the certificate. In case of error, returns a string starting with "error:".
+        """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
+        return YAPI._yapiContext.DownloadHostCertificate(url, mstimeout)
+
+    @staticmethod
+    def AddTrustedCertificates(certificate):
+        """
+        Adds a TLS/SSL certificate to the list of trusted certificates. By default, the library
+        library will reject TLS/SSL connections to servers whose certificate is not known. This function
+        function allows to add a list of known certificates. It is also possible to disable the verification
+        using the SetNetworkSecurityOptions method.
+
+        @param certificate : a string containing one or more certificates.
+
+        @return an empty string if the certificate has been added correctly.
+                In case of error, returns a string starting with "error:".
+        """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
+        return YAPI._yapiContext.AddTrustedCertificates(certificate)
+
+    @staticmethod
+    def SetNetworkSecurityOptions(options):
+        """
+        Enables or disables certain TLS/SSL certificate checks.
+
+        @param options: The options: YAPI.NO_TRUSTED_CA_CHECK,
+                YAPI.NO_EXPIRATION_CHECK, YAPI.NO_HOSTNAME_CHECK.
+
+        @return an empty string if the options are taken into account.
+                On error, returns a string beginning with "error:".
+        """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
+        return YAPI._yapiContext.SetNetworkSecurityOptions(options)
 
     @staticmethod
     def SetNetworkTimeout(networkMsTimeout):
@@ -2778,6 +2926,14 @@ class YAPI:
         del YAPI._DataEvents[:]
         YFunction._CalibHandlers.clear()
 
+    @staticmethod
+    def _atof(str_float):
+        try:
+            res = float(str_float)
+        except ValueError:
+            res = 0.0
+        return res
+
 
 # --- (generated code: YFirmwareUpdate class start)
 #noinspection PyProtectedMember
@@ -2795,7 +2951,7 @@ class YFirmwareUpdate(object):
     def __init__(self, serial, path, settings, force=False):
         # --- (generated code: YFirmwareUpdate attributes)
         self._serial = ''
-        self._settings = ''
+        self._settings = bytearray()
         self._firmwarepath = ''
         self._progress_msg = ''
         self._progress_c = 0
@@ -2839,7 +2995,7 @@ class YFirmwareUpdate(object):
             self._progress = int((self._progress_c * 9) / (10))
             self._progress_msg = YByte2String(errmsg.value)
         else:
-            if (len(self._settings) != 0):
+            if (len(self._settings) != 0) and ( self._progress_c != 101):
                 self._progress_msg = "restoring settings"
                 m = YModule.FindModule(self._serial + ".module")
                 if not (m.isOnline()):
@@ -4551,15 +4707,15 @@ native_yHubDiscoveryAnchor = YAPI._yapiHubDiscoveryCallback(YAPI.native_HubDisco
 native_yDeviceLogAnchor = YAPI._yapiDeviceLogCallback(YAPI.native_DeviceLogCallback)
 
 
-#--- (generated code: YHub class start)
+# --- (generated code: YHub class start)
 #noinspection PyProtectedMember
 class YHub(object):
     #--- (end of generated code: YHub class start)
-    #--- (generated code: YHub definitions)
+    # --- (generated code: YHub definitions)
     #--- (end of generated code: YHub definitions)
 
     def __init__(self, yctx, hubref):
-    #--- (generated code: YHub attributes)
+        # --- (generated code: YHub attributes)
         self._ctx = None
         self._hubref = 0
         self._userData = None
@@ -4567,7 +4723,7 @@ class YHub(object):
         self._ctx = yctx
         self._hubref = hubref
 
-    #--- (generated code: YHub implementation)
+    # --- (generated code: YHub implementation)
     def _getStrAttr(self, attrName):
         val = ctypes.create_string_buffer(1024)
         # res
@@ -4757,7 +4913,7 @@ class YHub(object):
 
 #--- (end of generated code: YHub implementation)
 
-#--- (generated code: YHub functions)
+# --- (generated code: YHub functions)
 #--- (end of generated code: YHub functions)
 
 
@@ -6207,8 +6363,10 @@ class YModule(YFunction):
         Registers a device log callback function. This callback will be called each time
         that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
 
-        @param callback : the callback function to call, or a None pointer. The callback function should take two
-                arguments: the module object that emitted the log message, and the character string containing the log.
+        @param callback : the callback function to call, or a None pointer.
+                The callback function should take two
+                arguments: the module object that emitted the log message,
+                and the character string containing the log.
                 On failure, throws an exception or returns a negative error code.
         """
         # serial
@@ -6680,7 +6838,7 @@ class YModule(YFunction):
                             i = i + 1
                 else:
                     if paramVer == 0:
-                        ratio = float(param)
+                        ratio = YAPI._atof(param)
                         if ratio > 0:
                             calibData.append(0.0)
                             calibData.append(0.0)
@@ -8145,7 +8303,7 @@ class YSensor(YFunction):
         del rawValues[:]
         del refValues[:]
         # // Load function parameters if not yet loaded
-        if self._scale == 0:
+        if (self._scale == 0) or (self._cacheExpiration <= YAPI.GetTickCount()):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAPI.DEVICE_NOT_FOUND
         if self._caltyp < 0:

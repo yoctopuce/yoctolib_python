@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_weighscale.py 50689 2022-08-17 14:37:15Z mvuilleu $
+#  $Id: yocto_weighscale.py 59222 2024-02-05 15:50:11Z seb $
 #
 #  Implements yFindWeighScale(), the high-level API for WeighScale functions
 #
@@ -449,8 +449,8 @@ class YWeighScale(YSensor):
         del compValues[:]
         idx = 0
         while idx < siz:
-            temp = float(paramlist[2*idx])/1000.0
-            comp = float(paramlist[2*idx+1])/1000.0
+            temp = YAPI._atof(paramlist[2*idx])/1000.0
+            comp = YAPI._atof(paramlist[2*idx+1])/1000.0
             tempValues.append(temp)
             compValues.append(comp)
             idx = idx + 1

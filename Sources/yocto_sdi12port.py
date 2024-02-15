@@ -53,18 +53,23 @@ class YSdi12SnoopingRecord(object):
     def __init__(self, json_str):
         #--- (generated code: YSdi12SnoopingRecord attributes)
         self._tim = 0
+        self._pos = 0
         self._dir = 0
         self._msg = ''
         #--- (end of generated code: YSdi12SnoopingRecord attributes)
         json = YJSONObject(json_str, 0, len(json_str))
         json.parse()
-        self._tim = json.getInt("t")
-        m = json.getString("m")
-        if m[0] == '<':
-            self._dir = 1
-        else:
-            self._dir = 0
-        self._msg = m[1:]
+        if json_val.has("t"):
+            self._tim = json.getInt("t")
+        if json_val.has("p"):
+            self._pos = json.getInt("p")
+        if json_val.has("m"):
+            m = json.getString("m")
+            if m[0] == '<':
+                self._dir = 1
+            else:
+                self._dir = 0
+            self._msg = m[1:]
 
     #--- (generated code: YSdi12SnoopingRecord implementation)
     def get_time(self):
@@ -74,6 +79,14 @@ class YSdi12SnoopingRecord(object):
         @return the elapsed time, in ms, since the beginning of the preceding message.
         """
         return self._tim
+
+    def get_pos(self):
+        """
+        Returns the absolute position of the message end.
+
+        @return the absolute position of the message end.
+        """
+        return self._pos
 
     def get_direction(self):
         """
@@ -119,39 +132,109 @@ class YSdi12Sensor(object):
 
     #--- (generated code: YSdi12Sensor implementation)
     def get_sensorAddress(self):
+        """
+        Returns the sensor address.
+
+        @return the sensor address.
+        """
         return self._addr
 
     def get_sensorProtocol(self):
+        """
+        Returns the compatible SDI-12 version of the sensor.
+
+        @return the compatible SDI-12 version of the sensor.
+        """
         return self._proto
 
     def get_sensorVendor(self):
+        """
+        Returns the sensor vendor identification.
+
+        @return the sensor vendor identification.
+        """
         return self._mfg
 
     def get_sensorModel(self):
+        """
+        Returns the sensor model number.
+
+        @return the sensor model number.
+        """
         return self._model
 
     def get_sensorVersion(self):
+        """
+        Returns the sensor version.
+
+        @return the sensor version.
+        """
         return self._ver
 
     def get_sensorSerial(self):
+        """
+        Returns the sensor serial number.
+
+        @return the sensor serial number.
+        """
         return self._sn
 
     def get_measureCount(self):
+        """
+        Returns the number of sensor measurements.
+
+        @return the number of sensor measurements.
+        """
         return len(self._valuesDesc)
 
     def get_measureCommand(self, measureIndex):
+        """
+        Returns the sensor measurement command.
+
+        @param measureIndex : measurement index
+
+        @return the sensor measurement command.
+        """
         return self._valuesDesc[measureIndex][0]
 
     def get_measurePosition(self, measureIndex):
+        """
+        Returns sensor measurement position.
+
+        @param measureIndex : measurement index
+
+        @return the sensor measurement command.
+        """
         return YAPI._atoi(self._valuesDesc[measureIndex][2])
 
     def get_measureSymbol(self, measureIndex):
+        """
+        Returns the measured value symbol.
+
+        @param measureIndex : measurement index
+
+        @return the sensor measurement command.
+        """
         return self._valuesDesc[measureIndex][3]
 
     def get_measureUnit(self, measureIndex):
+        """
+        Returns the unit of the measured value.
+
+        @param measureIndex : measurement index
+
+        @return the sensor measurement command.
+        """
         return self._valuesDesc[measureIndex][4]
 
     def get_measureDescription(self, measureIndex):
+        """
+        Returns the description of the measured value.
+
+        @param measureIndex : measurement index
+
+        @return the sensor measurement command.
+        """
         return self._valuesDesc[measureIndex][5]
 
     def get_typeMeasure(self):
@@ -189,8 +272,10 @@ class YSdi12Sensor(object):
         # i
         # j
         listVal = []
+        # size
 
         k = 0
+        size = 4
         while k < 10:
             infoNbVal = self._sdi12Port.querySdi12(self._addr, "IM" + str(int(k)), 5000)
             if len(infoNbVal) > 1:
@@ -208,6 +293,8 @@ class YSdi12Sensor(object):
                         listVal.append("M" + str(int(k)))
                         listVal.append(str(i+1))
                         j = 0
+                        while len(data) < size:
+                            data.append("")
                         while j < len(data):
                             listVal.append(data[j])
                             j = j + 1
@@ -286,7 +373,7 @@ class YSdi12Port(YFunction):
         self._voltageLevel = YSdi12Port.VOLTAGELEVEL_INVALID
         self._serialMode = YSdi12Port.SERIALMODE_INVALID
         self._rxptr = 0
-        self._rxbuff = ''
+        self._rxbuff = bytearray()
         self._rxbuffptr = 0
         self._eventPos = 0
         #--- (end of generated code: YSdi12Port attributes)
@@ -1431,11 +1518,11 @@ class YSdi12Port(YFunction):
         if len(split) < 2:
             return res
 
-        valdouble = float(split[1])
+        valdouble = YAPI._atof(split[1])
         res.append(valdouble)
         i = 1
         while i < len(tab):
-            valdouble = float(tab[i])
+            valdouble = YAPI._atof(tab[i])
             res.append(valdouble)
             i = i + 1
 

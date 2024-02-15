@@ -1,13 +1,13 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 45299 2021-05-26 07:13:05Z web $
+#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
 #
-#  An example that show how to use a  Yocto-Buzzer
+#  An example that shows how to use a  Yocto-Buzzer
 #
 #  You can find more information on our web site:
 #   Yocto-Buzzer documentation:
 #      https://www.yoctopuce.com/EN/products/yocto-buzzer/doc.html
-#   Python API Reference:
+#   Python V2 API Reference:
 #      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
 #
 # *********************************************************************

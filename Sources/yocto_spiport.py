@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 52892 2023-01-25 10:13:30Z seb $
+#  $Id: yocto_spiport.py 59222 2024-02-05 15:50:11Z seb $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -53,18 +53,23 @@ class YSpiSnoopingRecord(object):
     def __init__(self, json_str):
         #--- (generated code: YSpiSnoopingRecord attributes)
         self._tim = 0
+        self._pos = 0
         self._dir = 0
         self._msg = ''
         #--- (end of generated code: YSpiSnoopingRecord attributes)
         json = YJSONObject(json_str, 0, len(json_str))
         json.parse()
-        self._tim = json.getInt("t")
-        m = json.getString("m")
-        if m[0] == '<':
-            self._dir = 1
-        else:
-            self._dir = 0
-        self._msg = m[1:]
+        if json_val.has("t"):
+            self._tim = json.getInt("t")
+        if json_val.has("p"):
+            self._pos = json.getInt("p")
+        if json_val.has("m"):
+            m = json.getString("m")
+            if m[0] == '<':
+                self._dir = 1
+            else:
+                self._dir = 0
+            self._msg = m[1:]
 
     #--- (generated code: YSpiSnoopingRecord implementation)
     def get_time(self):
@@ -74,6 +79,14 @@ class YSpiSnoopingRecord(object):
         @return the elapsed time, in ms, since the beginning of the preceding message.
         """
         return self._tim
+
+    def get_pos(self):
+        """
+        Returns the absolute position of the message end.
+
+        @return the absolute position of the message end.
+        """
+        return self._pos
 
     def get_direction(self):
         """
@@ -170,7 +183,7 @@ class YSpiPort(YFunction):
         self._ssPolarity = YSpiPort.SSPOLARITY_INVALID
         self._shiftSampling = YSpiPort.SHIFTSAMPLING_INVALID
         self._rxptr = 0
-        self._rxbuff = ''
+        self._rxbuff = bytearray()
         self._rxbuffptr = 0
         self._eventPos = 0
         #--- (end of generated code: YSpiPort attributes)

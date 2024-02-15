@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 52892 2023-01-25 10:13:30Z seb $
+#* $Id: yocto_serialport.py 59222 2024-02-05 15:50:11Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -54,18 +54,23 @@ class YSnoopingRecord(object):
     def __init__(self, json_str):
         #--- (generated code: YSnoopingRecord attributes)
         self._tim = 0
+        self._pos = 0
         self._dir = 0
         self._msg = ''
         #--- (end of generated code: YSnoopingRecord attributes)
         json = YJSONObject(json_str, 0, len(json_str))
         json.parse()
-        self._tim = json.getInt("t")
-        m = json.getString("m")
-        if m[0] == '<':
-            self._dir = 1
-        else:
-            self._dir = 0
-        self._msg = m[1:]
+        if json_val.has("t"):
+            self._tim = json.getInt("t")
+        if json_val.has("p"):
+            self._pos = json.getInt("p")
+        if json_val.has("m"):
+            m = json.getString("m")
+            if m[0] == '<':
+                self._dir = 1
+            else:
+                self._dir = 0
+            self._msg = m[1:]
 
     #--- (generated code: YSnoopingRecord implementation)
     def get_time(self):
@@ -75,6 +80,14 @@ class YSnoopingRecord(object):
         @return the elapsed time, in ms, since the beginning of the preceding message.
         """
         return self._tim
+
+    def get_pos(self):
+        """
+        Returns the absolute position of the message end.
+
+        @return the absolute position of the message end.
+        """
+        return self._pos
 
     def get_direction(self):
         """
@@ -161,7 +174,7 @@ class YSerialPort(YFunction):
         self._voltageLevel = YSerialPort.VOLTAGELEVEL_INVALID
         self._serialMode = YSerialPort.SERIALMODE_INVALID
         self._rxptr = 0
-        self._rxbuff = ''
+        self._rxbuff = bytearray()
         self._rxbuffptr = 0
         self._eventPos = 0
         self._eventCallback = None

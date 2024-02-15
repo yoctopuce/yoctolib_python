@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 51903 2022-11-29 17:25:59Z mvuilleu $
+#* $Id: yocto_files.py 52175 2022-12-06 07:37:12Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*

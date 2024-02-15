@@ -5,7 +5,7 @@
 #  Doc-Inventory example
 #
 #  You can find more information on our web site:
-#   Python API Reference:
+#   Python V2 API Reference:
 #      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
 #
 # *********************************************************************

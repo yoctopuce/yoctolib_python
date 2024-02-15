@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_arithmeticsensor.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_arithmeticsensor.py 59222 2024-02-05 15:50:11Z seb $
 #
 #  Implements yFindArithmeticSensor(), the high-level API for ArithmeticSensor functions
 #
@@ -190,7 +190,7 @@ class YArithmeticSensor(YSensor):
         if not ((diags)[0: 0 + 8] == "Result: "):
             self._throw(YAPI.INVALID_ARGUMENT, diags)
             return YAPI.INVALID_DOUBLE
-        resval = float((diags)[8: 8 + len(diags)-8])
+        resval = YAPI._atof((diags)[8: 8 + len(diags)-8])
         return resval
 
     def loadExpression(self):

@@ -1,8 +1,8 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 34161 2019-01-28 14:41:40Z mvuilleu $
+#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
 #
-#  An example that show how to use a  Yocto-PWM-Tx
+#  An example that shows how to use a  Yocto-PWM-Tx
 #
 #  You can find more information on our web site:
 #   Yocto-PWM-Tx documentation:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_network.py 53886 2023-04-05 08:06:39Z mvuilleu $
+#  $Id: yocto_network.py 54332 2023-05-02 08:35:37Z seb $
 #
 #  Implements yFindNetwork(), the high-level API for Network functions
 #
@@ -71,6 +71,7 @@ class YNetwork(YFunction):
     USERPASSWORD_INVALID = YAPI.INVALID_STRING
     ADMINPASSWORD_INVALID = YAPI.INVALID_STRING
     HTTPPORT_INVALID = YAPI.INVALID_UINT
+    HTTPSPORT_INVALID = YAPI.INVALID_UINT
     DEFAULTPAGE_INVALID = YAPI.INVALID_STRING
     WWWWATCHDOGDELAY_INVALID = YAPI.INVALID_UINT
     CALLBACKURL_INVALID = YAPI.INVALID_STRING
@@ -130,6 +131,7 @@ class YNetwork(YFunction):
         self._userPassword = YNetwork.USERPASSWORD_INVALID
         self._adminPassword = YNetwork.ADMINPASSWORD_INVALID
         self._httpPort = YNetwork.HTTPPORT_INVALID
+        self._httpsPort = YNetwork.HTTPSPORT_INVALID
         self._defaultPage = YNetwork.DEFAULTPAGE_INVALID
         self._discoverable = YNetwork.DISCOVERABLE_INVALID
         self._wwwWatchdogDelay = YNetwork.WWWWATCHDOGDELAY_INVALID
@@ -173,6 +175,8 @@ class YNetwork(YFunction):
             self._adminPassword = json_val.getString("adminPassword")
         if json_val.has("httpPort"):
             self._httpPort = json_val.getInt("httpPort")
+        if json_val.has("httpsPort"):
+            self._httpsPort = json_val.getInt("httpsPort")
         if json_val.has("defaultPage"):
             self._defaultPage = json_val.getString("defaultPage")
         if json_val.has("discoverable"):
@@ -534,6 +538,36 @@ class YNetwork(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("httpPort", rest_val)
+
+    def get_httpsPort(self):
+        """
+        Returns the secure TCP port used to serve the hub web UI.
+
+        @return an integer corresponding to the secure TCP port used to serve the hub web UI
+
+        On failure, throws an exception or returns YNetwork.HTTPSPORT_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YNetwork.HTTPSPORT_INVALID
+        res = self._httpsPort
+        return res
+
+    def set_httpsPort(self, newval):
+        """
+        Changes the secure TCP port used to serve the hub web UI. The default value is port 4443,
+        which is the default for all Web servers. When you change this parameter, remember to call the saveToFlash()
+        method of the module if the modification must be kept.
+
+        @param newval : an integer corresponding to the secure TCP port used to serve the hub web UI
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("httpsPort", rest_val)
 
     def get_defaultPage(self):
         """

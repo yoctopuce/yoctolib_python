@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_pwmoutput.py 50689 2022-08-17 14:37:15Z mvuilleu $
+#  $Id: yocto_pwmoutput.py 58921 2024-01-12 09:43:57Z seb $
 #
 #  Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #
@@ -69,6 +69,9 @@ class YPwmOutput(YFunction):
     ENABLED_FALSE = 0
     ENABLED_TRUE = 1
     ENABLED_INVALID = -1
+    INVERTEDOUTPUT_FALSE = 0
+    INVERTEDOUTPUT_TRUE = 1
+    INVERTEDOUTPUT_INVALID = -1
     ENABLEDATPOWERON_FALSE = 0
     ENABLEDATPOWERON_TRUE = 1
     ENABLEDATPOWERON_INVALID = -1
@@ -85,6 +88,7 @@ class YPwmOutput(YFunction):
         self._dutyCycle = YPwmOutput.DUTYCYCLE_INVALID
         self._pulseDuration = YPwmOutput.PULSEDURATION_INVALID
         self._pwmTransition = YPwmOutput.PWMTRANSITION_INVALID
+        self._invertedOutput = YPwmOutput.INVERTEDOUTPUT_INVALID
         self._enabledAtPowerOn = YPwmOutput.ENABLEDATPOWERON_INVALID
         self._dutyCycleAtPowerOn = YPwmOutput.DUTYCYCLEATPOWERON_INVALID
         #--- (end of YPwmOutput attributes)
@@ -103,6 +107,8 @@ class YPwmOutput(YFunction):
             self._pulseDuration = round(json_val.getDouble("pulseDuration") / 65.536) / 1000.0
         if json_val.has("pwmTransition"):
             self._pwmTransition = json_val.getString("pwmTransition")
+        if json_val.has("invertedOutput"):
+            self._invertedOutput = (json_val.getInt("invertedOutput") > 0 if 1 else 0)
         if json_val.has("enabledAtPowerOn"):
             self._enabledAtPowerOn = (json_val.getInt("enabledAtPowerOn") > 0 if 1 else 0)
         if json_val.has("dutyCycleAtPowerOn"):
@@ -272,6 +278,38 @@ class YPwmOutput(YFunction):
     def set_pwmTransition(self, newval):
         rest_val = newval
         return self._setAttr("pwmTransition", rest_val)
+
+    def get_invertedOutput(self):
+        """
+        Returns true if the output signal is configured as inverted, and false otherwise.
+
+        @return either YPwmOutput.INVERTEDOUTPUT_FALSE or YPwmOutput.INVERTEDOUTPUT_TRUE, according to true
+        if the output signal is configured as inverted, and false otherwise
+
+        On failure, throws an exception or returns YPwmOutput.INVERTEDOUTPUT_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YPwmOutput.INVERTEDOUTPUT_INVALID
+        res = self._invertedOutput
+        return res
+
+    def set_invertedOutput(self, newval):
+        """
+        Changes the inversion mode of the output signal.
+        Remember to call the matching module saveToFlash() method if you want
+        the change to be kept after power cycle.
+
+        @param newval : either YPwmOutput.INVERTEDOUTPUT_FALSE or YPwmOutput.INVERTEDOUTPUT_TRUE, according
+        to the inversion mode of the output signal
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("invertedOutput", rest_val)
 
     def get_enabledAtPowerOn(self):
         """

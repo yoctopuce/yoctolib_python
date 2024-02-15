@@ -1,13 +1,13 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 56194 2023-08-21 07:39:11Z seb $
+#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
 #
-#  An example that show how to use a  Yocto-SDI12
+#  An example that shows how to use a  Yocto-SDI12
 #
 #  You can find more information on our web site:
 #   Yocto-SDI12 documentation:
 #      https://www.yoctopuce.com/EN/products/yocto-sdi12/doc.html
-#   Python API Reference:
+#   Python V2 API Reference:
 #      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
 #
 # *********************************************************************

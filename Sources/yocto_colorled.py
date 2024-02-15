@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorled.py 55988 2023-08-11 16:15:16Z mvuilleu $
+#  $Id: yocto_colorled.py 56108 2023-08-16 09:16:49Z seb $
 #
 #  Implements yFindColorLed(), the high-level API for ColorLed functions
 #

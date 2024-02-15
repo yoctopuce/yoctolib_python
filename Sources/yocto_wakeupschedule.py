@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_wakeupschedule.py 56230 2023-08-21 15:20:59Z mvuilleu $
+#  $Id: yocto_wakeupschedule.py 56252 2023-08-23 10:06:05Z seb $
 #
 #  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #

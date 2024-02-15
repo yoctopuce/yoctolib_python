@@ -1,8 +1,8 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 32630 2018-10-10 14:11:07Z seb $
+#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
 #
-#  An example that show how to use a  Yocto-Display
+#  An example that shows how to use a  Yocto-Display
 #
 #  You can find more information on our web site:
 #   Yocto-Display documentation:

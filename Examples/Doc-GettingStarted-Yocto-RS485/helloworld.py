@@ -1,13 +1,13 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 52208 2022-12-07 08:17:21Z mvuilleu $
+#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
 #
-#  An example that show how to use a  Yocto-RS485
+#  An example that shows how to use a  Yocto-RS485
 #
 #  You can find more information on our web site:
 #   Yocto-RS485 documentation:
 #      https://www.yoctopuce.com/EN/products/yocto-rs485/doc.html
-#   Python API Reference:
+#   Python V2 API Reference:
 #      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
 #
 # *********************************************************************

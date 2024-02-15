@@ -1,8 +1,8 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 48203 2022-01-20 13:50:08Z mvuilleu $
+#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
 #
-#  An example that show how to use a  Yocto-0-10V-Tx
+#  An example that shows how to use a  Yocto-0-10V-Tx
 #
 #  You can find more information on our web site:
 #   Yocto-0-10V-Tx documentation:

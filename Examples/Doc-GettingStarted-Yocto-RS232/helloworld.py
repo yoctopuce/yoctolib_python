@@ -1,8 +1,8 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 32628 2018-10-10 13:37:59Z seb $
+#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
 #
-#  An example that show how to use a  Yocto-RS232
+#  An example that shows how to use a  Yocto-RS232
 #
 #  You can find more information on our web site:
 #   Yocto-RS232 documentation:

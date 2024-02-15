@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_realtimeclock.py 53841 2023-04-04 09:20:11Z mvuilleu $
+#  $Id: yocto_realtimeclock.py 54332 2023-05-02 08:35:37Z seb $
 #
 #  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #
