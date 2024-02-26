@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 59222 2024-02-05 15:50:11Z seb $
+#  $Id: yocto_spiport.py 59503 2024-02-26 11:04:41Z seb $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -600,7 +600,7 @@ class YSpiPort(YFunction):
     @staticmethod
     def FindSpiPort(func):
         """
-        Retrieves a SPI port for a given identifier.
+        Retrieves an SPI port for a given identifier.
         The identifier can be specified using several formats:
         <ul>
         <li>FunctionLogicalName</li>
@@ -614,7 +614,7 @@ class YSpiPort(YFunction):
         it is invoked. The returned object is nevertheless valid.
         Use the method YSpiPort.isOnline() to test if the SPI port is
         indeed online at a given time. In case of ambiguity when looking for
-        a SPI port by logical name, no error is notified: the first instance
+        an SPI port by logical name, no error is notified: the first instance
         found is returned. The search is performed first by hardware name,
         then by logical name.
 
@@ -1302,11 +1302,11 @@ class YSpiPort(YFunction):
         """
         Continues the enumeration of SPI ports started using yFirstSpiPort().
         Caution: You can't make any assumption about the returned SPI ports order.
-        If you want to find a specific a SPI port, use SpiPort.findSpiPort()
+        If you want to find a specific an SPI port, use SpiPort.findSpiPort()
         and a hardwareID or a logical name.
 
         @return a pointer to a YSpiPort object, corresponding to
-                a SPI port currently online, or a None pointer
+                an SPI port currently online, or a None pointer
                 if there are no more SPI ports to enumerate.
         """
         hwidRef = YRefParam()

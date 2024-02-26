@@ -1,3 +1,4 @@
-PythonV2 v2.0.59414
+PythonV2 v2.0.59503
 
-- Fix missing file on release
+- Fix support for macOS on Apple silicon
+- Fix parsing of URL with domain in YAPI::RegisterHub

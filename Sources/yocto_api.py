@@ -1,7 +1,7 @@
 # -*- coding: latin-1 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 59238 2024-02-06 10:13:26Z seb $
+# * $Id: yocto_api.py 59503 2024-02-26 11:04:41Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -1018,7 +1018,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.0"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "59414"
+    YOCTO_API_BUILD_NO = "59503"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -7975,11 +7975,10 @@ class YSensor(YFunction):
 
     def get_sensorState(self):
         """
-        Returns the sensor health state code, which is zero when there is an up-to-date measure
+        Returns the sensor state code, which is zero when there is an up-to-date measure
         available or a positive code if the sensor is not able to provide a measure right now.
 
-        @return an integer corresponding to the sensor health state code, which is zero when there is an
-        up-to-date measure
+        @return an integer corresponding to the sensor state code, which is zero when there is an up-to-date measure
                 available or a positive code if the sensor is not able to provide a measure right now
 
         On failure, throws an exception or returns YSensor.SENSORSTATE_INVALID.
@@ -8523,7 +8522,7 @@ class YDataLogger(YFunction):
     sensors. Recording can happen automatically, without requiring a permanent
     connection to a computer.
     The YDataLogger class controls the global parameters of the internal data
-    logger. Recording control (start/stop) as well as data retreival is done at
+    logger. Recording control (start/stop) as well as data retrieval is done at
     sensor objects level.
 
     """
