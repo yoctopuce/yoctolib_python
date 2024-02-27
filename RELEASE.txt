@@ -1,4 +1,3 @@
-PythonV2 v2.0.59503
+PythonV2 v2.0.59526
 
-- Fix support for macOS on Apple silicon
-- Fix parsing of URL with domain in YAPI::RegisterHub
+- Fix dependency to GLIBC_2.33 on Linux aarch64 system
