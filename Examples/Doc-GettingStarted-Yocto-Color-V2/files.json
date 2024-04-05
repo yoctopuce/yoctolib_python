@@ -1,0 +1,15 @@
+{
+    "main": "helloworld.py",
+    "other_files": [],
+    "ylib": [
+        "yocto_colorled",
+        "yocto_colorledcluster",
+        "yocto_files",
+        "yocto_api"
+    ],
+    "skip": false,
+    "xcode": false,
+    "vstudio": false,
+    "gnu": false,
+    "cb": false
+}

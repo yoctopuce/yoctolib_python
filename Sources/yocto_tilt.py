@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_tilt.py 42951 2020-12-14 09:43:29Z seb $
+#  $Id: yocto_tilt.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #
 #  Implements yFindTilt(), the high-level API for Tilt functions
 #
@@ -134,13 +134,13 @@ class YTilt(YSensor):
         """
         Retrieves a tilt sensor for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the tilt sensor is online at the time
         it is invoked. The returned object is nevertheless valid.

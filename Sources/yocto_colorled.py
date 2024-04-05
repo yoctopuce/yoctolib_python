@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorled.py 56108 2023-08-16 09:16:49Z seb $
+#  $Id: yocto_colorled.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #
 #  Implements yFindColorLed(), the high-level API for ColorLed functions
 #
@@ -330,13 +330,13 @@ class YColorLed(YFunction):
         """
         Retrieves an RGB LED for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the RGB LED is online at the time
         it is invoked. The returned object is nevertheless valid.

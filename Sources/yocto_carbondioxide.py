@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_carbondioxide.py 44175 2021-03-11 11:27:12Z mvuilleu $
+#  $Id: yocto_carbondioxide.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #
 #  Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
 #
@@ -133,13 +133,13 @@ class YCarbonDioxide(YSensor):
         """
         Retrieves a CO2 sensor for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the CO2 sensor is online at the time
         it is invoked. The returned object is nevertheless valid.

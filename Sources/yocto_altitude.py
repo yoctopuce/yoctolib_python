@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_altitude.py 50694 2022-08-18 09:01:12Z seb $
+#  $Id: yocto_altitude.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #
 #  Implements yFindAltitude(), the high-level API for Altitude functions
 #
@@ -157,13 +157,13 @@ class YAltitude(YSensor):
         """
         Retrieves an altimeter for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the altimeter is online at the time
         it is invoked. The returned object is nevertheless valid.

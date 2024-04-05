@@ -1,0 +1,16 @@
+{
+    "main": "helloworld.py",
+    "other_files": [],
+    "ylib": [
+        "yocto_genericsensor",
+        "yocto_multicellweighscale",
+        "yocto_temperature",
+        "yocto_weighscale",
+        "yocto_api"
+    ],
+    "skip": false,
+    "xcode": false,
+    "vstudio": false,
+    "gnu": false,
+    "cb": false
+}

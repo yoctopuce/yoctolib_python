@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_refframe.py 50694 2022-08-18 09:01:12Z seb $
+#  $Id: yocto_refframe.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #
 #  Implements yFindRefFrame(), the high-level API for RefFrame functions
 #
@@ -236,13 +236,13 @@ class YRefFrame(YFunction):
         """
         Retrieves a reference frame for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the reference frame is online at the time
         it is invoked. The returned object is nevertheless valid.

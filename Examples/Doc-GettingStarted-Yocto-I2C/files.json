@@ -1,0 +1,16 @@
+{
+    "main": "helloworld.py",
+    "other_files": [],
+    "ylib": [
+        "yocto_files",
+        "yocto_genericsensor",
+        "yocto_i2cport",
+        "yocto_poweroutput",
+        "yocto_api"
+    ],
+    "skip": false,
+    "xcode": false,
+    "vstudio": false,
+    "gnu": false,
+    "cb": false
+}

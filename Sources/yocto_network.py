@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_network.py 54332 2023-05-02 08:35:37Z seb $
+#  $Id: yocto_network.py 60214 2024-03-26 13:01:50Z mvuilleu $
 #
 #  Implements yFindNetwork(), the high-level API for Network functions
 #
@@ -87,6 +87,11 @@ class YNetwork(YFunction):
     READINESS_LAN_OK = 3
     READINESS_WWW_OK = 4
     READINESS_INVALID = -1
+    SECURITYMODE_UNDEFINED = 0
+    SECURITYMODE_LEGACY = 1
+    SECURITYMODE_MIXED = 2
+    SECURITYMODE_SECURE = 3
+    SECURITYMODE_INVALID = -1
     DISCOVERABLE_FALSE = 0
     DISCOVERABLE_TRUE = 1
     DISCOVERABLE_INVALID = -1
@@ -132,6 +137,7 @@ class YNetwork(YFunction):
         self._adminPassword = YNetwork.ADMINPASSWORD_INVALID
         self._httpPort = YNetwork.HTTPPORT_INVALID
         self._httpsPort = YNetwork.HTTPSPORT_INVALID
+        self._securityMode = YNetwork.SECURITYMODE_INVALID
         self._defaultPage = YNetwork.DEFAULTPAGE_INVALID
         self._discoverable = YNetwork.DISCOVERABLE_INVALID
         self._wwwWatchdogDelay = YNetwork.WWWWATCHDOGDELAY_INVALID
@@ -177,6 +183,8 @@ class YNetwork(YFunction):
             self._httpPort = json_val.getInt("httpPort")
         if json_val.has("httpsPort"):
             self._httpsPort = json_val.getInt("httpsPort")
+        if json_val.has("securityMode"):
+            self._securityMode = json_val.getInt("securityMode")
         if json_val.has("defaultPage"):
             self._defaultPage = json_val.getString("defaultPage")
         if json_val.has("discoverable"):
@@ -568,6 +576,52 @@ class YNetwork(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("httpsPort", rest_val)
+
+    def get_securityMode(self):
+        """
+        Returns the security level chosen to prevent unauthorized access to the server.
+
+        @return a value among YNetwork.SECURITYMODE_UNDEFINED, YNetwork.SECURITYMODE_LEGACY,
+        YNetwork.SECURITYMODE_MIXED and YNetwork.SECURITYMODE_SECURE corresponding to the security level
+        chosen to prevent unauthorized access to the server
+
+        On failure, throws an exception or returns YNetwork.SECURITYMODE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YNetwork.SECURITYMODE_INVALID
+        res = self._securityMode
+        return res
+
+    def set_securityMode(self, newval):
+        """
+        Changes the security level used to prevent unauthorized access to the server.
+        The value UNDEFINED causes the security configuration wizard to be
+        displayed the next time you log on to the Web console.
+        The value LEGACY offers unencrypted HTTP access by default, and
+        is designed to provide compatibility with legacy applications that do not
+        handle password or do not support HTTPS. But it should
+        only be used when system security is guaranteed by other means, such as the
+        use of a firewall.
+        The value MIXED requires the configuration of passwords, and allows
+        access via both HTTP (unencrypted) and HTTPS (encrypted), while requiring
+        the Yoctopuce API to be tolerant of certificate characteristics.
+        The value SECURE requires the configuration of passwords and the
+        use of secure communications in all cases.
+        When you change this parameter, remember to call the saveToFlash()
+        method of the module if the modification must be kept.
+
+        @param newval : a value among YNetwork.SECURITYMODE_UNDEFINED, YNetwork.SECURITYMODE_LEGACY,
+        YNetwork.SECURITYMODE_MIXED and YNetwork.SECURITYMODE_SECURE corresponding to the security level
+        used to prevent unauthorized access to the server
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("securityMode", rest_val)
 
     def get_defaultPage(self):
         """
@@ -1017,13 +1071,13 @@ class YNetwork(YFunction):
         """
         Retrieves a network interface for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the network interface is online at the time
         it is invoked. The returned object is nevertheless valid.

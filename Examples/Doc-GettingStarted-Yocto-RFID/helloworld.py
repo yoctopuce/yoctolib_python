@@ -1,13 +1,13 @@
 # ********************************************************************
 #
-#  $Id: svn_id $
+#  $Id: helloworld.py 60206 2024-03-25 16:03:00Z seb $
 #
-#  An example that show how to use a  Yocto-RFID-14443A
+#  An example that shows how to use a  Yocto-RFID-15693
 #
 #  You can find more information on our web site:
-#   Yocto-RFID-14443A documentation:
-#      https://www.yoctopuce.com/EN/products/yocto-rfid-14443a/doc.html
-#   Python V2 API Reference:
+#   Yocto-RFID-15693 documentation:
+#      https://www.yoctopuce.com/EN/products/yocto-rfid-15693/doc.html
+#   Python API Reference:
 #      https://www.yoctopuce.com/EN/doc/reference/yoctolib-python-EN.html
 #
 # *********************************************************************

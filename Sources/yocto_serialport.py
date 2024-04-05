@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 59222 2024-02-05 15:50:11Z seb $
+#* $Id: yocto_serialport.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -540,13 +540,13 @@ class YSerialPort(YFunction):
         """
         Retrieves a serial port for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the serial port is online at the time
         it is invoked. The returned object is nevertheless valid.
@@ -1232,6 +1232,48 @@ class YSerialPort(YFunction):
         res = YGetByte(buff, 0) - 48
         return res
 
+    def snoopMessagesEx(self, maxWait, maxMsg):
+        """
+        Retrieves messages (both direction) in the serial port buffer, starting at current position.
+        This function will only compare and return printable characters in the message strings.
+        Binary protocols are handled as hexadecimal strings.
+
+        If no message is found, the search waits for one up to the specified maximum timeout
+        (in milliseconds).
+
+        @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+                in the receive buffer.
+        @param maxMsg : the maximum number of messages to be returned by the function; up to 254.
+
+        @return an array of YSnoopingRecord objects containing the messages found, if any.
+                Binary messages are converted to hexadecimal representation.
+
+        On failure, throws an exception or returns an empty array.
+        """
+        # url
+        # msgbin
+        msgarr = []
+        # msglen
+        res = []
+        # idx
+
+        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&t=0&len=" + str(int(maxMsg))
+        msgbin = self._download(url)
+        msgarr = self._json_get_array(msgbin)
+        msglen = len(msgarr)
+        if msglen == 0:
+            return res
+        # // last element of array is the new position
+        msglen = msglen - 1
+        self._rxptr = YAPI._atoi(msgarr[msglen])
+        idx = 0
+
+        while idx < msglen:
+            res.append(YSnoopingRecord(msgarr[idx]))
+            idx = idx + 1
+
+        return res
+
     def snoopMessages(self, maxWait):
         """
         Retrieves messages (both direction) in the serial port buffer, starting at current position.
@@ -1249,29 +1291,7 @@ class YSerialPort(YFunction):
 
         On failure, throws an exception or returns an empty array.
         """
-        # url
-        # msgbin
-        msgarr = []
-        # msglen
-        res = []
-        # idx
-
-        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&t=0"
-        msgbin = self._download(url)
-        msgarr = self._json_get_array(msgbin)
-        msglen = len(msgarr)
-        if msglen == 0:
-            return res
-        # // last element of array is the new position
-        msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
-        idx = 0
-
-        while idx < msglen:
-            res.append(YSnoopingRecord(msgarr[idx]))
-            idx = idx + 1
-
-        return res
+        return self.snoopMessagesEx(maxWait, 255)
 
     def registerSnoopingCallback(self, callback):
         """

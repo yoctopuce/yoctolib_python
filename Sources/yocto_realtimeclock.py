@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_realtimeclock.py 54332 2023-05-02 08:35:37Z seb $
+#  $Id: yocto_realtimeclock.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #
 #  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #
@@ -232,13 +232,13 @@ class YRealTimeClock(YFunction):
         """
         Retrieves a real-time clock for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the real-time clock is online at the time
         it is invoked. The returned object is nevertheless valid.

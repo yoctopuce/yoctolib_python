@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 52175 2022-12-06 07:37:12Z seb $
+#* $Id: yocto_files.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -166,13 +166,13 @@ class YFiles(YFunction):
         """
         Retrieves a filesystem for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the filesystem is online at the time
         it is invoked. The returned object is nevertheless valid.

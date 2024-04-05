@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_power.py 53431 2023-03-06 14:19:35Z seb $
+#  $Id: yocto_power.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #
 #  Implements yFindPower(), the high-level API for Power functions
 #
@@ -215,13 +215,13 @@ class YPower(YSensor):
         """
         Retrieves a electrical power sensor for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the electrical power sensor is online at the time
         it is invoked. The returned object is nevertheless valid.

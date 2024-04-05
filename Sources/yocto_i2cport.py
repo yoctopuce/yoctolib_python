@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_i2cport.py 59222 2024-02-05 15:50:11Z seb $
+#  $Id: yocto_i2cport.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #
 #  Implements yFindI2cPort(), the high-level API for I2cPort functions
 #
@@ -510,13 +510,13 @@ class YI2cPort(YFunction):
         """
         Retrieves an I2C port for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the I2C port is online at the time
         it is invoked. The returned object is nevertheless valid.
@@ -1164,7 +1164,7 @@ class YI2cPort(YFunction):
 
         return self.writeHex(msg)
 
-    def snoopMessages(self, maxWait):
+    def snoopMessagesEx(self, maxWait, maxMsg):
         """
         Retrieves messages (both direction) in the I2C port buffer, starting at current position.
 
@@ -1173,6 +1173,7 @@ class YI2cPort(YFunction):
 
         @param maxWait : the maximum number of milliseconds to wait for a message if none is found
                 in the receive buffer.
+        @param maxMsg : the maximum number of messages to be returned by the function; up to 254.
 
         @return an array of YI2cSnoopingRecord objects containing the messages found, if any.
 
@@ -1185,7 +1186,7 @@ class YI2cPort(YFunction):
         res = []
         # idx
 
-        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&t=0"
+        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&t=0&len=" + str(int(maxMsg))
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
         msglen = len(msgarr)
@@ -1201,6 +1202,22 @@ class YI2cPort(YFunction):
             idx = idx + 1
 
         return res
+
+    def snoopMessages(self, maxWait):
+        """
+        Retrieves messages (both direction) in the I2C port buffer, starting at current position.
+
+        If no message is found, the search waits for one up to the specified maximum timeout
+        (in milliseconds).
+
+        @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+                in the receive buffer.
+
+        @return an array of YI2cSnoopingRecord objects containing the messages found, if any.
+
+        On failure, throws an exception or returns an empty array.
+        """
+        return self.snoopMessagesEx(maxWait, 255)
 
     def nextI2cPort(self):
         """

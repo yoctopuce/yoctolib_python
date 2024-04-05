@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorledcluster.py 50326 2022-07-01 09:33:24Z seb $
+#  $Id: yocto_colorledcluster.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #
 #  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #
@@ -249,13 +249,13 @@ class YColorLedCluster(YFunction):
         """
         Retrieves a RGB LED cluster for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the RGB LED cluster is online at the time
         it is invoked. The returned object is nevertheless valid.

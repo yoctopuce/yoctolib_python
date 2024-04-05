@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_oscontrol.py 37827 2019-10-25 13:07:48Z mvuilleu $
+#  $Id: yocto_oscontrol.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #
 #  Implements yFindOsControl(), the high-level API for OsControl functions
 #
@@ -103,13 +103,13 @@ class YOsControl(YFunction):
         """
         Retrieves OS control for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the OS control is online at the time
         it is invoked. The returned object is nevertheless valid.

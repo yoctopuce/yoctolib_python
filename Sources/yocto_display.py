@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 43619 2021-01-29 09:14:45Z mvuilleu $
+#* $Id: yocto_display.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -856,13 +856,13 @@ class YDisplay(YFunction):
         """
         Retrieves a display for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the display is online at the time
         it is invoked. The returned object is nevertheless valid.

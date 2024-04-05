@@ -1,0 +1,12 @@
+{
+    "main": "main.py",
+    "other_files": [],
+    "ylib": [
+        "yocto_api"
+    ],
+    "skip": false,
+    "xcode": false,
+    "vstudio": false,
+    "gnu": false,
+    "cb": false
+}

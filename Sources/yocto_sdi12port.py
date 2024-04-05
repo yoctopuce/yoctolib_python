@@ -109,16 +109,17 @@ class YSdi12SnoopingRecord(object):
 #--- (generated code: YSdi12SnoopingRecord functions)
 #--- (end of generated code: YSdi12SnoopingRecord functions)
 
-#--- (generated code: YSdi12Sensor class start)
+#--- (generated code: YSdi12SensorInfo class start)
 #noinspection PyProtectedMember
-class YSdi12Sensor(object):
-    #--- (end of generated code: YSdi12Sensor class start)
-    #--- (generated code: YSdi12Sensor definitions)
-    #--- (end of generated code: YSdi12Sensor definitions)
+class YSdi12SensorInfo(object):
+    #--- (end of generated code: YSdi12SensorInfo class start)
+    #--- (generated code: YSdi12SensorInfo definitions)
+    #--- (end of generated code: YSdi12SensorInfo definitions)
 
     def __init__(self, YSdi12Port, json_str):
-        #--- (generated code: YSdi12Sensor attributes)
+        #--- (generated code: YSdi12SensorInfo attributes)
         self._sdi12Port = None
+        self._isValid = 0
         self._addr = ''
         self._proto = ''
         self._mfg = ''
@@ -126,11 +127,22 @@ class YSdi12Sensor(object):
         self._ver = ''
         self._sn = ''
         self._valuesDesc = []
-        #--- (end of generated code: YSdi12Sensor attributes)
+        #--- (end of generated code: YSdi12SensorInfo attributes)
         self._sdi12Port = YSdi12Port
         self._parseInfoStr(json_str)
 
-    #--- (generated code: YSdi12Sensor implementation)
+    def _throw(self, errcode, msg):
+        self._sdi12Port._throw(errcode,msg)
+
+    #--- (generated code: YSdi12SensorInfo implementation)
+    def isValid(self):
+        """
+        Returns the sensor state.
+
+        @return the sensor state.
+        """
+        return self._isValid
+
     def get_sensorAddress(self):
         """
         Returns the sensor address.
@@ -182,6 +194,8 @@ class YSdi12Sensor(object):
     def get_measureCount(self):
         """
         Returns the number of sensor measurements.
+        This function only works if the sensor is in version 1.4 SDI-12
+        and supports metadata commands.
 
         @return the number of sensor measurements.
         """
@@ -190,51 +204,81 @@ class YSdi12Sensor(object):
     def get_measureCommand(self, measureIndex):
         """
         Returns the sensor measurement command.
+        This function only works if the sensor is in version 1.4 SDI-12
+        and supports metadata commands.
 
         @param measureIndex : measurement index
 
         @return the sensor measurement command.
+                On failure, throws an exception or returns an empty string.
         """
+        if not (measureIndex < len(self._valuesDesc)):
+            self._throw(YAPI.INVALID_ARGUMENT, "Invalid measure index")
+            return ""
         return self._valuesDesc[measureIndex][0]
 
     def get_measurePosition(self, measureIndex):
         """
         Returns sensor measurement position.
+        This function only works if the sensor is in version 1.4 SDI-12
+        and supports metadata commands.
 
         @param measureIndex : measurement index
 
         @return the sensor measurement command.
+                On failure, throws an exception or returns 0.
         """
+        if not (measureIndex < len(self._valuesDesc)):
+            self._throw(YAPI.INVALID_ARGUMENT, "Invalid measure index")
+            return 0
         return YAPI._atoi(self._valuesDesc[measureIndex][2])
 
     def get_measureSymbol(self, measureIndex):
         """
         Returns the measured value symbol.
+        This function only works if the sensor is in version 1.4 SDI-12
+        and supports metadata commands.
 
         @param measureIndex : measurement index
 
         @return the sensor measurement command.
+                On failure, throws an exception or returns an empty string.
         """
+        if not (measureIndex < len(self._valuesDesc)):
+            self._throw(YAPI.INVALID_ARGUMENT, "Invalid measure index")
+            return ""
         return self._valuesDesc[measureIndex][3]
 
     def get_measureUnit(self, measureIndex):
         """
         Returns the unit of the measured value.
+        This function only works if the sensor is in version 1.4 SDI-12
+        and supports metadata commands.
 
         @param measureIndex : measurement index
 
         @return the sensor measurement command.
+                On failure, throws an exception or returns an empty string.
         """
+        if not (measureIndex < len(self._valuesDesc)):
+            self._throw(YAPI.INVALID_ARGUMENT, "Invalid measure index")
+            return ""
         return self._valuesDesc[measureIndex][4]
 
     def get_measureDescription(self, measureIndex):
         """
         Returns the description of the measured value.
+        This function only works if the sensor is in version 1.4 SDI-12
+        and supports metadata commands.
 
         @param measureIndex : measurement index
 
         @return the sensor measurement command.
+                On failure, throws an exception or returns an empty string.
         """
+        if not (measureIndex < len(self._valuesDesc)):
+            self._throw(YAPI.INVALID_ARGUMENT, "Invalid measure index")
+            return ""
         return self._valuesDesc[measureIndex][5]
 
     def get_typeMeasure(self):
@@ -252,6 +296,7 @@ class YSdi12Sensor(object):
                 self._model = errmsg
                 self._ver = errmsg
                 self._sn = errmsg
+                self._isValid = False
             else:
                 self._addr = (infoStr)[0: 0 + 1]
                 self._proto = (infoStr)[1: 1 + 2]
@@ -259,6 +304,7 @@ class YSdi12Sensor(object):
                 self._model = (infoStr)[11: 11 + 6]
                 self._ver = (infoStr)[17: 17 + 3]
                 self._sn = (infoStr)[20: 20 + len(infoStr)-20]
+                self._isValid = True
 
     def _queryValueInfo(self):
         val = []
@@ -303,10 +349,10 @@ class YSdi12Sensor(object):
             k = k + 1
         self._valuesDesc = val
 
-#--- (end of generated code: YSdi12Sensor implementation)
+#--- (end of generated code: YSdi12SensorInfo implementation)
 
-#--- (generated code: YSdi12Sensor functions)
-#--- (end of generated code: YSdi12Sensor functions)
+#--- (generated code: YSdi12SensorInfo functions)
+#--- (end of generated code: YSdi12SensorInfo functions)
 
 
 #--- (generated code: YSdi12Port class start)
@@ -726,13 +772,13 @@ class YSdi12Port(YFunction):
         """
         Retrieves an SDI12 port for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the SDI12 port is online at the time
         it is invoked. The returned object is nevertheless valid.
@@ -1429,7 +1475,7 @@ class YSdi12Port(YFunction):
         This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
         This function work when only one sensor is connected.
 
-        @return the reply returned by the sensor, as a YSdi12Sensor object.
+        @return the reply returned by the sensor, as a YSdi12SensorInfo object.
 
         On failure, throws an exception or returns an empty string.
         """
@@ -1437,7 +1483,7 @@ class YSdi12Port(YFunction):
 
         resStr = self.querySdi12("?","",5000)
         if resStr == "":
-            return YSdi12Sensor(self, "ERSensor Not Found")
+            return YSdi12SensorInfo(self, "ERSensor Not Found")
 
         return self.getSensorInformation(resStr)
 
@@ -1446,7 +1492,7 @@ class YSdi12Port(YFunction):
         Sends a discovery command to the bus, and reads all sensors information reply.
         This function is intended to be used when the serial port is configured for 'SDI-12' protocol.
 
-        @return all the information from every connected sensor, as an array of YSdi12Sensor object.
+        @return all the information from every connected sensor, as an array of YSdi12SensorInfo object.
 
         On failure, throws an exception or returns an empty string.
         """
@@ -1536,7 +1582,7 @@ class YSdi12Port(YFunction):
         @param oldAddress : Actual sensor address, as a string
         @param newAddress : New sensor address, as a string
 
-        @return the sensor address and information , as a YSdi12Sensor object.
+        @return the sensor address and information , as a YSdi12SensorInfo object.
 
         On failure, throws an exception or returns an empty string.
         """
@@ -1562,8 +1608,8 @@ class YSdi12Port(YFunction):
 
         res = self.querySdi12(sensorAddr,"I",1000)
         if res == "":
-            return YSdi12Sensor(self, "ERSensor Not Found")
-        sensor = YSdi12Sensor(self, res)
+            return YSdi12SensorInfo(self, "ERSensor Not Found")
+        sensor = YSdi12SensorInfo(self, res)
         sensor._queryValueInfo()
         return sensor
 
@@ -1602,7 +1648,7 @@ class YSdi12Port(YFunction):
         timewait = YAPI._atoi(wait) * 1000
         return timewait
 
-    def snoopMessages(self, maxWait):
+    def snoopMessagesEx(self, maxWait, maxMsg):
         """
         Retrieves messages (both direction) in the SDI12 port buffer, starting at current position.
 
@@ -1611,6 +1657,7 @@ class YSdi12Port(YFunction):
 
         @param maxWait : the maximum number of milliseconds to wait for a message if none is found
                 in the receive buffer.
+        @param maxMsg : the maximum number of messages to be returned by the function; up to 254.
 
         @return an array of YSdi12SnoopingRecord objects containing the messages found, if any.
 
@@ -1623,7 +1670,7 @@ class YSdi12Port(YFunction):
         res = []
         # idx
 
-        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&t=0"
+        url = "rxmsg.json?pos=" + str(int(self._rxptr)) + "&maxw=" + str(int(maxWait)) + "&t=0&len=" + str(int(maxMsg))
         msgbin = self._download(url)
         msgarr = self._json_get_array(msgbin)
         msglen = len(msgarr)
@@ -1639,6 +1686,22 @@ class YSdi12Port(YFunction):
             idx = idx + 1
 
         return res
+
+    def snoopMessages(self, maxWait):
+        """
+        Retrieves messages (both direction) in the SDI12 port buffer, starting at current position.
+
+        If no message is found, the search waits for one up to the specified maximum timeout
+        (in milliseconds).
+
+        @param maxWait : the maximum number of milliseconds to wait for a message if none is found
+                in the receive buffer.
+
+        @return an array of YSdi12SnoopingRecord objects containing the messages found, if any.
+
+        On failure, throws an exception or returns an empty array.
+        """
+        return self.snoopMessagesEx(maxWait, 255)
 
     def nextSdi12Port(self):
         """

@@ -1,0 +1,16 @@
+{
+    "main": "helloworld.py",
+    "other_files": [],
+    "ylib": [
+        "yocto_accelerometer",
+        "yocto_refframe",
+        "yocto_temperature",
+        "yocto_tilt",
+        "yocto_api"
+    ],
+    "skip": false,
+    "xcode": false,
+    "vstudio": false,
+    "gnu": false,
+    "cb": false
+}

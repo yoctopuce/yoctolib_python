@@ -48,7 +48,7 @@ def main():
         if sensor is None:
             sys.exit("No module connected (check USB cable)")
     else:
-        sensor = YSensor.FindSensor(sys.argv[0])
+        sensor = YSensor.FindSensor(sys.argv[1])
         if not sensor.isOnline():
             sys.exit("Sensor " + sensor.get_hardwareId() + " is not connected (check USB cable)")
     dumpSensor(sensor)

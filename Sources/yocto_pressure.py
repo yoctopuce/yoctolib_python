@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_pressure.py 38899 2019-12-20 17:21:03Z mvuilleu $
+#  $Id: yocto_pressure.py 59978 2024-03-18 15:04:46Z mvuilleu $
 #
 #  Implements yFindPressure(), the high-level API for Pressure functions
 #
@@ -78,13 +78,13 @@ class YPressure(YSensor):
         """
         Retrieves a pressure sensor for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the pressure sensor is online at the time
         it is invoked. The returned object is nevertheless valid.
