@@ -1,11 +1,3 @@
-PythonV2 v2.0.60394
+PythonV2 v2.0.60664
 
-- Add support for Yocto-RFID
-- Improve error reporting if remote TLS certificate is invalid
-- Increase the number of detectable hubs to 128
-- Increase then maximum number of connected hub to 128
-- Fix incomplete documentation
-- Fix warning about malformed XML comment
-- Fix Prog-Datalogger example
-- Fix handling of long strings in many parse situations (including json_get_key)
-- Fix return type of method DownloadHostCertificate
+- Fix rare Exception that can occurs during isOnline

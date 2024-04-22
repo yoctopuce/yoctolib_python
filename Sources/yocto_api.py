@@ -1,7 +1,7 @@
 # -*- coding: latin-1 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 60198 2024-03-25 14:56:46Z seb $
+# * $Id: yocto_api.py 60609 2024-04-18 07:44:20Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -714,7 +714,7 @@ class YJSONObject(YJSONContent):
                 yzon.parse()
                 self.convert(reference, yzon)
                 return
-            except YAPI.YAPI_Exception:
+            except:
                 self.parse()
                 return
         self.parse()
@@ -873,11 +873,33 @@ class YAPIContext(object):
         else:
             return ""
 
-    def SetNetworkSecurityOptions(self, options):
+    def SetTrustedCertificatesList(self, certificatePath):
+        """
+        Set the path of Certificate Authority file on local filesystem. This method takes as a parameter
+        the path of a file containing all certificates in PEM format.
+        For technical reasons, only one file can be specified. So if you need to connect to several Hubs
+        instances with self-signed certificates, you'll need to use
+        a single file containing all the certificates end-to-end. Passing a empty string will restore the
+        default settings. This option is only supported by PHP library.
+
+        @param certificatePath : the path of the file containing all certificates in PEM format.
+
+        @return an empty string if the certificate has been added correctly.
+                In case of error, returns a string starting with "error:".
+        """
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        # res
+        res = YAPI._yapiSetTrustedCertificatesList(ctypes.create_string_buffer(YString2Byte(certificatePath)), errmsg)
+        if res < 0:
+            return YByte2String(errmsg.value)
+        else:
+            return ""
+
+    def SetNetworkSecurityOptions(self, opts):
         """
         Enables or disables certain TLS/SSL certificate checks.
 
-        @param options: The options: YAPI.NO_TRUSTED_CA_CHECK,
+        @param opts : The options are YAPI.NO_TRUSTED_CA_CHECK,
                 YAPI.NO_EXPIRATION_CHECK, YAPI.NO_HOSTNAME_CHECK.
 
         @return an empty string if the options are taken into account.
@@ -885,7 +907,7 @@ class YAPIContext(object):
         """
         errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
         # res
-        res = YAPI._yapiSetNetworkSecurityOptions(options, errmsg)
+        res = YAPI._yapiSetNetworkSecurityOptions(opts, errmsg)
         if res < 0:
             return YByte2String(errmsg.value)
         else:
@@ -1018,7 +1040,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.0"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "60394"
+    YOCTO_API_BUILD_NO = "60664"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1426,6 +1448,9 @@ class YAPI:
         YAPI._yapiSetHubIntAttr = YAPI._yApiCLib.yapiSetHubIntAttr
         YAPI._yapiSetHubIntAttr.restypes = ctypes.c_int
         YAPI._yapiSetHubIntAttr.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
+        YAPI._yapiSetTrustedCertificatesList = YAPI._yApiCLib.yapiSetTrustedCertificatesList
+        YAPI._yapiSetTrustedCertificatesList.restypes = ctypes.c_int
+        YAPI._yapiSetTrustedCertificatesList.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
@@ -1710,11 +1735,30 @@ class YAPI:
         return YAPI._yapiContext.AddTrustedCertificates(certificate)
 
     @staticmethod
-    def SetNetworkSecurityOptions(options):
+    def SetTrustedCertificatesList(certificatePath):
+        """
+        Set the path of Certificate Authority file on local filesystem. This method takes as a parameter
+        the path of a file containing all certificates in PEM format.
+        For technical reasons, only one file can be specified. So if you need to connect to several Hubs
+        instances with self-signed certificates, you'll need to use
+        a single file containing all the certificates end-to-end. Passing a empty string will restore the
+        default settings. This option is only supported by PHP library.
+
+        @param certificatePath : the path of the file containing all certificates in PEM format.
+
+        @return an empty string if the certificate has been added correctly.
+                In case of error, returns a string starting with "error:".
+        """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
+        return YAPI._yapiContext.SetTrustedCertificatesList(certificatePath)
+
+    @staticmethod
+    def SetNetworkSecurityOptions(opts):
         """
         Enables or disables certain TLS/SSL certificate checks.
 
-        @param options: The options: YAPI.NO_TRUSTED_CA_CHECK,
+        @param opts : The options are YAPI.NO_TRUSTED_CA_CHECK,
                 YAPI.NO_EXPIRATION_CHECK, YAPI.NO_HOSTNAME_CHECK.
 
         @return an empty string if the options are taken into account.
@@ -1722,7 +1766,7 @@ class YAPI:
         """
         if not YAPI._apiInitialized:
             YAPI.InitAPI(0)
-        return YAPI._yapiContext.SetNetworkSecurityOptions(options)
+        return YAPI._yapiContext.SetNetworkSecurityOptions(opts)
 
     @staticmethod
     def SetNetworkTimeout(networkMsTimeout):
