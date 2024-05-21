@@ -1,3 +1,4 @@
-PythonV2 v2.0.60664
+PythonV2 v2.0.61039
 
-- Fix rare Exception that can occurs during isOnline
+- Fix authentication when request send a redirect
+- Fix timeout that was not correctly calculated on YAPI::TestHub
