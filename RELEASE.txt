@@ -1,4 +1,3 @@
-PythonV2 v2.0.61039
+PythonV2 v2.0.61305
 
-- Fix authentication when request send a redirect
-- Fix timeout that was not correctly calculated on YAPI::TestHub
+- Fix GlibC dependency that was not working on Ubunutu 18.04 an 20.04
