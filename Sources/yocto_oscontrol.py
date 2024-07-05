@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_oscontrol.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_oscontrol.py 61342 2024-06-11 08:30:46Z seb $
 #
 #  Implements yFindOsControl(), the high-level API for OsControl functions
 #
@@ -60,7 +60,7 @@ class YOsControl(YFunction):
     #--- (YOsControl yapiwrapper)
     #--- (end of YOsControl yapiwrapper)
     #--- (YOsControl definitions)
-    SHUTDOWNCOUNTDOWN_INVALID = YAPI.INVALID_UINT
+    SHUTDOWNCOUNTDOWN_INVALID = YAPI.INVALID_INT
     #--- (end of YOsControl definitions)
 
     def __init__(self, func):
@@ -146,6 +146,18 @@ class YOsControl(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         return self.set_shutdownCountdown(secBeforeShutDown)
+
+    def reboot(self, secBeforeReboot):
+        """
+        Schedules an OS reboot after a given number of seconds.
+
+        @param secBeforeReboot : number of seconds before reboot
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_shutdownCountdown(0 - secBeforeReboot)
 
     def nextOsControl(self):
         """
