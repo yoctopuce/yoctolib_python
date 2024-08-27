@@ -1164,12 +1164,20 @@ class YAPI:
             #
             if system == 'Windows':
                 if arch == '32bit':
-                    YAPI._yApiCLibFile = libpath + "\\cdll\\yapi.dll"
+                    if machine == 'ARM64':
+                        raise NotImplementedError(
+                            "unsupported windows architecture (" + machine + "/" + arch + "), contact support@yoctopuce.com.")
+                    else:
+                        YAPI._yApiCLibFile = libpath + "\\cdll\\yapi.dll"
+
                 elif arch == '64bit':
-                    YAPI._yApiCLibFile = libpath + "\\cdll\\yapi64.dll"
+                    if machine == 'ARM64':
+                        YAPI._yApiCLibFile = libpath + "\\cdll\\yapiARM.dll"
+                    else:
+                        YAPI._yApiCLibFile = libpath + "\\cdll\\yapi64.dll"
                 else:
                     raise NotImplementedError(
-                        "unsupported windows architecture (" + arch + "), contact support@yoctopuce.com.")
+                        "unsupported windows architecture (" + machine + "/" + arch + "), contact support@yoctopuce.com.")
             #
             #  LINUX (INTEL + ARM)
             #
