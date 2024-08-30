@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_anbutton.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_anbutton.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindAnButton(), the high-level API for AnButton functions
 #
@@ -112,7 +112,7 @@ class YAnButton(YFunction):
         if json_val.has("rawValue"):
             self._rawValue = json_val.getInt("rawValue")
         if json_val.has("analogCalibration"):
-            self._analogCalibration = (json_val.getInt("analogCalibration") > 0 if 1 else 0)
+            self._analogCalibration = json_val.getInt("analogCalibration") > 0
         if json_val.has("calibrationMax"):
             self._calibrationMax = json_val.getInt("calibrationMax")
         if json_val.has("calibrationMin"):
@@ -120,7 +120,7 @@ class YAnButton(YFunction):
         if json_val.has("sensitivity"):
             self._sensitivity = json_val.getInt("sensitivity")
         if json_val.has("isPressed"):
-            self._isPressed = (json_val.getInt("isPressed") > 0 if 1 else 0)
+            self._isPressed = json_val.getInt("isPressed") > 0
         if json_val.has("lastTimePressed"):
             self._lastTimePressed = json_val.getLong("lastTimePressed")
         if json_val.has("lastTimeReleased"):

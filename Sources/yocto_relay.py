@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_relay.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_relay.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindRelay(), the high-level API for Relay functions
 #
@@ -99,7 +99,7 @@ class YRelay(YFunction):
     #--- (YRelay implementation)
     def _parseAttr(self, json_val):
         if json_val.has("state"):
-            self._state = (json_val.getInt("state") > 0 if 1 else 0)
+            self._state = json_val.getInt("state") > 0
         if json_val.has("stateAtPowerOn"):
             self._stateAtPowerOn = json_val.getInt("stateAtPowerOn")
         if json_val.has("maxTimeOnStateA"):
@@ -107,7 +107,7 @@ class YRelay(YFunction):
         if json_val.has("maxTimeOnStateB"):
             self._maxTimeOnStateB = json_val.getLong("maxTimeOnStateB")
         if json_val.has("output"):
-            self._output = (json_val.getInt("output") > 0 if 1 else 0)
+            self._output = json_val.getInt("output") > 0
         if json_val.has("pulseTimer"):
             self._pulseTimer = json_val.getLong("pulseTimer")
         if json_val.has("delayedPulseTimer"):

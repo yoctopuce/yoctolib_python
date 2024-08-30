@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_voltage.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_voltage.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindVoltage(), the high-level API for Voltage functions
 #
@@ -76,7 +76,7 @@ class YVoltage(YSensor):
     #--- (YVoltage implementation)
     def _parseAttr(self, json_val):
         if json_val.has("enabled"):
-            self._enabled = (json_val.getInt("enabled") > 0 if 1 else 0)
+            self._enabled = json_val.getInt("enabled") > 0
         super(YVoltage, self)._parseAttr(json_val)
 
     def get_enabled(self):

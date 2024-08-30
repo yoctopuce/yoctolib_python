@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_refframe.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_refframe.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindRefFrame(), the high-level API for RefFrame functions
 #
@@ -48,7 +48,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YRefFrame(YFunction):
     """
-    The YRefFrame class is used to setup the base orientation of the Yoctopuce inertial
+    The YRefFrame class is used to set up the base orientation of the Yoctopuce inertial
     sensors. Thanks to this, orientation functions relative to the earth surface plane
     can use the proper reference frame. For some devices, the class also implements a
     tridimensional sensor calibration process, which can compensate for local variations
@@ -147,7 +147,7 @@ class YRefFrame(YFunction):
         indicated by the compass is the difference between the measured magnetic
         heading and the reference bearing indicated here.
 
-        For instance, if you setup as reference bearing the value of the earth
+        For instance, if you set up as reference bearing the value of the earth
         magnetic declination, the compass will provide the orientation relative
         to the geographic North.
 
@@ -286,7 +286,7 @@ class YRefFrame(YFunction):
         position = self.get_mountPos()
         if position < 0:
             return YRefFrame.MOUNTPOSITION.INVALID
-        return ((position) >> (2))
+        return (position >> 2)
 
     def get_mountOrientation(self):
         """
@@ -337,7 +337,7 @@ class YRefFrame(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # mixedPos
-        mixedPos = ((position) << (2)) + orientation
+        mixedPos = (position << 2) + orientation
         return self.set_mountPos(mixedPos)
 
     def get_calibrationState(self):
@@ -795,17 +795,17 @@ class YRefFrame(YFunction):
                 else:
                     scaleExp = 0
         if scaleExp > 0:
-            scaleX = ((scaleX) >> (scaleExp))
-            scaleY = ((scaleY) >> (scaleExp))
-            scaleZ = ((scaleZ) >> (scaleExp))
+            scaleX = (scaleX >> scaleExp)
+            scaleY = (scaleY >> scaleExp)
+            scaleZ = (scaleZ >> scaleExp)
         if scaleX < 0:
             scaleX = scaleX + 1024
         if scaleY < 0:
             scaleY = scaleY + 1024
         if scaleZ < 0:
             scaleZ = scaleZ + 1024
-        scaleLo = ((((scaleY) & (15))) << (12)) + ((scaleX) << (2)) + scaleExp
-        scaleHi = ((scaleZ) << (6)) + ((scaleY) >> (4))
+        scaleLo = (((scaleY) & (15)) << 12) + (scaleX << 2) + scaleExp
+        scaleHi = (scaleZ << 6) + (scaleY >> 4)
         # // Save calibration parameters
         newcalib = "5," + str(int(shiftX)) + "," + str(int(shiftY)) + "," + str(int(shiftZ)) + "," + str(int(scaleLo)) + "," + str(int(scaleHi))
         self._calibStage = 0

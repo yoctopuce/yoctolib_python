@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorledcluster.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_colorledcluster.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #
@@ -665,8 +665,8 @@ class YColorLedCluster(YFunction):
         idx = 0
         while idx < listlen:
             rgb = rgbList[idx]
-            buff[3*idx] = ((((rgb) >> (16))) & (255))
-            buff[3*idx+1] = ((((rgb) >> (8))) & (255))
+            buff[3*idx] = (((rgb >> 16)) & (255))
+            buff[3*idx+1] = (((rgb >> 8)) & (255))
             buff[3*idx+2] = ((rgb) & (255))
             idx = idx + 1
 
@@ -697,8 +697,8 @@ class YColorLedCluster(YFunction):
         idx = 0
         while idx < listlen:
             rgb = rgbList[idx]
-            buff[3*idx] = ((((rgb) >> (16))) & (255))
-            buff[3*idx+1] = ((((rgb) >> (8))) & (255))
+            buff[3*idx] = (((rgb >> 16)) & (255))
+            buff[3*idx+1] = (((rgb >> 8)) & (255))
             buff[3*idx+2] = ((rgb) & (255))
             idx = idx + 1
 
@@ -761,8 +761,8 @@ class YColorLedCluster(YFunction):
         idx = 0
         while idx < listlen:
             hsl = hslList[idx]
-            buff[3*idx] = ((((hsl) >> (16))) & (255))
-            buff[3*idx+1] = ((((hsl) >> (8))) & (255))
+            buff[3*idx] = (((hsl >> 16)) & (255))
+            buff[3*idx+1] = (((hsl >> 8)) & (255))
             buff[3*idx+2] = ((hsl) & (255))
             idx = idx + 1
 
@@ -811,8 +811,8 @@ class YColorLedCluster(YFunction):
         idx = 0
         while idx < listlen:
             hsl = hslList[idx]
-            buff[3*idx] = ((((hsl) >> (16))) & (255))
-            buff[3*idx+1] = ((((hsl) >> (8))) & (255))
+            buff[3*idx] = (((hsl >> 16)) & (255))
+            buff[3*idx+1] = (((hsl >> 8)) & (255))
             buff[3*idx+2] = ((hsl) & (255))
             idx = idx + 1
 
@@ -959,7 +959,7 @@ class YColorLedCluster(YFunction):
             hl = YGetByte(buff, 4*idx+1)
             lh = YGetByte(buff, 4*idx+2)
             ll = YGetByte(buff, 4*idx+3)
-            res.append(((hh) << (24))+((hl) << (16))+((lh) << (8))+ll)
+            res.append((hh << 24)+(hl << 16)+(lh << 8)+ll)
             idx = idx + 1
 
         return res
@@ -988,7 +988,7 @@ class YColorLedCluster(YFunction):
         while idx < count:
             lh = YGetByte(buff, 2*idx)
             ll = YGetByte(buff, 2*idx+1)
-            res.append(((lh) << (8))+ll)
+            res.append((lh << 8)+ll)
             idx = idx + 1
 
         return res
@@ -1068,10 +1068,10 @@ class YColorLedCluster(YFunction):
         # temp3
         # res
         L = ((hslValue) & (0xff))
-        S = ((((hslValue) >> (8))) & (0xff))
-        H = ((((hslValue) >> (16))) & (0xff))
+        S = (((hslValue >> 8)) & (0xff))
+        H = (((hslValue >> 16)) & (0xff))
         if S==0:
-            res = ((L) << (16))+((L) << (8))+L
+            res = (L << 16)+(L << 8)+L
             return res
         if L<=127:
             temp2 = L * (255 + S)
@@ -1101,7 +1101,7 @@ class YColorLedCluster(YFunction):
             G=255
         if B>255:
             B=255
-        res = ((R) << (16))+((G) << (8))+B
+        res = (R << 16)+(G << 8)+B
         return res
 
     def nextColorLedCluster(self):

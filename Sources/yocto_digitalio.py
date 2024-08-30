@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_digitalio.py 61494 2024-06-17 08:12:29Z seb $
+#  $Id: yocto_digitalio.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
 #
@@ -48,7 +48,7 @@ from yocto_api import *
 class YDigitalIO(YFunction):
     """
     The YDigitalIO class allows you drive a Yoctopuce digital input/output port.
-    It can be used to setup the direction of each channel, to read the state of each channel
+    It can be used to set up the direction of each channel, to read the state of each channel
     and to switch the state of each channel configures as an output.
     You can work on all channels at once, or one by one. Most functions
     use a binary representation for channels where bit 0 matches channel #0 , bit 1 matches channel
@@ -399,7 +399,7 @@ class YDigitalIO(YFunction):
         """
         # portVal
         portVal = self.get_portState()
-        return ((((portVal) >> (bitno))) & (1))
+        return (((portVal >> bitno)) & (1))
 
     def toggle_bitState(self, bitno):
         """
@@ -446,7 +446,7 @@ class YDigitalIO(YFunction):
         """
         # portDir
         portDir = self.get_portDirection()
-        return ((((portDir) >> (bitno))) & (1))
+        return (((portDir >> bitno)) & (1))
 
     def set_bitPolarity(self, bitno, bitpolarity):
         """
@@ -482,7 +482,7 @@ class YDigitalIO(YFunction):
         """
         # portPol
         portPol = self.get_portPolarity()
-        return ((((portPol) >> (bitno))) & (1))
+        return (((portPol >> bitno)) & (1))
 
     def set_bitOpenDrain(self, bitno, opendrain):
         """
@@ -519,7 +519,7 @@ class YDigitalIO(YFunction):
         """
         # portOpenDrain
         portOpenDrain = self.get_portOpenDrain()
-        return ((((portOpenDrain) >> (bitno))) & (1))
+        return (((portOpenDrain >> bitno)) & (1))
 
     def pulse(self, bitno, ms_duration):
         """

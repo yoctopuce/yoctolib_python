@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_genericsensor.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_genericsensor.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #
@@ -108,7 +108,7 @@ class YGenericSensor(YSensor):
         if json_val.has("signalSampling"):
             self._signalSampling = json_val.getInt("signalSampling")
         if json_val.has("enabled"):
-            self._enabled = (json_val.getInt("enabled") > 0 if 1 else 0)
+            self._enabled = json_val.getInt("enabled") > 0
         super(YGenericSensor, self)._parseAttr(json_val)
 
     def set_unit(self, newval):
@@ -235,7 +235,7 @@ class YGenericSensor(YSensor):
     def set_signalBias(self, newval):
         """
         Changes the electric signal bias for zero shift adjustment.
-        If your electric signal reads positive when it should be zero, setup
+        If your electric signal reads positive when it should be zero, set up
         a positive signalBias of the same value to fix the zero shift.
         Remember to call the saveToFlash()
         method of the module if the modification must be kept.

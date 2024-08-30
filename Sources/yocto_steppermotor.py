@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_steppermotor.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_steppermotor.py 61964 2024-07-29 15:54:55Z seb $
 #
 #  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #
@@ -177,7 +177,7 @@ class YStepperMotor(YFunction):
     def set_stepPos(self, newval):
         """
         Changes the current logical motor position, measured in steps.
-        This command does not cause any motor move, as its purpose is only to setup
+        This command does not cause any motor move, as its purpose is only to set up
         the origin of the position counter. The fractional part of the position,
         that corresponds to the physical position of the rotor, is not changed.
         To trigger a motor move, use methods moveTo() or moveRel()

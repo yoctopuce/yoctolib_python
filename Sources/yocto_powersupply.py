@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_powersupply.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_powersupply.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
 #
@@ -102,7 +102,7 @@ class YPowerSupply(YFunction):
         if json_val.has("currentLimit"):
             self._currentLimit = round(json_val.getDouble("currentLimit") / 65.536) / 1000.0
         if json_val.has("powerOutput"):
-            self._powerOutput = (json_val.getInt("powerOutput") > 0 if 1 else 0)
+            self._powerOutput = json_val.getInt("powerOutput") > 0
         if json_val.has("measuredVoltage"):
             self._measuredVoltage = round(json_val.getDouble("measuredVoltage") / 65.536) / 1000.0
         if json_val.has("measuredCurrent"):
@@ -116,7 +116,7 @@ class YPowerSupply(YFunction):
         if json_val.has("currentLimitAtStartUp"):
             self._currentLimitAtStartUp = round(json_val.getDouble("currentLimitAtStartUp") / 65.536) / 1000.0
         if json_val.has("powerOutputAtStartUp"):
-            self._powerOutputAtStartUp = (json_val.getInt("powerOutputAtStartUp") > 0 if 1 else 0)
+            self._powerOutputAtStartUp = json_val.getInt("powerOutputAtStartUp") > 0
         if json_val.has("command"):
             self._command = json_val.getString("command")
         super(YPowerSupply, self)._parseAttr(json_val)

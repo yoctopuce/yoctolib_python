@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_bluetoothlink.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_bluetoothlink.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
 #
@@ -107,7 +107,7 @@ class YBluetoothLink(YFunction):
         if json_val.has("remoteName"):
             self._remoteName = json_val.getString("remoteName")
         if json_val.has("mute"):
-            self._mute = (json_val.getInt("mute") > 0 if 1 else 0)
+            self._mute = json_val.getInt("mute") > 0
         if json_val.has("preAmplifier"):
             self._preAmplifier = json_val.getInt("preAmplifier")
         if json_val.has("volume"):

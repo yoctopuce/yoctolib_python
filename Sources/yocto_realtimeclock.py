@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_realtimeclock.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_realtimeclock.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
 #
@@ -94,9 +94,9 @@ class YRealTimeClock(YFunction):
         if json_val.has("utcOffset"):
             self._utcOffset = json_val.getInt("utcOffset")
         if json_val.has("timeSet"):
-            self._timeSet = (json_val.getInt("timeSet") > 0 if 1 else 0)
+            self._timeSet = json_val.getInt("timeSet") > 0
         if json_val.has("disableHostSync"):
-            self._disableHostSync = (json_val.getInt("disableHostSync") > 0 if 1 else 0)
+            self._disableHostSync = json_val.getInt("disableHostSync") > 0
         super(YRealTimeClock, self)._parseAttr(json_val)
 
     def get_unixTime(self):

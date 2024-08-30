@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_spiport.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -219,9 +219,9 @@ class YSpiPort(YFunction):
         if json_val.has("spiMode"):
             self._spiMode = json_val.getString("spiMode")
         if json_val.has("ssPolarity"):
-            self._ssPolarity = (json_val.getInt("ssPolarity") > 0 if 1 else 0)
+            self._ssPolarity = json_val.getInt("ssPolarity") > 0
         if json_val.has("shiftSampling"):
-            self._shiftSampling = (json_val.getInt("shiftSampling") > 0 if 1 else 0)
+            self._shiftSampling = json_val.getInt("shiftSampling") > 0
         super(YSpiPort, self)._parseAttr(json_val)
 
     def get_rxCount(self):
@@ -994,7 +994,7 @@ class YSpiPort(YFunction):
         bufflen = len(hexString)
         if bufflen < 100:
             return self.sendCommand("$" + hexString)
-        bufflen = ((bufflen) >> (1))
+        bufflen = (bufflen >> 1)
         buff = bytearray(bufflen)
         idx = 0
         while idx < bufflen:

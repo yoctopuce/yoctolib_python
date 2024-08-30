@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multicellweighscale.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_multicellweighscale.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
 #
@@ -101,7 +101,7 @@ class YMultiCellWeighScale(YSensor):
         if json_val.has("cellCount"):
             self._cellCount = json_val.getInt("cellCount")
         if json_val.has("externalSense"):
-            self._externalSense = (json_val.getInt("externalSense") > 0 if 1 else 0)
+            self._externalSense = json_val.getInt("externalSense") > 0
         if json_val.has("excitation"):
             self._excitation = json_val.getInt("excitation")
         if json_val.has("tempAvgAdaptRatio"):

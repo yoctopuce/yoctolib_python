@@ -110,7 +110,7 @@ class YInputChain(YFunction):
         if json_val.has("detectedNodes"):
             self._detectedNodes = json_val.getInt("detectedNodes")
         if json_val.has("loopbackTest"):
-            self._loopbackTest = (json_val.getInt("loopbackTest") > 0 if 1 else 0)
+            self._loopbackTest = json_val.getInt("loopbackTest") > 0
         if json_val.has("refreshRate"):
             self._refreshRate = json_val.getInt("refreshRate")
         if json_val.has("bitChain1"):
@@ -465,7 +465,7 @@ class YInputChain(YFunction):
     def resetWatchdog(self):
         """
         Resets the application watchdog countdown.
-        If you have setup a non-zero watchdogPeriod, you should
+        If you have set up a non-zero watchdogPeriod, you should
         call this function on a regular basis to prevent the application
         inactivity error to be triggered.
 
@@ -612,7 +612,7 @@ class YInputChain(YFunction):
         while idx < lenA:
             digitA = int((a)[idx: idx + 1], 16)
             digitB = int((b)[idx: idx + 1], 16)
-            res = "" + res + "" + ("%x" % ((digitA) ^ (digitB)))
+            res = "" + res + "" + ("%x" % (digitA ^ digitB))
             idx = idx + 1
         return res
 
@@ -629,9 +629,9 @@ class YInputChain(YFunction):
             idx = idx - 1
             digit = int((hexstr)[idx: idx + 1], 16)
             res.append(((digit) & (1)))
-            res.append(((((digit) >> (1))) & (1)))
-            res.append(((((digit) >> (2))) & (1)))
-            res.append(((((digit) >> (3))) & (1)))
+            res.append((((digit >> 1)) & (1)))
+            res.append((((digit >> 2)) & (1)))
+            res.append((((digit >> 3)) & (1)))
 
         return res
 

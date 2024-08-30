@@ -745,13 +745,13 @@ class YRfidOptions(object):
         else:
             opt = 0
         if self.ForceMultiBlockAccess:
-            opt = ((opt) | (2))
+            opt = (opt | 2)
         if self.EnableRawAccess:
-            opt = ((opt) | (4))
+            opt = (opt | 4)
         if self.DisableBoundaryChecks:
-            opt = ((opt) | (8))
+            opt = (opt | 8)
         if self.EnableDryRun:
-            opt = ((opt) | (16))
+            opt = (opt | 16)
         res = "&o=" + str(int(opt))
         if self.KeyType != 0:
             res = "" + res + "&k=" + ("%02x" % self.KeyType) + ":" + self.HexKey
@@ -1069,8 +1069,8 @@ class YRfidReader(YFunction):
         binRes = YAPI._hexStrToBin(self._json_get_key(json, "bitmap"))
         idx = 0
         while idx < nBlocks:
-            val = YGetByte(binRes, ((idx) >> (3)))
-            isLocked = (((val) & (((1) << (((idx) & (7)))))) != 0)
+            val = YGetByte(binRes, (idx >> 3))
+            isLocked = (((val) & ((1 << ((idx) & (7))))) != 0)
             res.append(isLocked)
             idx = idx + 1
 
@@ -1115,8 +1115,8 @@ class YRfidReader(YFunction):
         binRes = YAPI._hexStrToBin(self._json_get_key(json, "bitmap"))
         idx = 0
         while idx < nBlocks:
-            val = YGetByte(binRes, ((idx) >> (3)))
-            isLocked = (((val) & (((1) << (((idx) & (7)))))) != 0)
+            val = YGetByte(binRes, (idx >> 3))
+            isLocked = (((val) & ((1 << ((idx) & (7))))) != 0)
             res.append(isLocked)
             idx = idx + 1
 
@@ -1368,7 +1368,7 @@ class YRfidReader(YFunction):
         # idx
         # hexb
         bufflen = len(hexString)
-        bufflen = ((bufflen) >> (1))
+        bufflen = (bufflen >> 1)
         if bufflen <= 16:
             # // short data, use an URL-based command
             optstr = options.imm_getParams()

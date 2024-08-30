@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_servo.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_servo.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindServo(), the high-level API for Servo functions
 #
@@ -94,7 +94,7 @@ class YServo(YFunction):
         if json_val.has("position"):
             self._position = json_val.getInt("position")
         if json_val.has("enabled"):
-            self._enabled = (json_val.getInt("enabled") > 0 if 1 else 0)
+            self._enabled = json_val.getInt("enabled") > 0
         if json_val.has("range"):
             self._range = json_val.getInt("range")
         if json_val.has("neutral"):
@@ -111,7 +111,7 @@ class YServo(YFunction):
         if json_val.has("positionAtPowerOn"):
             self._positionAtPowerOn = json_val.getInt("positionAtPowerOn")
         if json_val.has("enabledAtPowerOn"):
-            self._enabledAtPowerOn = (json_val.getInt("enabledAtPowerOn") > 0 if 1 else 0)
+            self._enabledAtPowerOn = json_val.getInt("enabledAtPowerOn") > 0
         super(YServo, self)._parseAttr(json_val)
 
     def get_position(self):

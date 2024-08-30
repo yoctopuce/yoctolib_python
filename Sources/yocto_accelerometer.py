@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_accelerometer.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_accelerometer.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindAccelerometer(), the high-level API for Accelerometer functions
 #
@@ -94,7 +94,7 @@ class YAccelerometer(YSensor):
         if json_val.has("zValue"):
             self._zValue = round(json_val.getDouble("zValue") / 65.536) / 1000.0
         if json_val.has("gravityCancellation"):
-            self._gravityCancellation = (json_val.getInt("gravityCancellation") > 0 if 1 else 0)
+            self._gravityCancellation = json_val.getInt("gravityCancellation") > 0
         super(YAccelerometer, self)._parseAttr(json_val)
 
     def get_bandwidth(self):

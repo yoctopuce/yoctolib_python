@@ -1,3 +1,6 @@
-PythonV2 v2.0.61813
+PythonV2 v2.0.62334
 
-- Fix potential never ending loop on HTTP redirection
+- Add support Windows ARM 64 bits
+- Update MbedTLS lib to 3.6.0
+- Fix YAPI.Testhub("net") that was not returning YAPI.INVALID_ARGUMENT
+- Improve debug logs for network hubs

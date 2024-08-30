@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_network.py 60214 2024-03-26 13:01:50Z mvuilleu $
+#  $Id: yocto_network.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindNetwork(), the high-level API for Network functions
 #
@@ -188,7 +188,7 @@ class YNetwork(YFunction):
         if json_val.has("defaultPage"):
             self._defaultPage = json_val.getString("defaultPage")
         if json_val.has("discoverable"):
-            self._discoverable = (json_val.getInt("discoverable") > 0 if 1 else 0)
+            self._discoverable = json_val.getInt("discoverable") > 0
         if json_val.has("wwwWatchdogDelay"):
             self._wwwWatchdogDelay = json_val.getInt("wwwWatchdogDelay")
         if json_val.has("callbackUrl"):
@@ -198,7 +198,7 @@ class YNetwork(YFunction):
         if json_val.has("callbackEncoding"):
             self._callbackEncoding = json_val.getInt("callbackEncoding")
         if json_val.has("callbackTemplate"):
-            self._callbackTemplate = (json_val.getInt("callbackTemplate") > 0 if 1 else 0)
+            self._callbackTemplate = json_val.getInt("callbackTemplate") > 0
         if json_val.has("callbackCredentials"):
             self._callbackCredentials = json_val.getString("callbackCredentials")
         if json_val.has("callbackInitialDelay"):
@@ -324,7 +324,7 @@ class YNetwork(YFunction):
         """
         Returns the IP configuration of the network interface.
 
-        If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
+        If the network interface is set up to use a static IP address, the string starts with "STATIC:" and
         is followed by three
         parameters, separated by "/". The first is the device IP address, followed by the subnet mask
         length, and finally the
@@ -1179,7 +1179,7 @@ class YNetwork(YFunction):
 
     def set_periodicCallbackSchedule(self, interval, offset):
         """
-        Setup periodic HTTP callbacks (simplified function).
+        Set up periodic HTTP callbacks (simplified function).
 
         @param interval : a string representing the callback periodicity, expressed in
                 seconds, minutes or hours, eg. "60s", "5m", "1h", "48h".

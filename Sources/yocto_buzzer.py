@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_buzzer.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_buzzer.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindBuzzer(), the high-level API for Buzzer functions
 #
@@ -409,7 +409,7 @@ class YBuzzer(YFunction):
                         dNote = dNote + 12
                     pitch = prevPitch + dNote
                     freq = int(round(440 * math.exp(pitch * 0.05776226504666)))
-                    ms16 = ((ms) >> (4))
+                    ms16 = (ms >> 4)
                     rest = 0
                     if typ == 3:
                         rest = 2 * ms16

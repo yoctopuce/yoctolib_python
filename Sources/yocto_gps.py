@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_gps.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_gps.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindGps(), the high-level API for Gps functions
 #
@@ -119,7 +119,7 @@ class YGps(YFunction):
     #--- (YGps implementation)
     def _parseAttr(self, json_val):
         if json_val.has("isFixed"):
-            self._isFixed = (json_val.getInt("isFixed") > 0 if 1 else 0)
+            self._isFixed = json_val.getInt("isFixed") > 0
         if json_val.has("satCount"):
             self._satCount = json_val.getLong("satCount")
         if json_val.has("satPerConst"):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_pwmoutput.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_pwmoutput.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindPwmOutput(), the high-level API for PwmOutput functions
 #
@@ -48,7 +48,7 @@ from yocto_api import *
 class YPwmOutput(YFunction):
     """
     The YPwmOutput class allows you to drive a pulse-width modulated output (PWM).
-    You can configure the frequency as well as the duty cycle, and setup progressive
+    You can configure the frequency as well as the duty cycle, and set up progressive
     transitions.
 
     """
@@ -96,7 +96,7 @@ class YPwmOutput(YFunction):
     #--- (YPwmOutput implementation)
     def _parseAttr(self, json_val):
         if json_val.has("enabled"):
-            self._enabled = (json_val.getInt("enabled") > 0 if 1 else 0)
+            self._enabled = json_val.getInt("enabled") > 0
         if json_val.has("frequency"):
             self._frequency = round(json_val.getDouble("frequency") / 65.536) / 1000.0
         if json_val.has("period"):
@@ -108,9 +108,9 @@ class YPwmOutput(YFunction):
         if json_val.has("pwmTransition"):
             self._pwmTransition = json_val.getString("pwmTransition")
         if json_val.has("invertedOutput"):
-            self._invertedOutput = (json_val.getInt("invertedOutput") > 0 if 1 else 0)
+            self._invertedOutput = json_val.getInt("invertedOutput") > 0
         if json_val.has("enabledAtPowerOn"):
-            self._enabledAtPowerOn = (json_val.getInt("enabledAtPowerOn") > 0 if 1 else 0)
+            self._enabledAtPowerOn = json_val.getInt("enabledAtPowerOn") > 0
         if json_val.has("dutyCycleAtPowerOn"):
             self._dutyCycleAtPowerOn = round(json_val.getDouble("dutyCycleAtPowerOn") / 65.536) / 1000.0
         super(YPwmOutput, self)._parseAttr(json_val)

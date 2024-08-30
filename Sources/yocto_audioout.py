@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_audioout.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_audioout.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindAudioOut(), the high-level API for AudioOut functions
 #
@@ -84,7 +84,7 @@ class YAudioOut(YFunction):
         if json_val.has("volume"):
             self._volume = json_val.getInt("volume")
         if json_val.has("mute"):
-            self._mute = (json_val.getInt("mute") > 0 if 1 else 0)
+            self._mute = json_val.getInt("mute") > 0
         if json_val.has("volumeRange"):
             self._volumeRange = json_val.getString("volumeRange")
         if json_val.has("signal"):

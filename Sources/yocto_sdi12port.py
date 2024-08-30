@@ -1164,7 +1164,7 @@ class YSdi12Port(YFunction):
         bufflen = len(hexString)
         if bufflen < 100:
             return self.sendCommand("$" + hexString)
-        bufflen = ((bufflen) >> (1))
+        bufflen = (bufflen >> 1)
         buff = bytearray(bufflen)
         idx = 0
         while idx < bufflen:

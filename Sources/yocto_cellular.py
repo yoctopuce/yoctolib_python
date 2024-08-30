@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#* $Id: yocto_cellular.py 62196 2024-08-19 12:22:51Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -239,7 +239,7 @@ class YCellular(YFunction):
         if json_val.has("lockedOperator"):
             self._lockedOperator = json_val.getString("lockedOperator")
         if json_val.has("airplaneMode"):
-            self._airplaneMode = (json_val.getInt("airplaneMode") > 0 if 1 else 0)
+            self._airplaneMode = json_val.getInt("airplaneMode") > 0
         if json_val.has("enableData"):
             self._enableData = json_val.getInt("enableData")
         if json_val.has("apn"):
@@ -733,7 +733,7 @@ class YCellular(YFunction):
     def sendPUK(self, puk, newPin):
         """
         Sends a PUK code to unlock the SIM card after three failed PIN code attempts, and
-        setup a new PIN into the SIM card. Only ten consecutive tentatives are permitted:
+        set up a new PIN into the SIM card. Only ten consecutive tentatives are permitted:
         after that, the SIM card will be blocked permanently without any mean of recovery
         to use it again. Note that after calling this method, you have usually to invoke
         method set_pin() to tell the YoctoHub which PIN to use in the future.

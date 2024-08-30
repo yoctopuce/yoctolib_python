@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_micropython.py 58154 2023-11-30 13:45:48Z mvuilleu $
+#  $Id: yocto_micropython.py 62263 2024-08-23 07:01:20Z seb $
 #
 #  Implements yFindMicroPython(), the high-level API for MicroPython functions
 #
@@ -62,6 +62,8 @@ class YMicroPython(YFunction):
     #--- (end of YMicroPython yapiwrapper)
     #--- (YMicroPython definitions)
     LASTMSG_INVALID = YAPI.INVALID_STRING
+    HEAPUSAGE_INVALID = YAPI.INVALID_UINT
+    XHEAPUSAGE_INVALID = YAPI.INVALID_UINT
     CURRENTSCRIPT_INVALID = YAPI.INVALID_STRING
     STARTUPSCRIPT_INVALID = YAPI.INVALID_STRING
     COMMAND_INVALID = YAPI.INVALID_STRING
@@ -73,6 +75,8 @@ class YMicroPython(YFunction):
         #--- (YMicroPython attributes)
         self._callback = None
         self._lastMsg = YMicroPython.LASTMSG_INVALID
+        self._heapUsage = YMicroPython.HEAPUSAGE_INVALID
+        self._xheapUsage = YMicroPython.XHEAPUSAGE_INVALID
         self._currentScript = YMicroPython.CURRENTSCRIPT_INVALID
         self._startupScript = YMicroPython.STARTUPSCRIPT_INVALID
         self._command = YMicroPython.COMMAND_INVALID
@@ -87,6 +91,10 @@ class YMicroPython(YFunction):
     def _parseAttr(self, json_val):
         if json_val.has("lastMsg"):
             self._lastMsg = json_val.getString("lastMsg")
+        if json_val.has("heapUsage"):
+            self._heapUsage = json_val.getInt("heapUsage")
+        if json_val.has("xheapUsage"):
+            self._xheapUsage = json_val.getInt("xheapUsage")
         if json_val.has("currentScript"):
             self._currentScript = json_val.getString("currentScript")
         if json_val.has("startupScript"):
@@ -108,6 +116,40 @@ class YMicroPython(YFunction):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMicroPython.LASTMSG_INVALID
         res = self._lastMsg
+        return res
+
+    def get_heapUsage(self):
+        """
+        Returns the percentage of micropython main memory in use,
+        as observed at the end of the last garbage collection.
+
+        @return an integer corresponding to the percentage of micropython main memory in use,
+                as observed at the end of the last garbage collection
+
+        On failure, throws an exception or returns YMicroPython.HEAPUSAGE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YMicroPython.HEAPUSAGE_INVALID
+        res = self._heapUsage
+        return res
+
+    def get_xheapUsage(self):
+        """
+        Returns the percentage of micropython external memory in use,
+        as observed at the end of the last garbage collection.
+
+        @return an integer corresponding to the percentage of micropython external memory in use,
+                as observed at the end of the last garbage collection
+
+        On failure, throws an exception or returns YMicroPython.XHEAPUSAGE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YMicroPython.XHEAPUSAGE_INVALID
+        res = self._xheapUsage
         return res
 
     def get_currentScript(self):
@@ -188,13 +230,13 @@ class YMicroPython(YFunction):
         """
         Retrieves a MicroPython interpreter for a given identifier.
         The identifier can be specified using several formats:
-        <ul>
-        <li>FunctionLogicalName</li>
-        <li>ModuleSerialNumber.FunctionIdentifier</li>
-        <li>ModuleSerialNumber.FunctionLogicalName</li>
-        <li>ModuleLogicalName.FunctionIdentifier</li>
-        <li>ModuleLogicalName.FunctionLogicalName</li>
-        </ul>
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
 
         This function does not require that the MicroPython interpreter is online at the time
         it is invoked. The returned object is nevertheless valid.
@@ -282,7 +324,6 @@ class YMicroPython(YFunction):
         """
         # buff
         # bufflen
-        # endpos
         # res
 
         buff = self._download("mpy.txt")

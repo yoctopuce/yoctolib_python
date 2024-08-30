@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_proximity.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_proximity.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindProximity(), the high-level API for Proximity functions
 #
@@ -50,7 +50,7 @@ class YProximity(YSensor):
     The YProximity class allows you to read and configure Yoctopuce proximity sensors.
     It inherits from YSensor class the core functions to read measurements,
     to register callback functions, and to access the autonomous datalogger.
-    This class adds the ability to setup a detection threshold and to count the
+    This class adds the ability to set up a detection threshold and to count the
     number of detected state changes.
 
     """
@@ -111,7 +111,7 @@ class YProximity(YSensor):
         if json_val.has("removalMinTime"):
             self._removalMinTime = json_val.getInt("removalMinTime")
         if json_val.has("isPresent"):
-            self._isPresent = (json_val.getInt("isPresent") > 0 if 1 else 0)
+            self._isPresent = json_val.getInt("isPresent") > 0
         if json_val.has("lastTimeApproached"):
             self._lastTimeApproached = json_val.getLong("lastTimeApproached")
         if json_val.has("lastTimeRemoved"):

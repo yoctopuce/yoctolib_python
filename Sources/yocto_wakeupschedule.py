@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_wakeupschedule.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_wakeupschedule.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #
@@ -378,7 +378,7 @@ class YWakeUpSchedule(YFunction):
         # res
 
         res = self.get_minutesB()
-        res = ((res) << (30))
+        res = (res << 30)
         res = res + self.get_minutesA()
         return res
 
@@ -393,7 +393,7 @@ class YWakeUpSchedule(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         self.set_minutesA(((bitmap) & (0x3fffffff)))
-        bitmap = ((bitmap) >> (30))
+        bitmap = (bitmap >> 30)
         return self.set_minutesB(((bitmap) & (0x3fffffff)))
 
     def nextWakeUpSchedule(self):

@@ -1,7 +1,7 @@
 # -*- coding: latin-1 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 60609 2024-04-18 07:44:20Z seb $
+# * $Id: yocto_api.py 62319 2024-08-28 08:00:18Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -1040,7 +1040,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.0"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "61813"
+    YOCTO_API_BUILD_NO = "62334"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1164,7 +1164,7 @@ class YAPI:
             #
             if system == 'Windows':
                 if arch == '32bit':
-                    if machine == 'ARM64':
+                    if machine == 'ARM32':
                         raise NotImplementedError(
                             "unsupported windows architecture (" + machine + "/" + arch + "), contact support@yoctopuce.com.")
                     else:
@@ -1926,7 +1926,7 @@ class YAPI:
         """
         Checks if a given string is valid as logical name for a module or a function.
         A valid logical name has a maximum of 19 characters, all among
-        A..Z, a..z, 0..9, _, and -.
+        A...Z, a...z, 0...9, _, and -.
         If you try to configure a logical name with an incorrect string,
         the invalid characters are ignored.
 
@@ -2625,7 +2625,7 @@ class YAPI:
 
         From an operating system standpoint, it is generally not required to call
         this function since the OS will automatically free allocated resources
-        once your program is completed. However there are two situations when
+        once your program is completed. However, there are two situations when
         you may really want to use that function:
 
         - Free all dynamically allocated memory blocks in order to
@@ -2648,7 +2648,7 @@ class YAPI:
     @staticmethod
     def RegisterHub(url, errmsg=None):
         """
-        Setup the Yoctopuce library to use modules connected on a given machine. Idealy this
+        Set up the Yoctopuce library to use modules connected on a given machine. Idealy this
         call will be made once at the begining of your application.  The
         parameter will determine how the API will work. Use the following values:
 
@@ -2665,7 +2665,7 @@ class YAPI:
         computer, use the IP address 127.0.0.1. If the given IP is unresponsive, yRegisterHub
         will not return until a time-out defined by ySetNetworkTimeout has elapsed.
         However, it is possible to preventively test a connection  with yTestHub.
-        If you cannot afford a network time-out, you can use the non blocking yPregisterHub
+        If you cannot afford a network time-out, you can use the non-blocking yPregisterHub
         function that will establish the connection as soon as it is available.
 
 
@@ -2680,7 +2680,7 @@ class YAPI:
         while trying to access the USB modules. In particular, this means
         that you must stop the VirtualHub software before starting
         an application that uses direct USB access. The workaround
-        for this limitation is to setup the library to use the VirtualHub
+        for this limitation is to set up the library to use the VirtualHub
         rather than direct USB access.
 
         If access control has been activated on the hub, virtual or not, you want to
@@ -2747,7 +2747,7 @@ class YAPI:
     @staticmethod
     def UnregisterHub(url):
         """
-        Setup the Yoctopuce library to no more use modules connected on a previously
+        Set up the Yoctopuce library to no more use modules connected on a previously
         registered machine with RegisterHub.
 
         @param url : a string containing either "usb" or the
@@ -3269,8 +3269,8 @@ class YDataStream(object):
         # fRef
         iCalib = []
         # // decode sequence header to extract data
-        self._runNo = encoded[0] + (((encoded[1]) << (16)))
-        self._utcStamp = encoded[2] + (((encoded[3]) << (16)))
+        self._runNo = encoded[0] + ((encoded[1] << 16))
+        self._utcStamp = encoded[2] + ((encoded[3] << 16))
         val = encoded[4]
         self._isAvg = (((val) & (0x100)) == 0)
         samplesPerHour = ((val) & (0xff))
@@ -3338,9 +3338,9 @@ class YDataStream(object):
             self._nCols = 1
         # // decode min/avg/max values for the sequence
         if self._nRows > 0:
-            self._avgVal = self._decodeAvg(encoded[8] + (((((encoded[9]) ^ (0x8000))) << (16))), 1)
-            self._minVal = self._decodeVal(encoded[10] + (((encoded[11]) << (16))))
-            self._maxVal = self._decodeVal(encoded[12] + (((encoded[13]) << (16))))
+            self._avgVal = self._decodeAvg(encoded[8] + (((encoded[9] ^ 0x8000) << 16)), 1)
+            self._minVal = self._decodeVal(encoded[10] + ((encoded[11] << 16)))
+            self._maxVal = self._decodeVal(encoded[12] + ((encoded[13] << 16)))
         return 0
 
     def _parseStream(self, sdata):
@@ -3364,9 +3364,9 @@ class YDataStream(object):
                     dat.append(float('nan'))
                     dat.append(float('nan'))
                 else:
-                    dat.append(self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << (16)))))
-                    dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
-                    dat.append(self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << (16)))))
+                    dat.append(self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) << 16))))
+                    dat.append(self._decodeAvg(udat[idx] + ((((udat[idx + 1]) ^ 0x8000) << 16)), 1))
+                    dat.append(self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) << 16))))
                 idx = idx + 6
                 self._values.append(dat[:])
         else:
@@ -3375,7 +3375,7 @@ class YDataStream(object):
                 if (udat[idx] == 65535) and (udat[idx + 1] == 65535):
                     dat.append(float('nan'))
                 else:
-                    dat.append(self._decodeAvg(udat[idx] + (((((udat[idx + 1]) ^ (0x8000))) << (16))), 1))
+                    dat.append(self._decodeAvg(udat[idx] + ((((udat[idx + 1]) ^ 0x8000) << 16)), 1))
                 self._values.append(dat[:])
                 idx = idx + 2
 
@@ -6057,7 +6057,7 @@ class YModule(YFunction):
         if json_val.has("luminosity"):
             self._luminosity = json_val.getInt("luminosity")
         if json_val.has("beacon"):
-            self._beacon = (json_val.getInt("beacon") > 0 if 1 else 0)
+            self._beacon = json_val.getInt("beacon") > 0
         if json_val.has("upTime"):
             self._upTime = json_val.getLong("upTime")
         if json_val.has("usbCurrent"):
@@ -6553,13 +6553,13 @@ class YModule(YFunction):
         On failure, throws an exception or returns an binary object of size 0.
         """
         # settings
-        # json
+        # json_bin
         # res
         # sep
         # name
         # item
         # t_type
-        # id
+        # pageid
         # url
         # file_data
         # file_data_bin
@@ -6579,20 +6579,20 @@ class YModule(YFunction):
                 url = "api/" + y + "/sensorType"
                 t_type = YByte2String(self._download(url))
                 if t_type == "RES_NTC" or t_type == "RES_LINEAR":
-                    id = (y)[11: 11 + len(y) - 11]
-                    if id == "":
-                        id = "1"
-                    temp_data_bin = self._download("extra.json?page=" + id)
+                    pageid = (y)[11: 11 + len(y) - 11]
+                    if pageid == "":
+                        pageid = "1"
+                    temp_data_bin = self._download("extra.json?page=" + pageid)
                     if len(temp_data_bin) > 0:
                         item = "" + sep + "{\"fid\":\"" + y + "\", \"json\":" + YByte2String(temp_data_bin) + "}\n"
                         ext_settings = ext_settings + item
                         sep = ","
         ext_settings = ext_settings + "],\n\"files\":["
         if self.hasFunction("files"):
-            json = self._download("files.json?a=dir&f=")
-            if len(json) == 0:
-                return json
-            filelist = self._json_get_array(json)
+            json_bin = self._download("files.json?a=dir&f=")
+            if len(json_bin) == 0:
+                return json_bin
+            filelist = self._json_get_array(json_bin)
             sep = ""
             for y in filelist:
                 name = self._json_get_key(YString2Byte(y), "name")
@@ -6655,18 +6655,18 @@ class YModule(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # down
-        # json
+        # json_bin
         # json_api
         # json_files
         # json_extra
         # fuperror
         # globalres
         fuperror = 0
-        json = YByte2String(settings)
-        json_api = self._get_json_path(json, "api")
+        json_bin = YByte2String(settings)
+        json_api = self._get_json_path(json_bin, "api")
         if json_api == "":
             return self.set_allSettings(settings)
-        json_extra = self._get_json_path(json, "extras")
+        json_extra = self._get_json_path(json_bin, "extras")
         if not (json_extra == ""):
             self.set_extraSettings(json_extra)
         self.set_allSettings(YString2Byte(json_api))
@@ -6681,7 +6681,7 @@ class YModule(YFunction):
             if not (res == "ok"):
                 self._throw(YAPI.IO_ERROR, "format failed")
                 return YAPI.IO_ERROR
-            json_files = self._get_json_path(json, "files")
+            json_files = self._get_json_path(json_bin, "files")
             files = self._json_get_array(YString2Byte(json_files))
             for y in files:
                 name = self._get_json_path(y, "name")
@@ -7006,7 +7006,6 @@ class YModule(YFunction):
         # value
         # url
         # tmp
-        # new_calib
         # sensorType
         # unit_name
         # newval
@@ -7088,83 +7087,83 @@ class YModule(YFunction):
             do_update = True
             if fun == "services":
                 do_update = False
-            if (do_update) and (attr == "firmwareRelease"):
+            if do_update and (attr == "firmwareRelease"):
                 do_update = False
-            if (do_update) and (attr == "usbCurrent"):
+            if do_update and (attr == "usbCurrent"):
                 do_update = False
-            if (do_update) and (attr == "upTime"):
+            if do_update and (attr == "upTime"):
                 do_update = False
-            if (do_update) and (attr == "persistentSettings"):
+            if do_update and (attr == "persistentSettings"):
                 do_update = False
-            if (do_update) and (attr == "adminPassword"):
+            if do_update and (attr == "adminPassword"):
                 do_update = False
-            if (do_update) and (attr == "userPassword"):
+            if do_update and (attr == "userPassword"):
                 do_update = False
-            if (do_update) and (attr == "rebootCountdown"):
+            if do_update and (attr == "rebootCountdown"):
                 do_update = False
-            if (do_update) and (attr == "advertisedValue"):
+            if do_update and (attr == "advertisedValue"):
                 do_update = False
-            if (do_update) and (attr == "poeCurrent"):
+            if do_update and (attr == "poeCurrent"):
                 do_update = False
-            if (do_update) and (attr == "readiness"):
+            if do_update and (attr == "readiness"):
                 do_update = False
-            if (do_update) and (attr == "ipAddress"):
+            if do_update and (attr == "ipAddress"):
                 do_update = False
-            if (do_update) and (attr == "subnetMask"):
+            if do_update and (attr == "subnetMask"):
                 do_update = False
-            if (do_update) and (attr == "router"):
+            if do_update and (attr == "router"):
                 do_update = False
-            if (do_update) and (attr == "linkQuality"):
+            if do_update and (attr == "linkQuality"):
                 do_update = False
-            if (do_update) and (attr == "ssid"):
+            if do_update and (attr == "ssid"):
                 do_update = False
-            if (do_update) and (attr == "channel"):
+            if do_update and (attr == "channel"):
                 do_update = False
-            if (do_update) and (attr == "security"):
+            if do_update and (attr == "security"):
                 do_update = False
-            if (do_update) and (attr == "message"):
+            if do_update and (attr == "message"):
                 do_update = False
-            if (do_update) and (attr == "signalValue"):
+            if do_update and (attr == "signalValue"):
                 do_update = False
-            if (do_update) and (attr == "currentValue"):
+            if do_update and (attr == "currentValue"):
                 do_update = False
-            if (do_update) and (attr == "currentRawValue"):
+            if do_update and (attr == "currentRawValue"):
                 do_update = False
-            if (do_update) and (attr == "currentRunIndex"):
+            if do_update and (attr == "currentRunIndex"):
                 do_update = False
-            if (do_update) and (attr == "pulseTimer"):
+            if do_update and (attr == "pulseTimer"):
                 do_update = False
-            if (do_update) and (attr == "lastTimePressed"):
+            if do_update and (attr == "lastTimePressed"):
                 do_update = False
-            if (do_update) and (attr == "lastTimeReleased"):
+            if do_update and (attr == "lastTimeReleased"):
                 do_update = False
-            if (do_update) and (attr == "filesCount"):
+            if do_update and (attr == "filesCount"):
                 do_update = False
-            if (do_update) and (attr == "freeSpace"):
+            if do_update and (attr == "freeSpace"):
                 do_update = False
-            if (do_update) and (attr == "timeUTC"):
+            if do_update and (attr == "timeUTC"):
                 do_update = False
-            if (do_update) and (attr == "rtcTime"):
+            if do_update and (attr == "rtcTime"):
                 do_update = False
-            if (do_update) and (attr == "unixTime"):
+            if do_update and (attr == "unixTime"):
                 do_update = False
-            if (do_update) and (attr == "dateTime"):
+            if do_update and (attr == "dateTime"):
                 do_update = False
-            if (do_update) and (attr == "rawValue"):
+            if do_update and (attr == "rawValue"):
                 do_update = False
-            if (do_update) and (attr == "lastMsg"):
+            if do_update and (attr == "lastMsg"):
                 do_update = False
-            if (do_update) and (attr == "delayedPulseTimer"):
+            if do_update and (attr == "delayedPulseTimer"):
                 do_update = False
-            if (do_update) and (attr == "rxCount"):
+            if do_update and (attr == "rxCount"):
                 do_update = False
-            if (do_update) and (attr == "txCount"):
+            if do_update and (attr == "txCount"):
                 do_update = False
-            if (do_update) and (attr == "msgCount"):
+            if do_update and (attr == "msgCount"):
                 do_update = False
-            if (do_update) and (attr == "rxMsgCount"):
+            if do_update and (attr == "rxMsgCount"):
                 do_update = False
-            if (do_update) and (attr == "txMsgCount"):
+            if do_update and (attr == "txMsgCount"):
                 do_update = False
             if do_update:
                 do_update = False
@@ -7183,7 +7182,6 @@ class YModule(YFunction):
                     old_calib = ""
                     unit_name = ""
                     sensorType = ""
-                    new_calib = newval
                     j = 0
                     found = False
                     while (j < len(old_jpath)) and not (found):
@@ -7667,7 +7665,7 @@ class YSensor(YFunction):
     The YSensor class is the parent class for all Yoctopuce sensor types. It can be
     used to read the current value and unit of any sensor, read the min/max
     value, configure autonomous recording frequency and access recorded data.
-    It also provide a function to register a callback invoked each time the
+    It also provides a function to register a callback invoked each time the
     observed value changes, or at a predefined interval. Using this class rather
     than a specific subclass makes it possible to create generic applications
     that work with any Yoctopuce sensor, even those that do not yet exist.
@@ -8464,7 +8462,7 @@ class YSensor(YFunction):
                 sublen = sublen - 1
             if ((byteVal) & (0x80)) != 0:
                 avgRaw = avgRaw - poww
-            sublen = 1 + ((((report[1]) >> (2))) & (3))
+            sublen = 1 + (((report[1] >> 2)) & (3))
             poww = 1
             difRaw = 0
             while (sublen > 0) and (i < len(report)):
@@ -8474,7 +8472,7 @@ class YSensor(YFunction):
                 i = i + 1
                 sublen = sublen - 1
             minRaw = avgRaw - difRaw
-            sublen = 1 + ((((report[1]) >> (4))) & (3))
+            sublen = 1 + (((report[1] >> 4)) & (3))
             poww = 1
             difRaw = 0
             while (sublen > 0) and (i < len(report)):
@@ -8626,13 +8624,13 @@ class YDataLogger(YFunction):
         if json_val.has("recording"):
             self._recording = json_val.getInt("recording")
         if json_val.has("autoStart"):
-            self._autoStart = (json_val.getInt("autoStart") > 0 if 1 else 0)
+            self._autoStart = json_val.getInt("autoStart") > 0
         if json_val.has("beaconDriven"):
-            self._beaconDriven = (json_val.getInt("beaconDriven") > 0 if 1 else 0)
+            self._beaconDriven = json_val.getInt("beaconDriven") > 0
         if json_val.has("usage"):
             self._usage = json_val.getInt("usage")
         if json_val.has("clearHistory"):
-            self._clearHistory = (json_val.getInt("clearHistory") > 0 if 1 else 0)
+            self._clearHistory = json_val.getInt("clearHistory") > 0
         super(YDataLogger, self)._parseAttr(json_val)
 
     def get_currentRunIndex(self):
@@ -8867,12 +8865,12 @@ class YDataLogger(YFunction):
         """
         return self.parse_dataSets(self._download("logger.json"))
 
-    def parse_dataSets(self, json):
+    def parse_dataSets(self, jsonbuff):
         dslist = []
         # dataset
         res = []
 
-        dslist = self._json_get_array(json)
+        dslist = self._json_get_array(jsonbuff)
         del res[:]
         for y in dslist:
             dataset = YDataSet(self)

@@ -37,6 +37,7 @@
         "yocto_longitude",
         "yocto_magnetometer",
         "yocto_messagebox",
+        "yocto_micropython",
         "yocto_motor",
         "yocto_multiaxiscontroller",
         "yocto_multicellweighscale",

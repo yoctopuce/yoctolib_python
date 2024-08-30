@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#* $Id: yocto_serialport.py 62196 2024-08-19 12:22:51Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -932,7 +932,7 @@ class YSerialPort(YFunction):
         bufflen = len(hexString)
         if bufflen < 100:
             return self.sendCommand("$" + hexString)
-        bufflen = ((bufflen) >> (1))
+        bufflen = (bufflen >> 1)
         buff = bytearray(bufflen)
         idx = 0
         while idx < bufflen:
@@ -1403,7 +1403,7 @@ class YSerialPort(YFunction):
         # replen
         # hexb
         funCode = pduBytes[0]
-        nib = ((funCode) >> (4))
+        nib = (funCode >> 4)
         pat = "" + ("%02X" % slaveNo) + "[" + ("%X" % nib) + "" + ("%X" % (nib+8)) + "]" + ("%X" % ((funCode) & (15))) + ".*"
         cmd = "" + ("%02X" % slaveNo) + "" + ("%02X" % funCode)
         i = 1
@@ -1426,7 +1426,7 @@ class YSerialPort(YFunction):
             return res
         if len(reps) > 1:
             rep = self._json_get_string(YString2Byte(reps[0]))
-            replen = ((len(rep) - 3) >> (1))
+            replen = ((len(rep) - 3) >> 1)
             i = 0
             while i < replen:
                 hexb = int((rep)[2 * i + 3: 2 * i + 3 + 2], 16)
@@ -1470,9 +1470,9 @@ class YSerialPort(YFunction):
         # mask
 
         pdu.append(0x01)
-        pdu.append(((pduAddr) >> (8)))
+        pdu.append((pduAddr >> 8))
         pdu.append(((pduAddr) & (0xff)))
-        pdu.append(((nBits) >> (8)))
+        pdu.append((nBits >> 8))
         pdu.append(((nBits) & (0xff)))
 
 
@@ -1497,7 +1497,7 @@ class YSerialPort(YFunction):
                 val = reply[idx]
                 mask = 1
             else:
-                mask = ((mask) << (1))
+                mask = (mask << 1)
 
         return res
 
@@ -1523,9 +1523,9 @@ class YSerialPort(YFunction):
         # mask
 
         pdu.append(0x02)
-        pdu.append(((pduAddr) >> (8)))
+        pdu.append((pduAddr >> 8))
         pdu.append(((pduAddr) & (0xff)))
-        pdu.append(((nBits) >> (8)))
+        pdu.append((nBits >> 8))
         pdu.append(((nBits) & (0xff)))
 
 
@@ -1550,7 +1550,7 @@ class YSerialPort(YFunction):
                 val = reply[idx]
                 mask = 1
             else:
-                mask = ((mask) << (1))
+                mask = (mask << 1)
 
         return res
 
@@ -1578,9 +1578,9 @@ class YSerialPort(YFunction):
             return res
 
         pdu.append(0x03)
-        pdu.append(((pduAddr) >> (8)))
+        pdu.append((pduAddr >> 8))
         pdu.append(((pduAddr) & (0xff)))
-        pdu.append(((nWords) >> (8)))
+        pdu.append((nWords >> 8))
         pdu.append(((nWords) & (0xff)))
 
 
@@ -1593,7 +1593,7 @@ class YSerialPort(YFunction):
         regpos = 0
         idx = 2
         while regpos < nWords:
-            val = ((reply[idx]) << (8))
+            val = (reply[idx] << 8)
             idx = idx + 1
             val = val + reply[idx]
             idx = idx + 1
@@ -1623,9 +1623,9 @@ class YSerialPort(YFunction):
         # val
 
         pdu.append(0x04)
-        pdu.append(((pduAddr) >> (8)))
+        pdu.append((pduAddr >> 8))
         pdu.append(((pduAddr) & (0xff)))
-        pdu.append(((nWords) >> (8)))
+        pdu.append((nWords >> 8))
         pdu.append(((nWords) & (0xff)))
 
 
@@ -1638,7 +1638,7 @@ class YSerialPort(YFunction):
         regpos = 0
         idx = 2
         while regpos < nWords:
-            val = ((reply[idx]) << (8))
+            val = (reply[idx] << 8)
             idx = idx + 1
             val = val + reply[idx]
             idx = idx + 1
@@ -1668,7 +1668,7 @@ class YSerialPort(YFunction):
             value = 0xff
 
         pdu.append(0x05)
-        pdu.append(((pduAddr) >> (8)))
+        pdu.append((pduAddr >> 8))
         pdu.append(((pduAddr) & (0xff)))
         pdu.append(value)
         pdu.append(0x00)
@@ -1705,12 +1705,12 @@ class YSerialPort(YFunction):
         # res
         res = 0
         nBits = len(bits)
-        nBytes = (((nBits + 7)) >> (3))
+        nBytes = ((nBits + 7) >> 3)
 
         pdu.append(0x0f)
-        pdu.append(((pduAddr) >> (8)))
+        pdu.append((pduAddr >> 8))
         pdu.append(((pduAddr) & (0xff)))
-        pdu.append(((nBits) >> (8)))
+        pdu.append((nBits >> 8))
         pdu.append(((nBits) & (0xff)))
         pdu.append(nBytes)
         bitpos = 0
@@ -1718,14 +1718,14 @@ class YSerialPort(YFunction):
         mask = 1
         while bitpos < nBits:
             if bits[bitpos] != 0:
-                val = ((val) | (mask))
+                val = (val | mask)
             bitpos = bitpos + 1
             if mask == 0x80:
                 pdu.append(val)
                 val = 0
                 mask = 1
             else:
-                mask = ((mask) << (1))
+                mask = (mask << 1)
         if mask != 1:
             pdu.append(val)
 
@@ -1735,7 +1735,7 @@ class YSerialPort(YFunction):
             return res
         if reply[0] != pdu[0]:
             return res
-        res = ((reply[3]) << (8))
+        res = (reply[3] << 8)
         res = res + reply[4]
         return res
 
@@ -1758,9 +1758,9 @@ class YSerialPort(YFunction):
         res = 0
 
         pdu.append(0x06)
-        pdu.append(((pduAddr) >> (8)))
+        pdu.append((pduAddr >> 8))
         pdu.append(((pduAddr) & (0xff)))
-        pdu.append(((value) >> (8)))
+        pdu.append((value >> 8))
         pdu.append(((value) & (0xff)))
 
 
@@ -1797,15 +1797,15 @@ class YSerialPort(YFunction):
         nBytes = 2 * nWords
 
         pdu.append(0x10)
-        pdu.append(((pduAddr) >> (8)))
+        pdu.append((pduAddr >> 8))
         pdu.append(((pduAddr) & (0xff)))
-        pdu.append(((nWords) >> (8)))
+        pdu.append((nWords >> 8))
         pdu.append(((nWords) & (0xff)))
         pdu.append(nBytes)
         regpos = 0
         while regpos < nWords:
             val = values[regpos]
-            pdu.append(((val) >> (8)))
+            pdu.append((val >> 8))
             pdu.append(((val) & (0xff)))
             regpos = regpos + 1
 
@@ -1815,7 +1815,7 @@ class YSerialPort(YFunction):
             return res
         if reply[0] != pdu[0]:
             return res
-        res = ((reply[3]) << (8))
+        res = (reply[3] << 8)
         res = res + reply[4]
         return res
 
@@ -1847,19 +1847,19 @@ class YSerialPort(YFunction):
         nBytes = 2 * nWriteWords
 
         pdu.append(0x17)
-        pdu.append(((pduReadAddr) >> (8)))
+        pdu.append((pduReadAddr >> 8))
         pdu.append(((pduReadAddr) & (0xff)))
-        pdu.append(((nReadWords) >> (8)))
+        pdu.append((nReadWords >> 8))
         pdu.append(((nReadWords) & (0xff)))
-        pdu.append(((pduWriteAddr) >> (8)))
+        pdu.append((pduWriteAddr >> 8))
         pdu.append(((pduWriteAddr) & (0xff)))
-        pdu.append(((nWriteWords) >> (8)))
+        pdu.append((nWriteWords >> 8))
         pdu.append(((nWriteWords) & (0xff)))
         pdu.append(nBytes)
         regpos = 0
         while regpos < nWriteWords:
             val = values[regpos]
-            pdu.append(((val) >> (8)))
+            pdu.append((val >> 8))
             pdu.append(((val) & (0xff)))
             regpos = regpos + 1
 
@@ -1873,7 +1873,7 @@ class YSerialPort(YFunction):
         regpos = 0
         idx = 2
         while regpos < nReadWords:
-            val = ((reply[idx]) << (8))
+            val = (reply[idx] << 8)
             idx = idx + 1
             val = val + reply[idx]
             idx = idx + 1

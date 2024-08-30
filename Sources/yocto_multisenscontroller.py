@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multisenscontroller.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_multisenscontroller.py 62196 2024-08-19 12:22:51Z seb $
 #
 #  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
 #
@@ -47,7 +47,7 @@ from yocto_api import *
 #noinspection PyProtectedMember
 class YMultiSensController(YFunction):
     """
-    The YMultiSensController class allows you to setup a customized
+    The YMultiSensController class allows you to set up a customized
     sensor chain on devices featuring that functionality.
 
     """
@@ -87,7 +87,7 @@ class YMultiSensController(YFunction):
         if json_val.has("maxSensors"):
             self._maxSensors = json_val.getInt("maxSensors")
         if json_val.has("maintenanceMode"):
-            self._maintenanceMode = (json_val.getInt("maintenanceMode") > 0 if 1 else 0)
+            self._maintenanceMode = json_val.getInt("maintenanceMode") > 0
         if json_val.has("lastAddressDetected"):
             self._lastAddressDetected = json_val.getInt("lastAddressDetected")
         if json_val.has("command"):
