@@ -1,6 +1,3 @@
-PythonV2 v2.0.62388
+PythonV2 v2.0.62554
 
-- Add support Windows ARM 64 bits
-- Update MbedTLS lib to 3.6.0
-- Fix YAPI.Testhub("net") that was not returning YAPI.INVALID_ARGUMENT
-- Improve debug logs for network hubs
+- Fix missing entry points in yapi.dll in build 62388
