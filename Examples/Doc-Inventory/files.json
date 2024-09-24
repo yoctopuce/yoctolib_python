@@ -62,6 +62,8 @@
         "yocto_segmenteddisplay",
         "yocto_serialport",
         "yocto_servo",
+        "yocto_spectralchannel",
+        "yocto_spectralsensor",
         "yocto_spiport",
         "yocto_steppermotor",
         "yocto_temperature",

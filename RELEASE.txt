@@ -1,3 +1,3 @@
-PythonV2 v2.0.62554
+PythonV2 v2.0.62710
 
-- Fix missing entry points in yapi.dll in build 62388
+- Fix crash if network discovery cannot be started correctly
