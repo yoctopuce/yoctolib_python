@@ -1,3 +1,4 @@
-PythonV2 v2.0.62733
+PythonV2 v2.0.62875
 
-- Fix crash if network discovery cannot be started correctly
+- Fix connection to YoctoHub with very old firmware
+- Fix crash if Network discovery cannot be started correctly
