@@ -1,4 +1,5 @@
-PythonV2 v2.0.62875
+PythonV2 v2.0.63620
 
-- Fix connection to YoctoHub with very old firmware
-- Fix crash if Network discovery cannot be started correctly
+- Fix crash on Windows ARM computers running the Intel 64 Python engine.
+- Fix network discovery for Windows hosts with a Wi-Fi interface.
+- Improve log verbosity for connections to VirtualHub for Web.

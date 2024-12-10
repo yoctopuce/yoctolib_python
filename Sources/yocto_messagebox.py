@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 62196 2024-08-19 12:22:51Z seb $
+#* $Id: yocto_messagebox.py 63513 2024-11-28 10:50:30Z seb $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -143,11 +143,11 @@ class YSms(object):
             isolatin = bytearray(isosize)
             i = 0
             while i < isosize:
-                isolatin[i] = YGetByte(self._udata, 2*i+1)
+                isolatin[i] = self._udata[2*i+1]
                 i = i + 1
-            return YByte2String(isolatin)
+            return isolatin.decode(YAPI.DefaultEncoding)
         # // default: convert 8 bit to string as-is
-        return YByte2String(self._udata)
+        return self._udata.decode(YAPI.DefaultEncoding)
 
     def get_unicodeData(self):
         res = []
@@ -163,7 +163,7 @@ class YSms(object):
             del res[:]
             i = 0
             while i < unisize:
-                unival = 256*YGetByte(self._udata, 2*i)+YGetByte(self._udata, 2*i+1)
+                unival = 256*self._udata[2*i]+self._udata[2*i+1]
                 res.append(unival)
                 i = i + 1
         else:
@@ -172,7 +172,7 @@ class YSms(object):
             del res[:]
             i = 0
             while i < unisize:
-                res.append(YGetByte(self._udata, i)+0)
+                res.append(self._udata[i]+0)
                 i = i + 1
 
         return res
@@ -289,7 +289,7 @@ class YSms(object):
             del ucs2[:]
             i = 0
             while i < udatalen:
-                uni = YGetByte(self._udata, i)
+                uni = self._udata[i]
                 ucs2.append(uni)
                 i = i + 1
         self._alphab = 2
@@ -322,10 +322,10 @@ class YSms(object):
             if newdatalen == 0:
                 # // 7-bit not possible, switch to unicode
                 self.convertToUnicode()
-                newdata = YString2Byte(val)
+                newdata = bytearray(val, YAPI.DefaultEncoding)
                 newdatalen = len(newdata)
         else:
-            newdata = YString2Byte(val)
+            newdata = bytearray(val, YAPI.DefaultEncoding)
             newdatalen = len(newdata)
         udatalen = len(self._udata)
         if self._alphab == 2:
@@ -333,11 +333,11 @@ class YSms(object):
             udata = bytearray(udatalen + 2*newdatalen)
             i = 0
             while i < udatalen:
-                udata[i] = YGetByte(self._udata, i)
+                udata[i] = self._udata[i]
                 i = i + 1
             i = 0
             while i < newdatalen:
-                udata[udatalen+1] = YGetByte(newdata, i)
+                udata[udatalen+1] = newdata[i]
                 udatalen = udatalen + 2
                 i = i + 1
         else:
@@ -345,11 +345,11 @@ class YSms(object):
             udata = bytearray(udatalen+newdatalen)
             i = 0
             while i < udatalen:
-                udata[i] = YGetByte(self._udata, i)
+                udata[i] = self._udata[i]
                 i = i + 1
             i = 0
             while i < newdatalen:
-                udata[udatalen] = YGetByte(newdata, i)
+                udata[udatalen] = newdata[i]
                 udatalen = udatalen + 1
                 i = i + 1
         return self.set_userData(udata)
@@ -386,7 +386,7 @@ class YSms(object):
         udata = bytearray(udatalen+2*newdatalen)
         i = 0
         while i < udatalen:
-            udata[i] = YGetByte(self._udata, i)
+            udata[i] = self._udata[i]
             i = i + 1
         i = 0
         while i < arrlen:
@@ -459,7 +459,7 @@ class YSms(object):
             subdata = subsms.get_userData()
             i = 0
             while i < len(subdata):
-                res[totsize] = YGetByte(subdata, i)
+                res[totsize] = subdata[i]
                 totsize = totsize + 1
                 i = i + 1
             partno = partno + 1
@@ -474,12 +474,12 @@ class YSms(object):
         # val
         # digit
         # res
-        bytes = YString2Byte(addr)
+        bytes = bytearray(addr, YAPI.DefaultEncoding)
         srclen = len(bytes)
         numlen = 0
         i = 0
         while i < srclen:
-            val = YGetByte(bytes, i)
+            val = bytes[i]
             if (val >= 48) and (val < 58):
                 numlen = numlen + 1
             i = i + 1
@@ -489,7 +489,7 @@ class YSms(object):
             return res
         res = bytearray(2+((numlen+1) >> 1))
         res[0] = numlen
-        if YGetByte(bytes, 0) == 43:
+        if bytes[0] == 43:
             res[1] = 145
         else:
             res[1] = 129
@@ -497,7 +497,7 @@ class YSms(object):
         digit = 0
         i = 0
         while i < srclen:
-            val = YGetByte(bytes, i)
+            val = bytes[i]
             if (val >= 48) and (val < 58):
                 if ((numlen) & (1)) == 0:
                     digit = val - 48
@@ -522,7 +522,7 @@ class YSms(object):
         if siz == 0:
             return ""
         res = ""
-        addrType = ((YGetByte(addr, ofs)) & (112))
+        addrType = ((addr[ofs]) & (112))
         if addrType == 80:
             # // alphanumeric number
             siz = int((4*siz) / (7))
@@ -537,7 +537,7 @@ class YSms(object):
                     carry = 0
                     nbits = 0
                 else:
-                    byt = YGetByte(addr, ofs+rpos)
+                    byt = addr[ofs+rpos]
                     rpos = rpos + 1
                     gsm7[i] = (carry | ((((byt << nbits))) & (127)))
                     carry = (byt >> (7 - nbits))
@@ -551,11 +551,11 @@ class YSms(object):
             siz = ((siz+1) >> 1)
             i = 0
             while i < siz:
-                byt = YGetByte(addr, ofs+i+1)
+                byt = addr[ofs+i+1]
                 res = "" + res + "" + ("%x" % ((byt) & (15))) + "" + ("%x" % (byt >> 4))
                 i = i + 1
             # // remove padding digit if needed
-            if ((YGetByte(addr, ofs+siz)) >> 4) == 15:
+            if ((addr[ofs+siz]) >> 4) == 15:
                 res = (res)[0: 0 + len(res)-1]
             return res
 
@@ -592,14 +592,14 @@ class YSms(object):
             # // ignore century
             exp = (exp)[2: 2 + explen-2]
             explen = len(exp)
-        expasc = YString2Byte(exp)
+        expasc = bytearray(exp, YAPI.DefaultEncoding)
         res = bytearray(7)
         n = 0
         i = 0
         while (i+1 < explen) and (n < 7):
-            v1 = YGetByte(expasc, i)
+            v1 = expasc[i]
             if (v1 >= 48) and (v1 < 58):
-                v2 = YGetByte(expasc, i+1)
+                v2 = expasc[i+1]
                 if (v2 >= 48) and (v2 < 58):
                     v1 = v1 - 48
                     v2 = v2 - 48
@@ -612,16 +612,16 @@ class YSms(object):
             n = n + 1
         if i+2 < explen:
             # // convert for timezone in cleartext ISO format +/-nn:nn
-            v1 = YGetByte(expasc, i-3)
-            v2 = YGetByte(expasc, i)
+            v1 = expasc[i-3]
+            v2 = expasc[i]
             if ((v1 == 43) or (v1 == 45)) and (v2 == 58):
-                v1 = YGetByte(expasc, i+1)
-                v2 = YGetByte(expasc, i+2)
+                v1 = expasc[i+1]
+                v2 = expasc[i+2]
                 if (v1 >= 48) and (v1 < 58) and (v1 >= 48) and (v1 < 58):
                     v1 = int(((10*(v1 - 48)+(v2 - 48))) / (15))
                     n = n - 1
-                    v2 = 4 * YGetByte(res, n) + v1
-                    if YGetByte(expasc, i-3) == 45:
+                    v2 = 4 * res[n] + v1
+                    if expasc[i-3] == 45:
                         v2 = v2 + 128
                     res[n] = v2
         return res
@@ -637,7 +637,7 @@ class YSms(object):
         if siz < 1:
             return ""
         if siz == 1:
-            n = YGetByte(exp, ofs)
+            n = exp[ofs]
             if n < 144:
                 n = n * 300
             else:
@@ -652,7 +652,7 @@ class YSms(object):
         res = "20"
         i = 0
         while (i < siz) and (i < 6):
-            byt = YGetByte(exp, ofs+i)
+            byt = exp[ofs+i]
             res = "" + res + "" + ("%x" % ((byt) & (15))) + "" + ("%x" % (byt >> 4))
             if i < 3:
                 if i < 2:
@@ -664,7 +664,7 @@ class YSms(object):
                     res = "" + res + ":"
             i = i + 1
         if siz == 7:
-            byt = YGetByte(exp, ofs+i)
+            byt = exp[ofs+i]
             sign = "+"
             if ((byt) & (8)) != 0:
                 byt = byt - 8
@@ -729,7 +729,7 @@ class YSms(object):
             wpos = wpos + 1
             i = 0
             while i < udhsize:
-                res[wpos] = YGetByte(self._udh, i)
+                res[wpos] = self._udh[i]
                 wpos = wpos + 1
                 i = i + 1
         # // 3. Encode UD
@@ -738,10 +738,10 @@ class YSms(object):
             i = 0
             while i < udlen:
                 if nbits == 0:
-                    carry = YGetByte(self._udata, i)
+                    carry = self._udata[i]
                     nbits = 7
                 else:
-                    thi_b = YGetByte(self._udata, i)
+                    thi_b = self._udata[i]
                     res[wpos] = (carry | ((((thi_b << nbits))) & (255)))
                     wpos = wpos + 1
                     nbits = nbits - 1
@@ -753,7 +753,7 @@ class YSms(object):
             # // 8-bit encoding
             i = 0
             while i < udlen:
-                res[wpos] = YGetByte(self._udata, i)
+                res[wpos] = self._udata[i]
                 wpos = wpos + 1
                 i = i + 1
         return res
@@ -790,7 +790,7 @@ class YSms(object):
             newudh[4] = partno
             i = 0
             while i < udhsize:
-                newudh[5+i] = YGetByte(self._udh, i)
+                newudh[5+i] = self._udh[i]
                 i = i + 1
             if wpos+mss < udlen:
                 partlen = mss
@@ -799,7 +799,7 @@ class YSms(object):
             newud = bytearray(partlen)
             i = 0
             while i < partlen:
-                newud[i] = YGetByte(self._udata, wpos)
+                newud[i] = self._udata[wpos]
                 wpos = wpos + 1
                 i = i + 1
             newpdu = YSms(self._mbox)
@@ -858,17 +858,17 @@ class YSms(object):
         pdulen = 0
         i = 0
         while i < len(sca):
-            self._pdu[pdulen] = YGetByte(sca, i)
+            self._pdu[pdulen] = sca[i]
             pdulen = pdulen + 1
             i = i + 1
         i = 0
         while i < len(hdr):
-            self._pdu[pdulen] = YGetByte(hdr, i)
+            self._pdu[pdulen] = hdr[i]
             pdulen = pdulen + 1
             i = i + 1
         i = 0
         while i < len(addr):
-            self._pdu[pdulen] = YGetByte(addr, i)
+            self._pdu[pdulen] = addr[i]
             pdulen = pdulen + 1
             i = i + 1
         self._pdu[pdulen] = self._pid
@@ -877,12 +877,12 @@ class YSms(object):
         pdulen = pdulen + 1
         i = 0
         while i < len(stamp):
-            self._pdu[pdulen] = YGetByte(stamp, i)
+            self._pdu[pdulen] = stamp[i]
             pdulen = pdulen + 1
             i = i + 1
         i = 0
         while i < len(udata):
-            self._pdu[pdulen] = YGetByte(udata, i)
+            self._pdu[pdulen] = udata[i]
             pdulen = pdulen + 1
             i = i + 1
         self._npdu = 1
@@ -900,22 +900,22 @@ class YSms(object):
         udhlen = len(self._udh)
         i = 0
         while i+1 < udhlen:
-            iei = YGetByte(self._udh, i)
-            ielen = YGetByte(self._udh, i+1)
+            iei = self._udh[i]
+            ielen = self._udh[i+1]
             i = i + 2
             if i + ielen <= udhlen:
                 if (iei == 0) and (ielen == 3):
                     # // concatenated SMS, 8-bit ref
-                    sig = "" + self._orig + "-" + self._dest + "-" + ("%02x" % self._mref) + "-" + ("%02x" % YGetByte(self._udh, i))
+                    sig = "" + self._orig + "-" + self._dest + "-" + ("%02x" % self._mref) + "-" + ("%02x" % self._udh[i])
                     self._aggSig = sig
-                    self._aggCnt = YGetByte(self._udh, i+1)
-                    self._aggIdx = YGetByte(self._udh, i+2)
+                    self._aggCnt = self._udh[i+1]
+                    self._aggIdx = self._udh[i+2]
                 if (iei == 8) and (ielen == 4):
                     # // concatenated SMS, 16-bit ref
-                    sig = "" + self._orig + "-" + self._dest + "-" + ("%02x" % self._mref) + "-" + ("%02x" % YGetByte(self._udh, i)) + "" + ("%02x" % YGetByte(self._udh, i+1))
+                    sig = "" + self._orig + "-" + self._dest + "-" + ("%02x" % self._mref) + "-" + ("%02x" % self._udh[i]) + "" + ("%02x" % self._udh[i+1])
                     self._aggSig = sig
-                    self._aggCnt = YGetByte(self._udh, i+2)
-                    self._aggIdx = YGetByte(self._udh, i+3)
+                    self._aggCnt = self._udh[i+2]
+                    self._aggIdx = self._udh[i+3]
             i = i + ielen
         return YAPI.SUCCESS
 
@@ -935,21 +935,21 @@ class YSms(object):
         self._pdu = pdu
         self._npdu = 1
         # // parse meta-data
-        self._smsc = self.decodeAddress(pdu, 1, 2*(YGetByte(pdu, 0)-1))
-        rpos = 1+YGetByte(pdu, 0)
-        pdutyp = YGetByte(pdu, rpos)
+        self._smsc = self.decodeAddress(pdu, 1, 2*(pdu[0]-1))
+        rpos = 1+pdu[0]
+        pdutyp = pdu[rpos]
         rpos = rpos + 1
         self._deliv = (((pdutyp) & (3)) == 0)
         if self._deliv:
-            addrlen = YGetByte(pdu, rpos)
+            addrlen = pdu[rpos]
             rpos = rpos + 1
             self._orig = self.decodeAddress(pdu, rpos, addrlen)
             self._dest = ""
             tslen = 7
         else:
-            self._mref = YGetByte(pdu, rpos)
+            self._mref = pdu[rpos]
             rpos = rpos + 1
-            addrlen = YGetByte(pdu, rpos)
+            addrlen = pdu[rpos]
             rpos = rpos + 1
             self._dest = self.decodeAddress(pdu, rpos, addrlen)
             self._orig = ""
@@ -961,9 +961,9 @@ class YSms(object):
             else:
                 tslen = 0
         rpos = rpos + (((addrlen+3) >> 1))
-        self._pid = YGetByte(pdu, rpos)
+        self._pid = pdu[rpos]
         rpos = rpos + 1
-        dcs = YGetByte(pdu, rpos)
+        dcs = pdu[rpos]
         rpos = rpos + 1
         self._alphab = ((((dcs >> 2))) & (3))
         self._mclass = ((dcs) & (16+3))
@@ -972,15 +972,15 @@ class YSms(object):
         # // parse user data (including udh)
         nbits = 0
         carry = 0
-        udlen = YGetByte(pdu, rpos)
+        udlen = pdu[rpos]
         rpos = rpos + 1
         if ((pdutyp) & (64)) != 0:
-            udhsize = YGetByte(pdu, rpos)
+            udhsize = pdu[rpos]
             rpos = rpos + 1
             self._udh = bytearray(udhsize)
             i = 0
             while i < udhsize:
-                self._udh[i] = YGetByte(pdu, rpos)
+                self._udh[i] = pdu[rpos]
                 rpos = rpos + 1
                 i = i + 1
             if self._alphab == 0:
@@ -988,7 +988,7 @@ class YSms(object):
                 udhlen = int(((8 + 8*udhsize + 6)) / (7))
                 nbits = 7*udhlen - 8 - 8*udhsize
                 if nbits > 0:
-                    thi_b = YGetByte(pdu, rpos)
+                    thi_b = pdu[rpos]
                     rpos = rpos + 1
                     carry = (thi_b >> nbits)
                     nbits = 8 - nbits
@@ -1009,7 +1009,7 @@ class YSms(object):
                     carry = 0
                     nbits = 0
                 else:
-                    thi_b = YGetByte(pdu, rpos)
+                    thi_b = pdu[rpos]
                     rpos = rpos + 1
                     self._udata[i] = (carry | ((((thi_b << nbits))) & (127)))
                     carry = (thi_b >> (7 - nbits))
@@ -1019,7 +1019,7 @@ class YSms(object):
             # // 8-bit encoding
             i = 0
             while i < udlen:
-                self._udata[i] = YGetByte(pdu, rpos)
+                self._udata[i] = pdu[rpos]
                 rpos = rpos + 1
                 i = i + 1
         self.parseUserDataHeader()
@@ -1339,7 +1339,7 @@ class YMessageBox(YFunction):
             idx = (slot >> 3)
             if idx < len(newBitmap):
                 bitVal = (1 << (((slot) & (7))))
-                if (((YGetByte(newBitmap, idx)) & (bitVal))) != 0:
+                if (((newBitmap[idx]) & (bitVal))) != 0:
                     self._prevBitmapStr = ""
                     int_res = self.set_command("DS" + str(int(slot)))
                     if int_res < 0:
@@ -1388,12 +1388,12 @@ class YMessageBox(YFunction):
         while waitMore > 0:
             buff = self._download(cmd)
             bufflen = len(buff)
-            buffstr = YByte2String(buff)
+            buffstr = buff.decode(YAPI.DefaultEncoding)
             buffstrlen = len(buffstr)
             idx = bufflen - 1
-            while (idx > 0) and (YGetByte(buff, idx) != 64) and (YGetByte(buff, idx) != 10) and (YGetByte(buff, idx) != 13):
+            while (idx > 0) and (buff[idx] != 64) and (buff[idx] != 10) and (buff[idx] != 13):
                 idx = idx - 1
-            if YGetByte(buff, idx) == 64:
+            if buff[idx] == 64:
                 # // continuation detected
                 suffixlen = bufflen - idx
                 cmd = "at.txt?cmd=" + (buffstr)[buffstrlen - suffixlen: buffstrlen - suffixlen + suffixlen]
@@ -1510,16 +1510,16 @@ class YMessageBox(YFunction):
         reslen = gsmlen
         i = 0
         while i < gsmlen:
-            if YGetByte(gsm, i) == 27:
+            if gsm[i] == 27:
                 reslen = reslen - 1
             i = i + 1
         del res[:]
         i = 0
         while i < gsmlen:
-            uni = self._gsm2unicode[YGetByte(gsm, i)]
+            uni = self._gsm2unicode[gsm[i]]
             if (uni == 27) and (i+1 < gsmlen):
                 i = i + 1
-                uni = YGetByte(gsm, i)
+                uni = gsm[i]
                 if uni < 60:
                     if uni < 41:
                         if uni==20:
@@ -1576,17 +1576,17 @@ class YMessageBox(YFunction):
         reslen = gsmlen
         i = 0
         while i < gsmlen:
-            if YGetByte(gsm, i) == 27:
+            if gsm[i] == 27:
                 reslen = reslen - 1
             i = i + 1
         resbin = bytearray(reslen)
         i = 0
         reslen = 0
         while i < gsmlen:
-            uni = self._gsm2unicode[YGetByte(gsm, i)]
+            uni = self._gsm2unicode[gsm[i]]
             if (uni == 27) and (i+1 < gsmlen):
                 i = i + 1
-                uni = YGetByte(gsm, i)
+                uni = gsm[i]
                 if uni < 60:
                     if uni < 41:
                         if uni==20:
@@ -1628,7 +1628,7 @@ class YMessageBox(YFunction):
                 resbin[reslen] = uni
                 reslen = reslen + 1
             i = i + 1
-        resstr = YByte2String(resbin)
+        resstr = resbin.decode(YAPI.DefaultEncoding)
         if len(resstr) > reslen:
             resstr = (resstr)[0: 0 + reslen]
         return resstr
@@ -1644,13 +1644,13 @@ class YMessageBox(YFunction):
         # wpos
         if not (self._gsm2unicodeReady):
             self.initGsm2Unicode()
-        asc = YString2Byte(msg)
+        asc = bytearray(msg, YAPI.DefaultEncoding)
         asclen = len(asc)
         extra = 0
         i = 0
         while i < asclen:
-            ch = YGetByte(asc, i)
-            gsm7 = YGetByte(self._iso2gsm, ch)
+            ch = asc[i]
+            gsm7 = self._iso2gsm[ch]
             if gsm7 == 27:
                 extra = extra + 1
             if gsm7 == 0:
@@ -1662,8 +1662,8 @@ class YMessageBox(YFunction):
         wpos = 0
         i = 0
         while i < asclen:
-            ch = YGetByte(asc, i)
-            gsm7 = YGetByte(self._iso2gsm, ch)
+            ch = asc[i]
+            gsm7 = self._iso2gsm[ch]
             res[wpos] = gsm7
             wpos = wpos + 1
             if gsm7 == 27:
@@ -1733,7 +1733,7 @@ class YMessageBox(YFunction):
             idx = (slot >> 3)
             if idx < len(newBitmap):
                 bitVal = (1 << (((slot) & (7))))
-                if (((YGetByte(newBitmap, idx)) & (bitVal))) != 0:
+                if (((newBitmap[idx]) & (bitVal))) != 0:
                     newArr.append(sms)
                     if sms.get_concatCount() == 0:
                         newMsg.append(sms)
@@ -1755,8 +1755,8 @@ class YMessageBox(YFunction):
             bitVal = (1 << (((slot) & (7))))
             prevBit = 0
             if idx < len(prevBitmap):
-                prevBit = ((YGetByte(prevBitmap, idx)) & (bitVal))
-            if (((YGetByte(newBitmap, idx)) & (bitVal))) != 0:
+                prevBit = ((prevBitmap[idx]) & (bitVal))
+            if (((newBitmap[idx]) & (bitVal))) != 0:
                 if prevBit == 0:
                     sms = self.fetchPdu(slot)
                     newArr.append(sms)

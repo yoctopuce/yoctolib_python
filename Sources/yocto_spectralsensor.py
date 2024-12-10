@@ -65,9 +65,19 @@ class YSpectralSensor(YFunction):
     INTEGRATIONTIME_INVALID = YAPI.INVALID_INT
     GAIN_INVALID = YAPI.INVALID_INT
     SATURATION_INVALID = YAPI.INVALID_UINT
+    ESTIMATEDRGB_INVALID = YAPI.INVALID_UINT
+    ESTIMATEDHSL_INVALID = YAPI.INVALID_UINT
+    ESTIMATEDXYZ_INVALID = YAPI.INVALID_STRING
+    ESTIMATEDOKLAB_INVALID = YAPI.INVALID_STRING
+    NEARRAL1_INVALID = YAPI.INVALID_STRING
+    NEARRAL2_INVALID = YAPI.INVALID_STRING
+    NEARRAL3_INVALID = YAPI.INVALID_STRING
     LEDCURRENTATPOWERON_INVALID = YAPI.INVALID_INT
     INTEGRATIONTIMEATPOWERON_INVALID = YAPI.INVALID_INT
     GAINATPOWERON_INVALID = YAPI.INVALID_INT
+    ESTIMATIONMODEL_REFLECTION = 0
+    ESTIMATIONMODEL_EMISSION = 1
+    ESTIMATIONMODEL_INVALID = -1
     #--- (end of YSpectralSensor definitions)
 
     def __init__(self, func):
@@ -79,7 +89,15 @@ class YSpectralSensor(YFunction):
         self._resolution = YSpectralSensor.RESOLUTION_INVALID
         self._integrationTime = YSpectralSensor.INTEGRATIONTIME_INVALID
         self._gain = YSpectralSensor.GAIN_INVALID
+        self._estimationModel = YSpectralSensor.ESTIMATIONMODEL_INVALID
         self._saturation = YSpectralSensor.SATURATION_INVALID
+        self._estimatedRGB = YSpectralSensor.ESTIMATEDRGB_INVALID
+        self._estimatedHSL = YSpectralSensor.ESTIMATEDHSL_INVALID
+        self._estimatedXYZ = YSpectralSensor.ESTIMATEDXYZ_INVALID
+        self._estimatedOkLab = YSpectralSensor.ESTIMATEDOKLAB_INVALID
+        self._nearRAL1 = YSpectralSensor.NEARRAL1_INVALID
+        self._nearRAL2 = YSpectralSensor.NEARRAL2_INVALID
+        self._nearRAL3 = YSpectralSensor.NEARRAL3_INVALID
         self._ledCurrentAtPowerOn = YSpectralSensor.LEDCURRENTATPOWERON_INVALID
         self._integrationTimeAtPowerOn = YSpectralSensor.INTEGRATIONTIMEATPOWERON_INVALID
         self._gainAtPowerOn = YSpectralSensor.GAINATPOWERON_INVALID
@@ -95,8 +113,24 @@ class YSpectralSensor(YFunction):
             self._integrationTime = json_val.getInt("integrationTime")
         if json_val.has("gain"):
             self._gain = json_val.getInt("gain")
+        if json_val.has("estimationModel"):
+            self._estimationModel = json_val.getInt("estimationModel")
         if json_val.has("saturation"):
             self._saturation = json_val.getInt("saturation")
+        if json_val.has("estimatedRGB"):
+            self._estimatedRGB = json_val.getInt("estimatedRGB")
+        if json_val.has("estimatedHSL"):
+            self._estimatedHSL = json_val.getInt("estimatedHSL")
+        if json_val.has("estimatedXYZ"):
+            self._estimatedXYZ = json_val.getString("estimatedXYZ")
+        if json_val.has("estimatedOkLab"):
+            self._estimatedOkLab = json_val.getString("estimatedOkLab")
+        if json_val.has("nearRAL1"):
+            self._nearRAL1 = json_val.getString("nearRAL1")
+        if json_val.has("nearRAL2"):
+            self._nearRAL2 = json_val.getString("nearRAL2")
+        if json_val.has("nearRAL3"):
+            self._nearRAL3 = json_val.getString("nearRAL3")
         if json_val.has("ledCurrentAtPowerOn"):
             self._ledCurrentAtPowerOn = json_val.getInt("ledCurrentAtPowerOn")
         if json_val.has("integrationTimeAtPowerOn"):
@@ -107,8 +141,11 @@ class YSpectralSensor(YFunction):
 
     def get_ledCurrent(self):
         """
+        Returns the current value of the LED.
+        This method retrieves the current flowing through the LED
+        and returns it as an integer or an object.
 
-        @return an integer
+        @return an integer corresponding to the current value of the LED
 
         On failure, throws an exception or returns YSpectralSensor.LEDCURRENT_INVALID.
         """
@@ -169,8 +206,11 @@ class YSpectralSensor(YFunction):
 
     def get_integrationTime(self):
         """
+        Returns the current integration time.
+        This method retrieves the integration time value
+        used for data processing and returns it as an integer or an object.
 
-        @return an integer
+        @return an integer corresponding to the current integration time
 
         On failure, throws an exception or returns YSpectralSensor.INTEGRATIONTIME_INVALID.
         """
@@ -183,10 +223,10 @@ class YSpectralSensor(YFunction):
 
     def set_integrationTime(self, newval):
         """
-        Change the integration time for a measure. The parameter is a
-        value between 0 and 100.
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
+        Sets the integration time for data processing.
+        This method takes a parameter `val` and assigns it
+        as the new integration time. This affects the duration
+        for which data is integrated before being processed.
 
         @param newval : an integer
 
@@ -199,6 +239,8 @@ class YSpectralSensor(YFunction):
 
     def get_gain(self):
         """
+        Retrieves the current gain.
+        This method updates the gain value.
 
         @return an integer
 
@@ -213,8 +255,10 @@ class YSpectralSensor(YFunction):
 
     def set_gain(self, newval):
         """
-        Remember to call the saveToFlash() method of the module if the
-        modification must be kept.
+        Sets the gain for signal processing.
+        This method takes a parameter `val` and assigns it
+        as the new gain. This affects the sensitivity and
+        intensity of the processed signal.
 
         @param newval : an integer
 
@@ -225,10 +269,40 @@ class YSpectralSensor(YFunction):
         rest_val = str(newval)
         return self._setAttr("gain", rest_val)
 
+    def get_estimationModel(self):
+        """
+        Return the model for the estimation colors.
+
+        @return either YSpectralSensor.ESTIMATIONMODEL_REFLECTION or YSpectralSensor.ESTIMATIONMODEL_EMISSION
+
+        On failure, throws an exception or returns YSpectralSensor.ESTIMATIONMODEL_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpectralSensor.ESTIMATIONMODEL_INVALID
+        res = self._estimationModel
+        return res
+
+    def set_estimationModel(self, newval):
+        """
+        Change the model for the estimation colors.
+
+        @param newval : either YSpectralSensor.ESTIMATIONMODEL_REFLECTION or YSpectralSensor.ESTIMATIONMODEL_EMISSION
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("estimationModel", rest_val)
+
     def get_saturation(self):
         """
+        Returns the current saturation of the sensor.
+        This function updates the sensor's saturation value.
 
-        @return an integer
+        @return an integer corresponding to the current saturation of the sensor
 
         On failure, throws an exception or returns YSpectralSensor.SATURATION_INVALID.
         """
@@ -239,13 +313,99 @@ class YSpectralSensor(YFunction):
         res = self._saturation
         return res
 
+    def get_estimatedRGB(self):
+        """
+        Returns the estimated color in RGB format.
+        This method retrieves the estimated color values
+        and returns them as an RGB object or structure.
+
+        @return an integer corresponding to the estimated color in RGB format
+
+        On failure, throws an exception or returns YSpectralSensor.ESTIMATEDRGB_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpectralSensor.ESTIMATEDRGB_INVALID
+        res = self._estimatedRGB
+        return res
+
+    def get_estimatedHSL(self):
+        """
+        Returns the estimated color in HSL format.
+        This method retrieves the estimated color values
+        and returns them as an HSL object or structure.
+
+        @return an integer corresponding to the estimated color in HSL format
+
+        On failure, throws an exception or returns YSpectralSensor.ESTIMATEDHSL_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpectralSensor.ESTIMATEDHSL_INVALID
+        res = self._estimatedHSL
+        return res
+
+    def get_estimatedXYZ(self):
+        """
+        Returns the estimated color in XYZ format.
+        This method retrieves the estimated color values
+        and returns them as an XYZ object or structure.
+
+        @return a string corresponding to the estimated color in XYZ format
+
+        On failure, throws an exception or returns YSpectralSensor.ESTIMATEDXYZ_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpectralSensor.ESTIMATEDXYZ_INVALID
+        res = self._estimatedXYZ
+        return res
+
+    def get_estimatedOkLab(self):
+        """
+        Returns the estimated color in OkLab format.
+        This method retrieves the estimated color values
+        and returns them as an OkLab object or structure.
+
+        @return a string corresponding to the estimated color in OkLab format
+
+        On failure, throws an exception or returns YSpectralSensor.ESTIMATEDOKLAB_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpectralSensor.ESTIMATEDOKLAB_INVALID
+        res = self._estimatedOkLab
+        return res
+
+    def get_nearRAL1(self):
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpectralSensor.NEARRAL1_INVALID
+        res = self._nearRAL1
+        return res
+
+    def get_nearRAL2(self):
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpectralSensor.NEARRAL2_INVALID
+        res = self._nearRAL2
+        return res
+
+    def get_nearRAL3(self):
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpectralSensor.NEARRAL3_INVALID
+        res = self._nearRAL3
+        return res
+
     def get_ledCurrentAtPowerOn(self):
-        """
-
-        @return an integer
-
-        On failure, throws an exception or returns YSpectralSensor.LEDCURRENTATPOWERON_INVALID.
-        """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
@@ -255,6 +415,10 @@ class YSpectralSensor(YFunction):
 
     def set_ledCurrentAtPowerOn(self, newval):
         """
+        Sets the LED current at power-on.
+        This method takes a parameter `val` and assigns it to startupLumin, representing the LED current defined
+        at startup.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : an integer
 
@@ -267,6 +431,8 @@ class YSpectralSensor(YFunction):
 
     def get_integrationTimeAtPowerOn(self):
         """
+        Retrieves the integration time at power-on.
+        This method updates the power-on integration time value.
 
         @return an integer
 
@@ -281,6 +447,10 @@ class YSpectralSensor(YFunction):
 
     def set_integrationTimeAtPowerOn(self, newval):
         """
+        Sets the integration time at power-on.
+        This method takes a parameter `val` and assigns it to startupIntegTime, representing the integration time
+        defined at startup.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : an integer
 
@@ -292,12 +462,6 @@ class YSpectralSensor(YFunction):
         return self._setAttr("integrationTimeAtPowerOn", rest_val)
 
     def get_gainAtPowerOn(self):
-        """
-
-        @return an integer
-
-        On failure, throws an exception or returns YSpectralSensor.GAINATPOWERON_INVALID.
-        """
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
@@ -307,6 +471,9 @@ class YSpectralSensor(YFunction):
 
     def set_gainAtPowerOn(self, newval):
         """
+        Sets the gain at power-on.
+        This method takes a parameter `val` and assigns it to startupGain, representing the gain defined at startup.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @param newval : an integer
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_refframe.py 62196 2024-08-19 12:22:51Z seb $
+#  $Id: yocto_refframe.py 63513 2024-11-28 10:50:30Z seb $
 #
 #  Implements yFindRefFrame(), the high-level API for RefFrame functions
 #
@@ -672,7 +672,7 @@ class YRefFrame(YFunction):
                 return YAPI.SUCCESS
 
         calibParam = self._download("api/refFrame/calibrationParam.txt")
-        iCalib = YAPI._decodeFloats(YByte2String(calibParam))
+        iCalib = YAPI._decodeFloats(calibParam.decode(YAPI.DefaultEncoding))
         cal3 = int((iCalib[1]) / (1000))
         calAcc = int((cal3) / (100))
         calMag = int((cal3) / (10)) - 10*calAcc

@@ -94,8 +94,8 @@ class YInputCaptureData(object):
     #--- (generated code: YInputCaptureData implementation)
     def _decodeU16(self, sdata, ofs):
         # v
-        v = YGetByte(sdata, ofs)
-        v = v + 256 * YGetByte(sdata, ofs+1)
+        v = sdata[ofs]
+        v = v + 256 * sdata[ofs+1]
         return v
 
     def _decodeU32(self, sdata, ofs):
@@ -112,7 +112,7 @@ class YInputCaptureData(object):
         ofs = ofs + 2
         len = len - 2
         while len > 0:
-            v = v + b * YGetByte(sdata, ofs)
+            v = v + b * sdata[ofs]
             b = b * 256
             ofs = ofs + 1
             len = len - 1
@@ -136,10 +136,10 @@ class YInputCaptureData(object):
         if not (buffSize >= 24):
             self._throw(YAPI.INVALID_ARGUMENT, "Invalid snapshot data (too short)")
             return YAPI.INVALID_ARGUMENT
-        self._fmt = YGetByte(sdata, 0)
-        self._var1size = YGetByte(sdata, 1) - 48
-        self._var2size = YGetByte(sdata, 2) - 48
-        self._var3size = YGetByte(sdata, 3) - 48
+        self._fmt = sdata[0]
+        self._var1size = sdata[1] - 48
+        self._var2size = sdata[2] - 48
+        self._var3size = sdata[3] - 48
         if not (self._fmt == 83):
             self._throw(YAPI.INVALID_ARGUMENT, "Unsupported snapshot format")
             return YAPI.INVALID_ARGUMENT
@@ -170,18 +170,18 @@ class YInputCaptureData(object):
         self._trigUTC = self._decodeVal(sdata, 20, 4)
         self._trigUTC = self._trigUTC + (ms / 1000.0)
         recOfs = 24
-        while YGetByte(sdata, recOfs) >= 32:
-            self._var1unit = "" + self._var1unit + "" + str(chr(YGetByte(sdata, recOfs)))
+        while sdata[recOfs] >= 32:
+            self._var1unit = "" + self._var1unit + "" + str(chr(sdata[recOfs]))
             recOfs = recOfs + 1
         if self._var2size > 0:
             recOfs = recOfs + 1
-            while YGetByte(sdata, recOfs) >= 32:
-                self._var2unit = "" + self._var2unit + "" + str(chr(YGetByte(sdata, recOfs)))
+            while sdata[recOfs] >= 32:
+                self._var2unit = "" + self._var2unit + "" + str(chr(sdata[recOfs]))
                 recOfs = recOfs + 1
         if self._var3size > 0:
             recOfs = recOfs + 1
-            while YGetByte(sdata, recOfs) >= 32:
-                self._var3unit = "" + self._var3unit + "" + str(chr(YGetByte(sdata, recOfs)))
+            while sdata[recOfs] >= 32:
+                self._var3unit = "" + self._var3unit + "" + str(chr(sdata[recOfs]))
                 recOfs = recOfs + 1
         if ((recOfs) & (1)) == 1:
             # // align to next word

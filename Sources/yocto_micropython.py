@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_micropython.py 62263 2024-08-23 07:01:20Z seb $
+#  $Id: yocto_micropython.py 63513 2024-11-28 10:50:30Z seb $
 #
 #  Implements yFindMicroPython(), the high-level API for MicroPython functions
 #
@@ -67,6 +67,9 @@ class YMicroPython(YFunction):
     CURRENTSCRIPT_INVALID = YAPI.INVALID_STRING
     STARTUPSCRIPT_INVALID = YAPI.INVALID_STRING
     COMMAND_INVALID = YAPI.INVALID_STRING
+    DEBUGMODE_OFF = 0
+    DEBUGMODE_ON = 1
+    DEBUGMODE_INVALID = -1
     #--- (end of YMicroPython definitions)
 
     def __init__(self, func):
@@ -79,6 +82,7 @@ class YMicroPython(YFunction):
         self._xheapUsage = YMicroPython.XHEAPUSAGE_INVALID
         self._currentScript = YMicroPython.CURRENTSCRIPT_INVALID
         self._startupScript = YMicroPython.STARTUPSCRIPT_INVALID
+        self._debugMode = YMicroPython.DEBUGMODE_INVALID
         self._command = YMicroPython.COMMAND_INVALID
         self._logCallback = None
         self._isFirstCb = 0
@@ -99,6 +103,8 @@ class YMicroPython(YFunction):
             self._currentScript = json_val.getString("currentScript")
         if json_val.has("startupScript"):
             self._startupScript = json_val.getString("startupScript")
+        if json_val.has("debugMode"):
+            self._debugMode = json_val.getInt("debugMode") > 0
         if json_val.has("command"):
             self._command = json_val.getString("command")
         super(YMicroPython, self)._parseAttr(json_val)
@@ -213,6 +219,36 @@ class YMicroPython(YFunction):
         rest_val = newval
         return self._setAttr("startupScript", rest_val)
 
+    def get_debugMode(self):
+        """
+        Returns the activation state of micropython debugging interface.
+
+        @return either YMicroPython.DEBUGMODE_OFF or YMicroPython.DEBUGMODE_ON, according to the activation
+        state of micropython debugging interface
+
+        On failure, throws an exception or returns YMicroPython.DEBUGMODE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YMicroPython.DEBUGMODE_INVALID
+        res = self._debugMode
+        return res
+
+    def set_debugMode(self, newval):
+        """
+        Changes the activation state of micropython debugging interface.
+
+        @param newval : either YMicroPython.DEBUGMODE_OFF or YMicroPython.DEBUGMODE_ON, according to the
+        activation state of micropython debugging interface
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("debugMode", rest_val)
+
     def get_command(self):
         # res
         if self._cacheExpiration <= YAPI.GetTickCount():
@@ -288,7 +324,7 @@ class YMicroPython(YFunction):
         # fullname
         # res
         fullname = "mpy:" + codeName
-        res = self._upload(fullname, YString2Byte(mpyCode))
+        res = self._upload(fullname, bytearray(mpyCode, YAPI.DefaultEncoding))
         return res
 
     def reset(self):
@@ -328,9 +364,9 @@ class YMicroPython(YFunction):
 
         buff = self._download("mpy.txt")
         bufflen = len(buff) - 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
+        while (bufflen > 0) and (buff[bufflen] != 64):
             bufflen = bufflen - 1
-        res = (YByte2String(buff))[0: 0 + bufflen]
+        res = (buff.decode(YAPI.DefaultEncoding))[0: 0 + bufflen]
         return res
 
     def registerLogCallback(self, callback):
@@ -391,10 +427,10 @@ class YMicroPython(YFunction):
             url = "mpy.txt?pos=" + str(int(self._logPos))
 
         content = self._download(url)
-        contentStr = YByte2String(content)
+        contentStr = content.decode(YAPI.DefaultEncoding)
         # // look for new position indicator at end of logs
         endPos = len(content) - 1
-        while (endPos >= 0) and (YGetByte(content, endPos) != 64):
+        while (endPos >= 0) and (content[endPos] != 64):
             endPos = endPos - 1
         if not (endPos > 0):
             self._throw(YAPI.IO_ERROR, "fail to download micropython logs")
@@ -408,7 +444,7 @@ class YMicroPython(YFunction):
             return YAPI.SUCCESS
         # // now generate callbacks for each complete log line
         endPos = endPos - 1
-        if not (YGetByte(content, endPos) == 10):
+        if not (content[endPos] == 10):
             self._throw(YAPI.IO_ERROR, "fail to download micropython logs")
             return YAPI.IO_ERROR
         contentStr = (contentStr)[0: 0 + endPos]

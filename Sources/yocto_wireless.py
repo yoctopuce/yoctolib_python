@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_wireless.py 59978 2024-03-18 15:04:46Z mvuilleu $
+# * $Id: yocto_wireless.py 63513 2024-11-28 10:50:30Z seb $
 # *
 # * Implements yFindWireless(), the high-level API for Wireless functions
 # *
@@ -428,7 +428,7 @@ class YWireless(YFunction):
         wlanlist = self._json_get_array(json)
         del res[:]
         for y in wlanlist:
-            res.append(YWlanRecord(y))
+            res.append(YWlanRecord(y.decode(YAPI.DefaultEncoding)))
         return res
 
     def nextWireless(self):

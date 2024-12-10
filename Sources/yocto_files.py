@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#* $Id: yocto_files.py 63513 2024-11-28 10:50:30Z seb $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -243,7 +243,7 @@ class YFiles(YFunction):
         filelist = self._json_get_array(json)
         del res[:]
         for y in filelist:
-            res.append(YFileRecord(y))
+            res.append(YFileRecord(y.decode(YAPI.DefaultEncoding)))
         return res
 
     def fileExist(self, filename):
@@ -262,7 +262,7 @@ class YFiles(YFunction):
             return False
         json = self.sendCommand("dir&f=" + filename)
         filelist = self._json_get_array(json)
-        if len(filelist) > 0 :
+        if len(filelist) > 0:
             return True
         return False
 

@@ -487,7 +487,7 @@ class YInputChain(YFunction):
         # content
 
         content = self._download("events.txt")
-        return YByte2String(content)
+        return content.decode(YAPI.DefaultEncoding)
 
     def registerStateChangeCallback(self, callback):
         """
@@ -553,7 +553,7 @@ class YInputChain(YFunction):
         url = "events.txt?pos=" + str(int(self._eventPos))
 
         content = self._download(url)
-        contentStr = YByte2String(content)
+        contentStr = content.decode(YAPI.DefaultEncoding)
         eventArr = (contentStr).split('\n')
         arrLen = len(eventArr)
         if not (arrLen > 0):

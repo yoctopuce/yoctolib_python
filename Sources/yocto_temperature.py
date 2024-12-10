@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_temperature.py 62196 2024-08-19 12:22:51Z seb $
+#  $Id: yocto_temperature.py 63513 2024-11-28 10:50:30Z seb $
 #
 #  Implements yFindTemperature(), the high-level API for Temperature functions
 #
@@ -393,7 +393,7 @@ class YTemperature(YSensor):
         del templist[:]
         idx = 0
         while idx < siz:
-            temp = YAPI._atof(paramlist[2*idx+1])/1000.0
+            temp = YAPI._atof(paramlist[2*idx+1].decode(YAPI.DefaultEncoding))/1000.0
             templist.append(temp)
             idx = idx + 1
         # // then add records in growing temperature value
@@ -410,7 +410,7 @@ class YTemperature(YSensor):
                 temp = templist[idx]
                 if (temp > prev) and (temp < curr):
                     curr = temp
-                    currRes = YAPI._atof(paramlist[2*idx])/1000.0
+                    currRes = YAPI._atof(paramlist[2*idx].decode(YAPI.DefaultEncoding))/1000.0
                     found = 1
                 idx = idx + 1
             if found > 0:

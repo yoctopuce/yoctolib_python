@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_network.py 62196 2024-08-19 12:22:51Z seb $
+#  $Id: yocto_network.py 63513 2024-11-28 10:50:30Z seb $
 #
 #  Implements yFindNetwork(), the high-level API for Network functions
 #
@@ -1162,7 +1162,7 @@ class YNetwork(YFunction):
         # content
 
         content = self._download("ping.txt?host=" + host)
-        return YByte2String(content)
+        return content.decode(YAPI.DefaultEncoding)
 
     def triggerCallback(self):
         """

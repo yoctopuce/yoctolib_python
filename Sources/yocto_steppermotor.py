@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_steppermotor.py 61964 2024-07-29 15:54:55Z seb $
+#  $Id: yocto_steppermotor.py 63500 2024-11-28 10:17:13Z seb $
 #
 #  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #
@@ -542,7 +542,7 @@ class YStepperMotor(YFunction):
         url = "cmd.txt?" + id + "=" + command
         # //may throw an exception
         retBin = self._download(url)
-        res = YGetByte(retBin, 0)
+        res = retBin[0]
         if res < 58:
             if not (res == 48):
                 self._throw(YAPI.DEVICE_BUSY, "Motor command pipeline is full, try again later")

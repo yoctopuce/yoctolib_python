@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multiaxiscontroller.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_multiaxiscontroller.py 63500 2024-11-28 10:17:13Z seb $
 #
 #  Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
 #
@@ -192,7 +192,7 @@ class YMultiAxisController(YFunction):
         url = "cmd.txt?X=" + command
         # //may throw an exception
         retBin = self._download(url)
-        res = YGetByte(retBin, 0)
+        res = retBin[0]
         if res < 58:
             if not (res == 48):
                 self._throw(YAPI.DEVICE_BUSY, "Motor command pipeline is full, try again later")

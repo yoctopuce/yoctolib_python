@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 62196 2024-08-19 12:22:51Z seb $
+#* $Id: yocto_cellular.py 63513 2024-11-28 10:50:30Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -830,12 +830,12 @@ class YCellular(YFunction):
         while waitMore > 0:
             buff = self._download(cmd)
             bufflen = len(buff)
-            buffstr = YByte2String(buff)
+            buffstr = buff.decode(YAPI.DefaultEncoding)
             buffstrlen = len(buffstr)
             idx = bufflen - 1
-            while (idx > 0) and (YGetByte(buff, idx) != 64) and (YGetByte(buff, idx) != 10) and (YGetByte(buff, idx) != 13):
+            while (idx > 0) and (buff[idx] != 64) and (buff[idx] != 10) and (buff[idx] != 13):
                 idx = idx - 1
-            if YGetByte(buff, idx) == 64:
+            if buff[idx] == 64:
                 # // continuation detected
                 suffixlen = bufflen - idx
                 cmd = "at.txt?cmd=" + (buffstr)[buffstrlen - suffixlen: buffstrlen - suffixlen + suffixlen]

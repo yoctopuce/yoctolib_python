@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_i2cport.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_i2cport.py 63513 2024-11-28 10:50:30Z seb $
 #
 #  Implements yFindI2cPort(), the high-level API for I2cPort functions
 #
@@ -573,10 +573,10 @@ class YI2cPort(YFunction):
             return ""
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
+        self._rxptr = self._decode_json_int(msgarr[msglen])
         if msglen == 0:
             return ""
-        res = self._json_get_string(YString2Byte(msgarr[0]))
+        res = self._json_get_string(msgarr[0])
         return res
 
     def readMessages(self, pattern, maxWait):
@@ -616,11 +616,11 @@ class YI2cPort(YFunction):
             return res
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
+        self._rxptr = self._decode_json_int(msgarr[msglen])
         idx = 0
 
         while idx < msglen:
-            res.append(self._json_get_string(YString2Byte(msgarr[idx])))
+            res.append(self._json_get_string(msgarr[idx]))
             idx = idx + 1
 
         return res
@@ -659,7 +659,7 @@ class YI2cPort(YFunction):
         # databin
 
         databin = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
-        availPosStr = YByte2String(databin)
+        availPosStr = databin.decode(YAPI.DefaultEncoding)
         atPos = availPosStr.find("@")
         res = YAPI._atoi((availPosStr)[0: 0 + atPos])
         return res
@@ -671,7 +671,7 @@ class YI2cPort(YFunction):
         # databin
 
         databin = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
-        availPosStr = YByte2String(databin)
+        availPosStr = databin.decode(YAPI.DefaultEncoding)
         atPos = availPosStr.find("@")
         res = YAPI._atoi((availPosStr)[atPos+1: atPos+1 + len(availPosStr)-atPos-1])
         return res
@@ -701,7 +701,7 @@ class YI2cPort(YFunction):
         else:
             # // long query
             prevpos = self.end_tell()
-            self._upload("txdata", YString2Byte(query + "\r\n"))
+            self._upload("txdata", bytearray(query + "\r\n", YAPI.DefaultEncoding))
             url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&pos=" + str(int(prevpos))
 
         msgbin = self._download(url)
@@ -711,10 +711,10 @@ class YI2cPort(YFunction):
             return ""
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
+        self._rxptr = self._decode_json_int(msgarr[msglen])
         if msglen == 0:
             return ""
-        res = self._json_get_string(YString2Byte(msgarr[0]))
+        res = self._json_get_string(msgarr[0])
         return res
 
     def queryHex(self, hexString, maxWait):
@@ -753,10 +753,10 @@ class YI2cPort(YFunction):
             return ""
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
+        self._rxptr = self._decode_json_int(msgarr[msglen])
         if msglen == 0:
             return ""
-        res = self._json_get_string(YString2Byte(msgarr[0]))
+        res = self._json_get_string(msgarr[0])
         return res
 
     def uploadJob(self, jobfile, jsonDef):
@@ -771,7 +771,7 @@ class YI2cPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        self._upload(jobfile, YString2Byte(jsonDef))
+        self._upload(jobfile, bytearray(jsonDef, YAPI.DefaultEncoding))
         return YAPI.SUCCESS
 
     def selectJob(self, jobfile):
@@ -823,7 +823,7 @@ class YI2cPort(YFunction):
         nBytes = len(buff)
         idx = 0
         while idx < nBytes:
-            val = YGetByte(buff, idx)
+            val = buff[idx]
             msg = "" + msg + "" + ("%02x" % val)
             idx = idx + 1
 
@@ -908,7 +908,7 @@ class YI2cPort(YFunction):
         nBytes = len(buff)
         idx = 0
         while idx < nBytes:
-            val = YGetByte(buff, idx)
+            val = buff[idx]
             msg = "" + msg + "" + ("%02x" % val)
             idx = idx + 1
         idx = 0
@@ -1000,7 +1000,7 @@ class YI2cPort(YFunction):
         del res[:]
         idx = 0
         while idx < rcvCount:
-            val = YGetByte(rcvbytes, idx)
+            val = rcvbytes[idx]
             res.append(val)
             idx = idx + 1
 
@@ -1031,14 +1031,14 @@ class YI2cPort(YFunction):
         # buff
         # idx
         # ch
-        buff = YString2Byte(codes)
+        buff = bytearray(codes, YAPI.DefaultEncoding)
         bufflen = len(buff)
         if bufflen < 100:
             # // if string is pure text, we can send it as a simple command (faster)
             ch = 0x20
             idx = 0
             while (idx < bufflen) and (ch != 0):
-                ch = YGetByte(buff, idx)
+                ch = buff[idx]
                 if (ch >= 0x20) and (ch < 0x7f):
                     idx = idx + 1
                 else:
@@ -1075,7 +1075,7 @@ class YI2cPort(YFunction):
         if bufflen < 100:
             return self.sendCommand("!" + codes)
         # // send string using file upload
-        buff = YString2Byte("" + codes + "\n")
+        buff = bytearray("" + codes + "\n", YAPI.DefaultEncoding)
         return self._upload("txdata", buff)
 
     def writeByte(self, code):
@@ -1108,7 +1108,7 @@ class YI2cPort(YFunction):
         bufflen = len(hexString)
         if bufflen < 100:
             return self.sendCommand("+" + hexString)
-        buff = YString2Byte(hexString)
+        buff = bytearray(hexString, YAPI.DefaultEncoding)
 
         return self._upload("txdata", buff)
 
@@ -1132,7 +1132,7 @@ class YI2cPort(YFunction):
         nBytes = len(buff)
         idx = 0
         while idx < nBytes:
-            val = YGetByte(buff, idx)
+            val = buff[idx]
             msg = "" + msg + "" + ("%02x" % val)
             idx = idx + 1
 
@@ -1194,11 +1194,11 @@ class YI2cPort(YFunction):
             return res
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
+        self._rxptr = self._decode_json_int(msgarr[msglen])
         idx = 0
 
         while idx < msglen:
-            res.append(YI2cSnoopingRecord(msgarr[idx]))
+            res.append(YI2cSnoopingRecord(msgarr[idx].decode(YAPI.DefaultEncoding)))
             idx = idx + 1
 
         return res

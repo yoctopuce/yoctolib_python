@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 62196 2024-08-19 12:22:51Z seb $
+#* $Id: yocto_serialport.py 63513 2024-11-28 10:50:30Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -603,10 +603,10 @@ class YSerialPort(YFunction):
             return ""
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
+        self._rxptr = self._decode_json_int(msgarr[msglen])
         if msglen == 0:
             return ""
-        res = self._json_get_string(YString2Byte(msgarr[0]))
+        res = self._json_get_string(msgarr[0])
         return res
 
     def readMessages(self, pattern, maxWait):
@@ -646,11 +646,11 @@ class YSerialPort(YFunction):
             return res
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
+        self._rxptr = self._decode_json_int(msgarr[msglen])
         idx = 0
 
         while idx < msglen:
-            res.append(self._json_get_string(YString2Byte(msgarr[idx])))
+            res.append(self._json_get_string(msgarr[idx]))
             idx = idx + 1
 
         return res
@@ -689,7 +689,7 @@ class YSerialPort(YFunction):
         # databin
 
         databin = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
-        availPosStr = YByte2String(databin)
+        availPosStr = databin.decode(YAPI.DefaultEncoding)
         atPos = availPosStr.find("@")
         res = YAPI._atoi((availPosStr)[0: 0 + atPos])
         return res
@@ -701,7 +701,7 @@ class YSerialPort(YFunction):
         # databin
 
         databin = self._download("rxcnt.bin?pos=" + str(int(self._rxptr)))
-        availPosStr = YByte2String(databin)
+        availPosStr = databin.decode(YAPI.DefaultEncoding)
         atPos = availPosStr.find("@")
         res = YAPI._atoi((availPosStr)[atPos+1: atPos+1 + len(availPosStr)-atPos-1])
         return res
@@ -731,7 +731,7 @@ class YSerialPort(YFunction):
         else:
             # // long query
             prevpos = self.end_tell()
-            self._upload("txdata", YString2Byte(query + "\r\n"))
+            self._upload("txdata", bytearray(query + "\r\n", YAPI.DefaultEncoding))
             url = "rxmsg.json?len=1&maxw=" + str(int(maxWait)) + "&pos=" + str(int(prevpos))
 
         msgbin = self._download(url)
@@ -741,10 +741,10 @@ class YSerialPort(YFunction):
             return ""
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
+        self._rxptr = self._decode_json_int(msgarr[msglen])
         if msglen == 0:
             return ""
-        res = self._json_get_string(YString2Byte(msgarr[0]))
+        res = self._json_get_string(msgarr[0])
         return res
 
     def queryHex(self, hexString, maxWait):
@@ -783,10 +783,10 @@ class YSerialPort(YFunction):
             return ""
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
+        self._rxptr = self._decode_json_int(msgarr[msglen])
         if msglen == 0:
             return ""
-        res = self._json_get_string(YString2Byte(msgarr[0]))
+        res = self._json_get_string(msgarr[0])
         return res
 
     def uploadJob(self, jobfile, jsonDef):
@@ -801,7 +801,7 @@ class YSerialPort(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        self._upload(jobfile, YString2Byte(jsonDef))
+        self._upload(jobfile, bytearray(jsonDef, YAPI.DefaultEncoding))
         return YAPI.SUCCESS
 
     def selectJob(self, jobfile):
@@ -859,14 +859,14 @@ class YSerialPort(YFunction):
         # bufflen
         # idx
         # ch
-        buff = YString2Byte(text)
+        buff = bytearray(text, YAPI.DefaultEncoding)
         bufflen = len(buff)
         if bufflen < 100:
             # // if string is pure text, we can send it as a simple command (faster)
             ch = 0x20
             idx = 0
             while (idx < bufflen) and (ch != 0):
-                ch = YGetByte(buff, idx)
+                ch = buff[idx]
                 if (ch >= 0x20) and (ch < 0x7f):
                     idx = idx + 1
                 else:
@@ -957,14 +957,14 @@ class YSerialPort(YFunction):
         # bufflen
         # idx
         # ch
-        buff = YString2Byte("" + text + "\r\n")
+        buff = bytearray("" + text + "\r\n", YAPI.DefaultEncoding)
         bufflen = len(buff)-2
         if bufflen < 100:
             # // if string is pure text, we can send it as a simple command (faster)
             ch = 0x20
             idx = 0
             while (idx < bufflen) and (ch != 0):
-                ch = YGetByte(buff, idx)
+                ch = buff[idx]
                 if (ch >= 0x20) and (ch < 0x7f):
                     idx = idx + 1
                 else:
@@ -994,7 +994,7 @@ class YSerialPort(YFunction):
         # // first check if we have the requested character in the look-ahead buffer
         bufflen = len(self._rxbuff)
         if (self._rxptr >= self._rxbuffptr) and (self._rxptr < self._rxbuffptr+bufflen):
-            res = YGetByte(self._rxbuff, self._rxptr-self._rxbuffptr)
+            res = self._rxbuff[self._rxptr-self._rxbuffptr]
             self._rxptr = self._rxptr + 1
             return res
         # // try to preload more than one byte to speed-up byte-per-byte access
@@ -1003,7 +1003,7 @@ class YSerialPort(YFunction):
         buff = self.readBin(reqlen)
         bufflen = len(buff)
         if self._rxptr == currpos+bufflen:
-            res = YGetByte(buff, 0)
+            res = buff[0]
             self._rxptr = currpos+1
             self._rxbuffptr = currpos
             self._rxbuff = buff
@@ -1014,7 +1014,7 @@ class YSerialPort(YFunction):
         buff = self.readBin(reqlen)
         bufflen = len(buff)
         if self._rxptr == currpos+bufflen:
-            res = YGetByte(buff, 0)
+            res = buff[0]
             self._rxptr = currpos+1
             self._rxbuffptr = currpos
             self._rxbuff = buff
@@ -1026,14 +1026,14 @@ class YSerialPort(YFunction):
         bufflen = len(buff) - 1
         endpos = 0
         mult = 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            endpos = endpos + mult * (YGetByte(buff, bufflen) - 48)
+        while (bufflen > 0) and (buff[bufflen] != 64):
+            endpos = endpos + mult * (buff[bufflen] - 48)
             mult = mult * 10
             bufflen = bufflen - 1
         self._rxptr = endpos
         if bufflen == 0:
             return YAPI.NO_MORE_DATA
-        res = YGetByte(buff, 0)
+        res = buff[0]
         return res
 
     def readStr(self, nChars):
@@ -1060,12 +1060,12 @@ class YSerialPort(YFunction):
         bufflen = len(buff) - 1
         endpos = 0
         mult = 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            endpos = endpos + mult * (YGetByte(buff, bufflen) - 48)
+        while (bufflen > 0) and (buff[bufflen] != 64):
+            endpos = endpos + mult * (buff[bufflen] - 48)
             mult = mult * 10
             bufflen = bufflen - 1
         self._rxptr = endpos
-        res = (YByte2String(buff))[0: 0 + bufflen]
+        res = (buff.decode(YAPI.DefaultEncoding))[0: 0 + bufflen]
         return res
 
     def readBin(self, nChars):
@@ -1093,15 +1093,15 @@ class YSerialPort(YFunction):
         bufflen = len(buff) - 1
         endpos = 0
         mult = 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            endpos = endpos + mult * (YGetByte(buff, bufflen) - 48)
+        while (bufflen > 0) and (buff[bufflen] != 64):
+            endpos = endpos + mult * (buff[bufflen] - 48)
             mult = mult * 10
             bufflen = bufflen - 1
         self._rxptr = endpos
         res = bytearray(bufflen)
         idx = 0
         while idx < bufflen:
-            res[idx] = YGetByte(buff, idx)
+            res[idx] = buff[idx]
             idx = idx + 1
         return res
 
@@ -1131,15 +1131,15 @@ class YSerialPort(YFunction):
         bufflen = len(buff) - 1
         endpos = 0
         mult = 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            endpos = endpos + mult * (YGetByte(buff, bufflen) - 48)
+        while (bufflen > 0) and (buff[bufflen] != 64):
+            endpos = endpos + mult * (buff[bufflen] - 48)
             mult = mult * 10
             bufflen = bufflen - 1
         self._rxptr = endpos
         del res[:]
         idx = 0
         while idx < bufflen:
-            b = YGetByte(buff, idx)
+            b = buff[idx]
             res.append(b)
             idx = idx + 1
 
@@ -1170,18 +1170,18 @@ class YSerialPort(YFunction):
         bufflen = len(buff) - 1
         endpos = 0
         mult = 1
-        while (bufflen > 0) and (YGetByte(buff, bufflen) != 64):
-            endpos = endpos + mult * (YGetByte(buff, bufflen) - 48)
+        while (bufflen > 0) and (buff[bufflen] != 64):
+            endpos = endpos + mult * (buff[bufflen] - 48)
             mult = mult * 10
             bufflen = bufflen - 1
         self._rxptr = endpos
         res = ""
         ofs = 0
         while ofs + 3 < bufflen:
-            res = "" + res + "" + ("%02X" % YGetByte(buff, ofs)) + "" + ("%02X" % YGetByte(buff, ofs + 1)) + "" + ("%02X" % YGetByte(buff, ofs + 2)) + "" + ("%02X" % YGetByte(buff, ofs + 3))
+            res = "" + res + "" + ("%02X" % buff[ofs]) + "" + ("%02X" % buff[ofs + 1]) + "" + ("%02X" % buff[ofs + 2]) + "" + ("%02X" % buff[ofs + 3])
             ofs = ofs + 4
         while ofs < bufflen:
-            res = "" + res + "" + ("%02X" % YGetByte(buff, ofs))
+            res = "" + res + "" + ("%02X" % buff[ofs])
             ofs = ofs + 1
         return res
 
@@ -1229,7 +1229,7 @@ class YSerialPort(YFunction):
         if not (len(buff) == 1):
             self._throw(YAPI.IO_ERROR, "invalid CTS reply")
             return YAPI.IO_ERROR
-        res = YGetByte(buff, 0) - 48
+        res = buff[0] - 48
         return res
 
     def snoopMessagesEx(self, maxWait, maxMsg):
@@ -1265,11 +1265,11 @@ class YSerialPort(YFunction):
             return res
         # // last element of array is the new position
         msglen = msglen - 1
-        self._rxptr = YAPI._atoi(msgarr[msglen])
+        self._rxptr = self._decode_json_int(msgarr[msglen])
         idx = 0
 
         while idx < msglen:
-            res.append(YSnoopingRecord(msgarr[idx]))
+            res.append(YSnoopingRecord(msgarr[idx].decode(YAPI.DefaultEncoding)))
             idx = idx + 1
 
         return res
@@ -1337,12 +1337,12 @@ class YSerialPort(YFunction):
         msglen = msglen - 1
         if not (self._eventCallback is not None):
             # // first simulated event, use it only to initialize reference values
-            self._eventPos = YAPI._atoi(msgarr[msglen])
+            self._eventPos = self._decode_json_int(msgarr[msglen])
             return YAPI.SUCCESS
-        self._eventPos = YAPI._atoi(msgarr[msglen])
+        self._eventPos = self._decode_json_int(msgarr[msglen])
         idx = 0
         while idx < msglen:
-            self._eventCallback(self, YSnoopingRecord(msgarr[idx]))
+            self._eventCallback(self, YSnoopingRecord(msgarr[idx].decode(YAPI.DefaultEncoding)))
             idx = idx + 1
         return YAPI.SUCCESS
 
@@ -1358,7 +1358,7 @@ class YSerialPort(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # buff
-        buff = YString2Byte("" + str(chr(2)) + "" + text + "" + str(chr(3)))
+        buff = bytearray("" + str(chr(2)) + "" + text + "" + str(chr(3)), YAPI.DefaultEncoding)
         # // send string using file upload
         return self._upload("txdata", buff)
 
@@ -1425,7 +1425,7 @@ class YSerialPort(YFunction):
             self._throw(YAPI.IO_ERROR, "no reply from MODBUS slave")
             return res
         if len(reps) > 1:
-            rep = self._json_get_string(YString2Byte(reps[0]))
+            rep = self._json_get_string(reps[0])
             replen = ((len(rep) - 3) >> 1)
             i = 0
             while i < replen:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 62196 2024-08-19 12:22:51Z seb $
+#* $Id: yocto_display.py 63513 2024-11-28 10:50:30Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -946,7 +946,7 @@ class YDisplay(YFunction):
         """
         self.flushLayers()
         self._recording = False
-        self._upload(sequenceName, YString2Byte(self._sequence))
+        self._upload(sequenceName, bytearray(self._sequence, YAPI.DefaultEncoding))
         # //We need to use YPRINTF("") for Objective-C
         self._sequence = ""
         return YAPI.SUCCESS

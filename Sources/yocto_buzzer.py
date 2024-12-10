@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_buzzer.py 62196 2024-08-19 12:22:51Z seb $
+#  $Id: yocto_buzzer.py 63513 2024-11-28 10:50:30Z seb $
 #
 #  Implements yFindBuzzer(), the high-level API for Buzzer functions
 #
@@ -330,11 +330,11 @@ class YBuzzer(YFunction):
         note = -99
         num = 0
         typ = 3
-        ascNotes = YString2Byte(notes)
+        ascNotes = bytearray(notes, YAPI.DefaultEncoding)
         notesLen = len(ascNotes)
         i = 0
         while i < notesLen:
-            ch = YGetByte(ascNotes, i)
+            ch = ascNotes[i]
             # // A (note))
             if ch == 65:
                 note = 0

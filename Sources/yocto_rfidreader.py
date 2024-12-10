@@ -918,7 +918,7 @@ class YRfidReader(YFunction):
             fab = -1
             lab = -1
         else:
-            jsonStr = YByte2String(json)
+            jsonStr = json.decode(YAPI.DefaultEncoding)
             errCode = YAPI._atoi(self._json_get_key(json, "err"))
             errBlk = YAPI._atoi(self._json_get_key(json, "errBlk"))-1
             if jsonStr.find("\"fab\":") >= 0:
@@ -959,7 +959,7 @@ class YRfidReader(YFunction):
         if len(json) > 3:
             jsonList = self._json_get_array(json)
             for y in jsonList:
-                taglist.append(self._json_get_string(YString2Byte(y)))
+                taglist.append(self._json_get_string(y))
         return taglist
 
     def get_tagInfo(self, tagId, status):
@@ -1069,7 +1069,7 @@ class YRfidReader(YFunction):
         binRes = YAPI._hexStrToBin(self._json_get_key(json, "bitmap"))
         idx = 0
         while idx < nBlocks:
-            val = YGetByte(binRes, (idx >> 3))
+            val = binRes[(idx >> 3)]
             isLocked = (((val) & ((1 << ((idx) & (7))))) != 0)
             res.append(isLocked)
             idx = idx + 1
@@ -1115,7 +1115,7 @@ class YRfidReader(YFunction):
         binRes = YAPI._hexStrToBin(self._json_get_key(json, "bitmap"))
         idx = 0
         while idx < nBlocks:
-            val = YGetByte(binRes, (idx >> 3))
+            val = binRes[(idx >> 3)]
             isLocked = (((val) & ((1 << ((idx) & (7))))) != 0)
             res.append(isLocked)
             idx = idx + 1
@@ -1220,7 +1220,7 @@ class YRfidReader(YFunction):
 
         idx = 0
         while idx < endidx:
-            res.append(YGetByte(blk, idx))
+            res.append(blk[idx])
             idx = idx + 1
 
         return res
@@ -1249,7 +1249,7 @@ class YRfidReader(YFunction):
         On failure, throws an exception or returns an empty string. When it
         happens, you can get more information from the status object.
         """
-        return YByte2String(self.tagReadBin(tagId, firstBlock, nChars, options, status))
+        return self.tagReadBin(tagId, firstBlock, nChars, options, status).decode(YAPI.DefaultEncoding)
 
     def tagWriteBin(self, tagId, firstBlock, buff, options, status):
         """
@@ -1422,7 +1422,7 @@ class YRfidReader(YFunction):
         happens, you can get more information from the status object.
         """
         # buff
-        buff = YString2Byte(text)
+        buff = bytearray(text, YAPI.DefaultEncoding)
 
         return self.tagWriteBin(tagId, firstBlock, buff, options, status)
 
@@ -1604,7 +1604,7 @@ class YRfidReader(YFunction):
         # content
 
         content = self._download("events.txt?pos=0")
-        return YByte2String(content)
+        return content.decode(YAPI.DefaultEncoding)
 
     def registerEventCallback(self, callback):
         """
@@ -1666,7 +1666,7 @@ class YRfidReader(YFunction):
             self._isFirstCb = False
             self._eventStamp = 0
             content = self._download("events.txt")
-            contentStr = YByte2String(content)
+            contentStr = content.decode(YAPI.DefaultEncoding)
             eventArr = (contentStr).split('\n')
             arrLen = len(eventArr)
             if not (arrLen > 0):
@@ -1682,7 +1682,7 @@ class YRfidReader(YFunction):
             # // load all events since previous call
             url = "events.txt?pos=" + str(int(self._eventPos))
             content = self._download(url)
-            contentStr = YByte2String(content)
+            contentStr = content.decode(YAPI.DefaultEncoding)
             eventArr = (contentStr).split('\n')
             arrLen = len(eventArr)
             if not (arrLen > 0):
@@ -1705,8 +1705,8 @@ class YRfidReader(YFunction):
                 intStamp = int(hexStamp, 16)
                 if intStamp >= self._eventStamp:
                     self._eventStamp = intStamp
-                    binMStamp = YString2Byte((eventStr)[8: 8 + 2])
-                    msStamp = (YGetByte(binMStamp, 0)-64) * 32 + YGetByte(binMStamp, 1)
+                    binMStamp = bytearray((eventStr)[8: 8 + 2], YAPI.DefaultEncoding)
+                    msStamp = (binMStamp[0]-64) * 32 + binMStamp[1]
                     evtStamp = intStamp + (0.001 * msStamp)
                     dataPos = eventStr.find("=")+1
                     evtType = (eventStr)[typePos: typePos + 1]

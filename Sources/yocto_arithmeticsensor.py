@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_arithmeticsensor.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: yocto_arithmeticsensor.py 63513 2024-11-28 10:50:30Z seb $
 #
 #  Implements yFindArithmeticSensor(), the high-level API for ArithmeticSensor functions
 #
@@ -185,8 +185,8 @@ class YArithmeticSensor(YSensor):
         fname = "arithmExpr" + id + ".txt"
 
         content = "// " + descr + "\n" + expr
-        data = self._uploadEx(fname, YString2Byte(content))
-        diags = YByte2String(data)
+        data = self._uploadEx(fname, bytearray(content, YAPI.DefaultEncoding))
+        diags = data.decode(YAPI.DefaultEncoding)
         if not ((diags)[0: 0 + 8] == "Result: "):
             self._throw(YAPI.INVALID_ARGUMENT, diags)
             return YAPI.INVALID_DOUBLE
@@ -210,7 +210,7 @@ class YArithmeticSensor(YSensor):
         id = (id)[16: 16 + len(id) - 16]
         fname = "arithmExpr" + id + ".txt"
 
-        content = YByte2String(self._download(fname))
+        content = self._download(fname).decode(YAPI.DefaultEncoding)
         idx = content.find("\n")
         if idx > 0:
             content = (content)[idx+1: idx+1 + len(content)-(idx+1)]
@@ -256,7 +256,7 @@ class YArithmeticSensor(YSensor):
             idx = idx + 1
         fname = "userMap" + name + ".txt"
 
-        return self._upload(fname, YString2Byte(defstr))
+        return self._upload(fname, bytearray(defstr, YAPI.DefaultEncoding))
 
     def loadAuxiliaryFunction(self, name, inputValues, outputValues):
         """
