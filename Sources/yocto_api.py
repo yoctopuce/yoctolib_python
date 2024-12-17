@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 63612 2024-12-09 15:36:29Z seb $
+# * $Id: yocto_api.py 63705 2024-12-16 10:12:35Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -978,7 +978,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.0"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "63620"
+    YOCTO_API_BUILD_NO = "63744"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -6960,6 +6960,8 @@ class YModule(YFunction):
         # fun
         # attr
         # value
+        # old_serial
+        # new_serial
         # url
         # tmp
         # binTmp
@@ -6975,6 +6977,7 @@ class YModule(YFunction):
         binTmp = self._get_json_path(settings, "api")
         if len(binTmp) > 0:
             settings = binTmp
+        old_serial = ""
         oldval = ""
         newval = ""
         old_json_flat = self._flattenJsonStruct(settings)
@@ -6996,6 +6999,8 @@ class YModule(YFunction):
             old_jpath.append(jpath)
             old_jpath_len.append(len(jpath))
             old_val_arr.append(value)
+            if jpath == "module/serialNumber":
+                old_serial = value
 
 
 
@@ -7006,6 +7011,9 @@ class YModule(YFunction):
             # // retry silently after a short wait
             YAPI.Sleep(500)
             actualSettings = self._download("api.json")
+        new_serial = self.get_serialNumber()
+        if old_serial == new_serial or old_serial == "":
+            old_serial = "_NO_SERIAL_FILTER_"
         actualSettings = self._flattenJsonStruct(actualSettings)
         new_dslist = self._json_get_array(actualSettings)
 
@@ -7123,14 +7131,14 @@ class YModule(YFunction):
                 do_update = False
             if do_update:
                 do_update = False
-                newval = new_val_arr[i]
                 j = 0
                 found = False
+                newval = new_val_arr[i]
                 while (j < len(old_jpath)) and not (found):
                     if (new_jpath_len[i] == old_jpath_len[j]) and (new_jpath[i] == old_jpath[j]):
                         found = True
                         oldval = old_val_arr[j]
-                        if not (newval == oldval):
+                        if not (newval == oldval) and not (oldval == old_serial):
                             do_update = True
                     j = j + 1
             if do_update:

@@ -72,6 +72,7 @@ class YSpectralSensor(YFunction):
     NEARRAL1_INVALID = YAPI.INVALID_STRING
     NEARRAL2_INVALID = YAPI.INVALID_STRING
     NEARRAL3_INVALID = YAPI.INVALID_STRING
+    NEARHTMLCOLOR_INVALID = YAPI.INVALID_STRING
     LEDCURRENTATPOWERON_INVALID = YAPI.INVALID_INT
     INTEGRATIONTIMEATPOWERON_INVALID = YAPI.INVALID_INT
     GAINATPOWERON_INVALID = YAPI.INVALID_INT
@@ -98,6 +99,7 @@ class YSpectralSensor(YFunction):
         self._nearRAL1 = YSpectralSensor.NEARRAL1_INVALID
         self._nearRAL2 = YSpectralSensor.NEARRAL2_INVALID
         self._nearRAL3 = YSpectralSensor.NEARRAL3_INVALID
+        self._nearHTMLColor = YSpectralSensor.NEARHTMLCOLOR_INVALID
         self._ledCurrentAtPowerOn = YSpectralSensor.LEDCURRENTATPOWERON_INVALID
         self._integrationTimeAtPowerOn = YSpectralSensor.INTEGRATIONTIMEATPOWERON_INVALID
         self._gainAtPowerOn = YSpectralSensor.GAINATPOWERON_INVALID
@@ -131,6 +133,8 @@ class YSpectralSensor(YFunction):
             self._nearRAL2 = json_val.getString("nearRAL2")
         if json_val.has("nearRAL3"):
             self._nearRAL3 = json_val.getString("nearRAL3")
+        if json_val.has("nearHTMLColor"):
+            self._nearHTMLColor = json_val.getString("nearHTMLColor")
         if json_val.has("ledCurrentAtPowerOn"):
             self._ledCurrentAtPowerOn = json_val.getInt("ledCurrentAtPowerOn")
         if json_val.has("integrationTimeAtPowerOn"):
@@ -403,6 +407,14 @@ class YSpectralSensor(YFunction):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpectralSensor.NEARRAL3_INVALID
         res = self._nearRAL3
+        return res
+
+    def get_nearHTMLColor(self):
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpectralSensor.NEARHTMLCOLOR_INVALID
+        res = self._nearHTMLColor
         return res
 
     def get_ledCurrentAtPowerOn(self):
