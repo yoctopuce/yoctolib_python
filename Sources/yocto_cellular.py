@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 63513 2024-11-28 10:50:30Z seb $
+#* $Id: yocto_cellular.py 64028 2025-01-06 15:19:41Z seb $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -1032,7 +1032,7 @@ class YCellular(YFunction):
                                         if plmnid == 20813:
                                             return "SFR"
                                         if plmnid == 20814:
-                                            return u"SNCF Réseau"
+                                            return "SNCF Reseau"
                                     else:
                                         if plmnid == 20815:
                                             return "Free FR"
@@ -1302,7 +1302,7 @@ class YCellular(YFunction):
                                         if plmnid == 24412:
                                             return "DNA"
                                         if plmnid == 24414:
-                                            return u"Ålcom"
+                                            return "Alcom"
                                     else:
                                         if plmnid < 24601:
                                             if plmnid == 24436:
@@ -1395,7 +1395,7 @@ class YCellular(YFunction):
                                         if plmnid == 25902:
                                             return "Moldcell"
                                         if plmnid == 25905:
-                                            return u"Unité"
+                                            return "Unite"
                                     else:
                                         if plmnid < 26002:
                                             if plmnid == 25915:
@@ -1466,7 +1466,7 @@ class YCellular(YFunction):
                                     else:
                                         if plmnid < 27404:
                                             if plmnid == 27401:
-                                                return u"Síminn"
+                                                return "Siminn"
                                             if plmnid == 27402:
                                                 return "Vodafone IS"
                                         else:
@@ -1540,9 +1540,9 @@ class YCellular(YFunction):
                                         if plmnid == 28602:
                                             return "Vodafone TR"
                                         if plmnid == 28603:
-                                            return u"Türk Telekom"
+                                            return "Turk Telekom"
                                         if plmnid == 28801:
-                                            return u"Føroya Tele"
+                                            return "Foroya Tele"
                                         if plmnid == 28802:
                                             return "Hey"
                                 else:
@@ -1597,9 +1597,9 @@ class YCellular(YFunction):
                                         if plmnid == 34001:
                                             return "Orange GF"
                                         if plmnid == 34002:
-                                            return u"SFR Caraïbe BL/GF/GP/MF/MQ"
+                                            return "SFR Caraibe BL/GF/GP/MF/MQ"
                                         if plmnid == 34002:
-                                            return u"SFR Caraïbe GF"
+                                            return "SFR Caraibe GF"
                                         if plmnid == 34003:
                                             return "Chippie BL/GF/GP/MF/MQ"
                                     else:
@@ -2701,7 +2701,7 @@ class YCellular(YFunction):
                                         if plmnid == 61206:
                                             return "GreenN"
                                         if plmnid == 61207:
-                                            return u"café"
+                                            return "cafe"
                                     else:
                                         if plmnid < 61303:
                                             if plmnid == 61301:
@@ -3032,7 +3032,7 @@ class YCellular(YFunction):
                                             if plmnid == 64700:
                                                 return "Orange YT/RE"
                                             if plmnid == 64701:
-                                                return u"Maoré Mobile"
+                                                return "Maore Mobile"
                                             if plmnid == 64702:
                                                 return "Only"
                             else:
@@ -3041,7 +3041,7 @@ class YCellular(YFunction):
                                         if plmnid == 64703:
                                             return "Free YT/RE"
                                         if plmnid == 64710:
-                                            return u"SFR Réunion"
+                                            return "SFR Reunion"
                                         if plmnid == 64801:
                                             return "Net*One"
                                         if plmnid == 64803:
@@ -3145,9 +3145,9 @@ class YCellular(YFunction):
                                                 return "Claro NI"
                                         else:
                                             if plmnid == 71201:
-                                                return u"Kölbi ICE"
+                                                return "Kolbi ICE"
                                             if plmnid == 71202:
-                                                return u"Kölbi ICE"
+                                                return "Kolbi ICE"
                                             if plmnid == 71203:
                                                 return "Claro CR"
                                 else:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 63705 2024-12-16 10:12:35Z seb $
+# * $Id: yocto_api.py 64238 2025-01-16 10:19:02Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -724,6 +724,26 @@ class YAPIContext(object):
         res = YAPI._yapiGetNetDevListValidity()
         return res
 
+    def GetYAPISharedLibraryPath(self):
+        """
+        Returns the path to the dynamic YAPI library. This function is useful for debugging problems loading the
+        dynamic library YAPI. This function is supported by the C#, Python and VB languages. The other
+        libraries return an
+        empty string.
+
+        @return a string containing the path of the YAPI dynamic library.
+        """
+        errmsg = ctypes.create_string_buffer(YAPI.YOCTO_ERRMSG_LEN)
+        smallbuff = ctypes.create_string_buffer(4096)
+        # res
+        # path
+        res = YAPI._yapiGetDLLPath(smallbuff, 4096, errmsg)
+        if res < 0:
+            path = "error:" + (errmsg.value).decode(YAPI.DefaultEncoding)
+        else:
+            path = (smallbuff.value).decode(YAPI.DefaultEncoding)
+        return path
+
     def AddUdevRule(self, force):
         """
         Adds a UDEV rule which authorizes all users to access Yoctopuce modules
@@ -978,7 +998,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.0"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "63797"
+    YOCTO_API_BUILD_NO = "64286"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1556,7 +1576,7 @@ class YAPI:
     NO_TRUSTED_CA_CHECK = 1        # Disables certificate checking
     NO_EXPIRATION_CHECK = 2        # Disables certificate expiration date checking
     NO_HOSTNAME_CHECK = 4          # Disable hostname checking
-    LEGACY = 8                     # Allow non secure connection (similar to v1.10)
+    LEGACY = 8                     # Allow non-secure connection (similar to v1.10)
 
     #--- (end of generated code: YFunction return codes)
 
@@ -1630,6 +1650,20 @@ class YAPI:
         if not YAPI._apiInitialized:
             YAPI.InitAPI(0)
         return YAPI._yapiContext.GetDeviceListValidity()
+
+    @staticmethod
+    def GetYAPISharedLibraryPath():
+        """
+        Returns the path to the dynamic YAPI library. This function is useful for debugging problems loading the
+        dynamic library YAPI. This function is supported by the C#, Python and VB languages. The other
+        libraries return an
+        empty string.
+
+        @return a string containing the path of the YAPI dynamic library.
+        """
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
+        return YAPI._yapiContext.GetYAPISharedLibraryPath()
 
     @staticmethod
     def AddUdevRule(force):

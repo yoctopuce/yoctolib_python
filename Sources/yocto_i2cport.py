@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_i2cport.py 63513 2024-11-28 10:50:30Z seb $
+#  $Id: yocto_i2cport.py 64098 2025-01-08 10:59:39Z seb $
 #
 #  Implements yFindI2cPort(), the high-level API for I2cPort functions
 #
@@ -1050,8 +1050,7 @@ class YI2cPort(YFunction):
 
     def writeLine(self, codes):
         """
-        Sends a text-encoded I2C code stream to the I2C bus, and terminate
-        the message en relâchant le bus.
+        Sends a text-encoded I2C code stream to the I2C bus, and release the bus.
         An I2C code stream is a string made of hexadecimal data bytes,
         but that may also include the I2C state transitions code:
         "{S}" to emit a start condition,
