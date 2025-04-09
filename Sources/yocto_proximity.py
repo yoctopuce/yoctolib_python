@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_proximity.py 62196 2024-08-19 12:22:51Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindProximity(), the high-level API for Proximity functions
 #

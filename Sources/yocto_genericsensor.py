@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_genericsensor.py 62196 2024-08-19 12:22:51Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
 #

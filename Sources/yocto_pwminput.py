@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_pwminput.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: svn_id $
 #
 #  Implements yFindPwmInput(), the high-level API for PwmInput functions
 #
@@ -69,6 +69,7 @@ class YPwmInput(YSensor):
     PULSECOUNTER_INVALID = YAPI.INVALID_LONG
     PULSETIMER_INVALID = YAPI.INVALID_LONG
     DEBOUNCEPERIOD_INVALID = YAPI.INVALID_UINT
+    MINFREQUENCY_INVALID = YAPI.INVALID_DOUBLE
     BANDWIDTH_INVALID = YAPI.INVALID_UINT
     EDGESPERPERIOD_INVALID = YAPI.INVALID_UINT
     PWMREPORTMODE_PWM_DUTYCYCLE = 0
@@ -98,6 +99,7 @@ class YPwmInput(YSensor):
         self._pulseTimer = YPwmInput.PULSETIMER_INVALID
         self._pwmReportMode = YPwmInput.PWMREPORTMODE_INVALID
         self._debouncePeriod = YPwmInput.DEBOUNCEPERIOD_INVALID
+        self._minFrequency = YPwmInput.MINFREQUENCY_INVALID
         self._bandwidth = YPwmInput.BANDWIDTH_INVALID
         self._edgesPerPeriod = YPwmInput.EDGESPERPERIOD_INVALID
         #--- (end of YPwmInput attributes)
@@ -120,6 +122,8 @@ class YPwmInput(YSensor):
             self._pwmReportMode = json_val.getInt("pwmReportMode")
         if json_val.has("debouncePeriod"):
             self._debouncePeriod = json_val.getInt("debouncePeriod")
+        if json_val.has("minFrequency"):
+            self._minFrequency = round(json_val.getDouble("minFrequency") / 65.536) / 1000.0
         if json_val.has("bandwidth"):
             self._bandwidth = json_val.getInt("bandwidth")
         if json_val.has("edgesPerPeriod"):
@@ -315,6 +319,35 @@ class YPwmInput(YSensor):
         rest_val = str(newval)
         return self._setAttr("debouncePeriod", rest_val)
 
+    def set_minFrequency(self, newval):
+        """
+        Changes the minimum detected frequency, in Hz. Slower signals will be consider as zero frequency.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
+
+        @param newval : a floating point number corresponding to the minimum detected frequency, in Hz
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(int(round(newval * 65536.0, 1)))
+        return self._setAttr("minFrequency", rest_val)
+
+    def get_minFrequency(self):
+        """
+        Returns the minimum detected frequency, in Hz. Slower signals will be consider as zero frequency.
+
+        @return a floating point number corresponding to the minimum detected frequency, in Hz
+
+        On failure, throws an exception or returns YPwmInput.MINFREQUENCY_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YPwmInput.MINFREQUENCY_INVALID
+        res = self._minFrequency
+        return res
+
     def get_bandwidth(self):
         """
         Returns the input signal sampling rate, in kHz.
@@ -400,9 +433,19 @@ class YPwmInput(YSensor):
             YFunction._AddToCache("PwmInput", func, obj)
         return obj
 
+    def resetPeriodDetection(self):
+        """
+        Resets the periodicity detection algorithm.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.set_bandwidth(self.get_bandwidth())
+
     def resetCounter(self):
         """
-        Returns the pulse counter value as well as its timer.
+        Resets the pulse counter value as well as its timer.
 
         @return YAPI.SUCCESS if the call succeeds.
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 64238 2025-01-16 10:19:02Z seb $
+# * $Id: yocto_api.py 65618 2025-04-08 07:55:42Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -995,10 +995,10 @@ class YAPI:
     RESEND_MISSING_PKT = 4
     DETECT_ALL = DETECT_USB | DETECT_NET
 
-    YOCTO_API_VERSION_STR = "2.0"
-    YOCTO_API_VERSION_BCD = 0x0200
+    YOCTO_API_VERSION_STR = "2.1"
+    YOCTO_API_VERSION_BCD = 0x0201
 
-    YOCTO_API_BUILD_NO = "64286"
+    YOCTO_API_BUILD_NO = "65654"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2513,7 +2513,7 @@ class YAPI:
             YAPI.yloadYapiCDLL()
         YAPI.apiGetAPIVersion(version, date)
         # noinspection PyTypeChecker
-        return YAPI.YOCTO_API_VERSION_STR + "." + YAPI.YOCTO_API_BUILD_NO + " (" + version.value + ")"
+        return "2.1.654 (" + version.value + ")"
 
     @staticmethod
     def InitAPI(mode, errmsg=None):
@@ -6514,7 +6514,6 @@ class YModule(YFunction):
         if len(settings) == 0:
             self._throw(YAPI.IO_ERROR, "Unable to get device settings")
             settings = bytearray("error:Unable to get device settings", YAPI.DefaultEncoding)
-
         return YFirmwareUpdate(serial, path, settings, force)
 
     def updateFirmware(self, path):
@@ -6574,7 +6573,7 @@ class YModule(YFunction):
                         sep = ","
         ext_settings = ext_settings + "],\n\"files\":["
         if self.hasFunction("files"):
-            json = self._download("files.json?a=dir&f=")
+            json = self._download("files.json?a=dir&d=1&f=")
             if len(json) == 0:
                 return json
             filelist = self._json_get_array(json)
@@ -6582,8 +6581,11 @@ class YModule(YFunction):
             for y in filelist:
                 name = self._json_get_key(y, "name")
                 if (len(name) > 0) and not (name == "startupConf.json"):
-                    file_data_bin = self._download(self._escapeAttr(name))
-                    file_data = YAPI._bytesToHexStr(file_data_bin)
+                    if (name)[len(name)-1: len(name)-1 + 1] == "/":
+                        file_data = ""
+                    else:
+                        file_data_bin = self._download(self._escapeAttr(name))
+                        file_data = YAPI._bytesToHexStr(file_data_bin)
                     item = "" + sep + "{\"name\":\"" + name + "\", \"data\":\"" + file_data + "\"}\n"
                     ext_settings = ext_settings + item
                     sep = ","
@@ -8212,7 +8214,6 @@ class YSensor(YFunction):
         if serial == YAPI.INVALID_STRING:
             return None
         hwid = serial + ".dataLogger"
-
         logger = YDataLogger.FindDataLogger(hwid)
         return logger
 
@@ -8278,7 +8279,6 @@ class YSensor(YFunction):
 
         funcid = self.get_functionId()
         funit = self.get_unit()
-
         return YDataSet(self, funcid, funit, startTime, endTime)
 
     def registerTimedReportCallback(self, callback):
@@ -8869,7 +8869,6 @@ class YDataLogger(YFunction):
         dslist = []
         # dataset
         res = []
-
 
         dslist = self._json_get_array(jsonbuff)
         del res[:]

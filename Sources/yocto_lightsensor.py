@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_lightsensor.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: svn_id $
 #
 #  Implements yFindLightSensor(), the high-level API for LightSensor functions
 #

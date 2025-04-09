@@ -59,11 +59,11 @@ class YSdi12SnoopingRecord(object):
         #--- (end of generated code: YSdi12SnoopingRecord attributes)
         json = YJSONObject(json_str, 0, len(json_str))
         json.parse()
-        if json_val.has("t"):
+        if json.has("t"):
             self._tim = json.getInt("t")
-        if json_val.has("p"):
+        if json.has("p"):
             self._pos = json.getInt("p")
-        if json_val.has("m"):
+        if json.has("m"):
             m = json.getString("m")
             if m[0] == '<':
                 self._dir = 1

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_arithmeticsensor.py 63513 2024-11-28 10:50:30Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindArithmeticSensor(), the high-level API for ArithmeticSensor functions
 #

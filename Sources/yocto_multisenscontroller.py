@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_multisenscontroller.py 62196 2024-08-19 12:22:51Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
 #

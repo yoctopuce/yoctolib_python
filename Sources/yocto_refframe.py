@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_refframe.py 63513 2024-11-28 10:50:30Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindRefFrame(), the high-level API for RefFrame functions
 #

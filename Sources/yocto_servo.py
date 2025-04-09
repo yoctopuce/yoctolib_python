@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_servo.py 62196 2024-08-19 12:22:51Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindServo(), the high-level API for Servo functions
 #
@@ -100,7 +100,7 @@ class YServo(YFunction):
         if json_val.has("neutral"):
             self._neutral = json_val.getInt("neutral")
         if json_val.has("move"):
-            subjson = json_val.getYJSONObject("move");
+            subjson = json_val.getYJSONObject("move")
             self._move = {"moving": None, "target": None, "ms": None}
             if subjson.has("moving"):
                 self._move["moving"] = subjson.getInt("moving")

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_motor.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: svn_id $
 #
 #  Implements yFindMotor(), the high-level API for Motor functions
 #

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_i2cport.py 64098 2025-01-08 10:59:39Z seb $
+#  $Id: yocto_i2cport.py 64493 2025-01-30 11:17:59Z seb $
 #
 #  Implements yFindI2cPort(), the high-level API for I2cPort functions
 #
@@ -59,11 +59,11 @@ class YI2cSnoopingRecord(object):
         #--- (end of generated code: YI2cSnoopingRecord attributes)
         json = YJSONObject(json_str, 0, len(json_str))
         json.parse()
-        if json_val.has("t"):
+        if json.has("t"):
             self._tim = json.getInt("t")
-        if json_val.has("p"):
+        if json.has("p"):
             self._pos = json.getInt("p")
-        if json_val.has("m"):
+        if json.has("m"):
             m = json.getString("m")
             if m[0] == '<':
                 self._dir = 1

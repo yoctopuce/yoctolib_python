@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_currentloopoutput.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: svn_id $
 #
 #  Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
 #

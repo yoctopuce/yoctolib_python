@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_relay.py 62196 2024-08-19 12:22:51Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindRelay(), the high-level API for Relay functions
 #
@@ -111,7 +111,7 @@ class YRelay(YFunction):
         if json_val.has("pulseTimer"):
             self._pulseTimer = json_val.getLong("pulseTimer")
         if json_val.has("delayedPulseTimer"):
-            subjson = json_val.getYJSONObject("delayedPulseTimer");
+            subjson = json_val.getYJSONObject("delayedPulseTimer")
             self._delayedPulseTimer = {"moving": None, "target": None, "ms": None}
             if subjson.has("moving"):
                 self._delayedPulseTimer["moving"] = subjson.getInt("moving")

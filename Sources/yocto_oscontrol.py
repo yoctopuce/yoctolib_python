@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_oscontrol.py 61342 2024-06-11 08:30:46Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindOsControl(), the high-level API for OsControl functions
 #

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 63513 2024-11-28 10:50:30Z seb $
+#* $Id: yocto_serialport.py 64493 2025-01-30 11:17:59Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -60,11 +60,11 @@ class YSnoopingRecord(object):
         #--- (end of generated code: YSnoopingRecord attributes)
         json = YJSONObject(json_str, 0, len(json_str))
         json.parse()
-        if json_val.has("t"):
+        if json.has("t"):
             self._tim = json.getInt("t")
-        if json_val.has("p"):
+        if json.has("p"):
             self._pos = json.getInt("p")
-        if json_val.has("m"):
+        if json.has("m"):
             m = json.getString("m")
             if m[0] == '<':
                 self._dir = 1

@@ -828,7 +828,14 @@ class YInputCapture(YFunction):
 
     def nextInputCapture(self):
         """
-        comment from .yc definition
+        Continues the enumeration of instant snapshot triggers started using yFirstInputCapture().
+        Caution: You can't make any assumption about the returned instant snapshot triggers order.
+        If you want to find a specific an instant snapshot trigger, use InputCapture.findInputCapture()
+        and a hardwareID or a logical name.
+
+        @return a pointer to a YInputCapture object, corresponding to
+                an instant snapshot trigger currently online, or a None pointer
+                if there are no more instant snapshot triggers to enumerate.
         """
         hwidRef = YRefParam()
         if YAPI.YISERR(self._nextFunction(hwidRef)):
@@ -844,7 +851,13 @@ class YInputCapture(YFunction):
     @staticmethod
     def FirstInputCapture():
         """
-        comment from .yc definition
+        Starts the enumeration of instant snapshot triggers currently accessible.
+        Use the method YInputCapture.nextInputCapture() to iterate on
+        next instant snapshot triggers.
+
+        @return a pointer to a YInputCapture object, corresponding to
+                the first instant snapshot trigger currently online, or a None pointer
+                if there are none.
         """
         devRef = YRefParam()
         neededsizeRef = YRefParam()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_steppermotor.py 63500 2024-11-28 10:17:13Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
 #

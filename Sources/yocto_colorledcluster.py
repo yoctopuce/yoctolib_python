@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorledcluster.py 64098 2025-01-08 10:59:39Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #

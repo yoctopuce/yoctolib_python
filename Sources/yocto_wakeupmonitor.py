@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_wakeupmonitor.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#  $Id: svn_id $
 #
 #  Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
 #
@@ -69,6 +69,7 @@ class YWakeUpMonitor(YFunction):
     WAKEUPREASON_EXTSIG1 = 3
     WAKEUPREASON_SCHEDULE1 = 4
     WAKEUPREASON_SCHEDULE2 = 5
+    WAKEUPREASON_SCHEDULE3 = 6
     WAKEUPREASON_INVALID = -1
     WAKEUPSTATE_SLEEPING = 0
     WAKEUPSTATE_AWAKE = 1
@@ -198,8 +199,8 @@ class YWakeUpMonitor(YFunction):
 
         @return a value among YWakeUpMonitor.WAKEUPREASON_USBPOWER, YWakeUpMonitor.WAKEUPREASON_EXTPOWER,
         YWakeUpMonitor.WAKEUPREASON_ENDOFSLEEP, YWakeUpMonitor.WAKEUPREASON_EXTSIG1,
-        YWakeUpMonitor.WAKEUPREASON_SCHEDULE1 and YWakeUpMonitor.WAKEUPREASON_SCHEDULE2 corresponding to
-        the latest wake up reason
+        YWakeUpMonitor.WAKEUPREASON_SCHEDULE1, YWakeUpMonitor.WAKEUPREASON_SCHEDULE2 and
+        YWakeUpMonitor.WAKEUPREASON_SCHEDULE3 corresponding to the latest wake up reason
 
         On failure, throws an exception or returns YWakeUpMonitor.WAKEUPREASON_INVALID.
         """

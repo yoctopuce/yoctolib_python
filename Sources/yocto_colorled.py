@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_colorled.py 64082 2025-01-07 09:41:13Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindColorLed(), the high-level API for ColorLed functions
 #
@@ -97,7 +97,7 @@ class YColorLed(YFunction):
         if json_val.has("hslColor"):
             self._hslColor = json_val.getInt("hslColor")
         if json_val.has("rgbMove"):
-            subjson = json_val.getYJSONObject("rgbMove");
+            subjson = json_val.getYJSONObject("rgbMove")
             self._rgbMove = {"moving": None, "target": None, "ms": None}
             if subjson.has("moving"):
                 self._rgbMove["moving"] = subjson.getInt("moving")
@@ -106,7 +106,7 @@ class YColorLed(YFunction):
             if subjson.has("ms"):
                 self._rgbMove["ms"] = subjson.getInt("ms")
         if json_val.has("hslMove"):
-            subjson = json_val.getYJSONObject("hslMove");
+            subjson = json_val.getYJSONObject("hslMove")
             self._hslMove = {"moving": None, "target": None, "ms": None}
             if subjson.has("moving"):
                 self._hslMove["moving"] = subjson.getInt("moving")

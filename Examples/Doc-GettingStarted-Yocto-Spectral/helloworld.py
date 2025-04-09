@@ -1,6 +1,6 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
+#  $Id: helloworld.py 65359 2025-03-26 11:48:58Z tiago $
 #
 #  An example that shows how to use a  Yocto-Spectral
 #
@@ -18,7 +18,7 @@ import os, sys
 # add ../../Sources to the PYTHONPATH
 sys.path.append(os.path.join("..", "..", "Sources"))
 
-from yocto_spectralsensor import *
+from yocto_colorsensor import *
 from yocto_api import *
 
 
@@ -47,19 +47,19 @@ if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
     sys.exit("init error" + errmsg.value)
 
 if target == 'ANY':
-    spectralSensor = YSpectralSensor.FirstSpectralSensor()
-    if spectralSensor is None:
+    colorSensor = YColorSensor.FirstColorSensor()
+    if colorSensor is None:
         sys.exit('No module connected (check cable)')
 else:
-    i2cPort = YSpectralSensor.FindSpectralSensor(sys.argv[1] + ".spectralSensor")
-    if not i2cPort.isOnline():
+    colorSensor = YColorSensor.FindColorSensor(sys.argv[1] + ".colorSensor")
+    if not colorSensor.isOnline():
         sys.exit('Module not connected')
+while(colorSensor.isOnline()):
+    colorSensor.set_workingMode(0)
+    colorSensor.set_estimationModel(0)
 
-# sample code reading MCP9804 temperature sensor
-spectralSensor.set_gain(6)
-spectralSensor.set_integrationTime(150)
-spectralSensor.set_ledCurrent(6)
-
-print("Near color : " + spectralSensor.get_nearSimpleColor())
-print("Color HEX : " + str(hex(spectralSensor.get_estimatedRGB())))
+    print("Near color : " + colorSensor.get_nearSimpleColor())
+    print("RGB Hex : " + str(hex(colorSensor.get_estimatedRGB())))
+    print("--------------------------------------------")
+    YAPI.Sleep(5000, errmsg)
 YAPI.FreeAPI()

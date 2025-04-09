@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_network.py 63513 2024-11-28 10:50:30Z seb $
+#  $Id: svn_id $
 #
 #  Implements yFindNetwork(), the high-level API for Network functions
 #
