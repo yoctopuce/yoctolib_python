@@ -1,6 +1,6 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 65359 2025-03-26 11:48:58Z tiago $
+#  $Id: helloworld.py 65693 2025-04-09 08:08:53Z tiago $
 #
 #  An example that shows how to use a  Yocto-Spectral
 #
@@ -55,8 +55,8 @@ else:
     if not colorSensor.isOnline():
         sys.exit('Module not connected')
 while(colorSensor.isOnline()):
-    colorSensor.set_workingMode(0)
-    colorSensor.set_estimationModel(0)
+    colorSensor.set_workingMode(YColorSensor.WORKINGMODE_AUTO)
+    colorSensor.set_estimationModel(YColorSensor.ESTIMATIONMODEL_REFLECTION)
 
     print("Near color : " + colorSensor.get_nearSimpleColor())
     print("RGB Hex : " + str(hex(colorSensor.get_estimatedRGB())))
