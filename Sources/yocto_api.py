@@ -998,7 +998,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.1"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "65866"
+    YOCTO_API_BUILD_NO = "65971"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2513,7 +2513,7 @@ class YAPI:
             YAPI.yloadYapiCDLL()
         YAPI.apiGetAPIVersion(version, date)
         # noinspection PyTypeChecker
-        return "2.1.5866 (" + version.value + ")"
+        return "2.1.5971 (" + version.value + ")"
 
     @staticmethod
     def InitAPI(mode, errmsg=None):
@@ -7769,7 +7769,7 @@ class YSensor(YFunction):
         Returns the current value of the measure, in the specified unit, as a floating point number.
         Note that a get_currentValue() call will *not* start a measure in the device, it
         will just return the last measure that occurred in the device. Indeed, internally, each Yoctopuce
-        devices is continuously making measurements at a hardware specific frequency.
+        devices is continuously making measures at a hardware specific frequency.
 
         If continuously calling  get_currentValue() leads you to performances issues, then
         you might consider to switch to callback programming model. Check the "advanced

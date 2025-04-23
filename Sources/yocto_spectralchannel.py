@@ -48,7 +48,7 @@ from yocto_api import *
 class YSpectralChannel(YSensor):
     """
     The YSpectralChannel class allows you to read and configure Yoctopuce spectral analysis channels.
-    It inherits from YSensor class the core functions to read measurements,
+    It inherits from YSensor class the core functions to read measures,
     to register callback functions, and to access the autonomous datalogger.
 
     """
@@ -61,6 +61,8 @@ class YSpectralChannel(YSensor):
     #--- (end of YSpectralChannel yapiwrapper)
     #--- (YSpectralChannel definitions)
     RAWCOUNT_INVALID = YAPI.INVALID_INT
+    CHANNELNAME_INVALID = YAPI.INVALID_STRING
+    PEAKWAVELENGTH_INVALID = YAPI.INVALID_INT
     #--- (end of YSpectralChannel definitions)
 
     def __init__(self, func):
@@ -69,17 +71,23 @@ class YSpectralChannel(YSensor):
         #--- (YSpectralChannel attributes)
         self._callback = None
         self._rawCount = YSpectralChannel.RAWCOUNT_INVALID
+        self._channelName = YSpectralChannel.CHANNELNAME_INVALID
+        self._peakWavelength = YSpectralChannel.PEAKWAVELENGTH_INVALID
         #--- (end of YSpectralChannel attributes)
 
     #--- (YSpectralChannel implementation)
     def _parseAttr(self, json_val):
         if json_val.has("rawCount"):
             self._rawCount = json_val.getInt("rawCount")
+        if json_val.has("channelName"):
+            self._channelName = json_val.getString("channelName")
+        if json_val.has("peakWavelength"):
+            self._peakWavelength = json_val.getInt("peakWavelength")
         super(YSpectralChannel, self)._parseAttr(json_val)
 
     def get_rawCount(self):
         """
-        Retrieves the raw cspectral intensity value as measured by the sensor, without any scaling or calibration.
+        Retrieves the raw spectral intensity value as measured by the sensor, without any scaling or calibration.
 
         @return an integer
 
@@ -90,6 +98,36 @@ class YSpectralChannel(YSensor):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSpectralChannel.RAWCOUNT_INVALID
         res = self._rawCount
+        return res
+
+    def get_channelName(self):
+        """
+        Returns the target spectral band name.
+
+        @return a string corresponding to the target spectral band name
+
+        On failure, throws an exception or returns YSpectralChannel.CHANNELNAME_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpectralChannel.CHANNELNAME_INVALID
+        res = self._channelName
+        return res
+
+    def get_peakWavelength(self):
+        """
+        Returns the target spectral band peak wavelenght, in nm.
+
+        @return an integer corresponding to the target spectral band peak wavelenght, in nm
+
+        On failure, throws an exception or returns YSpectralChannel.PEAKWAVELENGTH_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YSpectralChannel.PEAKWAVELENGTH_INVALID
+        res = self._peakWavelength
         return res
 
     @staticmethod

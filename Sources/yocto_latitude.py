@@ -48,7 +48,7 @@ from yocto_api import *
 class YLatitude(YSensor):
     """
     The YLatitude class allows you to read and configure Yoctopuce latitude sensors.
-    It inherits from YSensor class the core functions to read measurements,
+    It inherits from YSensor class the core functions to read measures,
     to register callback functions, and to access the autonomous datalogger.
 
     """

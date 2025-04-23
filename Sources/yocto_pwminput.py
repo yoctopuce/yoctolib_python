@@ -48,7 +48,7 @@ from yocto_api import *
 class YPwmInput(YSensor):
     """
     The YPwmInput class allows you to read and configure Yoctopuce PWM inputs.
-    It inherits from YSensor class the core functions to read measurements,
+    It inherits from YSensor class the core functions to read measures,
     to register callback functions, and to access the autonomous datalogger.
     This class adds the ability to configure the signal parameter used to transmit
     information: the duty cycle, the frequency or the pulse width.

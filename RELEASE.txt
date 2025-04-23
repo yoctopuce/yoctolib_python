@@ -1,4 +1,4 @@
-PythonV2 v2.1.5866
+PythonV2 v2.1.5971
 
 - Bump minor version number to work around Windows limitation
 - Add ColorSensor class
