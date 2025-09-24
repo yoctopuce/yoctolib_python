@@ -1049,12 +1049,12 @@ class YColorLedCluster(YFunction):
 
     def hsl2rgbInt(self, temp1, temp2, temp3):
         if temp3 >= 170:
-            return int(((temp1 + 127)) / (255))
+            return int((temp1 + 127) / 255)
         if temp3 > 42:
             if temp3 <= 127:
-                return int(((temp2 + 127)) / (255))
+                return int((temp2 + 127) / 255)
             temp3 = 170 - temp3
-        return int(((temp1*255 + (temp2-temp1) * (6 * temp3) + 32512)) / (65025))
+        return int((temp1*255 + (temp2-temp1) * (6 * temp3) + 32512) / 65025)
 
     def hsl2rgb(self, hslValue):
         # R

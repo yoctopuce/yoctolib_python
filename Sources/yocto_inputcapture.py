@@ -820,7 +820,7 @@ class YInputCapture(YFunction):
             msDuration = 20
         if msDuration > 1000:
             msDuration = 1000
-        snapStart = int((-msDuration) / (2))
+        snapStart = int(-msDuration / 2)
         snapUrl = "snap.bin?t=" + str(int(snapStart)) + "&d=" + str(int(msDuration))
 
         snapData = self._download(snapUrl)

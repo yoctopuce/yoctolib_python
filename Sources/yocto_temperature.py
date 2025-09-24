@@ -49,7 +49,7 @@ from yocto_api import *
 class YTemperature(YSensor):
     """
     The YTemperature class allows you to read and configure Yoctopuce temperature sensors.
-    It inherits from YSensor class the core functions to read measures,
+    It inherits from YSensor class the core functions to read measurements,
     to register callback functions, and to access the autonomous datalogger.
     This class adds the ability to configure some specific parameters
     for some sensors (connection type, temperature mapping table).
@@ -389,7 +389,7 @@ class YTemperature(YSensor):
         bin_json = self._download("extra.json?page=" + id)
         paramlist = self._json_get_array(bin_json)
         # // first convert all temperatures to float
-        siz = ((len(paramlist)) >> 1)
+        siz = (len(paramlist) >> 1)
         del templist[:]
         idx = 0
         while idx < siz:

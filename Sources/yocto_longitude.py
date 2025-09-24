@@ -48,7 +48,7 @@ from yocto_api import *
 class YLongitude(YSensor):
     """
     The YLongitude class allows you to read and configure Yoctopuce longitude sensors.
-    It inherits from YSensor class the core functions to read measures,
+    It inherits from YSensor class the core functions to read measurements,
     to register callback functions, and to access the autonomous datalogger.
 
     """

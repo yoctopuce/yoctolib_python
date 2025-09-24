@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 65973 2025-04-22 09:50:13Z seb $
+# * $Id: yocto_api.py 68466 2025-08-19 17:31:45Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -941,6 +941,17 @@ class YAPIContext(object):
             self._addYHubToCache(hubref, obj)
         return obj
 
+    def findYHubFromID(self, id):
+        # rhub
+        rhub = self.nextHubInUseInternal(-1)
+        while not (rhub is None):
+            if rhub.get_serialNumber() == id:
+                return rhub
+            if rhub.get_registeredUrl() == id:
+                return rhub
+            rhub = rhub.nextHubInUse()
+        return rhub
+
 #--- (end of generated code: YAPIContext implementation)
 
     def _findYHubFromCache(self, hubref):
@@ -998,7 +1009,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.1"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "66320"
+    YOCTO_API_BUILD_NO = "69018"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1417,6 +1428,9 @@ class YAPI:
         YAPI._yapiSetTrustedCertificatesList = YAPI._yApiCLib.yapiSetTrustedCertificatesList
         YAPI._yapiSetTrustedCertificatesList.restypes = ctypes.c_int
         YAPI._yapiSetTrustedCertificatesList.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+        YAPI._yapiCRC32 = YAPI._yApiCLib.yapiCRC32
+        YAPI._yapiCRC32.restypes = ctypes.c_uint
+        YAPI._yapiCRC32.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
     #--- (end of generated code: YFunction dlldef)
 
         YAPI._ydllLoaded = True
@@ -1571,6 +1585,7 @@ class YAPI:
     BUFFER_TOO_SMALL = -18         # The buffer provided is too small
     DNS_ERROR = -19                # Error during name resolutions (invalid hostname or dns communication error)
     SSL_UNK_CERT = -20             # The certificate is not correctly signed by the trusted CA
+    UNCONFIGURED = -21             # Remote hub is not yet configured
 
     # TLS / SSL definitions
     NO_TRUSTED_CA_CHECK = 1        # Disables certificate checking
@@ -1824,6 +1839,12 @@ class YAPI:
         if not YAPI._apiInitialized:
             YAPI.InitAPI(0)
         return YAPI._yapiContext.getYHubObj(hubref)
+
+    @staticmethod
+    def findYHubFromID(id):
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
+        return YAPI._yapiContext.findYHubFromID(id)
 
     #--- (end of generated code: YAPIContext yapiwrapper)
 
@@ -2089,6 +2110,14 @@ class YAPI:
     @staticmethod
     def _hexStrToBin(hex_str):
         return binascii.unhexlify(bytearray(hex_str, YAPI.DefaultEncoding))
+
+    @staticmethod
+    def _bincrc(bindata, ofs, size):
+        data_c = ctypes.create_string_buffer(bytes(bindata))
+        crc = YAPI._yapiCRC32(data_c, ofs, size)
+        if crc > 0x7FFFFFFF:
+            crc = crc - 0x100000000
+        return crc
 
     # noinspection PyUnresolvedReferences
     @staticmethod
@@ -2513,7 +2542,7 @@ class YAPI:
             YAPI.yloadYapiCDLL()
         YAPI.apiGetAPIVersion(version, date)
         # noinspection PyTypeChecker
-        return "2.1.6320 (" + version.value + ")"
+        return "2.1.9018 (" + version.value + ")"
 
     @staticmethod
     def InitAPI(mode, errmsg=None):
@@ -3017,7 +3046,7 @@ class YFirmwareUpdate(object):
                 self._progress_msg = (errmsg.value).decode(YAPI.DefaultEncoding)
                 return res
             self._progress_c = res
-            self._progress = int((self._progress_c * 9) / (10))
+            self._progress = int((self._progress_c * 9) / 10)
             self._progress_msg = (errmsg.value).decode(YAPI.DefaultEncoding)
         else:
             if (len(self._settings) != 0) and ( self._progress_c != 101):
@@ -3880,31 +3909,31 @@ class YDataSet(object):
         summaryStopMs = YAPI.MIN_DOUBLE
 
         # // Parse complete streams
-        for y in self._streams:
-            streamStartTimeMs = round(y.get_realStartTimeUTC() * 1000)
-            streamDuration = y.get_realDuration()
+        for ii_0 in self._streams:
+            streamStartTimeMs = round(ii_0.get_realStartTimeUTC() * 1000)
+            streamDuration = ii_0.get_realDuration()
             streamEndTimeMs = streamStartTimeMs + round(streamDuration * 1000)
             if (streamStartTimeMs >= self._startTimeMs) and ((self._endTimeMs == 0) or (streamEndTimeMs <= self._endTimeMs)):
                 # // stream that are completely inside the dataset
-                previewMinVal = y.get_minValue()
-                previewAvgVal = y.get_averageValue()
-                previewMaxVal = y.get_maxValue()
+                previewMinVal = ii_0.get_minValue()
+                previewAvgVal = ii_0.get_averageValue()
+                previewMaxVal = ii_0.get_maxValue()
                 previewStartMs = streamStartTimeMs
                 previewStopMs = streamEndTimeMs
                 previewDuration = streamDuration
             else:
                 # // stream that are partially in the dataset
                 # // we need to parse data to filter value outside the dataset
-                if not (y._wasLoaded()):
-                    url = y._get_url()
+                if not (ii_0._wasLoaded()):
+                    url = ii_0._get_url()
                     data = self._parent._download(url)
-                    y._parseStream(data)
-                dataRows = y.get_dataRows()
+                    ii_0._parseStream(data)
+                dataRows = ii_0.get_dataRows()
                 if len(dataRows) == 0:
                     return self.get_progress()
                 tim = streamStartTimeMs
-                fitv = round(y.get_firstDataSamplesInterval() * 1000)
-                itv = round(y.get_dataSamplesInterval() * 1000)
+                fitv = round(ii_0.get_firstDataSamplesInterval() * 1000)
+                itv = round(ii_0.get_dataSamplesInterval() * 1000)
                 nCols = len(dataRows[0])
                 minCol = 0
                 if nCols > 2:
@@ -4025,15 +4054,15 @@ class YDataSet(object):
             maxCol = 0
 
         firstMeasure = True
-        for y in dataRows:
+        for ii_0 in dataRows:
             if firstMeasure:
                 end_ = tim + fitv
                 firstMeasure = False
             else:
                 end_ = tim + itv
-            avgv = y[avgCol]
+            avgv = ii_0[avgCol]
             if (end_ > self._startTimeMs) and ((self._endTimeMs == 0) or (tim < self._endTimeMs)) and not (math.isnan(avgv)):
-                self._measures.append(YMeasure(tim / 1000, end_ / 1000, y[minCol], avgv, y[maxCol]))
+                self._measures.append(YMeasure(tim / 1000, end_ / 1000, ii_0[minCol], avgv, ii_0[maxCol]))
             tim = end_
 
         # // Perform bulk preload to speed-up network transfer
@@ -4161,7 +4190,7 @@ class YDataSet(object):
         # // index not yet loaded
         if self._progress >= len(self._streams):
             return 100
-        return int((1 + (1 + self._progress) * 98) / ((1 + len(self._streams))))
+        return int((1 + (1 + self._progress) * 98) / (1 + len(self._streams)))
 
     def loadMore(self):
         """
@@ -4261,9 +4290,9 @@ class YDataSet(object):
 
         startUtcMs = measure.get_startTimeUTC() * 1000
         stream = None
-        for y in self._streams:
-            if round(y.get_realStartTimeUTC() *1000) == startUtcMs:
-                stream = y
+        for ii_0 in self._streams:
+            if round(ii_0.get_realStartTimeUTC() *1000) == startUtcMs:
+                stream = ii_0
         if stream is None:
             return measures
         dataRows = stream.get_dataRows()
@@ -4284,10 +4313,10 @@ class YDataSet(object):
         else:
             maxCol = 0
 
-        for y in dataRows:
+        for ii_1 in dataRows:
             end_ = tim + itv
             if (end_ > self._startTimeMs) and ((self._endTimeMs == 0) or (tim < self._endTimeMs)):
-                measures.append(YMeasure(tim / 1000.0, end_ / 1000.0, y[minCol], y[avgCol], y[maxCol]))
+                measures.append(YMeasure(tim / 1000.0, end_ / 1000.0, ii_1[minCol], ii_1[avgCol], ii_1[maxCol]))
             tim = end_
 
         return measures
@@ -4494,7 +4523,7 @@ class YConsolidatedDataSet(object):
             globprogress = globprogress + currprogress
             s = s + 1
         if globprogress > 0:
-            globprogress = int((globprogress) / (self._nsensors))
+            globprogress = int(globprogress / self._nsensors)
             if globprogress > 99:
                 globprogress = 99
 
@@ -4733,6 +4762,11 @@ native_yDeviceLogAnchor = YAPI._yapiDeviceLogCallback(YAPI.native_DeviceLogCallb
 class YHub(object):
     #--- (end of generated code: YHub class start)
     # --- (generated code: YHub definitions)
+    TRYING = 1
+    CONNECTED = 2
+    RECONNECTING = 3
+    ABORTED = 4
+    UNREGISTERED = 5
     #--- (end of generated code: YHub definitions)
 
     def __init__(self, yctx, hubref):
@@ -4808,6 +4842,12 @@ class YHub(object):
         Returns the URL currently in use to communicate with this hub.
         """
         return self._getStrAttr("connectionUrl")
+
+    def get_connectionState(self):
+        """
+        Returns the state of the connection with this hub. (TRYING, CONNECTED, RECONNECTING, ABORTED, UNREGISTERED)
+        """
+        return self._getIntAttr("connectionState")
 
     def get_serialNumber(self):
         """
@@ -4921,13 +4961,27 @@ class YHub(object):
         """
         return YAPI.nextHubInUseInternal(-1)
 
+    @staticmethod
+    def FindHubInUse(url):
+        """
+        Retrieves hub for a given identifier. The identifier can be the URL or the
+        serial of the hub.
+
+        @param url : The url or serial of the hub.
+
+        @return a pointer to a YHub object, corresponding to
+                the first hub currently in use by the API, or a
+                None pointer if none has been registered.
+        """
+        return YAPI.findYHubFromID(url)
+
     def nextHubInUse(self):
         """
         Continues the module enumeration started using YHub.FirstHubInUse().
         Caution: You can't make any assumption about the order of returned hubs.
 
         @return a pointer to a YHub object, corresponding to
-                the next hub currenlty in use, or a None pointer
+                the next hub currently in use, or a None pointer
                 if there are no more hubs to enumerate.
         """
         return self._ctx.nextHubInUseInternal(self._hubref)
@@ -6558,17 +6612,17 @@ class YModule(YFunction):
         ext_settings = ", \"extras\":["
         templist = self.get_functionIds("Temperature")
         sep = ""
-        for y in templist:
+        for ii_0 in templist:
             if YAPI._atoi(self.get_firmwareRelease()) > 9000:
-                url = "api/" + y + "/sensorType"
+                url = "api/" + ii_0 + "/sensorType"
                 t_type = self._download(url).decode(YAPI.DefaultEncoding)
                 if t_type == "RES_NTC" or t_type == "RES_LINEAR":
-                    pageid = (y)[11: 11 + len(y) - 11]
+                    pageid = (ii_0)[11: 11 + len(ii_0) - 11]
                     if pageid == "":
                         pageid = "1"
                     temp_data_bin = self._download("extra.json?page=" + pageid)
                     if len(temp_data_bin) > 0:
-                        item = "" + sep + "{\"fid\":\"" + y + "\", \"json\":" + temp_data_bin.decode(YAPI.DefaultEncoding) + "}\n"
+                        item = "" + sep + "{\"fid\":\"" + ii_0 + "\", \"json\":" + temp_data_bin.decode(YAPI.DefaultEncoding) + "}\n"
                         ext_settings = ext_settings + item
                         sep = ","
         ext_settings = ext_settings + "],\n\"files\":["
@@ -6578,8 +6632,8 @@ class YModule(YFunction):
                 return json
             filelist = self._json_get_array(json)
             sep = ""
-            for y in filelist:
-                name = self._json_get_key(y, "name")
+            for ii_1 in filelist:
+                name = self._json_get_key(ii_1, "name")
                 if (len(name) > 0) and not (name == "startupConf.json"):
                     if (name)[len(name)-1: len(name)-1 + 1] == "/":
                         file_data = ""
@@ -6624,10 +6678,10 @@ class YModule(YFunction):
         # functionId
         # data
         extras = self._json_get_array(bytearray(jsonExtra, YAPI.DefaultEncoding))
-        for y in extras:
-            tmp = self._get_json_path(y, "fid")
+        for ii_0 in extras:
+            tmp = self._get_json_path(ii_0, "fid")
             functionId = self._json_get_string(tmp)
-            data = self._get_json_path(y, "json")
+            data = self._get_json_path(ii_0, "json")
             if self.hasFunction(functionId):
                 self.loadThermistorExtra(functionId, data.decode(YAPI.DefaultEncoding))
         return YAPI.SUCCESS
@@ -6647,7 +6701,6 @@ class YModule(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         # down
-        # json_bin
         # json_api
         # json_files
         # json_extra
@@ -6675,10 +6728,10 @@ class YModule(YFunction):
                 return YAPI.IO_ERROR
             json_files = self._get_json_path(settings, "files")
             files = self._json_get_array(json_files)
-            for y in files:
-                tmp = self._get_json_path(y, "name")
+            for ii_0 in files:
+                tmp = self._get_json_path(ii_0, "name")
                 name = self._json_get_string(tmp)
-                tmp = self._get_json_path(y, "data")
+                tmp = self._get_json_path(ii_0, "data")
                 data = self._json_get_string(tmp)
                 if name == "":
                     fuperror = fuperror + 1
@@ -6869,8 +6922,8 @@ class YModule(YFunction):
             else:
                 if paramVer == 1:
                     words_str = (param).split(',')
-                    for y in words_str:
-                        words.append(YAPI._atoi(y))
+                    for ii_0 in words_str:
+                        words.append(YAPI._atoi(ii_0))
                     if param == "" or (words[0] > 10):
                         paramScale = 0
                     if (len(words) > 0) and (words[0] > 0):
@@ -6926,7 +6979,7 @@ class YModule(YFunction):
         else:
             if funVer >= 1:
                 # // Encode parameters for older devices
-                nPoints = int((len(calibData)) / (2))
+                nPoints = int(len(calibData) / 2)
                 param = str(nPoints)
                 i = 0
                 while i < 2 * nPoints:
@@ -7021,8 +7074,8 @@ class YModule(YFunction):
 
 
 
-        for y in old_dslist:
-            each_str = self._json_get_string(y)
+        for ii_0 in old_dslist:
+            each_str = self._json_get_string(ii_0)
             # // split json path and attr
             leng = len(each_str)
             eqpos = each_str.find("=")
@@ -7055,9 +7108,9 @@ class YModule(YFunction):
 
 
 
-        for y in new_dslist:
+        for ii_1 in new_dslist:
             # // remove quotes
-            each_str = self._json_get_string(y)
+            each_str = self._json_get_string(ii_1)
             # // split json path and attr
             leng = len(each_str)
             eqpos = each_str.find("=")
@@ -7220,8 +7273,8 @@ class YModule(YFunction):
                             res = subres
             i = i + 1
 
-        for y in restoreLast:
-            subres = self._tryExec(y)
+        for ii_2 in restoreLast:
+            subres = self._tryExec(ii_2)
             if (res == YAPI.SUCCESS) and (subres != YAPI.SUCCESS):
                 res = subres
         self.clearCache()
@@ -7265,17 +7318,17 @@ class YModule(YFunction):
 
         @return a binary buffer with the file content
 
-        On failure, throws an exception or returns  YAPI.INVALID_STRING.
+        On failure, throws an exception or returns an empty content.
         """
         return self._download(pathname)
 
     def get_icon2d(self):
         """
         Returns the icon of the module. The icon is a PNG image and does not
-        exceed 1536 bytes.
+        exceeds 1536 bytes.
 
         @return a binary buffer with module icon, in png format.
-                On failure, throws an exception or returns  YAPI.INVALID_STRING.
+                On failure, throws an exception or returns an empty content.
         """
         return self._download("icon2d.png")
 
@@ -7290,6 +7343,8 @@ class YModule(YFunction):
         # content
 
         content = self._download("logs.txt")
+        if len(content) == 0:
+            return YAPI.INVALID_STRING
         return content.decode(YAPI.DefaultEncoding)
 
     def log(self, text):
@@ -7428,9 +7483,9 @@ class YModule(YFunction):
             if not YAPI.YISERR(moddescr) and not YAPI.YISERR(
                     YAPI._yapiGetFunctionInfoEx(moddescr, ctypes.byref(devdesc), None, None, None, dname, None,
                                                 errbuff)):
-                if (dname.value).decode(YAPI.DefaultEncoding) != "":
-                    return "%s" % ((dname.value).decode(YAPI.DefaultEncoding))
-            return "%s" % ((snum.value).decode(YAPI.DefaultEncoding))
+                if dname.value.decode(YAPI.DefaultEncoding) != "":
+                    return "%s.module" % (dname.value.decode(YAPI.DefaultEncoding))
+            return "%s.module" % ((snum.value).decode(YAPI.DefaultEncoding))
         self._throw(YAPI.DEVICE_NOT_FOUND, errmsgRef.value)
         return self.FRIENDLYNAME_INVALID
 
@@ -7769,7 +7824,7 @@ class YSensor(YFunction):
         Returns the current value of the measure, in the specified unit, as a floating point number.
         Note that a get_currentValue() call will *not* start a measure in the device, it
         will just return the last measure that occurred in the device. Indeed, internally, each Yoctopuce
-        devices is continuously making measures at a hardware specific frequency.
+        devices is continuously making measurements at a hardware specific frequency.
 
         If continuously calling  get_currentValue() leads you to performances issues, then
         you might consider to switch to callback programming model. Check the "advanced
@@ -8104,7 +8159,7 @@ class YSensor(YFunction):
         if self._calibrationParam.find(",") >= 0:
             # // Plain text format
             iCalib = YAPI._decodeFloats(self._calibrationParam)
-            self._caltyp = int((iCalib[0]) / (1000))
+            self._caltyp = int(iCalib[0] / 1000)
             if self._caltyp > 0:
                 if self._caltyp < YAPI.YOCTO_CALIB_TYPE_OFS:
                     # // Unknown calibration type: calibrated value will be provided by the device
@@ -8361,10 +8416,10 @@ class YSensor(YFunction):
             return YAPI.NOT_SUPPORTED
         del rawValues[:]
         del refValues[:]
-        for y in self._calraw:
-            rawValues.append(y)
-        for y in self._calref:
-            refValues.append(y)
+        for ii_0 in self._calraw:
+            rawValues.append(ii_0)
+        for ii_1 in self._calref:
+            refValues.append(ii_1)
         return YAPI.SUCCESS
 
     def _encodeCalibrationPoints(self, rawValues, refValues):
@@ -8872,9 +8927,9 @@ class YDataLogger(YFunction):
 
         dslist = self._json_get_array(jsonbuff)
         del res[:]
-        for y in dslist:
+        for ii_0 in dslist:
             dataset = YDataSet(self)
-            dataset._parse(y.decode(YAPI.DefaultEncoding))
+            dataset._parse(ii_0.decode(YAPI.DefaultEncoding))
             res.append(dataset)
         return res
 

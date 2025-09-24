@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: svn_id $
+#  $Id: yocto_micropython.py 67995 2025-07-24 17:06:13Z mvuilleu $
 #
 #  Implements yFindMicroPython(), the high-level API for MicroPython functions
 #
@@ -45,7 +45,7 @@ from yocto_api import *
 def yInternalEventCallback(obj, value):
     obj._internalEventHandler(value)
 
-#--- (YMicroPython class start)
+#--- (generated code: YMicroPython class start)
 #noinspection PyProtectedMember
 class YMicroPython(YFunction):
     """
@@ -53,35 +53,41 @@ class YMicroPython(YFunction):
     that can be found on some Yoctopuce devices.
 
     """
-    #--- (end of YMicroPython class start)
-    #--- (YMicroPython return codes)
-    #--- (end of YMicroPython return codes)
-    #--- (YMicroPython dlldef)
-    #--- (end of YMicroPython dlldef)
-    #--- (YMicroPython yapiwrapper)
-    #--- (end of YMicroPython yapiwrapper)
-    #--- (YMicroPython definitions)
+    #--- (end of generated code: YMicroPython class start)
+    #--- (generated code: YMicroPython return codes)
+    #--- (end of generated code: YMicroPython return codes)
+    #--- (generated code: YMicroPython dlldef)
+    #--- (end of generated code: YMicroPython dlldef)
+    #--- (generated code: YMicroPython yapiwrapper)
+    #--- (end of generated code: YMicroPython yapiwrapper)
+    #--- (generated code: YMicroPython definitions)
     LASTMSG_INVALID = YAPI.INVALID_STRING
     HEAPUSAGE_INVALID = YAPI.INVALID_UINT
+    HEAPFRAG_INVALID = YAPI.INVALID_UINT
     XHEAPUSAGE_INVALID = YAPI.INVALID_UINT
+    STACKUSAGE_INVALID = YAPI.INVALID_UINT
     CURRENTSCRIPT_INVALID = YAPI.INVALID_STRING
     STARTUPSCRIPT_INVALID = YAPI.INVALID_STRING
+    STARTUPDELAY_INVALID = YAPI.INVALID_DOUBLE
     COMMAND_INVALID = YAPI.INVALID_STRING
     DEBUGMODE_OFF = 0
     DEBUGMODE_ON = 1
     DEBUGMODE_INVALID = -1
-    #--- (end of YMicroPython definitions)
+    #--- (end of generated code: YMicroPython definitions)
 
     def __init__(self, func):
         super(YMicroPython, self).__init__(func)
         self._className = 'MicroPython'
-        #--- (YMicroPython attributes)
+        #--- (generated code: YMicroPython attributes)
         self._callback = None
         self._lastMsg = YMicroPython.LASTMSG_INVALID
         self._heapUsage = YMicroPython.HEAPUSAGE_INVALID
+        self._heapFrag = YMicroPython.HEAPFRAG_INVALID
         self._xheapUsage = YMicroPython.XHEAPUSAGE_INVALID
+        self._stackUsage = YMicroPython.STACKUSAGE_INVALID
         self._currentScript = YMicroPython.CURRENTSCRIPT_INVALID
         self._startupScript = YMicroPython.STARTUPSCRIPT_INVALID
+        self._startupDelay = YMicroPython.STARTUPDELAY_INVALID
         self._debugMode = YMicroPython.DEBUGMODE_INVALID
         self._command = YMicroPython.COMMAND_INVALID
         self._logCallback = None
@@ -89,20 +95,26 @@ class YMicroPython(YFunction):
         self._prevCbPos = 0
         self._logPos = 0
         self._prevPartialLog = ''
-        #--- (end of YMicroPython attributes)
+        #--- (end of generated code: YMicroPython attributes)
 
-    #--- (YMicroPython implementation)
+    #--- (generated code: YMicroPython implementation)
     def _parseAttr(self, json_val):
         if json_val.has("lastMsg"):
             self._lastMsg = json_val.getString("lastMsg")
         if json_val.has("heapUsage"):
             self._heapUsage = json_val.getInt("heapUsage")
+        if json_val.has("heapFrag"):
+            self._heapFrag = json_val.getInt("heapFrag")
         if json_val.has("xheapUsage"):
             self._xheapUsage = json_val.getInt("xheapUsage")
+        if json_val.has("stackUsage"):
+            self._stackUsage = json_val.getInt("stackUsage")
         if json_val.has("currentScript"):
             self._currentScript = json_val.getString("currentScript")
         if json_val.has("startupScript"):
             self._startupScript = json_val.getString("startupScript")
+        if json_val.has("startupDelay"):
+            self._startupDelay = round(json_val.getDouble("startupDelay") / 65.536) / 1000.0
         if json_val.has("debugMode"):
             self._debugMode = json_val.getInt("debugMode") > 0
         if json_val.has("command"):
@@ -126,10 +138,10 @@ class YMicroPython(YFunction):
 
     def get_heapUsage(self):
         """
-        Returns the percentage of micropython main memory in use,
+        Returns the percentage of MicroPython main memory in use,
         as observed at the end of the last garbage collection.
 
-        @return an integer corresponding to the percentage of micropython main memory in use,
+        @return an integer corresponding to the percentage of MicroPython main memory in use,
                 as observed at the end of the last garbage collection
 
         On failure, throws an exception or returns YMicroPython.HEAPUSAGE_INVALID.
@@ -141,12 +153,29 @@ class YMicroPython(YFunction):
         res = self._heapUsage
         return res
 
-    def get_xheapUsage(self):
+    def get_heapFrag(self):
         """
-        Returns the percentage of micropython external memory in use,
+        Returns the fragmentation ratio of MicroPython main memory,
         as observed at the end of the last garbage collection.
 
-        @return an integer corresponding to the percentage of micropython external memory in use,
+        @return an integer corresponding to the fragmentation ratio of MicroPython main memory,
+                as observed at the end of the last garbage collection
+
+        On failure, throws an exception or returns YMicroPython.HEAPFRAG_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YMicroPython.HEAPFRAG_INVALID
+        res = self._heapFrag
+        return res
+
+    def get_xheapUsage(self):
+        """
+        Returns the percentage of MicroPython external memory in use,
+        as observed at the end of the last garbage collection.
+
+        @return an integer corresponding to the percentage of MicroPython external memory in use,
                 as observed at the end of the last garbage collection
 
         On failure, throws an exception or returns YMicroPython.XHEAPUSAGE_INVALID.
@@ -156,6 +185,23 @@ class YMicroPython(YFunction):
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YMicroPython.XHEAPUSAGE_INVALID
         res = self._xheapUsage
+        return res
+
+    def get_stackUsage(self):
+        """
+        Returns the maximum percentage of MicroPython call stack in use,
+        as observed at the end of the last garbage collection.
+
+        @return an integer corresponding to the maximum percentage of MicroPython call stack in use,
+                as observed at the end of the last garbage collection
+
+        On failure, throws an exception or returns YMicroPython.STACKUSAGE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YMicroPython.STACKUSAGE_INVALID
+        res = self._stackUsage
         return res
 
     def get_currentScript(self):
@@ -219,12 +265,46 @@ class YMicroPython(YFunction):
         rest_val = newval
         return self._setAttr("startupScript", rest_val)
 
+    def set_startupDelay(self, newval):
+        """
+        Changes the wait time before running the startup script on power on, between 0.1
+        second and 25 seconds. Remember to call the saveToFlash() method of the
+        module if the modification must be kept.
+
+        @param newval : a floating point number corresponding to the wait time before running the startup
+        script on power on, between 0.1
+                second and 25 seconds
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(int(round(newval * 65536.0, 1)))
+        return self._setAttr("startupDelay", rest_val)
+
+    def get_startupDelay(self):
+        """
+        Returns the wait time before running the startup script on power on,
+        between 0.1 second and 25 seconds.
+
+        @return a floating point number corresponding to the wait time before running the startup script on power on,
+                between 0.1 second and 25 seconds
+
+        On failure, throws an exception or returns YMicroPython.STARTUPDELAY_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YMicroPython.STARTUPDELAY_INVALID
+        res = self._startupDelay
+        return res
+
     def get_debugMode(self):
         """
-        Returns the activation state of micropython debugging interface.
+        Returns the activation state of MicroPython debugging interface.
 
         @return either YMicroPython.DEBUGMODE_OFF or YMicroPython.DEBUGMODE_ON, according to the activation
-        state of micropython debugging interface
+        state of MicroPython debugging interface
 
         On failure, throws an exception or returns YMicroPython.DEBUGMODE_INVALID.
         """
@@ -237,10 +317,10 @@ class YMicroPython(YFunction):
 
     def set_debugMode(self, newval):
         """
-        Changes the activation state of micropython debugging interface.
+        Changes the activation state of MicroPython debugging interface.
 
         @param newval : either YMicroPython.DEBUGMODE_OFF or YMicroPython.DEBUGMODE_ON, according to the
-        activation state of micropython debugging interface
+        activation state of MicroPython debugging interface
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -349,6 +429,19 @@ class YMicroPython(YFunction):
             YAPI.Sleep(50)
             state = (self.get_advertisedValue())[0: 0 + 1]
         return YAPI.SUCCESS
+
+    def clearLogs(self):
+        """
+        Clears MicroPython interpreter console log buffer.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # res
+
+        res = self.set_command("z")
+        return res
 
     def get_lastLogs(self):
         """
@@ -482,9 +575,9 @@ class YMicroPython(YFunction):
             return None
         return YMicroPython.FindMicroPython(hwidRef.value)
 
-#--- (end of YMicroPython implementation)
+#--- (end of generated code: YMicroPython implementation)
 
-#--- (YMicroPython functions)
+#--- (generated code: YMicroPython functions)
 
     @staticmethod
     def FirstMicroPython():
@@ -518,4 +611,4 @@ class YMicroPython(YFunction):
 
         return YMicroPython.FindMicroPython(serialRef.value + "." + funcIdRef.value)
 
-#--- (end of YMicroPython functions)
+#--- (end of generated code: YMicroPython functions)

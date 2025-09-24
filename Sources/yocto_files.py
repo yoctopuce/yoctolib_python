@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 63513 2024-11-28 10:50:30Z seb $
+#* $Id: yocto_files.py 68466 2025-08-19 17:31:45Z mvuilleu $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -121,6 +121,7 @@ class YFiles(YFunction):
         self._callback = None
         self._filesCount = YFiles.FILESCOUNT_INVALID
         self._freeSpace = YFiles.FREESPACE_INVALID
+        self._ver = 0
         #--- (end of generated code: YFiles attributes)
 
     #--- (generated code: YFiles implementation)
@@ -204,6 +205,19 @@ class YFiles(YFunction):
 
         return self._download(url)
 
+    def _getVersion(self):
+        # json
+        if self._ver > 0:
+            return self._ver
+        # //may throw an exception
+        json = self.sendCommand("info")
+        if json[0] != 123:
+            # // ascii code for '{'
+            self._ver = 30
+        else:
+            self._ver = YAPI._atoi(self._json_get_key(json, "ver"))
+        return self._ver
+
     def format_fs(self):
         """
         Reinitialize the filesystem to its clean, unfragmented, empty state.
@@ -242,17 +256,17 @@ class YFiles(YFunction):
         json = self.sendCommand("dir&f=" + pattern)
         filelist = self._json_get_array(json)
         del res[:]
-        for y in filelist:
-            res.append(YFileRecord(y.decode(YAPI.DefaultEncoding)))
+        for ii_0 in filelist:
+            res.append(YFileRecord(ii_0.decode(YAPI.DefaultEncoding)))
         return res
 
     def fileExist(self, filename):
         """
-        Test if a file exist on the filesystem of the module.
+        Tests if a file exists on the filesystem of the module.
 
-        @param filename : the file name to test.
+        @param filename : the filename to test.
 
-        @return a true if the file exist, false otherwise.
+        @return true if the file exists, false otherwise.
 
         On failure, throws an exception.
         """
@@ -315,6 +329,52 @@ class YFiles(YFunction):
             self._throw(YAPI.IO_ERROR, "unable to remove file")
             return YAPI.IO_ERROR
         return YAPI.SUCCESS
+
+    def get_content_crc(self, content):
+        """
+        Returns the expected file CRC for a given content.
+        Note that the CRC value may vary depending on the version
+        of the filesystem used by the hub, so it is important to
+        use this method if a reference value needs to be computed.
+
+        @param content : a buffer representing a file content
+
+        @return the 32-bit CRC summarizing the file content, as it would
+                be returned by the get_crc() method of
+                YFileRecord objects returned by get_list().
+        """
+        # fsver
+        # sz
+        # blkcnt
+        # meta
+        # blkidx
+        # blksz
+        # part
+        # res
+        sz = len(content)
+        if sz == 0:
+            res = YAPI._bincrc(content, 0, 0)
+            return res
+
+        fsver = self._getVersion()
+        if fsver < 40:
+            res = YAPI._bincrc(content, 0, sz)
+            return res
+        blkcnt = int((sz + 255) / 256)
+        meta = bytearray(4 * blkcnt)
+        blkidx = 0
+        while blkidx < blkcnt:
+            blksz = sz - blkidx * 256
+            if blksz > 256:
+                blksz = 256
+            part = (YAPI._bincrc(content, blkidx * 256, blksz) ^ int(0xffffffff))
+            meta[4 * blkidx] = ((part) & (255))
+            meta[4 * blkidx + 1] = (((part >> 8)) & (255))
+            meta[4 * blkidx + 2] = (((part >> 16)) & (255))
+            meta[4 * blkidx + 3] = (((part >> 24)) & (255))
+            blkidx = blkidx + 1
+        res = (YAPI._bincrc(meta, 0, 4 * blkcnt) ^ int(0xffffffff))
+        return res
 
     def nextFiles(self):
         """

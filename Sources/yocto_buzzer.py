@@ -392,7 +392,7 @@ class YBuzzer(YFunction):
                 num = (num * 10) + (ch - 48)
             if ch == 46:
                 # // . (duration modifier)
-                num = int((num * 2) / (3))
+                num = int((num * 2) / 3)
             if ((ch == 32) or (i+1 == notesLen)) and ((note > -99) or (typ != 3)):
                 if num == 0:
                     num = prevDuration

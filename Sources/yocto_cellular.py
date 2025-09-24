@@ -1,6 +1,6 @@
 #*********************************************************************
 #*
-#* $Id: yocto_cellular.py 64863 2025-03-05 14:06:40Z mvuilleu $
+#* $Id: yocto_cellular.py 68466 2025-08-19 17:31:45Z mvuilleu $
 #*
 #* Implements yFindCellular(), the high-level API for Cellular functions
 #*
@@ -921,22 +921,22 @@ class YCellular(YFunction):
         recs = (moni).split('#')
         # // process each line in turn
         del res[:]
-        for y in recs:
-            llen = len(y) - 2
+        for ii_0 in recs:
+            llen = len(ii_0) - 2
             if llen >= 44:
-                if (y)[41: 41 + 3] == "dbm":
-                    lac = int((y)[16: 16 + 4], 16)
-                    cellId = int((y)[23: 23 + 4], 16)
-                    dbms = (y)[37: 37 + 4]
+                if (ii_0)[41: 41 + 3] == "dbm":
+                    lac = int((ii_0)[16: 16 + 4], 16)
+                    cellId = int((ii_0)[23: 23 + 4], 16)
+                    dbms = (ii_0)[37: 37 + 4]
                     if (dbms)[0: 0 + 1] == " ":
                         dbms = (dbms)[1: 1 + 3]
                     dbm = YAPI._atoi(dbms)
                     if llen > 66:
-                        tads = (y)[54: 54 + 2]
+                        tads = (ii_0)[54: 54 + 2]
                         if (tads)[0: 0 + 1] == " ":
                             tads = (tads)[1: 1 + 3]
                         tad = YAPI._atoi(tads)
-                        oper = (y)[66: 66 + llen-66]
+                        oper = (ii_0)[66: 66 + llen-66]
                     else:
                         tad = -1
                         oper = ""

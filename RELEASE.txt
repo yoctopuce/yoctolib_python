@@ -1,3 +1,5 @@
-PythonV2 v2.1.6320
+PythonV2 v2.1.9018
 
-- Add documentation of YHub class
+- Fix timeout in case of invalid credential when using HTTP protocol
+- Fix potential timeouts with YAPI::PreregisterHub
+- Fix potential short write on socket

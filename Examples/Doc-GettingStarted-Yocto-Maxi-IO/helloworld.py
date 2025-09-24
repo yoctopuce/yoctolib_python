@@ -1,6 +1,6 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
+#  $Id: helloworld.py 66453 2025-05-09 10:25:49Z seb $
 #
 #  An example that shows how to use a  Yocto-Maxi-IO
 #
@@ -47,7 +47,7 @@ if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
     sys.exit("init error" + errmsg.value)
 
 if target == 'ANY':
-    # retreive any Relay then find its serial #
+    # retrieve any DigitalIO function
     io = YDigitalIO.FirstDigitalIO()
     if io is None:
         die('No module connected')

@@ -1,6 +1,6 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
+#  $Id: helloworld.py 66616 2025-05-13 09:24:35Z seb $
 #
 #  An example that shows how to use a  Yocto-SDI12
 #
@@ -51,7 +51,7 @@ if target == 'ANY':
     if sdi12Port is None:
         sys.exit('No module connected (check cable)')
 else:
-    sdi12Port = YSdi12Port.FirstSdi12Port(sys.argv[1] + ".sdi12port")
+    sdi12Port = YSdi12Port.FirstSdi12Port(sys.argv[1] + ".sdi12Port")
     if not sdi12Port.isOnline():
         sys.exit('Module not connected')
 

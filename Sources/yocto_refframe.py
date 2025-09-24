@@ -362,10 +362,10 @@ class YRefFrame(YFunction):
 
         calibParam = self.get_calibrationParam()
         iCalib = YAPI._decodeFloats(calibParam)
-        caltyp = int((iCalib[0]) / (1000))
+        caltyp = int(iCalib[0] / 1000)
         if caltyp != 33:
             return YAPI.NOT_SUPPORTED
-        res = int((iCalib[1]) / (1000))
+        res = int(iCalib[1] / 1000)
         return res
 
     def get_measureQuality(self):
@@ -389,10 +389,10 @@ class YRefFrame(YFunction):
 
         calibParam = self.get_calibrationParam()
         iCalib = YAPI._decodeFloats(calibParam)
-        caltyp = int((iCalib[0]) / (1000))
+        caltyp = int(iCalib[0] / 1000)
         if caltyp != 33:
             return YAPI.NOT_SUPPORTED
-        res = int((iCalib[2]) / (1000))
+        res = int(iCalib[2] / 1000)
         return res
 
     def _calibSort(self, start, stopidx):
@@ -576,14 +576,14 @@ class YRefFrame(YFunction):
         self._calibDataAccZ.append(zVal)
         self._calibDataAcc.append(norm)
         self._calibInternalPos = self._calibInternalPos + 1
-        self._calibProgress = 1 + 16 * (self._calibStage - 1) + int((16 * self._calibInternalPos) / (self._calibCount))
+        self._calibProgress = 1 + 16 * (self._calibStage - 1) + int((16 * self._calibInternalPos) / self._calibCount)
         if self._calibInternalPos < self._calibCount:
-            self._calibStageProgress = 1 + int((99 * self._calibInternalPos) / (self._calibCount))
+            self._calibStageProgress = 1 + int((99 * self._calibInternalPos) / self._calibCount)
             return YAPI.SUCCESS
         # // Stage done, compute preliminary result
         intpos = (self._calibStage - 1) * self._calibCount
         self._calibSort(intpos, intpos + self._calibCount)
-        intpos = intpos + int((self._calibCount) / (2))
+        intpos = intpos + int(self._calibCount / 2)
         self._calibLogMsg = "Stage " + str(int(self._calibStage)) + ": median is " + str(int(round(1000*self._calibDataAccX[intpos]))) + "," + str(int(round(1000*self._calibDataAccY[intpos]))) + "," + str(int(round(1000*self._calibDataAccZ[intpos])))
         # // move to next stage
         self._calibStage = self._calibStage + 1
@@ -599,7 +599,7 @@ class YRefFrame(YFunction):
         zVal = 0
         idx = 0
         while idx < 6:
-            intpos = idx * self._calibCount + int((self._calibCount) / (2))
+            intpos = idx * self._calibCount + int(self._calibCount / 2)
             orient = self._calibOrient[idx]
             if orient == 0 or orient == 1:
                 zVal = zVal + self._calibDataAccZ[intpos]
@@ -631,7 +631,7 @@ class YRefFrame(YFunction):
         zVal = 0
         idx = 0
         while idx < 6:
-            intpos = idx * self._calibCount + int((self._calibCount) / (2))
+            intpos = idx * self._calibCount + int(self._calibCount / 2)
             orient = self._calibOrient[idx]
             if orient == 0 or orient == 1:
                 zVal = zVal + self._calibDataAcc[intpos]
@@ -667,15 +667,15 @@ class YRefFrame(YFunction):
             currTick = ((currTick - self._calibPrevTick) & (0x7FFFFFFF))
             if currTick < 1600:
                 self._calibStageHint = "Set down the device on a steady horizontal surface"
-                self._calibStageProgress = int((currTick) / (40))
+                self._calibStageProgress = int(currTick / 40)
                 self._calibProgress = 1
                 return YAPI.SUCCESS
 
         calibParam = self._download("api/refFrame/calibrationParam.txt")
         iCalib = YAPI._decodeFloats(calibParam.decode(YAPI.DefaultEncoding))
-        cal3 = int((iCalib[1]) / (1000))
-        calAcc = int((cal3) / (100))
-        calMag = int((cal3) / (10)) - 10*calAcc
+        cal3 = int(iCalib[1] / 1000)
+        calAcc = int(cal3 / 100)
+        calMag = int(cal3 / 10) - 10*calAcc
         calGyr = ((cal3) % (10))
         if calGyr < 3:
             self._calibStageHint = "Set down the device on a steady horizontal surface"

@@ -1,6 +1,6 @@
 # ********************************************************************
 #
-#  $Id: helloworld.py 58233 2023-12-04 10:57:58Z seb $
+#  $Id: helloworld.py 66453 2025-05-09 10:25:49Z seb $
 #
 #  An example that shows how to use a  Yocto-Proximity
 #
@@ -49,7 +49,7 @@ if YAPI.RegisterHub("usb", errmsg) != YAPI.SUCCESS:
     sys.exit("init error" + errmsg.value)
 
 if target == 'any':
-    # retreive any Light sensor
+    # retreive any proximity sensor
     p = YProximity.FirstProximity()
     if p is None:
         die('No module connected')

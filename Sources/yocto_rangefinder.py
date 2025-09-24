@@ -48,7 +48,7 @@ from yocto_api import *
 class YRangeFinder(YSensor):
     """
     The YRangeFinder class allows you to read and configure Yoctopuce range finders.
-    It inherits from YSensor class the core functions to read measures,
+    It inherits from YSensor class the core functions to read measurements,
     to register callback functions, and to access the autonomous datalogger.
     This class adds the ability to easily perform a one-point linear calibration
     to compensate the effect of a glass or filter placed in front of the sensor.

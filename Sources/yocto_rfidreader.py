@@ -958,8 +958,8 @@ class YRfidReader(YFunction):
         del taglist[:]
         if len(json) > 3:
             jsonList = self._json_get_array(json)
-            for y in jsonList:
-                taglist.append(self._json_get_string(y))
+            for ii_0 in jsonList:
+                taglist.append(self._json_get_string(ii_0))
         return taglist
 
     def get_tagInfo(self, tagId, status):
@@ -1653,7 +1653,7 @@ class YRfidReader(YFunction):
         # evtData
         # // detect possible power cycle of the reader to clear event pointer
         cbPos = YAPI._atoi(cbVal)
-        cbPos = int((cbPos) / (1000))
+        cbPos = int(cbPos / 1000)
         cbDPos = ((cbPos - self._prevCbPos) & (0x7ffff))
         self._prevCbPos = cbPos
         if cbDPos > 16384:

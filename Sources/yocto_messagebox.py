@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 63513 2024-11-28 10:50:30Z seb $
+#* $Id: yocto_messagebox.py 68482 2025-08-21 10:07:30Z mvuilleu $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -139,7 +139,7 @@ class YSms(object):
             return self._mbox.gsm2str(self._udata)
         if self._alphab == 2:
             # // using UCS-2 alphabet
-            isosize = ((len(self._udata)) >> 1)
+            isosize = (len(self._udata) >> 1)
             isolatin = bytearray(isosize)
             i = 0
             while i < isosize:
@@ -159,7 +159,7 @@ class YSms(object):
             return self._mbox.gsm2unicode(self._udata)
         if self._alphab == 2:
             # // using UCS-2 alphabet
-            unisize = ((len(self._udata)) >> 1)
+            unisize = (len(self._udata) >> 1)
             del res[:]
             i = 0
             while i < unisize:
@@ -525,7 +525,7 @@ class YSms(object):
         addrType = ((addr[ofs]) & (112))
         if addrType == 80:
             # // alphanumeric number
-            siz = int((4*siz) / (7))
+            siz = int((4*siz) / 7)
             gsm7 = bytearray(siz)
             rpos = 1
             carry = 0
@@ -575,15 +575,15 @@ class YSms(object):
             n = YAPI._atoi((exp)[1: 1 + explen-1])
             res = bytearray(1)
             if n > 30*86400:
-                n = 192+int(((n+6*86400)) / ((7*86400)))
+                n = 192+int((n+6*86400) / (7*86400))
             else:
                 if n > 86400:
-                    n = 166+int(((n+86399)) / (86400))
+                    n = 166+int((n+86399) / 86400)
                 else:
                     if n > 43200:
-                        n = 143+int(((n-43200+1799)) / (1800))
+                        n = 143+int((n-43200+1799) / 1800)
                     else:
-                        n = -1+int(((n+299)) / (300))
+                        n = -1+int((n+299) / 300)
             if n < 0:
                 n = 0
             res[0] = n
@@ -618,7 +618,7 @@ class YSms(object):
                 v1 = expasc[i+1]
                 v2 = expasc[i+2]
                 if (v1 >= 48) and (v1 < 58) and (v1 >= 48) and (v1 < 58):
-                    v1 = int(((10*(v1 - 48)+(v2 - 48))) / (15))
+                    v1 = int((10*(v1 - 48)+(v2 - 48)) / 15)
                     n = n - 1
                     v2 = 4 * res[n] + v1
                     if expasc[i-3] == 45:
@@ -686,8 +686,8 @@ class YSms(object):
         res = len(self._udata)
         if self._alphab == 0:
             if udhsize > 0:
-                res = res + int(((8 + 8*udhsize + 6)) / (7))
-            res = int(((res * 7 + 7)) / (8))
+                res = res + int((8 + 8*udhsize + 6) / 7)
+            res = int((res * 7 + 7) / 8)
         else:
             if udhsize > 0:
                 res = res + 1 + udhsize
@@ -716,7 +716,7 @@ class YSms(object):
         if self._alphab == 0:
             # // 7-bit encoding
             if udhsize > 0:
-                udhlen = int(((8 + 8*udhsize + 6)) / (7))
+                udhlen = int((8 + 8*udhsize + 6) / 7)
                 nbits = 7*udhlen - 8 - 8*udhsize
             res[0] = udhlen+udlen
         else:
@@ -773,8 +773,8 @@ class YSms(object):
         udlen = len(self._udata)
         mss = 140 - 1 - 5 - udhsize
         if self._alphab == 0:
-            mss = int(((mss * 8 - 6)) / (7))
-        self._npdu = int(((udlen+mss-1)) / (mss))
+            mss = int((mss * 8 - 6) / 7)
+        self._npdu = int((udlen+mss-1) / mss)
         del self._parts[:]
         partno = 0
         wpos = 0
@@ -985,7 +985,7 @@ class YSms(object):
                 i = i + 1
             if self._alphab == 0:
                 # // 7-bit encoding
-                udhlen = int(((8 + 8*udhsize + 6)) / (7))
+                udhlen = int((8 + 8*udhsize + 6) / 7)
                 nbits = 7*udhlen - 8 - 8*udhsize
                 if nbits > 0:
                     thi_b = pdu[rpos]
@@ -1776,6 +1776,7 @@ class YMessageBox(YFunction):
 
         self._pdus = newArr
         # // append complete concatenated messages
+        del newAgg[:]
         i = 0
         while i < nsig:
             sig = signatures[i]

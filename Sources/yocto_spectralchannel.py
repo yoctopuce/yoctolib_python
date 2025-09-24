@@ -48,7 +48,7 @@ from yocto_api import *
 class YSpectralChannel(YSensor):
     """
     The YSpectralChannel class allows you to read and configure Yoctopuce spectral analysis channels.
-    It inherits from YSensor class the core functions to read measures,
+    It inherits from YSensor class the core functions to read measurements,
     to register callback functions, and to access the autonomous datalogger.
 
     """
@@ -117,9 +117,9 @@ class YSpectralChannel(YSensor):
 
     def get_peakWavelength(self):
         """
-        Returns the target spectral band peak wavelenght, in nm.
+        Returns the target spectral band peak wavelength, in nm.
 
-        @return an integer corresponding to the target spectral band peak wavelenght, in nm
+        @return an integer corresponding to the target spectral band peak wavelength, in nm
 
         On failure, throws an exception or returns YSpectralChannel.PEAKWAVELENGTH_INVALID.
         """
