@@ -832,7 +832,7 @@ class YColorLedCluster(YFunction):
 
         On failure, throws an exception or returns an empty binary buffer.
         """
-        return self._download("rgb.bin?typ=0&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
+        return self._download("rgb.bin?typ=" + str(int(0)) + "&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
 
     def get_rgbColorArray(self, ledIndex, count):
         """
@@ -854,7 +854,7 @@ class YColorLedCluster(YFunction):
         # g
         # b
 
-        buff = self._download("rgb.bin?typ=0&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
+        buff = self._download("rgb.bin?typ=" + str(int(0)) + "&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
         del res[:]
 
         idx = 0
@@ -887,7 +887,7 @@ class YColorLedCluster(YFunction):
         # g
         # b
 
-        buff = self._download("rgb.bin?typ=4&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
+        buff = self._download("rgb.bin?typ=" + str(int(4)) + "&pos=" + str(int(3*ledIndex)) + "&len=" + str(int(3*count)))
         del res[:]
 
         idx = 0
@@ -918,7 +918,7 @@ class YColorLedCluster(YFunction):
         # idx
         # seq
 
-        buff = self._download("rgb.bin?typ=1&pos=" + str(int(ledIndex)) + "&len=" + str(int(count)))
+        buff = self._download("rgb.bin?typ=" + str(int(1)) + "&pos=" + str(int(ledIndex)) + "&len=" + str(int(count)))
         del res[:]
 
         idx = 0
@@ -950,7 +950,7 @@ class YColorLedCluster(YFunction):
         # lh
         # ll
 
-        buff = self._download("rgb.bin?typ=2&pos=" + str(int(4*seqIndex)) + "&len=" + str(int(4*count)))
+        buff = self._download("rgb.bin?typ=" + str(int(2)) + "&pos=" + str(int(4*seqIndex)) + "&len=" + str(int(4*count)))
         del res[:]
 
         idx = 0
@@ -981,7 +981,7 @@ class YColorLedCluster(YFunction):
         # lh
         # ll
 
-        buff = self._download("rgb.bin?typ=6&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
+        buff = self._download("rgb.bin?typ=" + str(int(6)) + "&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
         del res[:]
 
         idx = 0
@@ -1009,7 +1009,7 @@ class YColorLedCluster(YFunction):
         # idx
         # started
 
-        buff = self._download("rgb.bin?typ=5&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
+        buff = self._download("rgb.bin?typ=" + str(int(5)) + "&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
         del res[:]
 
         idx = 0
@@ -1036,7 +1036,7 @@ class YColorLedCluster(YFunction):
         # idx
         # started
 
-        buff = self._download("rgb.bin?typ=3&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
+        buff = self._download("rgb.bin?typ=" + str(int(3)) + "&pos=" + str(int(seqIndex)) + "&len=" + str(int(count)))
         del res[:]
 
         idx = 0
@@ -1076,32 +1076,25 @@ class YColorLedCluster(YFunction):
         if L<=127:
             temp2 = L * (255 + S)
         else:
-            temp2 = (L+S) * 255 - L*S
+            temp2 = (L + S) * 255 - L * S
         temp1 = 510 * L - temp2
         # // R
-        temp3 = (H + 85)
-        if temp3 > 255:
-            temp3 = temp3-255
+        temp3 = (((H + 85)) & (0xff))
         R = self.hsl2rgbInt(temp1, temp2, temp3)
         # // G
-        temp3 = H
-        if temp3 > 255:
-            temp3 = temp3-255
+        temp3 = ((H) & (0xff))
         G = self.hsl2rgbInt(temp1, temp2, temp3)
         # // B
-        if H >= 85:
-            temp3 = H - 85
-        else:
-            temp3 = H + 170
+        temp3 = (((H + 170)) & (0xff))
         B = self.hsl2rgbInt(temp1, temp2, temp3)
         # // just in case
-        if R>255:
-            R=255
-        if G>255:
-            G=255
-        if B>255:
-            B=255
-        res = (R << 16)+(G << 8)+B
+        if R > 255:
+            R = 255
+        if G > 255:
+            G = 255
+        if B > 255:
+            B = 255
+        res = (R << 16) + (G << 8) + B
         return res
 
     def nextColorLedCluster(self):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_spiport.py 63513 2024-11-28 10:50:30Z seb $
+#  $Id: yocto_spiport.py 70736 2025-12-12 07:53:30Z mvuilleu $
 #
 #  Implements yFindSpiPort(), the high-level API for SpiPort functions
 #
@@ -1064,7 +1064,8 @@ class YSpiPort(YFunction):
         reqlen = 1024
         buff = self.readBin(reqlen)
         bufflen = len(buff)
-        if self._rxptr == currpos+bufflen:
+        if (bufflen > 0) and (self._rxptr == currpos+bufflen):
+            # // up to 1024 bytes in buffer, all in direction Rx
             res = buff[0]
             self._rxptr = currpos+1
             self._rxbuffptr = currpos
@@ -1075,7 +1076,8 @@ class YSpiPort(YFunction):
         reqlen = 16
         buff = self.readBin(reqlen)
         bufflen = len(buff)
-        if self._rxptr == currpos+bufflen:
+        if (bufflen > 0) and (self._rxptr == currpos+bufflen):
+            # // up to 16 bytes in buffer, all in direction Rx
             res = buff[0]
             self._rxptr = currpos+1
             self._rxbuffptr = currpos

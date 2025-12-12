@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 64493 2025-01-30 11:17:59Z seb $
+#* $Id: yocto_serialport.py 70736 2025-12-12 07:53:30Z mvuilleu $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -1002,7 +1002,8 @@ class YSerialPort(YFunction):
         reqlen = 1024
         buff = self.readBin(reqlen)
         bufflen = len(buff)
-        if self._rxptr == currpos+bufflen:
+        if (bufflen > 0) and (self._rxptr == currpos+bufflen):
+            # // up to 1024 bytes in buffer, all in direction Rx
             res = buff[0]
             self._rxptr = currpos+1
             self._rxbuffptr = currpos
@@ -1013,7 +1014,8 @@ class YSerialPort(YFunction):
         reqlen = 16
         buff = self.readBin(reqlen)
         bufflen = len(buff)
-        if self._rxptr == currpos+bufflen:
+        if (bufflen > 0) and (self._rxptr == currpos+bufflen):
+            # // up to 16 bytes in buffer, all in direction Rx
             res = buff[0]
             self._rxptr = currpos+1
             self._rxbuffptr = currpos

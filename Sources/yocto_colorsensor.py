@@ -62,6 +62,7 @@ class YColorSensor(YFunction):
     LEDCALIBRATION_INVALID = YAPI.INVALID_UINT
     INTEGRATIONTIME_INVALID = YAPI.INVALID_UINT
     GAIN_INVALID = YAPI.INVALID_UINT
+    AUTOGAIN_INVALID = YAPI.INVALID_STRING
     SATURATION_INVALID = YAPI.INVALID_UINT
     ESTIMATEDRGB_INVALID = YAPI.INVALID_UINT
     ESTIMATEDHSL_INVALID = YAPI.INVALID_UINT
@@ -104,6 +105,7 @@ class YColorSensor(YFunction):
         self._ledCalibration = YColorSensor.LEDCALIBRATION_INVALID
         self._integrationTime = YColorSensor.INTEGRATIONTIME_INVALID
         self._gain = YColorSensor.GAIN_INVALID
+        self._autoGain = YColorSensor.AUTOGAIN_INVALID
         self._saturation = YColorSensor.SATURATION_INVALID
         self._estimatedRGB = YColorSensor.ESTIMATEDRGB_INVALID
         self._estimatedHSL = YColorSensor.ESTIMATEDHSL_INVALID
@@ -131,6 +133,8 @@ class YColorSensor(YFunction):
             self._integrationTime = json_val.getInt("integrationTime")
         if json_val.has("gain"):
             self._gain = json_val.getInt("gain")
+        if json_val.has("autoGain"):
+            self._autoGain = json_val.getString("autoGain")
         if json_val.has("saturation"):
             self._saturation = json_val.getInt("saturation")
         if json_val.has("estimatedRGB"):
@@ -352,6 +356,35 @@ class YColorSensor(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("gain", rest_val)
+
+    def get_autoGain(self):
+        """
+        Returns the current autogain parameters of the sensor as a character string.
+        The returned parameter format is: "Min &lt; Channel &lt; Max:Saturation".
+
+        @return a string corresponding to the current autogain parameters of the sensor as a character string
+
+        On failure, throws an exception or returns YColorSensor.AUTOGAIN_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YColorSensor.AUTOGAIN_INVALID
+        res = self._autoGain
+        return res
+
+    def set_autoGain(self, newval):
+        """
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
+
+        @param newval : a string
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("autoGain", rest_val)
 
     def get_saturation(self):
         """
@@ -597,6 +630,29 @@ class YColorSensor(YFunction):
             obj = YColorSensor(func)
             YFunction._AddToCache("ColorSensor", func, obj)
         return obj
+
+    def configureAutoGain(self, channel, minRaw, maxRaw, noSatur):
+        """
+        Changes the sensor automatic gain control settings.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
+
+        @param channel : reference channel to use for automated gain control.
+        @param minRaw : lower threshold for the measured raw value, below which the gain is
+                automatically increased as long as possible.
+        @param maxRaw : high threshold for the measured raw value, over which the gain is
+                automatically decreased as long as possible.
+        @param noSatur : enables gain reduction in case of sensor saturation.
+
+        @return YAPI.SUCCESS if the operation completes successfully.
+                On failure, throws an exception or returns a negative error code.
+        """
+        # opt
+        if noSatur:
+            opt = "nosat"
+        else:
+            opt = ""
+
+        return self.set_autoGain("" + str(int(minRaw)) + " < " + channel + " < " + str(int(maxRaw)) + ":" + opt)
 
     def turnLedOn(self):
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_micropython.py 67995 2025-07-24 17:06:13Z mvuilleu $
+#  $Id: yocto_micropython.py 69442 2025-10-16 08:53:14Z mvuilleu $
 #
 #  Implements yFindMicroPython(), the high-level API for MicroPython functions
 #
@@ -285,10 +285,10 @@ class YMicroPython(YFunction):
     def get_startupDelay(self):
         """
         Returns the wait time before running the startup script on power on,
-        between 0.1 second and 25 seconds.
+        measured in seconds.
 
         @return a floating point number corresponding to the wait time before running the startup script on power on,
-                between 0.1 second and 25 seconds
+                measured in seconds
 
         On failure, throws an exception or returns YMicroPython.STARTUPDELAY_INVALID.
         """

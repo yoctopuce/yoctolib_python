@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 68466 2025-08-19 17:31:45Z mvuilleu $
+#* $Id: yocto_files.py 70518 2025-11-26 16:18:50Z mvuilleu $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*
@@ -352,13 +352,11 @@ class YFiles(YFunction):
         # part
         # res
         sz = len(content)
-        if sz == 0:
-            res = YAPI._bincrc(content, 0, 0)
-            return res
 
         fsver = self._getVersion()
         if fsver < 40:
             res = YAPI._bincrc(content, 0, sz)
+            res = (((res) & (0x7fffffff)) - 2 * (((res >> 1)) & (0x40000000)))
             return res
         blkcnt = int((sz + 255) / 256)
         meta = bytearray(4 * blkcnt)
@@ -374,6 +372,7 @@ class YFiles(YFunction):
             meta[4 * blkidx + 3] = (((part >> 24)) & (255))
             blkidx = blkidx + 1
         res = (YAPI._bincrc(meta, 0, 4 * blkcnt) ^ int(0xffffffff))
+        res = (((res) & (0x7fffffff)) - 2 * (((res >> 1)) & (0x40000000)))
         return res
 
     def nextFiles(self):

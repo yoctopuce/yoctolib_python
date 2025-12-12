@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 68466 2025-08-19 17:31:45Z mvuilleu $
+# * $Id: yocto_api.py 70666 2025-12-09 10:26:00Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -1009,7 +1009,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.1"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "69018"
+    YOCTO_API_BUILD_NO = "70736"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2542,7 +2542,7 @@ class YAPI:
             YAPI.yloadYapiCDLL()
         YAPI.apiGetAPIVersion(version, date)
         # noinspection PyTypeChecker
-        return "2.1.9018 (" + version.value + ")"
+        return "2.1.10736 (" + version.value + ")"
 
     @staticmethod
     def InitAPI(mode, errmsg=None):
@@ -3247,27 +3247,64 @@ class YDataStream(object):
         self._minVal = 0
         self._avgVal = 0
         self._maxVal = 0
-        self._caltyp = 0
-        self._calpar = []
-        self._calraw = []
-        self._calref = []
         self._values = []
         self._isLoaded = 0
         #--- (end of generated code: YDataStream attributes)
-        self._calhdl = None
+        self._cal = None
         self._parent = parent
         if dataset is not None:
             self._initFromDataSet(dataset, encoded)
 
     # --- (generated code: YDataStream implementation)
-    def _initFromDataSet(self, dataset, encoded):
-        # val
-        # i
+    def _parseCalibArr(self, iCalib):
+        # caltyp
+        # calhdl
         # maxpos
-        # ms_offset
-        # samplesPerHour
+        # position
+        calpar = []
+        calraw = []
+        calref = []
         # fRaw
         # fRef
+        caltyp = int(iCalib[0] / 1000)
+        if caltyp < YAPI.YOCTO_CALIB_TYPE_OFS:
+            # // Unknown calibration type: calibrated value will be provided by the device
+            self._cal = None
+            return YAPI.SUCCESS
+        calhdl = YAPI._getCalibrationHandler(caltyp)
+        if not (calhdl is not None):
+            # // Unknown calibration type: calibrated value will be provided by the device
+            self._cal = None
+            return YAPI.SUCCESS
+        # // New 32 bits text format
+        maxpos = len(iCalib)
+        del calpar[:]
+        position = 1
+        while position < maxpos:
+            calpar.append(iCalib[position])
+            position = position + 1
+
+        del calraw[:]
+        del calref[:]
+        position = 1
+        while position + 1 < maxpos:
+            fRaw = iCalib[position]
+            fRaw = fRaw / 1000.0
+            fRef = iCalib[position + 1]
+            fRef = fRef / 1000.0
+            calraw.append(fRaw)
+            calref.append(fRef)
+            position = position + 2
+
+
+        self._cal = YCalibCtx("", calhdl, caltyp, calpar, calraw, calref)
+        return YAPI.SUCCESS
+
+    def _initFromDataSet(self, dataset, encoded):
+        # val
+        # ms_offset
+        # samplesPerHour
+        # caltyp
         iCalib = []
         # // decode sequence header to extract data
         self._runNo = encoded[0] + ((encoded[1] << 16))
@@ -3305,26 +3342,11 @@ class YDataStream(object):
             self._duration = 0
         # // precompute decoding parameters
         iCalib = dataset._get_calibration()
-        self._caltyp = iCalib[0]
-        if self._caltyp != 0:
-            self._calhdl = YAPI._getCalibrationHandler(self._caltyp)
-            maxpos = len(iCalib)
-            del self._calpar[:]
-            del self._calraw[:]
-            del self._calref[:]
-            i = 1
-            while i < maxpos:
-                self._calpar.append(iCalib[i])
-                i = i + 1
-            i = 1
-            while i + 1 < maxpos:
-                fRaw = iCalib[i]
-                fRaw = fRaw / 1000.0
-                fRef = iCalib[i + 1]
-                fRef = fRef / 1000.0
-                self._calraw.append(fRaw)
-                self._calref.append(fRef)
-                i = i + 2
+        caltyp = iCalib[0]
+        if caltyp == 0:
+            self._cal = None
+        else:
+            self._parseCalibArr(iCalib)
         # // preload column names for backward-compatibility
         self._functionId = dataset.get_functionId()
         if self._isAvg:
@@ -3407,20 +3429,16 @@ class YDataStream(object):
 
     def _decodeVal(self, w):
         # val
-        val = w if w <= 0x7fffffff else -0x100000000 + w
-        val = val / 1000.0
-        if self._caltyp != 0:
-            if self._calhdl is not None:
-                val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+        val = (w if w <= 0x7fffffff else -0x100000000 + w) / 1000.0
+        if not (self._cal is None):
+            val = self._cal.hdl(val, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal)
         return val
 
     def _decodeAvg(self, dw, count):
         # val
-        val = dw if dw <= 0x7fffffff else -0x100000000 + dw
-        val = val / 1000.0
-        if self._caltyp != 0:
-            if self._calhdl is not None:
-                val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+        val = (dw if dw <= 0x7fffffff else -0x100000000 + dw) / 1000.0
+        if not (self._cal is None):
+            val = self._cal.hdl(val, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal)
         return val
 
     def isClosed(self):
@@ -5619,6 +5637,20 @@ class YFunction(object):
     def _parserHelper(self):
         return 0
 
+    def _is_valid_pass(self, passwd):
+        # tmp
+        if len(passwd) > YAPI.HASH_BUF_SIZE:
+            tmp = "Password too long (max " + str(int(YAPI.HASH_BUF_SIZE)) + " chars) :" + passwd
+            self._throw(YAPI.INVALID_ARGUMENT, tmp)
+            return False
+        if passwd.find("@") >=0:
+            self._throw(YAPI.INVALID_ARGUMENT, "Character @ is not allowed in password")
+            return False
+        if passwd.find("/") >=0:
+            self._throw(YAPI.INVALID_ARGUMENT, "Character / is not allowed in password")
+            return False
+        return True
+
     def nextFunction(self):
         """
         comment from .yc definition
@@ -7712,6 +7744,15 @@ class YModule(YFunction):
 
 #--- (end of generated code: YModule functions)
 
+class YCalibCtx(object):
+    def __init__(self, calibStr, handler ,caltyp, calpar, calraw, calref):
+        self.src =calibStr
+        self.hdl =handler
+        self.typ = caltyp
+        self.par = calpar
+        self.raw = calraw
+        self.cal = calref
+
 
 # --- (generated code: YSensor class start)
 #noinspection PyProtectedMember
@@ -7766,17 +7807,10 @@ class YSensor(YFunction):
         self._resolution = YSensor.RESOLUTION_INVALID
         self._sensorState = YSensor.SENSORSTATE_INVALID
         self._timedReportCallbackSensor = None
-        self._prevTimedReport = 0
+        self._prevTR = 0
         self._iresol = 0
-        self._offset = 0
-        self._scale = 0
-        self._decexp = 0
-        self._caltyp = 0
-        self._calpar = []
-        self._calraw = []
-        self._calref = []
-        self._calhdl = None
         #--- (end of generated code: YSensor attributes)
+        self._cal = None
 
     # --- (generated code: YSensor implementation)
     def _parseAttr(self, json_val):
@@ -7839,11 +7873,13 @@ class YSensor(YFunction):
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.CURRENTVALUE_INVALID
-        res = self._applyCalibration(self._currentRawValue)
-        if res == YSensor.CURRENTVALUE_INVALID:
+        if self._cal is None:
             res = self._currentValue
-        res = res * self._iresol
-        res = round(res) / self._iresol
+        else:
+            res = self._applyCalibration(self._currentRawValue)
+        if res == YSensor.CURRENTVALUE_INVALID:
+            return res
+        res = round(res * self._iresol) / self._iresol
         return res
 
     def set_lowestValue(self, newval):
@@ -7874,8 +7910,7 @@ class YSensor(YFunction):
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.LOWESTVALUE_INVALID
-        res = self._lowestValue * self._iresol
-        res = round(res) / self._iresol
+        res = round(self._lowestValue * self._iresol) / self._iresol
         return res
 
     def set_highestValue(self, newval):
@@ -7906,8 +7941,7 @@ class YSensor(YFunction):
         if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YSensor.HIGHESTVALUE_INVALID
-        res = self._highestValue * self._iresol
-        res = round(res) / self._iresol
+        res = round(self._highestValue * self._iresol) / self._iresol
         return res
 
     def get_currentRawValue(self):
@@ -8134,106 +8168,20 @@ class YSensor(YFunction):
         return obj
 
     def _parserHelper(self):
-        # position
-        # maxpos
-        iCalib = []
-        # iRaw
-        # iRef
-        # fRaw
-        # fRef
-        self._caltyp = -1
-        self._scale = -1
-        del self._calpar[:]
-        del self._calraw[:]
-        del self._calref[:]
+        # calibStr
         # // Store inverted resolution, to provide better rounding
         if self._resolution > 0:
             self._iresol = round(1.0 / self._resolution)
         else:
             self._iresol = 10000
-            self._resolution = 0.0001
-        # // Old format: supported when there is no calibration
-        if self._calibrationParam == "" or self._calibrationParam == "0":
-            self._caltyp = 0
+        # // Shortcut when there is no calibration parameter
+        calibStr = self._calibrationParam
+        if calibStr == "0," or calibStr == "" or calibStr == "0":
+            self._cal = None
             return 0
-        if self._calibrationParam.find(",") >= 0:
-            # // Plain text format
-            iCalib = YAPI._decodeFloats(self._calibrationParam)
-            self._caltyp = int(iCalib[0] / 1000)
-            if self._caltyp > 0:
-                if self._caltyp < YAPI.YOCTO_CALIB_TYPE_OFS:
-                    # // Unknown calibration type: calibrated value will be provided by the device
-                    self._caltyp = -1
-                    return 0
-                self._calhdl = YAPI._getCalibrationHandler(self._caltyp)
-                if not (self._calhdl is not None):
-                    # // Unknown calibration type: calibrated value will be provided by the device
-                    self._caltyp = -1
-                    return 0
-            # // New 32 bits text format
-            self._offset = 0
-            self._scale = 1000
-            maxpos = len(iCalib)
-            del self._calpar[:]
-            position = 1
-            while position < maxpos:
-                self._calpar.append(iCalib[position])
-                position = position + 1
-            del self._calraw[:]
-            del self._calref[:]
-            position = 1
-            while position + 1 < maxpos:
-                fRaw = iCalib[position]
-                fRaw = fRaw / 1000.0
-                fRef = iCalib[position + 1]
-                fRef = fRef / 1000.0
-                self._calraw.append(fRaw)
-                self._calref.append(fRef)
-                position = position + 2
-        else:
-            # // Recorder-encoded format, including encoding
-            iCalib = YAPI._decodeWords(self._calibrationParam)
-            # // In case of unknown format, calibrated value will be provided by the device
-            if len(iCalib) < 2:
-                self._caltyp = -1
-                return 0
-            # // Save variable format (scale for scalar, or decimal exponent)
-            self._offset = 0
-            self._scale = 1
-            self._decexp = 1.0
-            position = iCalib[0]
-            while position > 0:
-                self._decexp = self._decexp * 10
-                position = position - 1
-            # // Shortcut when there is no calibration parameter
-            if len(iCalib) == 2:
-                self._caltyp = 0
-                return 0
-            self._caltyp = iCalib[2]
-            self._calhdl = YAPI._getCalibrationHandler(self._caltyp)
-            # // parse calibration points
-            if self._caltyp <= 10:
-                maxpos = self._caltyp
-            else:
-                if self._caltyp <= 20:
-                    maxpos = self._caltyp - 10
-                else:
-                    maxpos = 5
-            maxpos = 3 + 2 * maxpos
-            if maxpos > len(iCalib):
-                maxpos = len(iCalib)
-            del self._calpar[:]
-            del self._calraw[:]
-            del self._calref[:]
-            position = 3
-            while position + 1 < maxpos:
-                iRaw = iCalib[position]
-                iRef = iCalib[position + 1]
-                self._calpar.append(iRaw)
-                self._calpar.append(iRef)
-                self._calraw.append(YAPI._decimalToDouble(iRaw))
-                self._calref.append(YAPI._decimalToDouble(iRef))
-                position = position + 2
+        # // Parse calibration parameters only if they have changed
+        if self._cal is None or not (self._cal.src == calibStr):
+            self._parseCalibStr(calibStr)
         return 0
 
     def isSensorReady(self):
@@ -8245,9 +8193,10 @@ class YSensor(YFunction):
 
         @return true if the sensor can provide an up-to-date measure, and false otherwise
         """
-        if not (self.isOnline()):
-            return False
-        if not (self._sensorState == 0):
+        try:
+            if self.get_sensorState() != 0:
+                return False
+        except:
             return False
         return True
 
@@ -8271,6 +8220,88 @@ class YSensor(YFunction):
         hwid = serial + ".dataLogger"
         logger = YDataLogger.FindDataLogger(hwid)
         return logger
+
+    def _parseCalibStr(self, calibStr):
+        iCalib = []
+        # caltyp
+        # calhdl
+        # maxpos
+        # position
+        calpar = []
+        calraw = []
+        calref = []
+        # fRaw
+        # fRef
+        # iRaw
+        # iRef
+        if calibStr.find(",") >= 0:
+            # // Plain text format
+            iCalib = YAPI._decodeFloats(calibStr)
+            caltyp = int(iCalib[0] / 1000)
+            if caltyp < YAPI.YOCTO_CALIB_TYPE_OFS:
+                # // Unknown calibration type: calibrated value will be provided by the device
+                self._cal = None
+                return YAPI.SUCCESS
+            calhdl = YAPI._getCalibrationHandler(caltyp)
+            if not (calhdl is not None):
+                # // Unknown calibration type: calibrated value will be provided by the device
+                self._cal = None
+                return YAPI.SUCCESS
+            # // New 32 bits text format
+            maxpos = len(iCalib)
+            del calpar[:]
+            position = 1
+            while position < maxpos:
+                calpar.append(iCalib[position])
+                position = position + 1
+            del calraw[:]
+            del calref[:]
+            position = 1
+            while position + 1 < maxpos:
+                fRaw = iCalib[position]
+                fRaw = fRaw / 1000.0
+                fRef = iCalib[position + 1]
+                fRef = fRef / 1000.0
+                calraw.append(fRaw)
+                calref.append(fRef)
+                position = position + 2
+        else:
+            # // Old recorder-encoded format, including encoding
+            iCalib = YAPI._decodeWords(calibStr)
+            if len(iCalib) <= 2:
+                # // Unknown calibration type: calibrated value will be provided by the device
+                self._cal = None
+                return YAPI.SUCCESS
+            caltyp = iCalib[2]
+            calhdl = YAPI._getCalibrationHandler(caltyp)
+            if not (calhdl is not None):
+                # // Unknown calibration type: calibrated value will be provided by the device
+                self._cal = None
+                return YAPI.SUCCESS
+            if caltyp <= 10:
+                maxpos = caltyp
+            else:
+                if caltyp <= 20:
+                    maxpos = caltyp - 10
+                else:
+                    maxpos = 5
+            maxpos = 3 + 2 * maxpos
+            if maxpos > len(iCalib):
+                maxpos = len(iCalib)
+            del calpar[:]
+            del calraw[:]
+            del calref[:]
+            position = 3
+            while position + 1 < maxpos:
+                iRaw = iCalib[position]
+                iRef = iCalib[position + 1]
+                calpar.append(iRaw)
+                calpar.append(iRef)
+                calraw.append(YAPI._decimalToDouble(iRaw))
+                calref.append(YAPI._decimalToDouble(iRef))
+                position = position + 2
+        self._cal = YCalibCtx(calibStr, calhdl, caltyp, calpar, calraw, calref)
+        return YAPI.SUCCESS
 
     def startDataLogger(self):
         """
@@ -8408,17 +8439,16 @@ class YSensor(YFunction):
         del rawValues[:]
         del refValues[:]
         # // Load function parameters if not yet loaded
-        if (self._scale == 0) or (self._cacheExpiration <= YAPI.GetTickCount()):
+        if self._cacheExpiration <= YAPI.GetTickCount():
             if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
                 return YAPI.DEVICE_NOT_FOUND
-        if self._caltyp < 0:
-            self._throw(YAPI.NOT_SUPPORTED, "Calibration parameters format mismatch. Please upgrade your library or firmware.")
-            return YAPI.NOT_SUPPORTED
+        if self._cal is None:
+            return YAPI.SUCCESS
         del rawValues[:]
         del refValues[:]
-        for ii_0 in self._calraw:
+        for ii_0 in self._cal.raw:
             rawValues.append(ii_0)
-        for ii_1 in self._calref:
+        for ii_1 in self._cal.cal:
             refValues.append(ii_1)
         return YAPI.SUCCESS
 
@@ -8433,15 +8463,7 @@ class YSensor(YFunction):
         # // Shortcut when building empty calibration parameters
         if npt == 0:
             return "0"
-        # // Load function parameters if not yet loaded
-        if self._scale == 0:
-            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
-                return YAPI.INVALID_STRING
-        # // Detect old firmware
-        if (self._caltyp < 0) or (self._scale < 0):
-            self._throw(YAPI.NOT_SUPPORTED, "Calibration parameters format mismatch. Please upgrade your library or firmware.")
-            return "0"
-        # // 32-bit fixed-point encoding
+        # // Encode using newer 32-bit fixed-point method
         res = "" + str(int(YAPI.YOCTO_CALIB_TYPE_OFS))
         idx = 0
         while idx < npt:
@@ -8450,15 +8472,11 @@ class YSensor(YFunction):
         return res
 
     def _applyCalibration(self, rawValue):
+        if self._cal is None:
+            return rawValue
         if rawValue == YSensor.CURRENTVALUE_INVALID:
             return YSensor.CURRENTVALUE_INVALID
-        if self._caltyp == 0:
-            return rawValue
-        if self._caltyp < 0:
-            return YSensor.CURRENTVALUE_INVALID
-        if not (self._calhdl is not None):
-            return YSensor.CURRENTVALUE_INVALID
-        return self._calhdl(rawValue, self._caltyp, self._calpar, self._calraw, self._calref)
+        return self._cal.hdl(rawValue, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal)
 
     def _decodeTimedReport(self, timestamp, duration, report):
         # i
@@ -8477,9 +8495,9 @@ class YSensor(YFunction):
         if duration > 0:
             startTime = timestamp - duration
         else:
-            startTime = self._prevTimedReport
+            startTime = self._prevTR
         endTime = timestamp
-        self._prevTimedReport = endTime
+        self._prevTR = endTime
         if startTime == 0:
             startTime = endTime
         # // 32 bits timed report format
@@ -8497,9 +8515,8 @@ class YSensor(YFunction):
             if ((byteVal) & (0x80)) != 0:
                 avgRaw = avgRaw - poww
             avgVal = avgRaw / 1000.0
-            if self._caltyp != 0:
-                if self._calhdl is not None:
-                    avgVal = self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref)
+            if not (self._cal is None):
+                avgVal = self._cal.hdl(avgVal, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal)
             minVal = avgVal
             maxVal = avgVal
         else:
@@ -8540,27 +8557,24 @@ class YSensor(YFunction):
             avgVal = avgRaw / 1000.0
             minVal = minRaw / 1000.0
             maxVal = maxRaw / 1000.0
-            if self._caltyp != 0:
-                if self._calhdl is not None:
-                    avgVal = self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref)
-                    minVal = self._calhdl(minVal, self._caltyp, self._calpar, self._calraw, self._calref)
-                    maxVal = self._calhdl(maxVal, self._caltyp, self._calpar, self._calraw, self._calref)
+            if not (self._cal is None):
+                avgVal = self._cal.hdl(avgVal, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal)
+                minVal = self._cal.hdl(minVal, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal)
+                maxVal = self._cal.hdl(maxVal, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal)
         return YMeasure(startTime, endTime, minVal, avgVal, maxVal)
 
     def _decodeVal(self, w):
         # val
         val = w if w <= 0x7fffffff else -0x100000000 + w
-        if self._caltyp != 0:
-            if self._calhdl is not None:
-                val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+        if not (self._cal is None):
+            val = self._cal.hdl(val, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal)
         return val
 
     def _decodeAvg(self, dw):
         # val
         val = dw if dw <= 0x7fffffff else -0x100000000 + dw
-        if self._caltyp != 0:
-            if self._calhdl is not None:
-                val = self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+        if not (self._cal is None):
+            val = self._cal.hdl(val, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal)
         return val
 
     def nextSensor(self):

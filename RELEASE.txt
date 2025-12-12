@@ -1,5 +1,14 @@
-PythonV2 v2.1.9018
+PythonV2 v2.1.10736
 
-- Fix timeout in case of invalid credential when using HTTP protocol
-- Fix potential timeouts with YAPI::PreregisterHub
+- Add YFiles.get_content_crc method
+- Fix search in HTML documentation
+- Prevent setting passwords with unsupported characters (@ and /)
+- Fix behavior of YSerialPort.readByte when there is no data available
+- Fix Yocto-SDI12 example
+- Fix Prog-FirmwareUpdate example to properly handle VirtualHub-4web and VirtualHub-V2
+- Fix YAPI.GetYAPISharedLibraryPath() on 64 bits
+- Fix YModule.get_friendlyName() method
+- Fix unnecessary timeout in case of invalid credential with HTTP protocol
 - Fix potential short write on socket
+- Fix possible incorrect timeout values in YAPI::PreregisterHub
+- Fix redirection handling with IPv6 address

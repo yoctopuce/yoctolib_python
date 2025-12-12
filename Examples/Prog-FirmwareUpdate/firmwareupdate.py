@@ -65,7 +65,7 @@ while module is not None:
         shield.append(serial)
     elif product[0:8] == "YoctoHub":
         hubs.append(serial)
-    elif product != "VirtualHub":
+    elif product[0:9] != "VirtualHub":
         devices.append(serial)
     module = module.nextModule()
 # fist upgrades all Hubs...

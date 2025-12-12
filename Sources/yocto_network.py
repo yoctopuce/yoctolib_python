@@ -472,8 +472,7 @@ class YNetwork(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        if len(newval) > YAPI.HASH_BUF_SIZE:
-            self._throw(YAPI.INVALID_ARGUMENT, "Password too long :" + newval)
+        if not self._is_valid_pass(newval):
             return YAPI.INVALID_ARGUMENT
         rest_val = newval
         return self._setAttr("userPassword", rest_val)
@@ -509,8 +508,7 @@ class YNetwork(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        if len(newval) > YAPI.HASH_BUF_SIZE:
-            self._throw(YAPI.INVALID_ARGUMENT, "Password too long :" + newval)
+        if not self._is_valid_pass(newval):
             return YAPI.INVALID_ARGUMENT
         rest_val = newval
         return self._setAttr("adminPassword", rest_val)
