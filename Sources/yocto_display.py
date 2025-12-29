@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 63513 2024-11-28 10:50:30Z seb $
+#* $Id: yocto_display.py 70932 2025-12-22 09:11:53Z seb $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -576,6 +576,7 @@ class YDisplay(YFunction):
     DISPLAYTYPE_MONO = 0
     DISPLAYTYPE_GRAY = 1
     DISPLAYTYPE_RGB = 2
+    DISPLAYTYPE_EPAPER = 3
     DISPLAYTYPE_INVALID = -1
     #--- (end of generated code: YDisplay definitions)
 
@@ -782,8 +783,9 @@ class YDisplay(YFunction):
         """
         Returns the display type: monochrome, gray levels or full color.
 
-        @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY and
-        YDisplay.DISPLAYTYPE_RGB corresponding to the display type: monochrome, gray levels or full color
+        @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY,
+        YDisplay.DISPLAYTYPE_RGB and YDisplay.DISPLAYTYPE_EPAPER corresponding to the display type:
+        monochrome, gray levels or full color
 
         On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
         """

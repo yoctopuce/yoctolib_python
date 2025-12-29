@@ -70,6 +70,7 @@
         "yocto_threshold",
         "yocto_tilt",
         "yocto_tvoc",
+        "yocto_virtualsensor",
         "yocto_voc",
         "yocto_voltage",
         "yocto_voltageoutput",
