@@ -1,11 +1,9 @@
-PythonV2 v2.1.11132
+PythonV2 v2.1.11416
 
 - Update Mbed-TLS lib to 4.0
-- Improve error reporting if dll is not found
-- Add support for old .NET framework (3.5)
-- Fix YAPI.GetYAPISharedLibraryPath() on 64 bits
-- Fix YModule.get_friendlyName() method
-- Fix Prog-FirmwareUpdate example that was not correctly handle VirtualHub-4web and VirtualHub-V2
 - Fix some timeout with YAPI::PreregisterHub
 - Fix redirection handling with IpV6 address
 - Fix rare deadlock when network connection is very unstable
+- Fix YAPI.GetYAPISharedLibraryPath() on 64 bits
+- Fix YModule.get_friendlyName() method
+- Fix Prog-FirmwareUpdate example that was not correctly handle VirtualHub-4web and VirtualHub-V2 //70025

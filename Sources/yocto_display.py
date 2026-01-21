@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 70932 2025-12-22 09:11:53Z seb $
+#* $Id: yocto_display.py 71207 2026-01-07 18:17:59Z mvuilleu $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -559,6 +559,8 @@ class YDisplay(YFunction):
     #--- (generated code: YDisplay definitions)
     STARTUPSEQ_INVALID = YAPI.INVALID_STRING
     BRIGHTNESS_INVALID = YAPI.INVALID_UINT
+    AUTOINVERTDELAY_INVALID = YAPI.INVALID_UINT
+    DISPLAYPANEL_INVALID = YAPI.INVALID_STRING
     DISPLAYWIDTH_INVALID = YAPI.INVALID_UINT
     DISPLAYHEIGHT_INVALID = YAPI.INVALID_UINT
     LAYERWIDTH_INVALID = YAPI.INVALID_UINT
@@ -588,7 +590,9 @@ class YDisplay(YFunction):
         self._enabled = YDisplay.ENABLED_INVALID
         self._startupSeq = YDisplay.STARTUPSEQ_INVALID
         self._brightness = YDisplay.BRIGHTNESS_INVALID
+        self._autoInvertDelay = YDisplay.AUTOINVERTDELAY_INVALID
         self._orientation = YDisplay.ORIENTATION_INVALID
+        self._displayPanel = YDisplay.DISPLAYPANEL_INVALID
         self._displayWidth = YDisplay.DISPLAYWIDTH_INVALID
         self._displayHeight = YDisplay.DISPLAYHEIGHT_INVALID
         self._displayType = YDisplay.DISPLAYTYPE_INVALID
@@ -609,8 +613,12 @@ class YDisplay(YFunction):
             self._startupSeq = json_val.getString("startupSeq")
         if json_val.has("brightness"):
             self._brightness = json_val.getInt("brightness")
+        if json_val.has("autoInvertDelay"):
+            self._autoInvertDelay = json_val.getInt("autoInvertDelay")
         if json_val.has("orientation"):
             self._orientation = json_val.getInt("orientation")
+        if json_val.has("displayPanel"):
+            self._displayPanel = json_val.getString("displayPanel")
         if json_val.has("displayWidth"):
             self._displayWidth = json_val.getInt("displayWidth")
         if json_val.has("displayHeight"):
@@ -717,6 +725,43 @@ class YDisplay(YFunction):
         rest_val = str(newval)
         return self._setAttr("brightness", rest_val)
 
+    def get_autoInvertDelay(self):
+        """
+        Returns the interval between automatic display inversions, or 0 if automatic
+        inversion is disabled. Using the automatic inversion mechanism reduces the
+        burn-in that occurs on OLED screens over long periods when the same content
+        remains displayed on the screen.
+
+        @return an integer corresponding to the interval between automatic display inversions, or 0 if automatic
+                inversion is disabled
+
+        On failure, throws an exception or returns YDisplay.AUTOINVERTDELAY_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YDisplay.AUTOINVERTDELAY_INVALID
+        res = self._autoInvertDelay
+        return res
+
+    def set_autoInvertDelay(self, newval):
+        """
+        Changes the interval between automatic display inversions.
+        The parameter is the number of seconds, or 0 to disable automatic inversion.
+        Using the automatic inversion mechanism reduces the burn-in that occurs on OLED
+        screens over long periods when the same content remains displayed on the screen.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+
+        @param newval : an integer corresponding to the interval between automatic display inversions
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(newval)
+        return self._setAttr("autoInvertDelay", rest_val)
+
     def get_orientation(self):
         """
         Returns the currently selected display orientation.
@@ -748,6 +793,38 @@ class YDisplay(YFunction):
         """
         rest_val = str(newval)
         return self._setAttr("orientation", rest_val)
+
+    def get_displayPanel(self):
+        """
+        Returns the exact model of the display panel.
+
+        @return a string corresponding to the exact model of the display panel
+
+        On failure, throws an exception or returns YDisplay.DISPLAYPANEL_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YDisplay.DISPLAYPANEL_INVALID
+        res = self._displayPanel
+        return res
+
+    def set_displayPanel(self, newval):
+        """
+        Changes the model of display to match the connected display panel.
+        This function has no effect if the module does not support the selected
+        display panel.
+        Remember to call the saveToFlash()
+        method of the module if the modification must be kept.
+
+        @param newval : a string corresponding to the model of display to match the connected display panel
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = newval
+        return self._setAttr("displayPanel", rest_val)
 
     def get_displayWidth(self):
         """
@@ -903,6 +980,44 @@ class YDisplay(YFunction):
         self.flushLayers()
         self.resetHiddenLayerFlags()
         return self.sendCommand("Z")
+
+    def regenerateDisplay(self):
+        """
+        Forces an ePaper screen to perform a regenerative update using the slow
+        update method. Periodic use of the slow method (total panel update with
+        multiple inversions) prevents ghosting effects and improves contrast.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("z")
+
+    def postponeRefresh(self, duration):
+        """
+        Disables screen refresh for a short period of time. The combination of
+        postponeRefresh and triggerRefresh can be used as an
+        alternative to double-buffering to avoid flickering during display updates.
+
+        @param duration : duration of deactivation in milliseconds (max. 30 seconds)
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("t" + str(int(duration)))
+
+    def triggerRefresh(self):
+        """
+        Trigger an immediate screen refresh. The combination of
+        postponeRefresh and triggerRefresh can be used as an
+        alternative to double-buffering to avoid flickering during display updates.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("t0")
 
     def fade(self, brightness, duration):
         """
@@ -1073,6 +1188,185 @@ class YDisplay(YFunction):
                 self._allDisplayLayers.append(YDisplayLayer(self, idx))
                 idx = idx + 1
         return self._allDisplayLayers[layerId]
+
+    def readDisplay(self, palette):
+        """
+        Returns a color image with the current content of the display.
+        The image is returned as a binary object, where each byte represents a pixel,
+        from left to right and from top to bottom. The palette used to map byte
+        values to RGB colors is filled into the list provided as argument.
+        In all cases, the first palette entry (value 0) corresponds to the
+        screen default background color.
+        The image dimensions are given by the display width and height.
+
+        @param palette : a list to be filled with the image palette
+
+        @return a binary object if the call succeeds.
+
+        On failure, throws an exception or returns an empty binary object.
+        """
+        # zipmap
+        # zipsize
+        # zipwidth
+        # zipheight
+        # ziprotate
+        # zipcolors
+        # zipcol
+        # zipbits
+        # zipmask
+        # srcpos
+        # endrun
+        # srcpat
+        # srcbit
+        # srcval
+        # srcx
+        # srcy
+        # srci
+        # incx
+        # pixmap
+        # pixcount
+        # pixval
+        # pixpos
+        # rotmap
+        pixmap = bytearray(0)
+        # // Check if the display firmware has autoInvertDelay and pixels.bin support
+
+        if self.get_autoInvertDelay() < 0:
+            # // Old firmware, use uncompressed GIF output to rebuild pixmap
+            zipmap = self._download("display.gif")
+            zipsize = len(zipmap)
+            if zipsize == 0:
+                return pixmap
+            if not (zipsize >= 32):
+                self._throw(YAPI.IO_ERROR, "not a GIF image")
+                return pixmap
+            if not ((zipmap[0] == 71) and (zipmap[2] == 70)):
+                self._throw(YAPI.INVALID_ARGUMENT, "not a GIF image")
+                return pixmap
+            zipwidth = zipmap[6] + 256 * zipmap[7]
+            zipheight = zipmap[8] + 256 * zipmap[9]
+            del palette[:]
+            zipcol = zipmap[13] * 65536 + zipmap[14] * 256 + zipmap[15]
+            palette.append(zipcol)
+            zipcol = zipmap[16] * 65536 + zipmap[17] * 256 + zipmap[18]
+            palette.append(zipcol)
+            pixcount = zipwidth * zipheight
+            pixmap = bytearray(pixcount)
+            pixpos = 0
+            srcpos = 30
+            zipsize = zipsize - 2
+            while srcpos < zipsize:
+                # // load next run size
+                endrun = srcpos + 1 + zipmap[srcpos]
+                srcpos = srcpos + 1
+                while srcpos < endrun:
+                    srcval = zipmap[srcpos]
+                    srcpos = srcpos + 1
+                    srcbit = 8
+                    while srcbit != 0:
+                        if srcbit < 3:
+                            srcval = srcval + (zipmap[srcpos] << srcbit)
+                            srcpos = srcpos + 1
+                        pixval = ((srcval) & (7))
+                        srcval = (srcval >> 3)
+                        if not ((pixval > 1) and (pixval != 4)):
+                            self._throw(YAPI.INVALID_ARGUMENT, "unexpected encoding")
+                            return pixmap
+                        pixmap[pixpos] = pixval
+                        pixpos = pixpos + 1
+                        srcbit = srcbit - 3
+            return pixmap
+        # // New firmware, use compressed pixels.bin
+        zipmap = self._download("pixels.bin")
+        zipsize = len(zipmap)
+        if zipsize == 0:
+            return pixmap
+        if not (zipsize >= 16):
+            self._throw(YAPI.IO_ERROR, "not a pixmap")
+            return pixmap
+        if not ((zipmap[0] == 80) and (zipmap[2] == 88)):
+            self._throw(YAPI.INVALID_ARGUMENT, "not a pixmap")
+            return pixmap
+        zipwidth = zipmap[4] + 256 * zipmap[5]
+        zipheight = zipmap[6] + 256 * zipmap[7]
+        ziprotate = zipmap[8]
+        zipcolors = zipmap[9]
+        del palette[:]
+        srcpos = 10
+        srci = 0
+        while srci < zipcolors:
+            zipcol = zipmap[srcpos] * 65536 + zipmap[srcpos+1] * 256 + zipmap[srcpos+2]
+            palette.append(zipcol)
+            srcpos = srcpos + 3
+            srci = srci + 1
+        zipbits = 1
+        while (1 << zipbits) < zipcolors:
+            zipbits = zipbits + 1
+        zipmask = (1 << zipbits) - 1
+
+        pixcount = zipwidth * zipheight
+        pixmap = bytearray(pixcount)
+        srcx = 0
+        srcy = 0
+        incx = int(8 / zipbits)
+        srcval = 0
+        while srcpos < zipsize:
+            # // load next compression pattern byte
+            srcpat = zipmap[srcpos]
+            srcpos = srcpos + 1
+            srcbit = 7
+            while srcbit >= 0:
+                # // get next bitmap byte
+                if ((srcpat) & (128)) != 0:
+                    srcval = zipmap[srcpos]
+                    srcpos = srcpos + 1
+                srcpat = (srcpat << 1)
+                pixpos = srcy * zipwidth + srcx
+                # // produce 8 pixels (or 4, if bitmap uses 2 bits per pixel)
+                srci = 8 - zipbits
+                while srci >= 0:
+                    pixval = (((srcval >> srci)) & (zipmask))
+                    pixmap[pixpos] = pixval
+                    pixpos = pixpos + 1
+                    srci = srci - zipbits
+                srcy = srcy + 1
+                if srcy >= zipheight:
+                    srcy = 0
+                    srcx = srcx + incx
+                    # // drop last bytes if image is not a multiple of 8
+                    if srcx >= zipwidth:
+                        srcbit = 0
+                srcbit = srcbit - 1
+        # // rotate pixmap to match display orientation
+        if ziprotate == 0:
+            return pixmap
+        if ((ziprotate) & (2)) != 0:
+            # // rotate buffer 180 degrees by swapping pixels
+            srcpos = 0
+            pixpos = pixcount - 1
+            while srcpos < pixpos:
+                pixval = pixmap[srcpos]
+                pixmap[srcpos] = pixmap[pixpos]
+                pixmap[pixpos] = pixval
+                srcpos = srcpos + 1
+                pixpos = pixpos - 1
+        if ((ziprotate) & (1)) == 0:
+            return pixmap
+        # // rotate 90 ccw: first pixel is bottom left
+        rotmap = bytearray(pixcount)
+        srcx = 0
+        srcy = zipwidth - 1
+        srcpos = 0
+        while srcpos < pixcount:
+            pixval = pixmap[srcpos]
+            pixpos = srcy * zipheight + srcx
+            rotmap[pixpos] = pixval
+            srcy = srcy - 1
+            if srcy < 0:
+                srcx = srcx + 1
+                srcy = zipwidth - 1
+            srcpos = srcpos + 1
+        return rotmap
 
     def nextDisplay(self):
         """
