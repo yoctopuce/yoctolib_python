@@ -1,9 +1,3 @@
-PythonV2 v2.1.11416
+PythonV2 v2.1.11632
 
-- Update Mbed-TLS lib to 4.0
-- Fix some timeout with YAPI::PreregisterHub
-- Fix redirection handling with IpV6 address
-- Fix rare deadlock when network connection is very unstable
-- Fix YAPI.GetYAPISharedLibraryPath() on 64 bits
-- Fix YModule.get_friendlyName() method
-- Fix Prog-FirmwareUpdate example that was not correctly handle VirtualHub-4web and VirtualHub-V2 //70025
+- Add new DisplayLayer methods

@@ -1,0 +1,167 @@
+# -*- coding: utf-8 -*-
+# ********************************************************************
+#
+#  $Id: svn_id $
+#
+#  Implements yFindAngularSpeed(), the high-level API for AngularSpeed functions
+#
+#  - - - - - - - - - License information: - - - - - - - - -
+#
+#  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+#
+#  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+#  non-exclusive license to use, modify, copy and integrate this
+#  file into your software for the sole purpose of interfacing
+#  with Yoctopuce products.
+#
+#  You may reproduce and distribute copies of this file in
+#  source or object form, as long as the sole purpose of this
+#  code is to interface with Yoctopuce products. You must retain
+#  this notice in the distributed source file.
+#
+#  You should refer to Yoctopuce General Terms and Conditions
+#  for additional information regarding your rights and
+#  obligations.
+#
+#  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+#  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+#  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
+#  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+#  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+#  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+#  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+#  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
+#  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+#  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+#  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+#  WARRANTY, OR OTHERWISE.
+#
+# *********************************************************************
+
+
+__docformat__ = 'restructuredtext en'
+from yocto_api import *
+
+
+#--- (YAngularSpeed class start)
+#noinspection PyProtectedMember
+class YAngularSpeed(YSensor):
+    """
+    The YAngularSpeed class allows you to read and configure Yoctopuce tachometers.
+    It inherits from YSensor class the core functions to read measurements,
+    to register callback functions, and to access the autonomous datalogger.
+
+    """
+    #--- (end of YAngularSpeed class start)
+    #--- (YAngularSpeed return codes)
+    #--- (end of YAngularSpeed return codes)
+    #--- (YAngularSpeed dlldef)
+    #--- (end of YAngularSpeed dlldef)
+    #--- (YAngularSpeed yapiwrapper)
+    #--- (end of YAngularSpeed yapiwrapper)
+    #--- (YAngularSpeed definitions)
+    #--- (end of YAngularSpeed definitions)
+
+    def __init__(self, func):
+        super(YAngularSpeed, self).__init__(func)
+        self._className = 'AngularSpeed'
+        #--- (YAngularSpeed attributes)
+        self._callback = None
+        #--- (end of YAngularSpeed attributes)
+
+    #--- (YAngularSpeed implementation)
+    def _parseAttr(self, json_val):
+        super(YAngularSpeed, self)._parseAttr(json_val)
+
+    @staticmethod
+    def FindAngularSpeed(func):
+        """
+        Retrieves a tachometer for a given identifier.
+        The identifier can be specified using several formats:
+
+        - FunctionLogicalName
+        - ModuleSerialNumber.FunctionIdentifier
+        - ModuleSerialNumber.FunctionLogicalName
+        - ModuleLogicalName.FunctionIdentifier
+        - ModuleLogicalName.FunctionLogicalName
+
+
+        This function does not require that the rtachometer is online at the time
+        it is invoked. The returned object is nevertheless valid.
+        Use the method YAngularSpeed.isOnline() to test if the rtachometer is
+        indeed online at a given time. In case of ambiguity when looking for
+        a tachometer by logical name, no error is notified: the first instance
+        found is returned. The search is performed first by hardware name,
+        then by logical name.
+
+        If a call to this object's is_online() method returns FALSE although
+        you are certain that the matching device is plugged, make sure that you did
+        call registerHub() at application initialization time.
+
+        @param func : a string that uniquely characterizes the rtachometer, for instance
+                MyDevice.angularSpeed.
+
+        @return a YAngularSpeed object allowing you to drive the rtachometer.
+        """
+        # obj
+        obj = YFunction._FindFromCache("AngularSpeed", func)
+        if obj is None:
+            obj = YAngularSpeed(func)
+            YFunction._AddToCache("AngularSpeed", func, obj)
+        return obj
+
+    def nextAngularSpeed(self):
+        """
+        Continues the enumeration of tachometers started using yFirstAngularSpeed().
+        Caution: You can't make any assumption about the returned tachometers order.
+        If you want to find a specific a tachometer, use AngularSpeed.findAngularSpeed()
+        and a hardwareID or a logical name.
+
+        @return a pointer to a YAngularSpeed object, corresponding to
+                a tachometer currently online, or a None pointer
+                if there are no more tachometers to enumerate.
+        """
+        hwidRef = YRefParam()
+        if YAPI.YISERR(self._nextFunction(hwidRef)):
+            return None
+        if hwidRef.value == "":
+            return None
+        return YAngularSpeed.FindAngularSpeed(hwidRef.value)
+
+#--- (end of YAngularSpeed implementation)
+
+#--- (YAngularSpeed functions)
+
+    @staticmethod
+    def FirstAngularSpeed():
+        """
+        Starts the enumeration of tachometers currently accessible.
+        Use the method YAngularSpeed.nextAngularSpeed() to iterate on
+        next tachometers.
+
+        @return a pointer to a YAngularSpeed object, corresponding to
+                the first tachometer currently online, or a None pointer
+                if there are none.
+        """
+        devRef = YRefParam()
+        neededsizeRef = YRefParam()
+        serialRef = YRefParam()
+        funcIdRef = YRefParam()
+        funcNameRef = YRefParam()
+        funcValRef = YRefParam()
+        errmsgRef = YRefParam()
+        size = YAPI.C_INTSIZE
+        #noinspection PyTypeChecker,PyCallingNonCallable
+        p = (ctypes.c_int * 1)()
+        err = YAPI.apiGetFunctionsByClass("AngularSpeed", 0, p, size, neededsizeRef, errmsgRef)
+
+        if YAPI.YISERR(err) or not neededsizeRef.value:
+            return None
+
+        if YAPI.YISERR(
+                YAPI.yapiGetFunctionInfo(p[0], devRef, serialRef, funcIdRef, funcNameRef, funcValRef, errmsgRef)):
+            return None
+
+        return YAngularSpeed.FindAngularSpeed(serialRef.value + "." + funcIdRef.value)
+
+#--- (end of YAngularSpeed functions)

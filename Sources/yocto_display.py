@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 71207 2026-01-07 18:17:59Z mvuilleu $
+#* $Id: yocto_display.py 71629 2026-01-29 15:08:26Z mvuilleu $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -60,6 +60,8 @@ class YDisplayLayer(object):
         self._cmdbuff = ""
         self._hidden = False
         #--- (generated code: YDisplayLayer attributes)
+        self._polyPrevX = 0
+        self._polyPrevY = 0
         #--- (end of generated code: YDisplayLayer attributes)
 
     #--- (generated code: YDisplayLayer definitions)
@@ -69,6 +71,9 @@ class YDisplayLayer(object):
         TOP_LEFT, CENTER_LEFT, BASELINE_LEFT, BOTTOM_LEFT, TOP_CENTER, CENTER, BASELINE_CENTER, BOTTOM_CENTER, \
             TOP_DECIMAL, CENTER_DECIMAL, BASELINE_DECIMAL, BOTTOM_DECIMAL, TOP_RIGHT, CENTER_RIGHT, BASELINE_RIGHT, \
             BOTTOM_RIGHT = range(16)
+    NO_INK = -1
+    BG_INK = -2
+    FG_INK = -3
     #--- (end of generated code: YDisplayLayer definitions)
 
     def flush_now(self):
@@ -123,8 +128,11 @@ class YDisplayLayer(object):
 
     def selectColorPen(self, color):
         """
-        Selects the pen color for all subsequent drawing functions,
-        including text drawing. The pen color is provided as an RGB value.
+        Selects the color to be used for all subsequent drawing functions,
+        for filling as well as for line and text drawing.
+        To select a different fill and outline color, use
+        selectFillColor and selectLineColor.
+        The pen color is provided as an RGB value.
         For grayscale or monochrome displays, the value is
         automatically converted to the proper range.
 
@@ -139,7 +147,10 @@ class YDisplayLayer(object):
     def selectGrayPen(self, graylevel):
         """
         Selects the pen gray level for all subsequent drawing functions,
-        including text drawing. The gray level is provided as a number between
+        for filling as well as for line and text drawing.
+        To select a different fill and outline color, use
+        selectFillColor and selectLineColor.
+        The gray level is provided as a number between
         0 (black) and 255 (white, or whichever the lightest color is).
         For monochrome displays (without gray levels), any value
         lower than 128 is rendered as black, and any value equal
@@ -166,23 +177,85 @@ class YDisplayLayer(object):
         """
         return self.command_push("e")
 
-    def setAntialiasingMode(self, mode):
+    def selectFillColor(self, color):
         """
-        Enables or disables anti-aliasing for drawing oblique lines and circles.
-        Anti-aliasing provides a smoother aspect when looked from far enough,
-        but it can add fuzziness when the display is looked from very close.
-        At the end of the day, it is your personal choice.
-        Anti-aliasing is enabled by default on grayscale and color displays,
-        but you can disable it if you prefer. This setting has no effect
-        on monochrome displays.
+        Selects the color to be used for filling rectangular bars,
+        discs and polygons. The color is provided as an RGB value.
+        For grayscale or monochrome displays, the value is
+        automatically converted to the proper range.
+        You can also use the constants FG_INK to use the
+        default drawing colour, BG_INK to use the default
+        background colour, and NO_INK to disable filling.
 
-        @param mode : true to enable anti-aliasing, false to
-                disable it.
+        @param color : the desired drawing color, as a 24-bit RGB value,
+                or one of the constants NO_INK, FG_INK
+                or BG_INK
 
         @return YAPI.SUCCESS if the call succeeds.
 
         On failure, throws an exception or returns a negative error code.
         """
+        # r
+        # g
+        # b
+        if color==-1:
+            return self.command_push("f_")
+        if color==-2:
+            return self.command_push("f-")
+        if color==-3:
+            return self.command_push("f.")
+        r = (((color >> 20)) & (15))
+        g = (((color >> 12)) & (15))
+        b = (((color >> 4)) & (15))
+        return self.command_push("f" + ("%x" % r) + "" + ("%x" % g) + "" + ("%x" % b))
+
+    def selectLineColor(self, color):
+        """
+        Selects the color to be used for drawing the outline of rectangular
+        bars, discs and polygons, as well as for drawing lines and text.
+        The color is provided as an RGB value.
+        For grayscale or monochrome displays, the value is
+        automatically converted to the proper range.
+        You can also use the constants FG_INK to use the
+        default drawing colour, BG_INK to use the default
+        background colour, and NO_INK to disable outline drawing.
+
+        @param color : the desired drawing color, as a 24-bit RGB value,
+                or one of the constants NO_INK, FG_INK
+                or BG_INK
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # r
+        # g
+        # b
+        if color==-1:
+            return self.command_push("l_")
+        if color==-2:
+            return self.command_push("l-")
+        if color==-3:
+            return self.command_push("l*")
+        r = (((color >> 20)) & (15))
+        g = (((color >> 12)) & (15))
+        b = (((color >> 4)) & (15))
+        return self.command_push("l" + ("%x" % r) + "" + ("%x" % g) + "" + ("%x" % b))
+
+    def selectLineWidth(self, width):
+        """
+        Selects the line width for drawing the outline of rectangular
+        bars, discs and polygons, as well as for drawing lines.
+
+        @param width : the desired line width, in pixels
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.command_push("t" + str(int(width)))
+
+    def setAntialiasingMode(self, mode):
         return self.command_push("a" + ("1" if mode else "0"))
 
     def drawPixel(self, x, y):
@@ -300,10 +373,10 @@ class YDisplayLayer(object):
 
     def drawImage(self, x, y, imagename):
         """
-        Draws a GIF image at the specified position. The GIF image must have been previously
-        uploaded to the device built-in memory. If you experience problems using an image
-        file, check the device logs for any error message such as missing image file or bad
-        image file format.
+        Draws an image previously uploaded to the device filesystem, at the specified position.
+        At present time, GIF images are the only supported image format. If you experience
+        problems using an image file, check the device logs for any error message such as
+        missing image file or bad image file format.
 
         @param x : the distance from left of layer to the left of the image, in pixels
         @param y : the distance from top of layer to the top of the image, in pixels
@@ -340,6 +413,24 @@ class YDisplayLayer(object):
         destname = "layer" + str(int(self._id)) + ":" + str(int(w)) + "," + str(int(bgcol)) + "@" + str(int(x)) + "," + str(int(y))
         return self._display.upload(destname,bitmap)
 
+    def drawGIF(self, x, y, gifimage):
+        """
+        Draws a GIF image provided as a binary buffer at the specified position.
+        If the image drawing must be included in an animation sequence, save it
+        in the device filesystem first and use drawImage instead.
+
+        @param x : the distance from left of layer to the left of the image, in pixels
+        @param y : the distance from top of layer to the top of the image, in pixels
+        @param gifimage : a binary object with the content of a GIF file
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # destname
+        destname = "layer" + str(int(self._id)) + ":G,-1@" + str(int(x)) + "," + str(int(y))
+        return self._display.upload(destname,gifimage)
+
     def moveTo(self, x, y):
         """
         Moves the drawing pointer of this layer to the specified position.
@@ -367,6 +458,52 @@ class YDisplayLayer(object):
         On failure, throws an exception or returns a negative error code.
         """
         return self.command_flush("-" + str(int(x)) + "," + str(int(y)))
+
+    def polygonStart(self, x, y):
+        """
+        Starts drawing a polygon with the first corner at the specified position.
+
+        @param x : the distance from left of layer, in pixels
+        @param y : the distance from top of layer, in pixels
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        self._polyPrevX = x
+        self._polyPrevY = y
+        return self.command_push("[" + str(int(x)) + "," + str(int(y)))
+
+    def polygonAdd(self, x, y):
+        """
+        Adds a point to the currently open polygon, previously opened using
+        polygonStart.
+
+        @param x : the distance from left of layer to the new point, in pixels
+        @param y : the distance from top of layer to the new point, in pixels
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # dx
+        # dy
+        dx = x - self._polyPrevX
+        dy = y - self._polyPrevY
+        self._polyPrevX = x
+        self._polyPrevY = y
+        return self.command_flush(";" + str(int(dx)) + "," + str(int(dy)))
+
+    def polygonEnd(self):
+        """
+        Close the currently open polygon, fill its content the fill color currently
+        selected for the layer, and draw its outline using the selected line color.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.command_flush("]")
 
     def consoleOut(self, text):
         """
@@ -1005,7 +1142,7 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("t" + str(int(duration)))
+        return self.sendCommand("H" + str(int(duration)))
 
     def triggerRefresh(self):
         """
@@ -1017,7 +1154,7 @@ class YDisplay(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.sendCommand("t0")
+        return self.sendCommand("H0")
 
     def fade(self, brightness, duration):
         """
