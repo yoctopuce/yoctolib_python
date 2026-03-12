@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_messagebox.py 68482 2025-08-21 10:07:30Z mvuilleu $
+#* $Id: yocto_messagebox.py 72410 2026-03-11 07:18:41Z mvuilleu $
 #*
 #* Implements yFindMessageBox(), the high-level API for MessageBox functions
 #*
@@ -64,6 +64,7 @@ class YSms(object):
         self._mbox = None
         self._slot = 0
         self._deliv = 0
+        self._isnew = 0
         self._smsc = ""
         self._mref = 0
         self._orig = ""
@@ -93,14 +94,14 @@ class YSms(object):
     def get_msgRef(self):
         return self._mref
 
-    def get_sender(self):
-        return self._orig
+    def get_protocolId(self):
+        return self._pid
 
     def get_recipient(self):
         return self._dest
 
-    def get_protocolId(self):
-        return self._pid
+    def isNew(self):
+        return self._isnew
 
     def isReceived(self):
         return self._deliv
@@ -114,10 +115,7 @@ class YSms(object):
         return ((self._mclass) & (3))
 
     def get_dcs(self):
-        return (self._mclass | ((self._alphab << 2)))
-
-    def get_timestamp(self):
-        return self._stamp
+        return (self._mclass | (self._alphab << 2))
 
     def get_userDataHeader(self):
         return self._udh
@@ -125,11 +123,36 @@ class YSms(object):
     def get_userData(self):
         return self._udata
 
+    def isFlashMessage(self):
+        """
+        Returns true iff the message is a "Flash" SMS (class 0 message). Flash messages
+        are displayed on the handset immediately and usually not saved on the SIM card.
+
+        @return a boolean.
+        """
+        return self.get_msgClass() == 0
+
+    def get_timestamp(self):
+        """
+        Returns the reported message timestamp.
+
+        @return the timestamp as a text string.
+        """
+        return self._stamp
+
+    def get_sender(self):
+        """
+        Returns the reported message sender.
+
+        @return a text string.
+        """
+        return self._orig
+
     def get_textData(self):
         """
-        Returns the content of the message.
+        Returns the content of the message as a text string.
 
-        @return  a string with the content of the message.
+        @return a string with the content of the message.
         """
         # isolatin
         # isosize
@@ -150,6 +173,11 @@ class YSms(object):
         return self._udata.decode(YAPI.DefaultEncoding)
 
     def get_unicodeData(self):
+        """
+        Returns the content of the message, as a list of integer unicode values.
+
+        @return a list of integers.
+        """
         res = []
         # unisize
         # unival
@@ -215,6 +243,10 @@ class YSms(object):
         self._deliv = val
         return YAPI.SUCCESS
 
+    def set_new(self, val):
+        self._isnew = val
+        return YAPI.SUCCESS
+
     def set_smsc(self, val):
         self._smsc = val
         self._npdu = 0
@@ -254,7 +286,7 @@ class YSms(object):
         return YAPI.SUCCESS
 
     def set_dcs(self, val):
-        self._alphab = ((((val >> 2))) & (3))
+        self._alphab = (((val >> 2)) & (3))
         self._mclass = ((val) & (16+3))
         self._npdu = 0
         return YAPI.SUCCESS
@@ -299,7 +331,7 @@ class YSms(object):
 
     def addText(self, val):
         """
-        Add a regular text to the SMS. This function support messages
+        Adds regular text to the SMS. This function support messages
         of more than 160 characters. ISO-latin accented characters
         are supported. For messages with special unicode characters such as asian
         characters and emoticons, use the  addUnicodeData method.
@@ -356,10 +388,10 @@ class YSms(object):
 
     def addUnicodeData(self, val):
         """
-        Add a unicode text to the SMS. This function support messages
+        Adds unicode characters to the SMS. This function support messages
         of more than 160 characters, using SMS concatenation.
 
-        @param val : an array of special unicode characters
+        @param val : a list of unicode characters provided as integers
 
         @return YAPI.SUCCESS when the call succeeds.
         """
@@ -393,11 +425,11 @@ class YSms(object):
             uni = val[i]
             if uni >= 65536:
                 surrogate = uni - 65536
-                uni = ((((surrogate >> 10)) & (1023))) + 55296
+                uni = (((surrogate >> 10)) & (1023)) + 55296
                 udata[udatalen] = (uni >> 8)
                 udata[udatalen+1] = ((uni) & (255))
                 udatalen = udatalen + 2
-                uni = (((surrogate) & (1023))) + 56320
+                uni = ((surrogate) & (1023)) + 56320
             udata[udatalen] = (uni >> 8)
             udata[udatalen+1] = ((uni) & (255))
             udatalen = udatalen + 2
@@ -539,7 +571,7 @@ class YSms(object):
                 else:
                     byt = addr[ofs+rpos]
                     rpos = rpos + 1
-                    gsm7[i] = (carry | ((((byt << nbits))) & (127)))
+                    gsm7[i] = (carry | (((byt << nbits)) & (127)))
                     carry = (byt >> (7 - nbits))
                     nbits = nbits + 1
                 i = i + 1
@@ -742,7 +774,7 @@ class YSms(object):
                     nbits = 7
                 else:
                     thi_b = self._udata[i]
-                    res[wpos] = (carry | ((((thi_b << nbits))) & (255)))
+                    res[wpos] = (carry | (((thi_b << nbits)) & (255)))
                     wpos = wpos + 1
                     nbits = nbits - 1
                     carry = (thi_b >> (7 - nbits))
@@ -953,19 +985,19 @@ class YSms(object):
             rpos = rpos + 1
             self._dest = self.decodeAddress(pdu, rpos, addrlen)
             self._orig = ""
-            if (((pdutyp) & (16))) != 0:
-                if (((pdutyp) & (8))) != 0:
+            if ((pdutyp) & (16)) != 0:
+                if ((pdutyp) & (8)) != 0:
                     tslen = 7
                 else:
                     tslen= 1
             else:
                 tslen = 0
-        rpos = rpos + (((addrlen+3) >> 1))
+        rpos = rpos + ((addrlen+3) >> 1)
         self._pid = pdu[rpos]
         rpos = rpos + 1
         dcs = pdu[rpos]
         rpos = rpos + 1
-        self._alphab = ((((dcs >> 2))) & (3))
+        self._alphab = (((dcs >> 2)) & (3))
         self._mclass = ((dcs) & (16+3))
         self._stamp = self.decodeTimeStamp(pdu, rpos, tslen)
         rpos = rpos + tslen
@@ -1011,7 +1043,7 @@ class YSms(object):
                 else:
                     thi_b = pdu[rpos]
                     rpos = rpos + 1
-                    self._udata[i] = (carry | ((((thi_b << nbits))) & (127)))
+                    self._udata[i] = (carry | (((thi_b << nbits)) & (127)))
                     carry = (thi_b >> (7 - nbits))
                     nbits = nbits + 1
                 i = i + 1
@@ -1040,17 +1072,26 @@ class YSms(object):
 
         if self._npdu == 0:
             self.generatePdu()
-        if self._npdu == 1:
-            return self._mbox._upload("sendSMS", self._pdu)
-        retcode = YAPI.SUCCESS
-        i = 0
-        while (i < self._npdu) and (retcode == YAPI.SUCCESS):
-            pdu = self._parts[i]
-            retcode= pdu.send()
-            i = i + 1
-        return retcode
+        if self._npdu > 1:
+            # // send multiple PDUs using recursive call
+            retcode = YAPI.SUCCESS
+            i = 0
+            while (i < self._npdu) and (retcode == YAPI.SUCCESS):
+                pdu = self._parts[i]
+                retcode= pdu.send()
+                i = i + 1
+            return retcode
+        # // send a single PDU
+        return self._mbox.sendPDU(self._pdu)
 
     def deleteFromSIM(self):
+        """
+        Delete the SMS from the SIM card.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
         # i
         # retcode
         # pdu
@@ -1070,6 +1111,9 @@ class YSms(object):
 #--- (generated code: YSms functions)
 #--- (end of generated code: YSms functions)
 
+
+def yInternalEventCallback(obj, value):
+    obj._internalEventHandler(value)
 
 #--- (generated code: YMessageBox class start)
 #noinspection PyProtectedMember
@@ -1106,6 +1150,7 @@ class YMessageBox(YFunction):
         self._pduReceived = YMessageBox.PDURECEIVED_INVALID
         self._obey = YMessageBox.OBEY_INVALID
         self._command = YMessageBox.COMMAND_INVALID
+        self._smsCallback = None
         self._nextMsgRef = 0
         self._prevBitmapStr = ""
         self._pdus = []
@@ -1325,7 +1370,6 @@ class YMessageBox(YFunction):
     def clearSIMSlot(self, slot):
         # retry
         # idx
-        # res
         # bitmapStr
         # int_res
         # newBitmap
@@ -1338,8 +1382,8 @@ class YMessageBox(YFunction):
             newBitmap = YAPI._hexStrToBin(bitmapStr)
             idx = (slot >> 3)
             if idx < len(newBitmap):
-                bitVal = (1 << (((slot) & (7))))
-                if (((newBitmap[idx]) & (bitVal))) != 0:
+                bitVal = (1 << ((slot) & (7)))
+                if ((newBitmap[idx]) & (bitVal)) != 0:
                     self._prevBitmapStr = ""
                     int_res = self.set_command("DS" + str(int(slot)))
                     if int_res < 0:
@@ -1348,74 +1392,68 @@ class YMessageBox(YFunction):
                     return YAPI.SUCCESS
             else:
                 return YAPI.INVALID_ARGUMENT
-            res = self._AT("")
+            self._download("at.txt?cmd=")
             retry = retry - 1
         return YAPI.IO_ERROR
 
-    def _AT(self, cmd):
-        # chrPos
-        # cmdLen
-        # waitMore
-        # res
+    def sendPDU(self, pdu):
+        # i
         # buff
         # bufflen
         # buffstr
-        # buffstrlen
-        # idx
-        # suffixlen
-        # // copied form the YCellular class
-        # // quote dangerous characters used in AT commands
-        cmdLen = len(cmd)
-        chrPos = cmd.find("#")
-        while chrPos >= 0:
-            cmd = "" + (cmd)[0: 0 + chrPos] + "" + str(chr(37)) + "23" + (cmd)[chrPos+1: chrPos+1 + cmdLen-chrPos-1]
-            cmdLen = cmdLen + 2
-            chrPos = cmd.find("#")
-        chrPos = cmd.find("+")
-        while chrPos >= 0:
-            cmd = "" + (cmd)[0: 0 + chrPos] + "" + str(chr(37)) + "2B" + (cmd)[chrPos+1: chrPos+1 + cmdLen-chrPos-1]
-            cmdLen = cmdLen + 2
-            chrPos = cmd.find("+")
-        chrPos = cmd.find("=")
-        while chrPos >= 0:
-            cmd = "" + (cmd)[0: 0 + chrPos] + "" + str(chr(37)) + "3D" + (cmd)[chrPos+1: chrPos+1 + cmdLen-chrPos-1]
-            cmdLen = cmdLen + 2
-            chrPos = cmd.find("=")
-        cmd = "at.txt?cmd=" + cmd
+        # res
+        # waitMore
+        # cmd
+
+        buff = self._uploadEx("sendSMS", pdu)
+        if len(buff) < 2:
+            return YAPI.SUCCESS
+        if buff[0] != 64:
+            return YAPI.SUCCESS
+        # // new firmware provides a way to check result of SMS send command
         res = ""
-        # // max 2 minutes (each iteration may take up to 5 seconds if waiting)
-        waitMore = 24
+        bufflen = len(buff)
+        buffstr = buff.decode(YAPI.DefaultEncoding)
+        i = 0
+        waitMore = 10
         while waitMore > 0:
+            cmd = "at.txt?cmd=" + (buffstr)[i: i + bufflen - i]
             buff = self._download(cmd)
             bufflen = len(buff)
             buffstr = buff.decode(YAPI.DefaultEncoding)
-            buffstrlen = len(buffstr)
-            idx = bufflen - 1
-            while (idx > 0) and (buff[idx] != 64) and (buff[idx] != 10) and (buff[idx] != 13):
-                idx = idx - 1
-            if buff[idx] == 64:
+            i = bufflen - 1
+            while (i > 0) and (buff[i] != 64) and (buff[i] != 10) and (buff[i] != 13):
+                i = i - 1
+            if (i >= 0) and (buff[i] == 64):
                 # // continuation detected
-                suffixlen = bufflen - idx
-                cmd = "at.txt?cmd=" + (buffstr)[buffstrlen - suffixlen: buffstrlen - suffixlen + suffixlen]
-                buffstr = (buffstr)[0: 0 + buffstrlen - suffixlen]
                 waitMore = waitMore - 1
             else:
                 # // request complete
                 waitMore = 0
-            res = "" + res + "" + buffstr
-        return res
+            res = "" + res + "" + (buffstr)[0: 0 + i]
+        if not (res.find("OK") >= 0):
+            self._throw(YAPI.NOT_SUPPORTED, "Failed to send SMS")
+            return YAPI.NOT_SUPPORTED
+        return YAPI.SUCCESS
 
     def fetchPdu(self, slot):
         # binPdu
         arrPdu = []
         # hexPdu
         # sms
-
-        binPdu = self._download("sms.json?pos=" + str(int(slot)) + "&len=1")
-        arrPdu = self._json_get_array(binPdu)
-        hexPdu = self._decode_json_string(arrPdu[0])
         sms = YSms(self)
         sms.set_slot(slot)
+
+        binPdu = self._download("sms.json?pos=" + str(int(slot)) + "&len=1")
+        if len(binPdu)<8:
+            # // Retry in case SIM was busy
+            YAPI.Sleep(250)
+            binPdu = self._download("sms.json?pos=" + str(int(slot)) + "&len=1")
+            if not (len(binPdu)>=8):
+                self._throw(YAPI.IO_ERROR, "unable to retrieve SMS")
+                return sms
+        arrPdu = self._json_get_array(binPdu)
+        hexPdu = self._decode_json_string(arrPdu[0])
         sms.parsePdu(YAPI._hexStrToBin(hexPdu))
         return sms
 
@@ -1696,18 +1734,17 @@ class YMessageBox(YFunction):
 
     def checkNewMessages(self):
         # bitmapStr
-        # prevBitmap
         # newBitmap
         # slot
         # nslots
         # pduIdx
         # idx
         # bitVal
-        # prevBit
         # i
         # nsig
         # cnt
         # sig
+        # isnew
         newArr = []
         newMsg = []
         newAgg = []
@@ -1717,9 +1754,8 @@ class YMessageBox(YFunction):
         bitmapStr = self.get_slotsBitmap()
         if bitmapStr == self._prevBitmapStr:
             return YAPI.SUCCESS
-        prevBitmap = YAPI._hexStrToBin(self._prevBitmapStr)
-        newBitmap = YAPI._hexStrToBin(bitmapStr)
         self._prevBitmapStr = bitmapStr
+        newBitmap = YAPI._hexStrToBin(bitmapStr)
         nslots = 8*len(newBitmap)
         del newArr[:]
         del newMsg[:]
@@ -1732,8 +1768,10 @@ class YMessageBox(YFunction):
             slot = sms.get_slot()
             idx = (slot >> 3)
             if idx < len(newBitmap):
-                bitVal = (1 << (((slot) & (7))))
-                if (((newBitmap[idx]) & (bitVal))) != 0:
+                bitVal = (1 << ((slot) & (7)))
+                if ((newBitmap[idx]) & (bitVal)) != 0:
+                    newBitmap[idx] = (newBitmap[idx] ^ bitVal)
+                    sms.set_new(False)
                     newArr.append(sms)
                     if sms.get_concatCount() == 0:
                         newMsg.append(sms)
@@ -1752,26 +1790,23 @@ class YMessageBox(YFunction):
         slot = 0
         while slot < nslots:
             idx = (slot >> 3)
-            bitVal = (1 << (((slot) & (7))))
-            prevBit = 0
-            if idx < len(prevBitmap):
-                prevBit = ((prevBitmap[idx]) & (bitVal))
-            if (((newBitmap[idx]) & (bitVal))) != 0:
-                if prevBit == 0:
-                    sms = self.fetchPdu(slot)
-                    newArr.append(sms)
-                    if sms.get_concatCount() == 0:
-                        newMsg.append(sms)
-                    else:
-                        sig = sms.get_concatSignature()
-                        i = 0
-                        while (i < nsig) and (len(sig) > 0):
-                            if signatures[i] == sig:
-                                sig = ""
-                            i = i + 1
-                        if len(sig) > 0:
-                            signatures.append(sig)
-                            nsig = nsig + 1
+            bitVal = (1 << ((slot) & (7)))
+            if ((newBitmap[idx]) & (bitVal)) != 0:
+                sms = self.fetchPdu(slot)
+                sms.set_new(True)
+                newArr.append(sms)
+                if sms.get_concatCount() == 0:
+                    newMsg.append(sms)
+                else:
+                    sig = sms.get_concatSignature()
+                    i = 0
+                    while (i < nsig) and (len(sig) > 0):
+                        if signatures[i] == sig:
+                            sig = ""
+                        i = i + 1
+                    if len(sig) > 0:
+                        signatures.append(sig)
+                        nsig = nsig + 1
             slot = slot + 1
 
         self._pdus = newArr
@@ -1782,6 +1817,7 @@ class YMessageBox(YFunction):
             sig = signatures[i]
             cnt = 0
             pduIdx = 0
+            isnew = True
             while pduIdx < len(self._pdus):
                 sms = self._pdus[pduIdx]
                 if sms.get_concatCount() > 0:
@@ -1789,11 +1825,13 @@ class YMessageBox(YFunction):
                         if cnt == 0:
                             cnt = sms.get_concatCount()
                             del newAgg[:]
+                        isnew = sms.isNew()
                         newAgg.append(sms)
                 pduIdx = pduIdx + 1
             if (cnt > 0) and (len(newAgg) == cnt):
                 sms = YSms(self)
                 sms.set_parts(newAgg)
+                sms.set_new(isnew)
                 newMsg.append(sms)
             i = i + 1
 
@@ -1895,6 +1933,46 @@ class YMessageBox(YFunction):
         """
         self.checkNewMessages()
         return self._messages
+
+    def registerSmsCallback(self, callback):
+        """
+        Registers a callback function to be called each time that a new SMS is received.
+        The callback is invoked only during the execution of ySleep or yHandleEvents.
+        This provides control over the time when the callback is triggered.
+        For good responsiveness, remember to call one of these two functions periodically.
+        To unregister a callback, pass a None pointer as argument.
+
+        @param callback : the callback function to call, or a None pointer.
+                The callback function should take four arguments:
+                the YMessageBox object that emitted the event, and
+                the YSms object containing the received message.
+                On failure, throws an exception or returns a negative error code.
+        """
+        self._smsCallback = None
+        if callback is not None:
+            self.registerValueCallback(yInternalEventCallback)
+        else:
+            self.registerValueCallback(None)
+        self._smsCallback = callback
+        return 0
+
+    def _internalEventHandler(self, cbVal):
+        # arrLen
+        # arrPos
+        messages = []
+        # sms
+
+        messages = self.get_messages()
+        # // invoke callback for all new messages
+        arrLen = len(messages)
+        arrPos = 0
+        while arrPos < arrLen:
+            sms = messages[arrPos]
+            if sms.isNew():
+                if self._smsCallback is not None:
+                    self._smsCallback(self, sms)
+            arrPos = arrPos + 1
+        return YAPI.SUCCESS
 
     def nextMessageBox(self):
         """

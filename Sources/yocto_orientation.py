@@ -60,6 +60,8 @@ class YOrientation(YSensor):
     #--- (YOrientation yapiwrapper)
     #--- (end of YOrientation yapiwrapper)
     #--- (YOrientation definitions)
+    COMMAND_INVALID = YAPI.INVALID_STRING
+    ZEROOFFSET_INVALID = YAPI.INVALID_DOUBLE
     #--- (end of YOrientation definitions)
 
     def __init__(self, func):
@@ -67,11 +69,62 @@ class YOrientation(YSensor):
         self._className = 'Orientation'
         #--- (YOrientation attributes)
         self._callback = None
+        self._command = YOrientation.COMMAND_INVALID
+        self._zeroOffset = YOrientation.ZEROOFFSET_INVALID
         #--- (end of YOrientation attributes)
 
     #--- (YOrientation implementation)
     def _parseAttr(self, json_val):
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
+        if json_val.has("zeroOffset"):
+            self._zeroOffset = round(json_val.getDouble("zeroOffset") / 65.536) / 1000.0
         super(YOrientation, self)._parseAttr(json_val)
+
+    def get_command(self):
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YOrientation.COMMAND_INVALID
+        res = self._command
+        return res
+
+    def set_command(self, newval):
+        rest_val = newval
+        return self._setAttr("command", rest_val)
+
+    def set_zeroOffset(self, newval):
+        """
+        Sets an offset between the orientation reported by the sensor and the actual orientation. This
+        can typically be used  to compensate for mechanical offset. This offset can also be set
+        automatically using the zero() method.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
+        On failure, throws an exception or returns a negative error code.
+
+        @param newval : a floating point number
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = str(int(round(newval * 65536.0, 1)))
+        return self._setAttr("zeroOffset", rest_val)
+
+    def get_zeroOffset(self):
+        """
+        Returns the Offset between the orientation reported by the sensor and the actual orientation.
+
+        @return a floating point number corresponding to the Offset between the orientation reported by the
+        sensor and the actual orientation
+
+        On failure, throws an exception or returns YOrientation.ZEROOFFSET_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YOrientation.ZEROOFFSET_INVALID
+        res = self._zeroOffset
+        return res
 
     @staticmethod
     def FindOrientation(func):
@@ -109,6 +162,86 @@ class YOrientation(YSensor):
             obj = YOrientation(func)
             YFunction._AddToCache("Orientation", func, obj)
         return obj
+
+    def sendCommand(self, command):
+        return self.set_command(command)
+
+    def zero(self):
+        """
+        Reset the sensor's zero to current position by automatically setting a new offset.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("Z")
+
+    def set_calibration(self, offsetValues):
+        """
+        Modifies the calibration of the MA600A sensor using an array of 32
+        values representing the offset in degrees between the true values and
+        those measured regularly every 11.25 degrees starting from zero. The calibration
+        is applied immediately and is stored permanently in the MA600A sensor.
+        Before calculating the offset values, remember to clear any previous
+        calibration using the clearCalibration function and set
+        the zero offset  to 0. After a calibration change, the sensor will stop
+        measurements for about one second.
+        Do not confuse this function with the generic calibrateFromPoints function,
+        which works at the YSensor level and is not necessarily well suited to
+        a sensor returning circular values.
+
+        @param offsetValues : array of 32 floating point values in the [-11.25..+11.25] range
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        # res
+        # npt
+        # idx
+        # corr
+        npt = len(offsetValues)
+        if npt != 32:
+            self._throw(YAPI.INVALID_ARGUMENT, "Invalid calibration parameters (32 expected)")
+            return YAPI.INVALID_ARGUMENT
+        res = "C"
+        idx = 0
+        while idx < npt:
+            corr = int(round(offsetValues[idx] * 128 / 11.25))
+            if (corr < -128) or (corr > 127):
+                self._throw(YAPI.INVALID_ARGUMENT, "Calibration parameter exceeds permitted range (+/-11.25)")
+                return YAPI.INVALID_ARGUMENT
+            if corr < 0:
+                corr = corr + 256
+            res = "" + res + "" + ("%02x" % corr)
+            idx = idx + 1
+        return self.sendCommand(res)
+
+    def get_Calibration(self, offsetValues):
+        """
+        Retrieves offset correction data points previously entered using the method
+        set_calibration.
+
+        @param offsetValues : array of 32 floating point numbers, that will be filled by the
+                function with the offset values for the correction points.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return 0
+
+    def clearCalibration(self):
+        """
+        Cancels any calibration set with set_calibration. This function
+        is equivalent to calling set_calibration with only zeros.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("-")
 
     def nextOrientation(self):
         """

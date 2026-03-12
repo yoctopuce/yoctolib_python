@@ -1,3 +1,5 @@
-PythonV2 v2.1.11632
+PythonV2 v2.1.12413
 
-- Add new DisplayLayer methods
+- Add error handling when sending SMS
+- Add registerSmsCallback support
+- Add example showing how to use SMS functions (Prog-SMS-Example)

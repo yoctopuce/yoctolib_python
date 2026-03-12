@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 71629 2026-01-29 15:08:26Z mvuilleu $
+#* $Id: yocto_display.py 71793 2026-02-03 18:07:40Z mvuilleu $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -713,9 +713,9 @@ class YDisplay(YFunction):
     ORIENTATION_DOWN = 3
     ORIENTATION_INVALID = -1
     DISPLAYTYPE_MONO = 0
-    DISPLAYTYPE_GRAY = 1
-    DISPLAYTYPE_RGB = 2
-    DISPLAYTYPE_EPAPER = 3
+    DISPLAYTYPE_EPAPER_BW = 1
+    DISPLAYTYPE_EPAPER_BWR = 2
+    DISPLAYTYPE_EPAPER_BWRY = 3
     DISPLAYTYPE_INVALID = -1
     #--- (end of generated code: YDisplay definitions)
 
@@ -995,11 +995,11 @@ class YDisplay(YFunction):
 
     def get_displayType(self):
         """
-        Returns the display type: monochrome, gray levels or full color.
+        Returns the display type: monochrome OLED, black and white ePaper, color ePaper, etc.
 
-        @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_GRAY,
-        YDisplay.DISPLAYTYPE_RGB and YDisplay.DISPLAYTYPE_EPAPER corresponding to the display type:
-        monochrome, gray levels or full color
+        @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_EPAPER_BW,
+        YDisplay.DISPLAYTYPE_EPAPER_BWR and YDisplay.DISPLAYTYPE_EPAPER_BWRY corresponding to the display
+        type: monochrome OLED, black and white ePaper, color ePaper, etc
 
         On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
         """
@@ -1359,7 +1359,6 @@ class YDisplay(YFunction):
         # srcx
         # srcy
         # srci
-        # incx
         # pixmap
         # pixcount
         # pixval
@@ -1445,7 +1444,6 @@ class YDisplay(YFunction):
         pixmap = bytearray(pixcount)
         srcx = 0
         srcy = 0
-        incx = int(8 / zipbits)
         srcval = 0
         while srcpos < zipsize:
             # // load next compression pattern byte
@@ -1457,10 +1455,13 @@ class YDisplay(YFunction):
                 if ((srcpat) & (128)) != 0:
                     srcval = zipmap[srcpos]
                     srcpos = srcpos + 1
+                    if zipbits > 1:
+                        srcval = (srcval << 8) + zipmap[srcpos]
+                        srcpos = srcpos + 1
                 srcpat = (srcpat << 1)
                 pixpos = srcy * zipwidth + srcx
-                # // produce 8 pixels (or 4, if bitmap uses 2 bits per pixel)
-                srci = 8 - zipbits
+                # // produce 8 pixels
+                srci = 7 * zipbits
                 while srci >= 0:
                     pixval = (((srcval >> srci)) & (zipmask))
                     pixmap[pixpos] = pixval
@@ -1469,7 +1470,7 @@ class YDisplay(YFunction):
                 srcy = srcy + 1
                 if srcy >= zipheight:
                     srcy = 0
-                    srcx = srcx + incx
+                    srcx = srcx + 8
                     # // drop last bytes if image is not a multiple of 8
                     if srcx >= zipwidth:
                         srcbit = 0

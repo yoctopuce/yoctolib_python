@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 70666 2025-12-09 10:26:00Z seb $
+# * $Id: yocto_api.py 72344 2026-03-09 14:01:56Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -1009,7 +1009,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.1"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "71632"
+    YOCTO_API_BUILD_NO = "72413"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2542,7 +2542,7 @@ class YAPI:
             YAPI.yloadYapiCDLL()
         YAPI.apiGetAPIVersion(version, date)
         # noinspection PyTypeChecker
-        return "2.1.11632 (" + version.value + ")"
+        return "2.1.12413 (" + version.value + ")"
 
     @staticmethod
     def InitAPI(mode, errmsg=None):
@@ -5531,9 +5531,11 @@ class YFunction(object):
     def registerValueCallback(self, callback):
         """
         Registers the callback function that is invoked on every change of advertised value.
-        The callback is invoked only during the execution of ySleep or yHandleEvents.
-        This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-        one of these two functions periodically. To unregister a callback, pass a None pointer as argument.
+        The callback is then invoked only during the execution of ySleep or yHandleEvents.
+        This provides control over the time when the callback is triggered. For good responsiveness,
+        remember to call one of these two functions periodically. The callback is called once juste after beeing
+        registered, passing the current advertised value  of the function, provided that it is not an empty string.
+        To unregister a callback, pass a None pointer as argument.
 
         @param callback : the callback function to call, or a None pointer. The callback function should take two
                 arguments: the function object of which the value has changed, and the character string describing
@@ -5768,8 +5770,8 @@ class YFunction(object):
         SERIAL     is the serial number of the module if the module is connected or "unresolved", and
         FUNCTIONID is  the hardware identifier of the function if the module is connected.
         For example, this method returns Relay(MyCustomName.relay1)=RELAYLO1-123456.relay1 if the
-        module is already connected or Relay(BadCustomeName.relay1)=unresolved if the module has
-        not yet been connected. This method does not trigger any USB or TCP transaction and can therefore be used in
+        module is connected or Relay(BadCustomeName.relay1)=unresolved if the module is
+        not connected. This method does not trigger any USB or TCP transaction and can therefore be used in
         a debugger.
 
         @return a string that describes the function

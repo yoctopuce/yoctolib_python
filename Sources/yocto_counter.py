@@ -60,6 +60,7 @@ class YCounter(YSensor):
     #--- (YCounter yapiwrapper)
     #--- (end of YCounter yapiwrapper)
     #--- (YCounter definitions)
+    COMMAND_INVALID = YAPI.INVALID_STRING
     #--- (end of YCounter definitions)
 
     def __init__(self, func):
@@ -67,11 +68,26 @@ class YCounter(YSensor):
         self._className = 'Counter'
         #--- (YCounter attributes)
         self._callback = None
+        self._command = YCounter.COMMAND_INVALID
         #--- (end of YCounter attributes)
 
     #--- (YCounter implementation)
     def _parseAttr(self, json_val):
+        if json_val.has("command"):
+            self._command = json_val.getString("command")
         super(YCounter, self)._parseAttr(json_val)
+
+    def get_command(self):
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YCounter.COMMAND_INVALID
+        res = self._command
+        return res
+
+    def set_command(self, newval):
+        rest_val = newval
+        return self._setAttr("command", rest_val)
 
     @staticmethod
     def FindCounter(func):
@@ -109,6 +125,19 @@ class YCounter(YSensor):
             obj = YCounter(func)
             YFunction._AddToCache("Counter", func, obj)
         return obj
+
+    def sendCommand(self, command):
+        return self.set_command(command)
+
+    def zero(self):
+        """
+        Reset the counter to zero.
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("Z")
 
     def nextCounter(self):
         """
