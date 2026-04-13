@@ -61,6 +61,9 @@ class YCounter(YSensor):
     #--- (end of YCounter yapiwrapper)
     #--- (YCounter definitions)
     COMMAND_INVALID = YAPI.INVALID_STRING
+    DECIMALMODE_FALSE = 0
+    DECIMALMODE_TRUE = 1
+    DECIMALMODE_INVALID = -1
     #--- (end of YCounter definitions)
 
     def __init__(self, func):
@@ -68,14 +71,48 @@ class YCounter(YSensor):
         self._className = 'Counter'
         #--- (YCounter attributes)
         self._callback = None
+        self._decimalMode = YCounter.DECIMALMODE_INVALID
         self._command = YCounter.COMMAND_INVALID
         #--- (end of YCounter attributes)
 
     #--- (YCounter implementation)
     def _parseAttr(self, json_val):
+        if json_val.has("decimalMode"):
+            self._decimalMode = json_val.getInt("decimalMode") > 0
         if json_val.has("command"):
             self._command = json_val.getString("command")
         super(YCounter, self)._parseAttr(json_val)
+
+    def get_decimalMode(self):
+        """
+        Returns a value indicating if the senseur compute whole or fractional values.
+
+        @return either YCounter.DECIMALMODE_FALSE or YCounter.DECIMALMODE_TRUE, according to a value
+        indicating if the senseur compute whole or fractional values
+
+        On failure, throws an exception or returns YCounter.DECIMALMODE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YCounter.DECIMALMODE_INVALID
+        res = self._decimalMode
+        return res
+
+    def set_decimalMode(self, newval):
+        """
+        Changes the sensor's operating mode so that it computes integer or decimal values.
+        Remember to call the saveToFlash() method of the module if the modification must be kept.
+
+        @param newval : either YCounter.DECIMALMODE_FALSE or YCounter.DECIMALMODE_TRUE, according to the
+        sensor's operating mode so that it computes integer or decimal values
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("decimalMode", rest_val)
 
     def get_command(self):
         # res
@@ -133,7 +170,10 @@ class YCounter(YSensor):
         """
         Reset the counter to zero.
 
-        @return YAPI.SUCCESS if the call succeeds.
+        @return YAPI.SUCCESS if the call succeeds. Please note that this function only resets
+                the integer part of the counter. In CONTINUOUS mode, the decimal part is calculated
+                from the angle measured by the sensor. To set the decimal part of the sensor to zero,
+                the origin of the sensor must be changed with the YOrientation.zero().
 
         On failure, throws an exception or returns a negative error code.
         """

@@ -62,6 +62,9 @@ class YOrientation(YSensor):
     #--- (YOrientation definitions)
     COMMAND_INVALID = YAPI.INVALID_STRING
     ZEROOFFSET_INVALID = YAPI.INVALID_DOUBLE
+    COUNTERCLOCKWISE_FALSE = 0
+    COUNTERCLOCKWISE_TRUE = 1
+    COUNTERCLOCKWISE_INVALID = -1
     #--- (end of YOrientation definitions)
 
     def __init__(self, func):
@@ -69,17 +72,51 @@ class YOrientation(YSensor):
         self._className = 'Orientation'
         #--- (YOrientation attributes)
         self._callback = None
+        self._counterClockwise = YOrientation.COUNTERCLOCKWISE_INVALID
         self._command = YOrientation.COMMAND_INVALID
         self._zeroOffset = YOrientation.ZEROOFFSET_INVALID
         #--- (end of YOrientation attributes)
 
     #--- (YOrientation implementation)
     def _parseAttr(self, json_val):
+        if json_val.has("counterClockwise"):
+            self._counterClockwise = json_val.getInt("counterClockwise") > 0
         if json_val.has("command"):
             self._command = json_val.getString("command")
         if json_val.has("zeroOffset"):
             self._zeroOffset = round(json_val.getDouble("zeroOffset") / 65.536) / 1000.0
         super(YOrientation, self)._parseAttr(json_val)
+
+    def get_counterClockwise(self):
+        """
+        Returns a value indicating whether the sensor is operating in a counterclockwise direction.
+
+        @return either YOrientation.COUNTERCLOCKWISE_FALSE or YOrientation.COUNTERCLOCKWISE_TRUE, according
+        to a value indicating whether the sensor is operating in a counterclockwise direction
+
+        On failure, throws an exception or returns YOrientation.COUNTERCLOCKWISE_INVALID.
+        """
+        # res
+        if self._cacheExpiration <= YAPI.GetTickCount():
+            if self.load(YAPI._yapiContext.GetCacheValidity()) != YAPI.SUCCESS:
+                return YOrientation.COUNTERCLOCKWISE_INVALID
+        res = self._counterClockwise
+        return res
+
+    def set_counterClockwise(self, newval):
+        """
+        Defines the operating direction of the sensor.
+        Remember to call the saveToFlash() method of the module if the
+        modification must be kept.
+
+        @param newval : either YOrientation.COUNTERCLOCKWISE_FALSE or YOrientation.COUNTERCLOCKWISE_TRUE
+
+        @return YAPI.SUCCESS if the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        rest_val = "1" if newval > 0 else "0"
+        return self._setAttr("counterClockwise", rest_val)
 
     def get_command(self):
         # res
@@ -99,7 +136,6 @@ class YOrientation(YSensor):
         can typically be used  to compensate for mechanical offset. This offset can also be set
         automatically using the zero() method.
         Remember to call the saveToFlash() method of the module if the modification must be kept.
-        On failure, throws an exception or returns a negative error code.
 
         @param newval : a floating point number
 
@@ -172,8 +208,7 @@ class YOrientation(YSensor):
         Remember to call the saveToFlash() method of the module if the modification must be kept.
 
         @return YAPI.SUCCESS if the call succeeds.
-
-        On failure, throws an exception or returns a negative error code.
+                On failure, throws an exception or returns a negative error code.
         """
         return self.sendCommand("Z")
 
