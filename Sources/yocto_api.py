@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 72344 2026-03-09 14:01:56Z seb $
+# * $Id: yocto_api.py 73343 2026-05-18 07:57:59Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -1009,7 +1009,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.1"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "72672"
+    YOCTO_API_BUILD_NO = "73347"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2542,7 +2542,7 @@ class YAPI:
             YAPI.yloadYapiCDLL()
         YAPI.apiGetAPIVersion(version, date)
         # noinspection PyTypeChecker
-        return "2.1.12672 (" + version.value + ")"
+        return "2.1.13347 (" + version.value + ")"
 
     @staticmethod
     def InitAPI(mode, errmsg=None):
@@ -5275,7 +5275,7 @@ class YFunction(object):
         # Get device Object
         res = self._getDevice(devRef, errmsgRef)
         if YAPI.YISERR(res):
-            self._throw(res, (request).decode(YAPI.DefaultEncoding))
+            self._throw(res, errmsgRef.value)
             return b""
         res = devRef.value.HTTPRequest(request, httpbuffer, errmsgRef)
         if YAPI.YISERR(res):

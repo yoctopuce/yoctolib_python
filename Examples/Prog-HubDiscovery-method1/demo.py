@@ -17,10 +17,15 @@ def HubDiscovered(serial, url):
         return
 
     print("hub found: " + serial + " (" + url + ")")
+    # add the hub to the dictionnary so we won't have to
+    # process is again.
+    KnownHubs.append(serial)
 
     # connect to the hub
     msg = YRefParam()
-    YAPI.RegisterHub(url, msg)
+    if YAPI.RegisterHub(url, msg) != YAPI.SUCCESS:
+        print(' Ignore hub '+ serial + ' (' + msg.value +')')
+        return
 
     #  find the hub module
     hub = YModule.FindModule(serial)
@@ -36,9 +41,6 @@ def HubDiscovered(serial, url):
             deviceid = hub.functionName(i)
             print("  " + fctHwdName + " : " + deviceid)
 
-    # add the hub to the dictionnary so we won't have to
-    # process is again.
-    KnownHubs.append(serial)
 
     # disconnect from the hub
     YAPI.UnregisterHub(url)

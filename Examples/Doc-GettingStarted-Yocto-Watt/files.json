@@ -3,6 +3,7 @@
     "other_files": [],
     "ylib": [
         "yocto_current",
+        "yocto_inputcapture",
         "yocto_power",
         "yocto_voltage",
         "yocto_api"

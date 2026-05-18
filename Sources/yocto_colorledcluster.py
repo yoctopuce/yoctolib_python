@@ -384,6 +384,58 @@ class YColorLedCluster(YFunction):
         """
         return self.sendCommand("MH" + str(int(ledIndex)) + "," + str(int(count)) + "," + ("%x" % hslValue) + "," + str(int(delay)))
 
+    def shl_rgb(self, rgbValue):
+        """
+        Changes the color displayed by the last LED and shifts all currently displayed colors
+        toward the beginning of the RGB LED string. The new color is encoded as follows: 0xRRGGBB.
+
+        @param rgbValue :  new color.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("<R" + ("%x" % rgbValue))
+
+    def shr_rgb(self, rgbValue):
+        """
+        Changes the color displayed by the first LED and shifts all currently displayed colors
+        toward the end of the RGB LED string. The new color is encoded as follows: 0xRRGGBB.
+
+        @param rgbValue :  new color.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand(">R" + ("%x" % rgbValue))
+
+    def shl_hsl(self, hslValue):
+        """
+        Changes the color displayed by the last LED and shifts all currently displayed colors
+        toward the beginning of the RGB LED string. The new color is encoded as follows: 0xHHSSLL.
+
+        @param hslValue :  new color.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand("<H" + ("%x" % hslValue))
+
+    def shr_hsl(self, hslValue):
+        """
+        Changes the color displayed by the first LED and shifts all currently displayed colors
+        toward the end of the RGB LED string. The new color is encoded as follows: 0xHHSSLL.
+
+        @param hslValue :  new color.
+
+        @return YAPI.SUCCESS when the call succeeds.
+
+        On failure, throws an exception or returns a negative error code.
+        """
+        return self.sendCommand(">H" + ("%x" % hslValue))
+
     def addRgbMoveToBlinkSeq(self, seqIndex, rgbValue, delay):
         """
         Adds an RGB transition to a sequence. A sequence is a transition list, which can
