@@ -72,6 +72,12 @@ class YRfidTagInfo(object):
     IEC_14443_NTAG_215 = 8
     IEC_14443_NTAG_216 = 9
     IEC_14443_NTAG_424_DNA = 10
+    IEC_15693_ST25DV = 11
+    IEC_15693_ST25TV = 12
+    IEC_15693_TAGIT_HFI = 13
+    IEC_15693_MB89R = 14
+    IEC_15693_ICODE_DNA = 15
+    IEC_15693_ICODE_SLI = 16
     #--- (end of generated code: YRfidTagInfo definitions)
 
     def __init__(self):
@@ -183,6 +189,19 @@ class YRfidTagInfo(object):
             typeStr = "NTAG 216"
         if tagType == YRfidTagInfo.IEC_14443_NTAG_424_DNA:
             typeStr = "NTAG 424 DNA"
+        if tagType == YRfidTagInfo.IEC_15693_ST25DV:
+            typeStr = "ST25DVxx"
+        if tagType == YRfidTagInfo.IEC_15693_ST25TV:
+            typeStr = "ST25TVxx"
+        if tagType == YRfidTagInfo.IEC_15693_TAGIT_HFI:
+            typeStr = "TI TAGIT HFI"
+        if tagType == YRfidTagInfo.IEC_15693_MB89R:
+            typeStr = "MB89Rxx"
+        if tagType == YRfidTagInfo.IEC_15693_ICODE_DNA:
+            typeStr = "ICODE DNA"
+        if tagType == YRfidTagInfo.IEC_15693_ICODE_SLI:
+            typeStr = "ICODE SLI"
+
         self._tagId = tagId
         self._tagType = tagType
         self._typeStr = typeStr
@@ -334,6 +353,8 @@ class YRfidStatus(object):
     BAD_PASSWORD_TYPE = -160
     BAD_PASSWORD = -161
     PASSWORD_REQUIRED = -162
+    MULTIWRITE_NOT_SUPPORTED = -163
+    MULTIREAD_NOT_SUPPORTED = -164
     #--- (end of generated code: YRfidStatus definitions)
 
     def __init__(self):
@@ -461,7 +482,7 @@ class YRfidStatus(object):
             if errCode == YRfidStatus.BLOCK_ALREADY_LOCKED:
                 errMsg = "Block / byte is already locked and thus cannot be locked again."
             if errCode == YRfidStatus.BLOCK_LOCKED:
-                errMsg = "Block / byte is locked and its content cannot be changed, operation might require a password."
+                errMsg = "Block / byte is either locked and its content cannot be changed or operation might require a password."
             if errCode == YRfidStatus.BLOCK_NOT_SUCESSFULLY_PROGRAMMED:
                 errMsg = "Block was not successfully programmed"
             if errCode == YRfidStatus.BLOCK_NOT_SUCESSFULLY_LOCKED:
@@ -646,6 +667,10 @@ class YRfidStatus(object):
                 errMsg = "Bad password."
             if errCode == YRfidStatus.PASSWORD_REQUIRED:
                 errMsg = "Operation requires a password"
+            if errCode == YRfidStatus.MULTIWRITE_NOT_SUPPORTED:
+                errMsg = "Multi block write unavailable on this tag."
+            if errCode == YRfidStatus.MULTIREAD_NOT_SUPPORTED:
+                errMsg = "Multi block read unavailable on this tag."
             if errBlk >= 0:
                 errMsg = "" + errMsg + " (block " + str(int(errBlk)) + ")"
         self._tagId = tagId
@@ -682,10 +707,13 @@ class YRfidOptions(object):
     NO_RFID_KEY = 0
     MIFARE_KEY_A = 1
     MIFARE_KEY_B = 2
-    ST25D_CONFIG_PWD = 3
-    ST25D_PWD1 = 4
-    ST25D_PWD2 = 5
-    ST25D_PWD3 = 6
+    ST25DV_CONFIG_PWD = 3
+    ST25DV_PWD1 = 4
+    ST25DV_PWD2 = 5
+    ST25DV_PWD3 = 6
+    ST25TV_CONFIG_PWD = 7
+    ST25TV_PWD1 = 8
+    ST25TV_PWD2 = 9
     #--- (end of generated code: YRfidOptions definitions)
 
     def __init__(self):
