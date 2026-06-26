@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 73343 2026-05-18 07:57:59Z seb $
+# * $Id: yocto_api.py 74764 2026-06-18 08:33:53Z seb $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -1009,7 +1009,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.1"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "74699"
+    YOCTO_API_BUILD_NO = "74927"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1543,6 +1543,7 @@ class YAPI:
                     yChangeFct(self.module)
             elif self.ev == self.HUB_DISCOVERY:
                 if yHubDiscoveryCallback is not None:
+                    # noinspection PyCallingNonCallable
                     yHubDiscoveryCallback(self.serial, self.url)
 
         # noinspection PyProtectedMember
@@ -2269,6 +2270,7 @@ class YAPI:
         modul = YModule.FindModule((infos.serial).decode(YAPI.DefaultEncoding) + ".module")
         callback = modul.get_logCallback()
         if callback is not None:
+            # noinspection PyCallingNonCallable
             callback(modul, (line).decode(YAPI.DefaultEncoding))
         return 0
 
@@ -2542,7 +2544,7 @@ class YAPI:
             YAPI.yloadYapiCDLL()
         YAPI.apiGetAPIVersion(version, date)
         # noinspection PyTypeChecker
-        return "2.1.14699 (" + version.value + ")"
+        return "2.1.14927 (" + version.value + ")"
 
     @staticmethod
     def InitAPI(mode, errmsg=None):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 74504 2026-06-01 14:50:23Z seb $
+#* $Id: yocto_display.py 74722 2026-06-12 12:57:01Z mvuilleu $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -59,7 +59,7 @@ class YDisplayLayer(object):
         self._id = int(layerId)
         #--- (generated code: YDisplayLayer attributes)
         self._cmdbuff = ""
-        self._hidden = false
+        self._hidden = False
         self._polyPrevX = 0
         self._polyPrevY = 0
         #--- (end of generated code: YDisplayLayer attributes)

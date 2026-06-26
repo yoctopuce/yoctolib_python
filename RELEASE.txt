@@ -1,3 +1,5 @@
-PythonV2 v2.1.14699
+PythonV2 v2.1.14927
 
-- Add support for new RFID tags
+- Add new YAirQuality class
+- Fix out-of-order execution of postponeRefresh vs bitmap uploads
+- Fix missing notifications with VirtualHub for web on http server that return chunk encoding data
