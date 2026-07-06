@@ -3,6 +3,7 @@
     "other_files": [],
     "ylib": [
         "yocto_accelerometer",
+        "yocto_airquality",
         "yocto_altitude",
         "yocto_anbutton",
         "yocto_angularspeed",
