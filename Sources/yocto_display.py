@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_display.py 74722 2026-06-12 12:57:01Z mvuilleu $
+#* $Id: yocto_display.py 75351 2026-08-02 19:45:07Z mvuilleu $
 #*
 #* Implements yFindDisplay(), the high-level API for Display functions
 #*
@@ -511,7 +511,7 @@ class YDisplayLayer(object):
 
     def polygonEnd(self):
         """
-        Close the currently open polygon, fill its content the fill color currently
+        Closes the currently open polygon, fill its content the fill color currently
         selected for the layer, and draw its outline using the selected line color.
 
         @return YAPI.SUCCESS if the call succeeds.
@@ -835,11 +835,11 @@ class YDisplay(YFunction):
 
     def set_startupSeq(self, newval):
         """
-        Changes the name of the sequence to play when the displayed is powered on.
+        Changes the name of the sequence to play when the display is powered on.
         Remember to call the saveToFlash() method of the module if the
         modification must be kept.
 
-        @param newval : a string corresponding to the name of the sequence to play when the displayed is powered on
+        @param newval : a string corresponding to the name of the sequence to play when the display is powered on
 
         @return YAPI.SUCCESS if the call succeeds.
 
@@ -945,7 +945,9 @@ class YDisplay(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = str(newval)
-        return self._setAttr("orientation", rest_val)
+        res = self._setAttr("orientation", rest_val)
+        self._clearLazyCache()
+        return res
 
     def get_displayPanel(self):
         """
@@ -977,7 +979,9 @@ class YDisplay(YFunction):
         On failure, throws an exception or returns a negative error code.
         """
         rest_val = newval
-        return self._setAttr("displayPanel", rest_val)
+        res = self._setAttr("displayPanel", rest_val)
+        self._clearLazyCache()
+        return res
 
     def get_displayWidth(self):
         """
@@ -1011,11 +1015,11 @@ class YDisplay(YFunction):
 
     def get_displayType(self):
         """
-        Returns the display type: monochrome OLED, black and white ePaper, color ePaper, etc.
+        Returns the display type: monochrome OLED, black and white ePaper, color ePaper, and so on.
 
         @return a value among YDisplay.DISPLAYTYPE_MONO, YDisplay.DISPLAYTYPE_EPAPER_BW,
         YDisplay.DISPLAYTYPE_EPAPER_BWR and YDisplay.DISPLAYTYPE_EPAPER_BWRY corresponding to the display
-        type: monochrome OLED, black and white ePaper, color ePaper, etc
+        type: monochrome OLED, black and white ePaper, color ePaper, and so on
 
         On failure, throws an exception or returns YDisplay.DISPLAYTYPE_INVALID.
         """
@@ -1148,7 +1152,7 @@ class YDisplay(YFunction):
     def resetAll(self):
         """
         Clears the display screen and resets all display layers to their default state.
-        Using this function in a sequence will kill the sequence play-back. Don't use that
+        Using this function in a sequence will kill the sequence play-back. Do not use that
         function to reset the display at sequence start-up.
 
         @return YAPI.SUCCESS if the call succeeds.
@@ -1228,7 +1232,7 @@ class YDisplay(YFunction):
 
     def triggerRefresh(self):
         """
-        Trigger an immediate screen refresh. The combination of
+        Triggers an immediate screen refresh. The combination of
         postponeRefresh and triggerRefresh can be used as an
         alternative to double-buffering to avoid flickering during display updates.
 

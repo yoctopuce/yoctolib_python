@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 74764 2026-06-18 08:33:53Z seb $
+# * $Id: yocto_api.py 75351 2026-08-02 19:45:07Z mvuilleu $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -1009,7 +1009,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.1"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "75129"
+    YOCTO_API_BUILD_NO = "75391"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2544,7 +2544,7 @@ class YAPI:
             YAPI.yloadYapiCDLL()
         YAPI.apiGetAPIVersion(version, date)
         # noinspection PyTypeChecker
-        return "2.1.15129 (" + version.value + ")"
+        return "2.1.15391 (" + version.value + ")"
 
     @staticmethod
     def InitAPI(mode, errmsg=None):
@@ -5946,6 +5946,11 @@ class YFunction(object):
         devRef.value.clearCache()
         self._cacheExpiration = YAPI.GetTickCount()
 
+    # Internal method to force reloading even lazy attributes (eg. displayWidth, etc)
+    def _clearLazyCache(self):
+        self.clearCache()
+        self._cacheExpiration = 0;
+
     def get_module(self):
         """
         Gets the YModule object for the device on which the function is located.
@@ -6450,7 +6455,14 @@ class YModule(YFunction):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.set_persistentSettings(YModule.PERSISTENTSETTINGS_LOADED)
+        # res
+
+        res = self.set_persistentSettings(YModule.PERSISTENTSETTINGS_LOADED)
+        if not (res==YAPI.SUCCESS):
+            self._throw(res, "unable to trigger revert settings")
+            return res
+        self._clearLazyCache()
+        return res
 
     def reboot(self, secBeforeReboot):
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_serialport.py 70736 2025-12-12 07:53:30Z mvuilleu $
+#* $Id: yocto_serialport.py 75307 2026-07-29 07:43:26Z seb $
 #*
 #* Implements yFindSerialPort(), the high-level API for SerialPort functions
 #*
@@ -42,7 +42,8 @@
 __docformat__ = 'restructuredtext en'
 from yocto_api import *
 
-
+def yInternalEventCallback(obj, value):
+    obj._internalEventHandler(value)
 
 #--- (generated code: YSnoopingRecord class start)
 #noinspection PyProtectedMember
@@ -1328,20 +1329,24 @@ class YSerialPort(YFunction):
         if not (self._eventCallback is not None):
             # // first simulated event, use it only to initialize reference values
             self._eventPos = 0
-
-        url = "rxmsg.json?pos=" + str(int(self._eventPos)) + "&maxw=0&t=0"
-        msgbin = self._download(url)
-        msgarr = self._json_get_array(msgbin)
-        msglen = len(msgarr)
-        if msglen == 0:
-            return YAPI.SUCCESS
-        # // last element of array is the new position
-        msglen = msglen - 1
-        if not (self._eventCallback is not None):
-            # // first simulated event, use it only to initialize reference values
+        msglen = 0
+        try:
+            url = "rxmsg.json?pos=" + str(int(self._eventPos)) + "&maxw=0&t=0"
+            msgbin = self._download(url)
+            msgarr = self._json_get_array(msgbin)
+            msglen = len(msgarr)
+            if msglen == 0:
+                return YAPI.SUCCESS
+            # // last element of array is the new position
+            msglen = msglen - 1
+            if not (self._eventCallback is not None):
+                # // first simulated event, use it only to initialize reference values
+                self._eventPos = self._decode_json_int(msgarr[msglen])
+                return YAPI.SUCCESS
             self._eventPos = self._decode_json_int(msgarr[msglen])
-            return YAPI.SUCCESS
-        self._eventPos = self._decode_json_int(msgarr[msglen])
+        except:
+            return YAPI.IO_ERROR
+
         idx = 0
         while idx < msglen:
             self._eventCallback(self, YSnoopingRecord(msgarr[idx].decode(YAPI.DefaultEncoding)))

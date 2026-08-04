@@ -1,3 +1,4 @@
-PythonV2 v2.1.15129
+PythonV2 v2.1.15391
 
-- Add NFC encoding support to YRfidReader class
+- Fix missing callback handler for registerSnoopingCallback
+- Fix USB support on Raspberry PI 1 that use Debian Trixie
