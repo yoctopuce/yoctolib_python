@@ -61,7 +61,7 @@ class YCarbonDioxide(YSensor):
     #--- (YCarbonDioxide yapiwrapper)
     #--- (end of YCarbonDioxide yapiwrapper)
     #--- (YCarbonDioxide definitions)
-    ABCPERIOD_INVALID = YAPI.INVALID_UINT
+    ABCPERIOD_INVALID = YAPI.INVALID_INT
     COMMAND_INVALID = YAPI.INVALID_STRING
     #--- (end of YCarbonDioxide definitions)
 
@@ -178,7 +178,7 @@ class YCarbonDioxide(YSensor):
 
         On failure, throws an exception or returns a negative error code.
         """
-        return self.set_command("F" + str(int(round(1000*refVal))) + "C")
+        return self.set_command("F" + str(int(round(refVal))) + "C")
 
     def triggerBaselineCalibration(self):
         """
