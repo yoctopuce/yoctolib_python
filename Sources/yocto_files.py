@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_files.py 70518 2025-11-26 16:18:50Z mvuilleu $
+#* $Id: yocto_files.py version 2.1.16087 (build 76087) $
 #*
 #* Implements yFindFiles(), the high-level API for Files functions
 #*

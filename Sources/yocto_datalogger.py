@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_datalogger.py 28125 2017-07-25 07:53:27Z seb $
+# * $Id: yocto_datalogger.py version 2.1.16087 (build 76087) $
 # *
 # * Implements yFindDataLogger(), the high-level API for DataLogger
 # *

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: svn_id $
+#  $Id: yocto_soundlevel.py version 2.1.16087 (build 76087) $
 #
 #  Implements yFindSoundLevel(), the high-level API for SoundLevel functions
 #

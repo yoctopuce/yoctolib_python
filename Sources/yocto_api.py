@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py 75351 2026-08-02 19:45:07Z mvuilleu $
+# * $Id: yocto_api.py version 2.1.16087 (build 76087) $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -1009,7 +1009,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.1"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "75681"
+    YOCTO_API_BUILD_NO = "76087"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -2544,7 +2544,7 @@ class YAPI:
             YAPI.yloadYapiCDLL()
         YAPI.apiGetAPIVersion(version, date)
         # noinspection PyTypeChecker
-        return "2.1.15681 (" + version.value + ")"
+        return "2.1.16087 (" + version.value + ")"
 
     @staticmethod
     def InitAPI(mode, errmsg=None):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_sdi12port.py 52939 2023-01-26 11:12:44Z mvuilleu $
+#  $Id: yocto_sdi12port.py version 2.1.16087 (build 76087) $
 #
 #  Implements yFindSdi12Port(), the high-level API for Sdi12Port functions
 #

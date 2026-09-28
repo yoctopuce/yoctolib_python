@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_wireless.py 68466 2025-08-19 17:31:45Z mvuilleu $
+# * $Id: yocto_wireless.py version 2.1.16087 (build 76087) $
 # *
 # * Implements yFindWireless(), the high-level API for Wireless functions
 # *

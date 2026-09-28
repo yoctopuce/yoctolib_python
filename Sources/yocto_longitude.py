@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: svn_id $
+#  $Id: yocto_longitude.py version 2.1.16087 (build 76087) $
 #
 #  Implements yFindLongitude(), the high-level API for Longitude functions
 #

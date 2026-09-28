@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: svn_id $
+#  $Id: yocto_orientation.py version 2.1.16087 (build 76087) $
 #
 #  Implements yFindOrientation(), the high-level API for Orientation functions
 #

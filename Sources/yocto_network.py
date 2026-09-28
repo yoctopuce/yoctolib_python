@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: svn_id $
+#  $Id: yocto_network.py version 2.1.16087 (build 76087) $
 #
 #  Implements yFindNetwork(), the high-level API for Network functions
 #

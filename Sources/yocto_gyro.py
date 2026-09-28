@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #*********************************************************************
 #*
-#* $Id: yocto_gyro.py 59978 2024-03-18 15:04:46Z mvuilleu $
+#* $Id: yocto_gyro.py version 2.1.16087 (build 76087) $
 #*
 #* Implements yFindGyro(), the high-level API for Gyro functions
 #*

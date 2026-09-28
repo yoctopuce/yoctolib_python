@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: svn_id $
+#  $Id: yocto_poweroutput.py version 2.1.16087 (build 76087) $
 #
 #  Implements yFindPowerOutput(), the high-level API for PowerOutput functions
 #

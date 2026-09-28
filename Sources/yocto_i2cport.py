@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_i2cport.py 64493 2025-01-30 11:17:59Z seb $
+#  $Id: yocto_i2cport.py version 2.1.16087 (build 76087) $
 #
 #  Implements yFindI2cPort(), the high-level API for I2cPort functions
 #

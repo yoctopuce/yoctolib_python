@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_micropython.py 69442 2025-10-16 08:53:14Z mvuilleu $
+#  $Id: yocto_micropython.py version 2.1.16087 (build 76087) $
 #
 #  Implements yFindMicroPython(), the high-level API for MicroPython functions
 #

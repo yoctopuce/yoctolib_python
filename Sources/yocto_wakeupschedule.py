@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: svn_id $
+#  $Id: yocto_wakeupschedule.py version 2.1.16087 (build 76087) $
 #
 #  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
 #
