@@ -1,4 +1,4 @@
-PythonV2 v2.1.16087
+PythonV2 v2.1.16635
 
-- Add XY-MODEM upload support
-- Fix documentation
+- Add QR code drawing function (requires firmware 76629+)
+- Improve handling of special files during automated firmware update

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # *********************************************************************
 # *
-# * $Id: yocto_api.py version 2.1.16087 (build 76087) $
+# * $Id:yocto_api.py version 2.1.16635 (build 76635) $
 # *
 # * High-level programming interface, common to all modules
 # *
@@ -726,10 +726,9 @@ class YAPIContext(object):
 
     def GetYAPISharedLibraryPath(self):
         """
-        Returns the path to the dynamic YAPI library. This function is useful for debugging problems loading the
-        dynamic library YAPI. This function is supported by the C#, Python and VB languages. The other
-        libraries return an
-        empty string.
+        Returns the path to the dynamic YAPI library. This function is useful for debugging
+        problems loading the dynamic library YAPI. This function is supported by the C#,
+        Python and VB languages. The other libraries return an empty string.
 
         @return a string containing the path of the YAPI dynamic library.
         """
@@ -743,6 +742,15 @@ class YAPIContext(object):
         else:
             path = (smallbuff.value).decode(YAPI.DefaultEncoding)
         return path
+
+    def _utf8Decode(self, utf8buff, fromPos, fromLen):
+        # tmpbuff
+        # res
+        tmpbuff = ctypes.create_string_buffer(fromLen+1)
+        YAPI._yapiUtf8Decode(ctypes.create_string_buffer(bytes(bytearray(utf8buff, YAPI.DefaultEncoding))), fromPos, fromLen, tmpbuff)
+        res = (tmpbuff.value).decode(YAPI.DefaultEncoding)
+        tmpbuff = None
+        return res
 
     def AddUdevRule(self, force):
         """
@@ -1009,7 +1017,7 @@ class YAPI:
     YOCTO_API_VERSION_STR = "2.1"
     YOCTO_API_VERSION_BCD = 0x0200
 
-    YOCTO_API_BUILD_NO = "76087"
+    YOCTO_API_BUILD_NO = "76635"
     YOCTO_DEFAULT_PORT = 4444
     YOCTO_VENDORID = 0x24e0
     YOCTO_DEVID_FACTORYBOOT = 1
@@ -1425,6 +1433,9 @@ class YAPI:
         YAPI._yapiSetHubIntAttr = YAPI._yApiCLib.yapiSetHubIntAttr
         YAPI._yapiSetHubIntAttr.restypes = ctypes.c_int
         YAPI._yapiSetHubIntAttr.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
+        YAPI._yapiUtf8Decode = YAPI._yApiCLib.yapiUtf8Decode
+        YAPI._yapiUtf8Decode.restypes = ctypes.c_int
+        YAPI._yapiUtf8Decode.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
         YAPI._yapiSetTrustedCertificatesList = YAPI._yApiCLib.yapiSetTrustedCertificatesList
         YAPI._yapiSetTrustedCertificatesList.restypes = ctypes.c_int
         YAPI._yapiSetTrustedCertificatesList.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -1670,16 +1681,21 @@ class YAPI:
     @staticmethod
     def GetYAPISharedLibraryPath():
         """
-        Returns the path to the dynamic YAPI library. This function is useful for debugging problems loading the
-        dynamic library YAPI. This function is supported by the C#, Python and VB languages. The other
-        libraries return an
-        empty string.
+        Returns the path to the dynamic YAPI library. This function is useful for debugging
+        problems loading the dynamic library YAPI. This function is supported by the C#,
+        Python and VB languages. The other libraries return an empty string.
 
         @return a string containing the path of the YAPI dynamic library.
         """
         if not YAPI._apiInitialized:
             YAPI.InitAPI(0)
         return YAPI._yapiContext.GetYAPISharedLibraryPath()
+
+    @staticmethod
+    def _utf8Decode(utf8buff, fromPos, fromLen):
+        if not YAPI._apiInitialized:
+            YAPI.InitAPI(0)
+        return YAPI._yapiContext._utf8Decode(utf8buff, fromPos, fromLen)
 
     @staticmethod
     def AddUdevRule(force):
@@ -2544,7 +2560,7 @@ class YAPI:
             YAPI.yloadYapiCDLL()
         YAPI.apiGetAPIVersion(version, date)
         # noinspection PyTypeChecker
-        return "2.1.16087 (" + version.value + ")"
+        return "2.1.16635 (" + version.value + ")"
 
     @staticmethod
     def InitAPI(mode, errmsg=None):
@@ -6682,7 +6698,7 @@ class YModule(YFunction):
             sep = ""
             for ii_1 in filelist:
                 name = self._json_get_key(ii_1, "name")
-                if (len(name) > 0) and not (name == "startupConf.json"):
+                if (len(name) > 0) and not (name == "startupConf.json") and not ((name)[0: 0 + 1] == "."):
                     if (name)[len(name)-1: len(name)-1 + 1] == "/":
                         file_data = ""
                     else:

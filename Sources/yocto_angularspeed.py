@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id: yocto_angularspeed.py version 2.1.16087 (build 76087) $
+#  $Id:yocto_angularspeed.py version 2.1.16635 (build 76635) $
 #
 #  Implements yFindAngularSpeed(), the high-level API for AngularSpeed functions
 #
