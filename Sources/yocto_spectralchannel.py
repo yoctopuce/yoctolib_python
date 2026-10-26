@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id:yocto_spectralchannel.py version 2.1.16635 (build 76635) $
+#  $Id: yocto_spectralchannel.py version 2.1.16695 (build 76695) $
 #
 #  Implements yFindSpectralChannel(), the high-level API for SpectralChannel functions
 #

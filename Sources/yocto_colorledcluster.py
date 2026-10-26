@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id:yocto_colorledcluster.py version 2.1.16635 (build 76635) $
+#  $Id: yocto_colorledcluster.py version 2.1.16695 (build 76695) $
 #
 #  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
 #

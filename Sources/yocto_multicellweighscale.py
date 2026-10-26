@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ********************************************************************
 #
-#  $Id:yocto_multicellweighscale.py version 2.1.16635 (build 76635) $
+#  $Id: yocto_multicellweighscale.py version 2.1.16695 (build 76695) $
 #
 #  Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
 #
